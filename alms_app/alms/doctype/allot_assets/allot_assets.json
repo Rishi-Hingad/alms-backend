@@ -19,7 +19,7 @@
   {
    "fieldname": "allot_assets_section",
    "fieldtype": "Section Break",
-   "label": "Allot Assets"
+   "label": "Allot Assets Details"
   },
   {
    "fieldname": "asset_code",
@@ -63,7 +63,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-09-11 14:57:43.074527",
+ "modified": "2024-09-11 15:40:24.545377",
  "modified_by": "Administrator",
  "module": "ALMS",
  "name": "Allot Assets",
