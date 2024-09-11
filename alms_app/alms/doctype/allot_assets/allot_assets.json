@@ -33,8 +33,9 @@
   },
   {
    "fieldname": "employee_name",
-   "fieldtype": "Data",
-   "label": "Employee Name"
+   "fieldtype": "Link",
+   "label": "Employee Name",
+   "options": "Employee Master"
   },
   {
    "fieldname": "allotted_date",
@@ -63,7 +64,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-09-11 15:40:24.545377",
+ "modified": "2024-09-11 15:53:40.033162",
  "modified_by": "Administrator",
  "module": "ALMS",
  "name": "Allot Assets",
