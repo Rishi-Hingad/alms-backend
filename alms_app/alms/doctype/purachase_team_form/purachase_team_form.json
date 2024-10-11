@@ -1,0 +1,112 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2024-09-23 10:19:15.791857",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "purchase_team_form_section",
+  "kilometers_per_year",
+  "tenure_in_years",
+  "total_kilometers",
+  "revise_ex_show_room_price",
+  "revise_discount",
+  "revise_net_ex_show_room_price",
+  "column_break_xtqz",
+  "revise_tcs",
+  "revise_registration_charges",
+  "revise_accessories",
+  "revised_financed_amount",
+  "revise_quotation_attachment_need_to_be_done"
+ ],
+ "fields": [
+  {
+   "fieldname": "purchase_team_form_section",
+   "fieldtype": "Section Break",
+   "label": "Purchase Team Form"
+  },
+  {
+   "fieldname": "kilometers_per_year",
+   "fieldtype": "Data",
+   "label": "Kilometers per Year"
+  },
+  {
+   "fieldname": "tenure_in_years",
+   "fieldtype": "Data",
+   "label": "Tenure (in years)"
+  },
+  {
+   "fieldname": "total_kilometers",
+   "fieldtype": "Data",
+   "label": "Total Kilometers"
+  },
+  {
+   "fieldname": "revise_ex_show_room_price",
+   "fieldtype": "Data",
+   "label": "Revise Ex Show Room Price"
+  },
+  {
+   "fieldname": "revise_discount",
+   "fieldtype": "Data",
+   "label": "Revise Discount"
+  },
+  {
+   "fieldname": "revise_net_ex_show_room_price",
+   "fieldtype": "Data",
+   "label": "Revise Net Ex-Show Room Price"
+  },
+  {
+   "fieldname": "column_break_xtqz",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "revise_tcs",
+   "fieldtype": "Data",
+   "label": "Revise TCS"
+  },
+  {
+   "fieldname": "revise_registration_charges",
+   "fieldtype": "Data",
+   "label": "Revise Registration Charges"
+  },
+  {
+   "fieldname": "revise_accessories",
+   "fieldtype": "Data",
+   "label": "Revise Accessories"
+  },
+  {
+   "fieldname": "revised_financed_amount",
+   "fieldtype": "Data",
+   "label": "Revised Financed Amount"
+  },
+  {
+   "fieldname": "revise_quotation_attachment_need_to_be_done",
+   "fieldtype": "Data",
+   "label": "Revise Quotation (Attachment need to be done)"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2024-09-23 10:23:42.353482",
+ "modified_by": "Administrator",
+ "module": "ALMS",
+ "name": "Purachase Team Form",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

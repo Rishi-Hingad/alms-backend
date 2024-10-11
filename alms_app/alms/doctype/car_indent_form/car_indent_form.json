@@ -1,0 +1,184 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2024-09-21 16:06:06.381987",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "car_indent_form_section",
+  "sr_no",
+  "company_name",
+  "employee_code",
+  "employee_name",
+  "designation",
+  "department",
+  "cost_center",
+  "eligibility",
+  "contact_number",
+  "e_mail_id",
+  "location",
+  "column_break_dptt",
+  "make",
+  "model",
+  "engine",
+  "colour",
+  "ex_showroom_price",
+  "discount",
+  "net_ex_room_price",
+  "tcs",
+  "registration_charges",
+  "accessories",
+  "financed_amount",
+  "quotation_document"
+ ],
+ "fields": [
+  {
+   "fieldname": "car_indent_form_section",
+   "fieldtype": "Section Break",
+   "label": "Car Indent Form"
+  },
+  {
+   "fieldname": "sr_no",
+   "fieldtype": "Data",
+   "label": "Sr. No"
+  },
+  {
+   "fieldname": "company_name",
+   "fieldtype": "Data",
+   "label": "Company Name"
+  },
+  {
+   "fieldname": "employee_code",
+   "fieldtype": "Data",
+   "label": "Employee Code"
+  },
+  {
+   "fieldname": "employee_name",
+   "fieldtype": "Data",
+   "label": "Employee Name"
+  },
+  {
+   "fieldname": "designation",
+   "fieldtype": "Data",
+   "label": "Designation"
+  },
+  {
+   "fieldname": "department",
+   "fieldtype": "Data",
+   "label": "Department"
+  },
+  {
+   "fieldname": "cost_center",
+   "fieldtype": "Data",
+   "label": "Cost Center"
+  },
+  {
+   "fieldname": "eligibility",
+   "fieldtype": "Data",
+   "label": "Eligibility"
+  },
+  {
+   "fieldname": "contact_number",
+   "fieldtype": "Data",
+   "label": "Contact Number"
+  },
+  {
+   "fieldname": "e_mail_id",
+   "fieldtype": "Data",
+   "label": "E-mail ID"
+  },
+  {
+   "fieldname": "location",
+   "fieldtype": "Data",
+   "label": "Location"
+  },
+  {
+   "fieldname": "make",
+   "fieldtype": "Data",
+   "label": "Make"
+  },
+  {
+   "fieldname": "model",
+   "fieldtype": "Data",
+   "label": "Model"
+  },
+  {
+   "fieldname": "engine",
+   "fieldtype": "Data",
+   "label": "Engine"
+  },
+  {
+   "fieldname": "colour",
+   "fieldtype": "Data",
+   "label": "Colour"
+  },
+  {
+   "fieldname": "ex_showroom_price",
+   "fieldtype": "Data",
+   "label": "Ex Showroom Price"
+  },
+  {
+   "fieldname": "discount",
+   "fieldtype": "Data",
+   "label": "Discount"
+  },
+  {
+   "fieldname": "net_ex_room_price",
+   "fieldtype": "Data",
+   "label": "Net Ex Room Price"
+  },
+  {
+   "fieldname": "tcs",
+   "fieldtype": "Data",
+   "label": "TCS"
+  },
+  {
+   "fieldname": "registration_charges",
+   "fieldtype": "Data",
+   "label": "Registration Charges"
+  },
+  {
+   "fieldname": "accessories",
+   "fieldtype": "Data",
+   "label": "Accessories"
+  },
+  {
+   "fieldname": "financed_amount",
+   "fieldtype": "Data",
+   "label": "Financed Amount"
+  },
+  {
+   "fieldname": "quotation_document",
+   "fieldtype": "Attach",
+   "label": "Quotation Document"
+  },
+  {
+   "fieldname": "column_break_dptt",
+   "fieldtype": "Column Break"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2024-09-21 16:32:39.951549",
+ "modified_by": "Administrator",
+ "module": "ALMS",
+ "name": "Car Indent Form",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}
