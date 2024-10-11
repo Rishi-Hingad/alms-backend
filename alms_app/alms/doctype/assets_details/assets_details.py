@@ -5,5 +5,5 @@
 from frappe.model.document import Document
 
 
-class InvoiceMaster(Document):
+class AssetsDetails(Document):
 	pass
