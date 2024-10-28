@@ -1,14 +1,23 @@
 {
  "actions": [],
  "allow_rename": 1,
+ "autoname": "format:{employee_code}-{employee_name}",
  "creation": "2024-09-11 14:58:10.398267",
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
   "employee_master_section",
   "employee_name",
+  "employee_department",
+  "designation",
+  "email_id",
+  "eligibility",
   "column_break_ryfx",
-  "employee_code"
+  "employee_code",
+  "company",
+  "location",
+  "contact_number",
+  "status"
  ],
  "fields": [
   {
@@ -29,14 +38,55 @@
    "fieldname": "employee_code",
    "fieldtype": "Data",
    "label": "Employee Code"
+  },
+  {
+   "fieldname": "employee_department",
+   "fieldtype": "Data",
+   "label": "Employee Department"
+  },
+  {
+   "fieldname": "designation",
+   "fieldtype": "Data",
+   "label": "Designation"
+  },
+  {
+   "fieldname": "email_id",
+   "fieldtype": "Data",
+   "label": "Email ID"
+  },
+  {
+   "fieldname": "eligibility",
+   "fieldtype": "Data",
+   "label": "Eligibility"
+  },
+  {
+   "fieldname": "company",
+   "fieldtype": "Data",
+   "label": "Company"
+  },
+  {
+   "fieldname": "location",
+   "fieldtype": "Data",
+   "label": "Location"
+  },
+  {
+   "fieldname": "contact_number",
+   "fieldtype": "Phone",
+   "label": "Contact Number"
+  },
+  {
+   "fieldname": "status",
+   "fieldtype": "Data",
+   "label": "Status"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-09-11 15:55:36.714438",
+ "modified": "2024-10-26 11:13:02.497570",
  "modified_by": "Administrator",
  "module": "master",
  "name": "Employee Master",
+ "naming_rule": "Expression",
  "owner": "Administrator",
  "permissions": [
   {

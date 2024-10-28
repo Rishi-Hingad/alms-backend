@@ -5,5 +5,5 @@
 from frappe.model.document import Document
 
 
-class PurachaseTeamForm(Document):
+class PurchaseTeamForm(Document):
 	pass
