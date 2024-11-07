@@ -1,5 +1,6 @@
 {
  "actions": [],
+ "allow_import": 1,
  "allow_rename": 1,
  "autoname": "format:{employee_name}-Form",
  "creation": "2024-09-21 16:06:06.381987",
@@ -102,42 +103,42 @@
   },
   {
    "fieldname": "colour",
-   "fieldtype": "Data",
+   "fieldtype": "Color",
    "label": "Colour"
   },
   {
    "fieldname": "ex_showroom_price",
-   "fieldtype": "Data",
+   "fieldtype": "Int",
    "label": "Ex Showroom Price"
   },
   {
    "fieldname": "discount",
-   "fieldtype": "Data",
+   "fieldtype": "Int",
    "label": "Discount"
   },
   {
    "fieldname": "net_ex_room_price",
-   "fieldtype": "Data",
+   "fieldtype": "Int",
    "label": "Net Ex Room Price"
   },
   {
    "fieldname": "tcs",
-   "fieldtype": "Data",
+   "fieldtype": "Int",
    "label": "TCS"
   },
   {
    "fieldname": "registration_charges",
-   "fieldtype": "Data",
+   "fieldtype": "Int",
    "label": "Registration Charges"
   },
   {
    "fieldname": "accessories",
-   "fieldtype": "Data",
+   "fieldtype": "Int",
    "label": "Accessories"
   },
   {
    "fieldname": "financed_amount",
-   "fieldtype": "Data",
+   "fieldtype": "Int",
    "label": "Financed Amount"
   },
   {
@@ -151,18 +152,20 @@
   },
   {
    "fieldname": "hr_approval",
-   "fieldtype": "Data",
-   "label": "HR Approval"
+   "fieldtype": "Select",
+   "label": "HR Approval",
+   "options": "-Select-\nApproved\nRejected"
   },
   {
    "fieldname": "hr_head_approval",
-   "fieldtype": "Data",
-   "label": "HR Head Approval"
+   "fieldtype": "Select",
+   "label": "HR Head Approval",
+   "options": "-Select-\nApproved\nRejected"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-10-26 11:49:17.565893",
+ "modified": "2024-11-07 11:19:24.026414",
  "modified_by": "Administrator",
  "module": "ALMS",
  "name": "Car Indent Form",

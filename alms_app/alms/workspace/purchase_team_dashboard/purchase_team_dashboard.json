@@ -1,0 +1,67 @@
+{
+ "charts": [
+  {
+   "chart_name": "Purchase Team Form Count",
+   "label": "Purchase Team Form Count"
+  }
+ ],
+ "content": "[{\"id\":\"fuuW24Boqy\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Purchase Team Dashboard</span>\",\"col\":12}},{\"id\":\"TR-uzPOa09\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"purchase_team_form\",\"col\":6}},{\"id\":\"8Eaj5YOHCF\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Total Car Indent Form\",\"col\":6}},{\"id\":\"SJ4PVkbPCW\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Purchase Team Form\",\"col\":12}},{\"id\":\"cYNRk2mVd5\",\"type\":\"quick_list\",\"data\":{\"quick_list_name\":\"Purchase Team Form\",\"col\":6}},{\"id\":\"-6t2VQSc8B\",\"type\":\"quick_list\",\"data\":{\"quick_list_name\":\"Car Indent Form\",\"col\":6}},{\"id\":\"Tt-MIObrGy\",\"type\":\"chart\",\"data\":{\"chart_name\":\"Purchase Team Form Count\",\"col\":12}}]",
+ "creation": "2024-11-04 12:58:43.448051",
+ "custom_blocks": [],
+ "docstatus": 0,
+ "doctype": "Workspace",
+ "for_user": "",
+ "hide_custom": 0,
+ "icon": "color-review-points",
+ "idx": 0,
+ "indicator_color": "",
+ "is_hidden": 0,
+ "label": "Purchase Team Dashboard",
+ "links": [],
+ "modified": "2024-11-06 16:34:43.163961",
+ "modified_by": "Administrator",
+ "module": "ALMS",
+ "name": "Purchase Team Dashboard",
+ "number_cards": [
+  {
+   "label": "purchase_team_form",
+   "number_card_name": "purchase_team_form"
+  },
+  {
+   "label": "Total Car Indent Form",
+   "number_card_name": "Total Car Indent Form"
+  }
+ ],
+ "owner": "Administrator",
+ "parent_page": "",
+ "public": 1,
+ "quick_lists": [
+  {
+   "document_type": "Purchase Team Form",
+   "label": "Purchase Team Form",
+   "quick_list_filter": "[]"
+  },
+  {
+   "document_type": "Car Indent Form",
+   "label": "Car Indent Form",
+   "quick_list_filter": "[]"
+  }
+ ],
+ "roles": [
+  {
+   "role": "Purchase Manager"
+  }
+ ],
+ "sequence_id": 2.0,
+ "shortcuts": [
+  {
+   "color": "Grey",
+   "doc_view": "List",
+   "label": "Purchase Team Form",
+   "link_to": "Purchase Team Form",
+   "stats_filter": "[]",
+   "type": "DocType"
+  }
+ ],
+ "title": "Purchase Team Dashboard"
+}
