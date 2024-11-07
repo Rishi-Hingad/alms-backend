@@ -1,11 +1,14 @@
 {
  "actions": [],
  "allow_rename": 1,
+ "autoname": "format:Quo-{finance_company}-{employee_details}",
  "creation": "2024-09-23 10:04:09.288926",
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
   "car_quotation_section",
+  "finance_company",
+  "employee_details",
   "location",
   "kms",
   "variant",
@@ -27,6 +30,8 @@
   "residual_value",
   "emi_financing",
   "finance_emi_road_tax",
+  "status",
+  "finance_hod_status",
   "column_break_vhla",
   "gst_and_cess",
   "insurance",
@@ -202,14 +207,39 @@
    "fieldname": "quarterly_payment",
    "fieldtype": "Data",
    "label": "Quarterly Payment"
+  },
+  {
+   "fieldname": "finance_company",
+   "fieldtype": "Select",
+   "label": "Finance Company",
+   "options": "-Select-\nEasy Assets\nALD\nXYZ"
+  },
+  {
+   "fieldname": "employee_details",
+   "fieldtype": "Link",
+   "label": "Employee Details",
+   "options": "Employee Master"
+  },
+  {
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "label": "Status",
+   "options": "-Select-\nApproved\nRejected"
+  },
+  {
+   "fieldname": "finance_hod_status",
+   "fieldtype": "Select",
+   "label": "Finance HOD Status",
+   "options": "-Select-\nApproved\nRejected"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-09-23 10:16:37.371553",
+ "modified": "2024-11-05 12:12:20.494148",
  "modified_by": "Administrator",
  "module": "ALMS",
  "name": "Car Quotation",
+ "naming_rule": "Expression",
  "owner": "Administrator",
  "permissions": [
   {
