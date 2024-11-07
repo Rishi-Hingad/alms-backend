@@ -6,4 +6,5 @@ from frappe.model.document import Document
 
 
 class CarIndentForm(Document):
+    
     pass
