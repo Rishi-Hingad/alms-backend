@@ -7,17 +7,17 @@
  "field_order": [
   "invoice_details_section",
   "order_number",
+  "vendor_name",
   "invoice_number",
+  "invoice_date",
   "quantity",
-  "basic_amount",
-  "total_bill_amount_inc_gst",
-  "total_sch_amount",
+  "delivery_address",
   "column_break_akdd",
   "upload_invoice",
-  "vendor_name",
-  "invoice_date",
-  "delivery_address",
+  "basic_amount",
   "gst",
+  "total_bill_amount_inc_gst",
+  "total_sch_amount",
   "rent_amount_details_section",
   "rental_amountexcl_gst",
   "rental_tax_rate",
@@ -59,7 +59,7 @@
   },
   {
    "fieldname": "total_sch_amount",
-   "fieldtype": "Data",
+   "fieldtype": "Int",
    "label": "Total SCH Amount"
   },
   {
@@ -78,7 +78,7 @@
   },
   {
    "fieldname": "total_bill_amount_inc_gst",
-   "fieldtype": "Data",
+   "fieldtype": "Int",
    "label": "Total Bill Amount (Inc. GST)"
   },
   {
@@ -103,7 +103,7 @@
   },
   {
    "fieldname": "rental_amountexcl_gst",
-   "fieldtype": "Data",
+   "fieldtype": "Int",
    "label": "Rental Amount(Excl. GST)"
   },
   {
@@ -129,7 +129,7 @@
   },
   {
    "fieldname": "basic_amount",
-   "fieldtype": "Data",
+   "fieldtype": "Int",
    "label": "Basic Amount"
   },
   {
@@ -219,7 +219,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-09-27 15:11:41.338233",
+ "modified": "2024-11-08 12:13:39.780464",
  "modified_by": "Administrator",
  "module": "ALMS",
  "name": "Asset Invoice",
