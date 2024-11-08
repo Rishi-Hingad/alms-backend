@@ -1,0 +1,20 @@
+[
+ {
+  "docstatus": 0,
+  "doctype": "Purchase Team Form",
+  "employee_name": "25885-Rishi Hingad",
+  "kilometers_per_year": "90000",
+  "modified": "2024-11-05 11:23:20.642798",
+  "name": "25885-Rishi Hingad",
+  "revise_accessories": "10000",
+  "revise_discount": "2000",
+  "revise_ex_show_room_price": "150000",
+  "revise_net_ex_show_room_price": "148000",
+  "revise_quotation_attachment_need_to_be_done": null,
+  "revise_registration_charges": "10000",
+  "revise_tcs": null,
+  "revised_financed_amount": "168000",
+  "tenure_in_years": "6",
+  "total_kilometers": "123456"
+ }
+]

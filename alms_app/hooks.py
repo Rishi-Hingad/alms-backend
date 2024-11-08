@@ -124,7 +124,13 @@ app_license = "mit"
 # has_permission = {
 # 	"Event": "frappe.desk.doctype.event.event.has_permission",
 # }
-
+fixtures = [
+    "Employee Master",
+    "Car Indent Form",
+    "Purchase Team Form",
+    "Car Quotation",
+    "Car Make Master",
+]
 # DocType Class
 # ---------------
 # Override standard doctype classes

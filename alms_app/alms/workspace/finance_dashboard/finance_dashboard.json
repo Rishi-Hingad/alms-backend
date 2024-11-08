@@ -1,0 +1,76 @@
+{
+ "charts": [
+  {
+   "chart_name": "Quotation Count",
+   "label": "Quotation Count"
+  },
+  {
+   "chart_name": "Quotation Status",
+   "label": "Quotation Status"
+  }
+ ],
+ "content": "[{\"id\":\"8N-Qh09fJU\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Finance Dashboard</span>\",\"col\":12}},{\"id\":\"y1msP-GXAC\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Eligible Employee\",\"col\":4}},{\"id\":\"hoMHwWs0G7\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"purchase_team_form\",\"col\":4}},{\"id\":\"SFdJwG_Cte\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Total Car Indent Form\",\"col\":4}},{\"id\":\"FJ_GXH1yJO\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Company And Employee Deduction\",\"col\":12}},{\"id\":\"TFDccfJReN\",\"type\":\"quick_list\",\"data\":{\"quick_list_name\":\"Easy Assets Quotation\",\"col\":4}},{\"id\":\"QMwW-CHWc2\",\"type\":\"quick_list\",\"data\":{\"quick_list_name\":\"ALD Quotations\",\"col\":4}},{\"id\":\"8vOOBdEIVa\",\"type\":\"quick_list\",\"data\":{\"quick_list_name\":\"XYZ Quotations\",\"col\":4}},{\"id\":\"eqlzUHk1cS\",\"type\":\"chart\",\"data\":{\"chart_name\":\"Quotation Count\",\"col\":12}},{\"id\":\"xGT6VGfjfF\",\"type\":\"chart\",\"data\":{\"chart_name\":\"Quotation Status\",\"col\":12}}]",
+ "creation": "2024-11-05 11:25:34.618276",
+ "custom_blocks": [],
+ "docstatus": 0,
+ "doctype": "Workspace",
+ "for_user": "",
+ "hide_custom": 0,
+ "icon": "color-energy-points",
+ "idx": 0,
+ "indicator_color": "green",
+ "is_hidden": 0,
+ "label": "Finance Dashboard",
+ "links": [],
+ "modified": "2024-11-08 18:00:52.187706",
+ "modified_by": "Administrator",
+ "module": "ALMS",
+ "name": "Finance Dashboard",
+ "number_cards": [
+  {
+   "label": "Eligible Employee",
+   "number_card_name": "Eligible Employee"
+  },
+  {
+   "label": "purchase_team_form",
+   "number_card_name": "purchase_team_form"
+  },
+  {
+   "label": "Total Car Indent Form",
+   "number_card_name": "Total Car Indent Form"
+  }
+ ],
+ "owner": "Administrator",
+ "parent_page": "",
+ "public": 1,
+ "quick_lists": [
+  {
+   "document_type": "Car Quotation",
+   "label": "Easy Assets Quotation",
+   "quick_list_filter": "[[\"Car Quotation\",\"finance_company\",\"=\",\"Easy Assets\",false]]"
+  },
+  {
+   "document_type": "Car Quotation",
+   "label": "ALD Quotations",
+   "quick_list_filter": "[[\"Car Quotation\",\"finance_company\",\"=\",\"ALD\",false]]"
+  },
+  {
+   "document_type": "Car Quotation",
+   "label": "XYZ Quotations",
+   "quick_list_filter": "[[\"Car Quotation\",\"finance_company\",\"=\",\"XYZ\",false]]"
+  }
+ ],
+ "roles": [],
+ "sequence_id": 3.0,
+ "shortcuts": [
+  {
+   "color": "Grey",
+   "doc_view": "New",
+   "label": "Company And Employee Deduction",
+   "link_to": "Company and Employee Deduction",
+   "stats_filter": "[]",
+   "type": "DocType"
+  }
+ ],
+ "title": "Finance Dashboard"
+}
