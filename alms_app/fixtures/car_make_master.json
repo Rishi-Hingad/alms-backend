@@ -1,0 +1,100 @@
+[
+ {
+  "docstatus": 0,
+  "doctype": "Car Make Master",
+  "make": "Hyundai",
+  "modified": "2024-10-26 10:49:50.057334",
+  "name": "Hyundai"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Car Make Master",
+  "make": "Maruti Suzuki",
+  "modified": "2024-10-26 10:50:04.231153",
+  "name": "Maruti Suzuki"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Car Make Master",
+  "make": "Honda",
+  "modified": "2024-10-26 10:50:36.947997",
+  "name": "Honda"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Car Make Master",
+  "make": "Citroen",
+  "modified": "2024-10-26 10:50:44.598747",
+  "name": "Citroen"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Car Make Master",
+  "make": "Volkswagen",
+  "modified": "2024-10-26 10:50:53.424942",
+  "name": "Volkswagen"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Car Make Master",
+  "make": "Tata",
+  "modified": "2024-10-26 10:51:01.577618",
+  "name": "Tata"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Car Make Master",
+  "make": "Maruti Suzuki Nexa",
+  "modified": "2024-10-26 10:51:19.961526",
+  "name": "Maruti Suzuki Nexa"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Car Make Master",
+  "make": "Skoda",
+  "modified": "2024-10-26 10:51:26.249672",
+  "name": "Skoda"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Car Make Master",
+  "make": "BMW",
+  "modified": "2024-10-26 10:51:42.122428",
+  "name": "BMW"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Car Make Master",
+  "make": "Audi",
+  "modified": "2024-10-26 10:55:02.816374",
+  "name": "Audi"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Car Make Master",
+  "make": "Mercedes",
+  "modified": "2024-10-26 10:55:11.655947",
+  "name": "Mercedes"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Car Make Master",
+  "make": "Mahindra",
+  "modified": "2024-10-26 10:55:18.317630",
+  "name": "Mahindra"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Car Make Master",
+  "make": "Toyota",
+  "modified": "2024-10-26 10:55:24.873209",
+  "name": "Toyota"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Car Make Master",
+  "make": "Renault",
+  "modified": "2024-10-26 10:55:31.875302",
+  "name": "Renault"
+ }
+]

@@ -1,0 +1,34 @@
+[
+ {
+  "company": "Micro Life Sciences",
+  "contact_number": "+91-8866060500",
+  "designation": "General Manager",
+  "docstatus": 0,
+  "doctype": "Employee Master",
+  "eligibility": "1000000",
+  "email_id": "harsh.somaiya@merillife.com",
+  "employee_code": "25938",
+  "employee_department": "IT",
+  "employee_name": "Harsh Somaiya",
+  "location": "Vapi",
+  "modified": "2024-10-26 11:16:49.769439",
+  "name": "25938-Harsh Somaiya",
+  "status": null
+ },
+ {
+  "company": "Micro Life Sciences",
+  "contact_number": "+91-1234567890",
+  "designation": "ASM",
+  "docstatus": 0,
+  "doctype": "Employee Master",
+  "eligibility": "500000",
+  "email_id": "rishi.hingad@merilllife.com",
+  "employee_code": "25885",
+  "employee_department": "IT",
+  "employee_name": "Rishi Hingad",
+  "location": "Vapi",
+  "modified": "2024-10-26 11:19:51.037385",
+  "name": "25885-Rishi Hingad",
+  "status": null
+ }
+]
