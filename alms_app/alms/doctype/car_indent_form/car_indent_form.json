@@ -1,30 +1,32 @@
 {
  "actions": [],
+ "allow_import": 1,
  "allow_rename": 1,
+ "autoname": "format:{employee_name}-Form",
  "creation": "2024-09-21 16:06:06.381987",
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
   "car_indent_form_section",
-  "sr_no",
   "company_name",
   "employee_code",
   "employee_name",
   "designation",
   "department",
-  "cost_center",
   "eligibility",
   "contact_number",
   "e_mail_id",
   "location",
+  "hr_approval",
+  "hr_head_approval",
   "column_break_dptt",
   "make",
   "model",
   "engine",
   "colour",
   "ex_showroom_price",
-  "discount",
   "net_ex_room_price",
+  "discount",
   "tcs",
   "registration_charges",
   "accessories",
@@ -38,14 +40,10 @@
    "label": "Car Indent Form"
   },
   {
-   "fieldname": "sr_no",
-   "fieldtype": "Data",
-   "label": "Sr. No"
-  },
-  {
    "fieldname": "company_name",
-   "fieldtype": "Data",
-   "label": "Company Name"
+   "fieldtype": "Select",
+   "label": "Company Name",
+   "options": "-Select-\nMicro Life Sciences\nMeril Life Sciences"
   },
   {
    "fieldname": "employee_code",
@@ -68,18 +66,13 @@
    "label": "Department"
   },
   {
-   "fieldname": "cost_center",
-   "fieldtype": "Data",
-   "label": "Cost Center"
-  },
-  {
    "fieldname": "eligibility",
    "fieldtype": "Data",
    "label": "Eligibility"
   },
   {
    "fieldname": "contact_number",
-   "fieldtype": "Data",
+   "fieldtype": "Phone",
    "label": "Contact Number"
   },
   {
@@ -94,8 +87,9 @@
   },
   {
    "fieldname": "make",
-   "fieldtype": "Data",
-   "label": "Make"
+   "fieldtype": "Link",
+   "label": "Make",
+   "options": "Car Make Master"
   },
   {
    "fieldname": "model",
@@ -109,42 +103,42 @@
   },
   {
    "fieldname": "colour",
-   "fieldtype": "Data",
+   "fieldtype": "Color",
    "label": "Colour"
   },
   {
    "fieldname": "ex_showroom_price",
-   "fieldtype": "Data",
+   "fieldtype": "Int",
    "label": "Ex Showroom Price"
   },
   {
    "fieldname": "discount",
-   "fieldtype": "Data",
+   "fieldtype": "Int",
    "label": "Discount"
   },
   {
    "fieldname": "net_ex_room_price",
-   "fieldtype": "Data",
+   "fieldtype": "Int",
    "label": "Net Ex Room Price"
   },
   {
    "fieldname": "tcs",
-   "fieldtype": "Data",
+   "fieldtype": "Int",
    "label": "TCS"
   },
   {
    "fieldname": "registration_charges",
-   "fieldtype": "Data",
+   "fieldtype": "Int",
    "label": "Registration Charges"
   },
   {
    "fieldname": "accessories",
-   "fieldtype": "Data",
+   "fieldtype": "Int",
    "label": "Accessories"
   },
   {
    "fieldname": "financed_amount",
-   "fieldtype": "Data",
+   "fieldtype": "Int",
    "label": "Financed Amount"
   },
   {
@@ -155,14 +149,27 @@
   {
    "fieldname": "column_break_dptt",
    "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "hr_approval",
+   "fieldtype": "Select",
+   "label": "HR Approval",
+   "options": "-Select-\nApproved\nRejected"
+  },
+  {
+   "fieldname": "hr_head_approval",
+   "fieldtype": "Select",
+   "label": "HR Head Approval",
+   "options": "-Select-\nApproved\nRejected"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-09-21 16:32:39.951549",
+ "modified": "2024-11-07 11:19:24.026414",
  "modified_by": "Administrator",
  "module": "ALMS",
  "name": "Car Indent Form",
+ "naming_rule": "Expression",
  "owner": "Administrator",
  "permissions": [
   {

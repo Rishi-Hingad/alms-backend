@@ -1,11 +1,13 @@
 {
  "actions": [],
  "allow_rename": 1,
+ "autoname": "field:employee_name",
  "creation": "2024-09-23 10:19:15.791857",
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
   "purchase_team_form_section",
+  "employee_name",
   "kilometers_per_year",
   "tenure_in_years",
   "total_kilometers",
@@ -81,16 +83,24 @@
   },
   {
    "fieldname": "revise_quotation_attachment_need_to_be_done",
-   "fieldtype": "Data",
+   "fieldtype": "Attach",
    "label": "Revise Quotation (Attachment need to be done)"
+  },
+  {
+   "fieldname": "employee_name",
+   "fieldtype": "Link",
+   "label": "Employee Name",
+   "options": "Employee Master",
+   "unique": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-09-23 10:23:42.353482",
+ "modified": "2024-11-05 11:22:55.928635",
  "modified_by": "Administrator",
  "module": "ALMS",
- "name": "Purachase Team Form",
+ "name": "Purchase Team Form",
+ "naming_rule": "By fieldname",
  "owner": "Administrator",
  "permissions": [
   {
