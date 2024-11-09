@@ -76,13 +76,15 @@
   },
   {
    "fieldname": "status",
-   "fieldtype": "Data",
-   "label": "Status"
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Status",
+   "options": "Not Sent\nSent"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-10-26 11:13:02.497570",
+ "modified": "2024-11-09 14:36:15.647315",
  "modified_by": "Administrator",
  "module": "master",
  "name": "Employee Master",
@@ -104,5 +106,14 @@
  ],
  "sort_field": "modified",
  "sort_order": "DESC",
- "states": []
+ "states": [
+  {
+   "color": "Green",
+   "title": "Sent"
+  },
+  {
+   "color": "Red",
+   "title": "Not Sent"
+  }
+ ]
 }
