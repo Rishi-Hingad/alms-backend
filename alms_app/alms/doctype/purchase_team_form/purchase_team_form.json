@@ -19,7 +19,8 @@
   "revise_registration_charges",
   "revise_accessories",
   "revised_financed_amount",
-  "revise_quotation_attachment_need_to_be_done"
+  "revise_quotation_attachment_need_to_be_done",
+  "status"
  ],
  "fields": [
   {
@@ -92,11 +93,17 @@
    "label": "Employee Name",
    "options": "Employee Master",
    "unique": 1
+  },
+  {
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "label": "Status",
+   "options": "Pending\nApproved\nRejected"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-11-05 11:22:55.928635",
+ "modified": "2024-11-09 15:06:06.692284",
  "modified_by": "Administrator",
  "module": "ALMS",
  "name": "Purchase Team Form",
@@ -118,5 +125,18 @@
  ],
  "sort_field": "modified",
  "sort_order": "DESC",
- "states": []
+ "states": [
+  {
+   "color": "Yellow",
+   "title": "Pending"
+  },
+  {
+   "color": "Green",
+   "title": "Accepted"
+  },
+  {
+   "color": "Red",
+   "title": "Rejected"
+  }
+ ]
 }
