@@ -130,6 +130,7 @@ fixtures = [
     "Purchase Team Form",
     "Car Quotation",
     "Car Make Master",
+    "Vendor Rental Invoice",
 ]
 # DocType Class
 # ---------------

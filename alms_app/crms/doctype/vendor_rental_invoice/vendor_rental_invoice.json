@@ -1,0 +1,208 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2024-09-21 16:38:47.242837",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "vendor_rental_invoice_section",
+  "sr_no",
+  "leasing_company",
+  "entity_name",
+  "contract_number",
+  "employee_code",
+  "employee_name",
+  "column_break_bdln",
+  "invoice_date_from",
+  "invoice_date_to",
+  "vehicle_delivery_date",
+  "contract_end_date",
+  "vehicle_details",
+  "vehicle_numbers",
+  "installment_number",
+  "number_of_billing_days",
+  "rental_charges_section",
+  "billing_date",
+  "invoice_number",
+  "invoice_value_a",
+  "fleet_charges_section",
+  "invoice_no",
+  "invoice_value_b",
+  "road_tax_and_regis_charges_section",
+  "invoice_num",
+  "invoice_value_c",
+  "inusrance_charges_section",
+  "invoice_numbers",
+  "invoice_value_d"
+ ],
+ "fields": [
+  {
+   "fieldname": "vendor_rental_invoice_section",
+   "fieldtype": "Section Break",
+   "label": "Vendor Rental Invoice"
+  },
+  {
+   "fieldname": "sr_no",
+   "fieldtype": "Data",
+   "label": "Sr. No"
+  },
+  {
+   "fieldname": "leasing_company",
+   "fieldtype": "Data",
+   "label": "Leasing Company"
+  },
+  {
+   "fieldname": "entity_name",
+   "fieldtype": "Data",
+   "label": "Entity Name"
+  },
+  {
+   "fieldname": "contract_number",
+   "fieldtype": "Data",
+   "label": "Contract Number"
+  },
+  {
+   "fieldname": "employee_code",
+   "fieldtype": "Data",
+   "label": "Employee Code"
+  },
+  {
+   "fieldname": "employee_name",
+   "fieldtype": "Data",
+   "label": "Employee Name"
+  },
+  {
+   "fieldname": "column_break_bdln",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "invoice_date_from",
+   "fieldtype": "Data",
+   "label": "Invoice Date From"
+  },
+  {
+   "fieldname": "invoice_date_to",
+   "fieldtype": "Data",
+   "label": "Invoice Date To"
+  },
+  {
+   "fieldname": "vehicle_delivery_date",
+   "fieldtype": "Data",
+   "label": "Vehicle Delivery Date"
+  },
+  {
+   "fieldname": "contract_end_date",
+   "fieldtype": "Data",
+   "label": "Contract End Date"
+  },
+  {
+   "fieldname": "vehicle_details",
+   "fieldtype": "Data",
+   "label": "Vehicle Details"
+  },
+  {
+   "fieldname": "vehicle_numbers",
+   "fieldtype": "Data",
+   "label": "Vehicle Numbers"
+  },
+  {
+   "fieldname": "installment_number",
+   "fieldtype": "Data",
+   "label": "Installment Number"
+  },
+  {
+   "fieldname": "number_of_billing_days",
+   "fieldtype": "Data",
+   "label": "Number of Billing Days"
+  },
+  {
+   "fieldname": "rental_charges_section",
+   "fieldtype": "Section Break",
+   "label": "Rental Charges"
+  },
+  {
+   "fieldname": "billing_date",
+   "fieldtype": "Data",
+   "label": "Billing Date"
+  },
+  {
+   "fieldname": "invoice_number",
+   "fieldtype": "Data",
+   "label": "Invoice No."
+  },
+  {
+   "fieldname": "invoice_value_a",
+   "fieldtype": "Data",
+   "label": "Invoice Value (A)"
+  },
+  {
+   "fieldname": "fleet_charges_section",
+   "fieldtype": "Section Break",
+   "label": "Fleet Charges"
+  },
+  {
+   "fieldname": "invoice_no",
+   "fieldtype": "Data",
+   "label": "Invoice No."
+  },
+  {
+   "fieldname": "invoice_value_b",
+   "fieldtype": "Data",
+   "label": "Invoice Value (B)"
+  },
+  {
+   "fieldname": "road_tax_and_regis_charges_section",
+   "fieldtype": "Section Break",
+   "label": "Road Tax and Regis. Charges"
+  },
+  {
+   "fieldname": "invoice_num",
+   "fieldtype": "Data",
+   "label": "Invoice No."
+  },
+  {
+   "fieldname": "invoice_value_c",
+   "fieldtype": "Data",
+   "label": "Invoice Value (C)"
+  },
+  {
+   "fieldname": "inusrance_charges_section",
+   "fieldtype": "Section Break",
+   "label": "Inusrance Charges"
+  },
+  {
+   "fieldname": "invoice_numbers",
+   "fieldtype": "Data",
+   "label": "Invoice No."
+  },
+  {
+   "fieldname": "invoice_value_d",
+   "fieldtype": "Data",
+   "label": "Invoice Value (D)"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2024-11-11 09:58:58.941470",
+ "modified_by": "Administrator",
+ "module": "CRMS",
+ "name": "Vendor Rental Invoice",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

@@ -18,9 +18,9 @@
  "is_hidden": 0,
  "label": "Purchase Team Dashboard",
  "links": [],
- "modified": "2024-11-09 15:23:55.878638",
+ "modified": "2024-11-11 10:03:34.486413",
  "modified_by": "Administrator",
- "module": "ALMS",
+ "module": "CRMS",
  "name": "Purchase Team Dashboard",
  "number_cards": [
   {

@@ -26,9 +26,9 @@
  "is_hidden": 0,
  "label": "HR Dashboard",
  "links": [],
- "modified": "2024-11-09 14:46:50.237021",
+ "modified": "2024-11-11 10:03:42.857835",
  "modified_by": "Administrator",
- "module": "ALMS",
+ "module": "CRMS",
  "name": "HR Dashboard",
  "number_cards": [
   {

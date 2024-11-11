@@ -1,0 +1,261 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "format:Quo-{finance_company}-{employee_details}",
+ "creation": "2024-09-23 10:04:09.288926",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "car_quotation_section",
+  "finance_company",
+  "employee_details",
+  "location",
+  "kms",
+  "variant",
+  "quote",
+  "interest_rate",
+  "tenure",
+  "base_price_excluding_gst",
+  "gst",
+  "ex_showroom_amount",
+  "accessory",
+  "column_break_xjhs",
+  "discount_excluding_gst",
+  "base_price_less_discounts",
+  "total_discount",
+  "ex_showroom_amount_net_of_discount",
+  "registration_charges",
+  "residual_value_percent",
+  "financed_amount",
+  "residual_value",
+  "emi_financing",
+  "finance_emi_road_tax",
+  "status",
+  "finance_hod_status",
+  "column_break_vhla",
+  "gst_and_cess",
+  "insurance",
+  "fleet_management_repairs_and_tyres",
+  "24x7_assist",
+  "pickup_and_drop",
+  "std_relief_car_non_accdt",
+  "gst_on_fms",
+  "total_emi",
+  "interim_payment",
+  "quarterly_payment"
+ ],
+ "fields": [
+  {
+   "fieldname": "car_quotation_section",
+   "fieldtype": "Section Break",
+   "label": "Car Quotation"
+  },
+  {
+   "fieldname": "finance_company",
+   "fieldtype": "Select",
+   "label": "Finance Company",
+   "options": "-Select-\nEasy Assets\nALD\nXYZ"
+  },
+  {
+   "fieldname": "employee_details",
+   "fieldtype": "Link",
+   "label": "Employee Details",
+   "options": "Employee Master"
+  },
+  {
+   "fieldname": "location",
+   "fieldtype": "Data",
+   "label": "Location"
+  },
+  {
+   "fieldname": "kms",
+   "fieldtype": "Data",
+   "label": "KMS"
+  },
+  {
+   "fieldname": "variant",
+   "fieldtype": "Data",
+   "label": "Variant"
+  },
+  {
+   "fieldname": "quote",
+   "fieldtype": "Data",
+   "label": "Quote"
+  },
+  {
+   "fieldname": "interest_rate",
+   "fieldtype": "Data",
+   "label": "Interest Rate"
+  },
+  {
+   "fieldname": "tenure",
+   "fieldtype": "Data",
+   "label": "Tenure"
+  },
+  {
+   "fieldname": "base_price_excluding_gst",
+   "fieldtype": "Data",
+   "label": "Base Price Excluding GST"
+  },
+  {
+   "fieldname": "gst",
+   "fieldtype": "Data",
+   "label": "GST"
+  },
+  {
+   "fieldname": "ex_showroom_amount",
+   "fieldtype": "Data",
+   "label": "Ex-Showroom Amount"
+  },
+  {
+   "fieldname": "accessory",
+   "fieldtype": "Data",
+   "label": "Accessory"
+  },
+  {
+   "fieldname": "column_break_xjhs",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "discount_excluding_gst",
+   "fieldtype": "Data",
+   "label": "Discount (Excluding GST)"
+  },
+  {
+   "fieldname": "base_price_less_discounts",
+   "fieldtype": "Data",
+   "label": "Base Price Less Discounts"
+  },
+  {
+   "fieldname": "total_discount",
+   "fieldtype": "Data",
+   "label": "Total Discount"
+  },
+  {
+   "fieldname": "ex_showroom_amount_net_of_discount",
+   "fieldtype": "Data",
+   "label": "Ex-Showroom Amount(Net of Discount)"
+  },
+  {
+   "fieldname": "registration_charges",
+   "fieldtype": "Data",
+   "label": "Registration Charges"
+  },
+  {
+   "fieldname": "residual_value_percent",
+   "fieldtype": "Data",
+   "label": "Residual Value Percent"
+  },
+  {
+   "fieldname": "financed_amount",
+   "fieldtype": "Data",
+   "label": "Financed Amount"
+  },
+  {
+   "fieldname": "residual_value",
+   "fieldtype": "Data",
+   "label": "Residual Value"
+  },
+  {
+   "fieldname": "emi_financing",
+   "fieldtype": "Data",
+   "label": "EMI (Financing)"
+  },
+  {
+   "fieldname": "finance_emi_road_tax",
+   "fieldtype": "Data",
+   "label": "Finance EMI - Road Tax"
+  },
+  {
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "label": "Status",
+   "options": "-Select-\nApproved\nRejected"
+  },
+  {
+   "fieldname": "finance_hod_status",
+   "fieldtype": "Select",
+   "label": "Finance HOD Status",
+   "options": "-Select-\nApproved\nRejected"
+  },
+  {
+   "fieldname": "column_break_vhla",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "gst_and_cess",
+   "fieldtype": "Data",
+   "label": "GST and Cess"
+  },
+  {
+   "fieldname": "insurance",
+   "fieldtype": "Data",
+   "label": "Insurance"
+  },
+  {
+   "fieldname": "fleet_management_repairs_and_tyres",
+   "fieldtype": "Data",
+   "label": "Fleet Management (Repairs and Tyres)"
+  },
+  {
+   "fieldname": "24x7_assist",
+   "fieldtype": "Data",
+   "label": "24x7 Assist"
+  },
+  {
+   "fieldname": "pickup_and_drop",
+   "fieldtype": "Data",
+   "label": "Pickup & Drop"
+  },
+  {
+   "fieldname": "std_relief_car_non_accdt",
+   "fieldtype": "Data",
+   "label": "Std Relief Car (Non Accdt)"
+  },
+  {
+   "fieldname": "gst_on_fms",
+   "fieldtype": "Data",
+   "label": "GST on FMS"
+  },
+  {
+   "fieldname": "total_emi",
+   "fieldtype": "Data",
+   "label": "Total EMI"
+  },
+  {
+   "fieldname": "interim_payment",
+   "fieldtype": "Data",
+   "label": "Interim Payment"
+  },
+  {
+   "fieldname": "quarterly_payment",
+   "fieldtype": "Data",
+   "label": "Quarterly Payment"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2024-11-11 09:59:38.918859",
+ "modified_by": "Administrator",
+ "module": "CRMS",
+ "name": "Car Quotation",
+ "naming_rule": "Expression",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}
