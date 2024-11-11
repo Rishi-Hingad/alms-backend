@@ -1,0 +1,205 @@
+{
+ "actions": [],
+ "allow_import": 1,
+ "allow_rename": 1,
+ "autoname": "format:{employee_name}-Form",
+ "creation": "2024-09-21 16:06:06.381987",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "car_indent_form_section",
+  "employee_code",
+  "department",
+  "contact_number",
+  "location",
+  "model",
+  "colour",
+  "net_ex_room_price",
+  "tcs",
+  "accessories",
+  "quotation_document",
+  "column_break_dptt",
+  "company_name",
+  "designation",
+  "eligibility",
+  "email_id",
+  "make",
+  "engine",
+  "ex_showroom_price",
+  "discount",
+  "registration_charges",
+  "financed_amount",
+  "status",
+  "status_head"
+ ],
+ "fields": [
+  {
+   "fieldname": "car_indent_form_section",
+   "fieldtype": "Section Break",
+   "label": "Car Indent Form"
+  },
+  {
+   "fieldname": "employee_code",
+   "fieldtype": "Link",
+   "label": "Employee Code",
+   "options": "Employee Master"
+  },
+  {
+   "fetch_from": "employee_code.employee_department",
+   "fieldname": "department",
+   "fieldtype": "Data",
+   "label": "Department"
+  },
+  {
+   "fetch_from": "employee_code.contact_number",
+   "fieldname": "contact_number",
+   "fieldtype": "Phone",
+   "label": "Contact Number"
+  },
+  {
+   "fetch_from": "employee_code.location",
+   "fieldname": "location",
+   "fieldtype": "Data",
+   "label": "Location"
+  },
+  {
+   "fieldname": "model",
+   "fieldtype": "Data",
+   "label": "Model"
+  },
+  {
+   "fieldname": "colour",
+   "fieldtype": "Color",
+   "label": "Colour"
+  },
+  {
+   "fieldname": "net_ex_room_price",
+   "fieldtype": "Int",
+   "label": "Net Ex Room Price"
+  },
+  {
+   "fieldname": "tcs",
+   "fieldtype": "Int",
+   "label": "TCS"
+  },
+  {
+   "fieldname": "accessories",
+   "fieldtype": "Int",
+   "label": "Accessories"
+  },
+  {
+   "fieldname": "quotation_document",
+   "fieldtype": "Attach",
+   "label": "Quotation Document"
+  },
+  {
+   "fieldname": "column_break_dptt",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fetch_from": "employee_code.company",
+   "fieldname": "company_name",
+   "fieldtype": "Data",
+   "label": "Company Name"
+  },
+  {
+   "fetch_from": "employee_code.designation",
+   "fieldname": "designation",
+   "fieldtype": "Data",
+   "label": "Designation"
+  },
+  {
+   "fetch_from": "employee_code.eligibility",
+   "fieldname": "eligibility",
+   "fieldtype": "Data",
+   "label": "Eligibility"
+  },
+  {
+   "fetch_from": "employee_code.email_id",
+   "fieldname": "email_id",
+   "fieldtype": "Data",
+   "label": "E-mail ID"
+  },
+  {
+   "fieldname": "make",
+   "fieldtype": "Link",
+   "label": "Make",
+   "options": "Car Make Master"
+  },
+  {
+   "fieldname": "engine",
+   "fieldtype": "Data",
+   "label": "Engine"
+  },
+  {
+   "fieldname": "ex_showroom_price",
+   "fieldtype": "Int",
+   "label": "Ex Showroom Price"
+  },
+  {
+   "fieldname": "discount",
+   "fieldtype": "Int",
+   "label": "Discount"
+  },
+  {
+   "fieldname": "registration_charges",
+   "fieldtype": "Int",
+   "label": "Registration Charges"
+  },
+  {
+   "fieldname": "financed_amount",
+   "fieldtype": "Int",
+   "label": "Financed Amount"
+  },
+  {
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "label": "HR Approval",
+   "options": "Pending\nApproved\nRejected"
+  },
+  {
+   "fieldname": "status_head",
+   "fieldtype": "Select",
+   "label": "HR Head Approval",
+   "options": "Pending\nApproved\nRejected"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2024-11-11 09:59:28.150744",
+ "modified_by": "Administrator",
+ "module": "CRMS",
+ "name": "Car Indent Form",
+ "naming_rule": "Expression",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [
+  {
+   "color": "Green",
+   "title": "Approved"
+  },
+  {
+   "color": "Red",
+   "title": "Rejected"
+  },
+  {
+   "color": "Yellow",
+   "title": "Pending"
+  }
+ ]
+}

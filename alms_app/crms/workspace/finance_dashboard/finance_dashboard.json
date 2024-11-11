@@ -22,9 +22,9 @@
  "is_hidden": 0,
  "label": "Finance Dashboard",
  "links": [],
- "modified": "2024-11-09 16:49:27.063371",
+ "modified": "2024-11-11 10:03:24.921496",
  "modified_by": "Administrator",
- "module": "ALMS",
+ "module": "CRMS",
  "name": "Finance Dashboard",
  "number_cards": [
   {
