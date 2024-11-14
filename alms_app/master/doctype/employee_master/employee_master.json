@@ -56,7 +56,7 @@
   },
   {
    "fieldname": "eligibility",
-   "fieldtype": "Data",
+   "fieldtype": "Currency",
    "label": "Eligibility"
   },
   {
@@ -84,7 +84,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-11-09 14:36:15.647315",
+ "modified": "2024-11-12 11:47:32.883837",
  "modified_by": "Administrator",
  "module": "master",
  "name": "Employee Master",

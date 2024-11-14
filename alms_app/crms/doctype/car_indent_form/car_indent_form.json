@@ -2,33 +2,34 @@
  "actions": [],
  "allow_import": 1,
  "allow_rename": 1,
- "autoname": "format:{employee_name}-Form",
+ "autoname": "format:{employee_code}",
  "creation": "2024-09-21 16:06:06.381987",
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
   "car_indent_form_section",
   "employee_code",
-  "department",
-  "contact_number",
-  "location",
-  "model",
-  "colour",
-  "net_ex_room_price",
-  "tcs",
-  "accessories",
-  "quotation_document",
-  "column_break_dptt",
   "company_name",
+  "department",
   "designation",
-  "eligibility",
+  "contact_number",
   "email_id",
+  "location",
+  "eligibility",
   "make",
+  "model",
   "engine",
+  "colour",
+  "column_break_wlht",
   "ex_showroom_price",
   "discount",
+  "tcs",
+  "net_ex_showroom_price",
   "registration_charges",
-  "financed_amount",
+  "accessories",
+  "finance_amount",
+  "quotation_document",
+  "reporting_head_approval",
   "status",
   "status_head"
  ],
@@ -53,7 +54,7 @@
   {
    "fetch_from": "employee_code.contact_number",
    "fieldname": "contact_number",
-   "fieldtype": "Phone",
+   "fieldtype": "Data",
    "label": "Contact Number"
   },
   {
@@ -69,32 +70,23 @@
   },
   {
    "fieldname": "colour",
-   "fieldtype": "Color",
+   "fieldtype": "Data",
    "label": "Colour"
   },
   {
-   "fieldname": "net_ex_room_price",
-   "fieldtype": "Int",
-   "label": "Net Ex Room Price"
-  },
-  {
    "fieldname": "tcs",
-   "fieldtype": "Int",
+   "fieldtype": "Currency",
    "label": "TCS"
   },
   {
    "fieldname": "accessories",
-   "fieldtype": "Int",
+   "fieldtype": "Currency",
    "label": "Accessories"
   },
   {
    "fieldname": "quotation_document",
    "fieldtype": "Attach",
    "label": "Quotation Document"
-  },
-  {
-   "fieldname": "column_break_dptt",
-   "fieldtype": "Column Break"
   },
   {
    "fetch_from": "employee_code.company",
@@ -111,7 +103,7 @@
   {
    "fetch_from": "employee_code.eligibility",
    "fieldname": "eligibility",
-   "fieldtype": "Data",
+   "fieldtype": "Currency",
    "label": "Eligibility"
   },
   {
@@ -128,28 +120,24 @@
   },
   {
    "fieldname": "engine",
-   "fieldtype": "Data",
-   "label": "Engine"
+   "fieldtype": "Select",
+   "label": "Engine",
+   "options": "-Select-\nEV\nPetrol\nDiesel\nCNG"
   },
   {
    "fieldname": "ex_showroom_price",
-   "fieldtype": "Int",
+   "fieldtype": "Currency",
    "label": "Ex Showroom Price"
   },
   {
    "fieldname": "discount",
-   "fieldtype": "Int",
+   "fieldtype": "Currency",
    "label": "Discount"
   },
   {
    "fieldname": "registration_charges",
-   "fieldtype": "Int",
+   "fieldtype": "Currency",
    "label": "Registration Charges"
-  },
-  {
-   "fieldname": "financed_amount",
-   "fieldtype": "Int",
-   "label": "Financed Amount"
   },
   {
    "fieldname": "status",
@@ -162,11 +150,38 @@
    "fieldtype": "Select",
    "label": "HR Head Approval",
    "options": "Pending\nApproved\nRejected"
+  },
+  {
+   "fieldname": "net_ex_showroom_price",
+   "fieldtype": "Currency",
+   "label": "Net Ex Showroom Price",
+   "read_only": 1
+  },
+  {
+   "fieldname": "finance_amount",
+   "fieldtype": "Currency",
+   "label": "Finance Amount",
+   "read_only": 1
+  },
+  {
+   "fieldname": "reporting_head_approval",
+   "fieldtype": "Select",
+   "label": "Reporting Head Approval",
+   "options": "Pending\nApproved\nRejected"
+  },
+  {
+   "fieldname": "column_break_wlht",
+   "fieldtype": "Column Break"
   }
  ],
  "index_web_pages_for_search": 1,
- "links": [],
- "modified": "2024-11-11 09:59:28.150744",
+ "links": [
+  {
+   "link_doctype": "Purchase Team Form",
+   "link_fieldname": "employee_name"
+  }
+ ],
+ "modified": "2024-11-12 11:56:25.371451",
  "modified_by": "Administrator",
  "module": "CRMS",
  "name": "Car Indent Form",
