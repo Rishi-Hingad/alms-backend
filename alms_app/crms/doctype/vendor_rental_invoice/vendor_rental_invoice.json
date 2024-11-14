@@ -10,15 +10,14 @@
   "leasing_company",
   "entity_name",
   "contract_number",
+  "contract_end_date",
   "employee_code",
-  "employee_name",
   "column_break_bdln",
   "invoice_date_from",
   "invoice_date_to",
-  "vehicle_delivery_date",
-  "contract_end_date",
-  "vehicle_details",
   "vehicle_numbers",
+  "vehicle_details",
+  "vehicle_delivery_date",
   "installment_number",
   "number_of_billing_days",
   "rental_charges_section",
@@ -64,12 +63,7 @@
   {
    "fieldname": "employee_code",
    "fieldtype": "Data",
-   "label": "Employee Code"
-  },
-  {
-   "fieldname": "employee_name",
-   "fieldtype": "Data",
-   "label": "Employee Name"
+   "label": "Employee Code & Name"
   },
   {
    "fieldname": "column_break_bdln",
@@ -77,12 +71,12 @@
   },
   {
    "fieldname": "invoice_date_from",
-   "fieldtype": "Data",
+   "fieldtype": "Date",
    "label": "Invoice Date From"
   },
   {
    "fieldname": "invoice_date_to",
-   "fieldtype": "Data",
+   "fieldtype": "Date",
    "label": "Invoice Date To"
   },
   {
@@ -183,7 +177,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-11-11 09:58:58.941470",
+ "modified": "2024-11-14 10:41:53.400297",
  "modified_by": "Administrator",
  "module": "CRMS",
  "name": "Vendor Rental Invoice",

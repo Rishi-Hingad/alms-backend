@@ -6,104 +6,226 @@
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
-  "purchase_team_form_section",
+  "car_indent_form_details_section",
   "employee_name",
+  "meril_entity",
+  "eligibility",
+  "location",
+  "car_model",
+  "make",
+  "color",
+  "engine",
+  "column_break_otzw",
+  "ex_showroom_price",
+  "discount",
+  "tcs",
+  "net_ex_showroom_price",
+  "registration_charges",
+  "accessories",
+  "finance_amount",
+  "quotation_document",
+  "revised_car_details_section",
   "kilometers_per_year",
   "tenure_in_years",
   "total_kilometers",
-  "revise_ex_show_room_price",
-  "revise_discount",
-  "revise_net_ex_show_room_price",
+  "revised_ex_show_room_price",
+  "revised_discount",
+  "revised_tcs",
+  "revised_net_ex_showroom_price",
   "column_break_xtqz",
-  "revise_tcs",
-  "revise_registration_charges",
-  "revise_accessories",
+  "revised_registration_charges",
+  "revised_accessories",
   "revised_financed_amount",
-  "revise_quotation_attachment_need_to_be_done",
+  "revised_quotation_attachment_need_to_be_done",
   "status"
  ],
  "fields": [
   {
-   "fieldname": "purchase_team_form_section",
-   "fieldtype": "Section Break",
-   "label": "Purchase Team Form"
-  },
-  {
    "fieldname": "employee_name",
    "fieldtype": "Link",
    "label": "Employee Name",
-   "options": "Employee Master",
+   "options": "Car Indent Form",
    "unique": 1
   },
   {
    "fieldname": "kilometers_per_year",
-   "fieldtype": "Data",
+   "fieldtype": "Int",
    "label": "Kilometers per Year"
   },
   {
    "fieldname": "tenure_in_years",
-   "fieldtype": "Data",
+   "fieldtype": "Int",
    "label": "Tenure (in years)"
   },
   {
    "fieldname": "total_kilometers",
    "fieldtype": "Data",
-   "label": "Total Kilometers"
-  },
-  {
-   "fieldname": "revise_ex_show_room_price",
-   "fieldtype": "Data",
-   "label": "Revise Ex Show Room Price"
-  },
-  {
-   "fieldname": "revise_discount",
-   "fieldtype": "Data",
-   "label": "Revise Discount"
-  },
-  {
-   "fieldname": "revise_net_ex_show_room_price",
-   "fieldtype": "Data",
-   "label": "Revise Net Ex-Show Room Price"
+   "label": "Total Kilometers",
+   "read_only": 1
   },
   {
    "fieldname": "column_break_xtqz",
    "fieldtype": "Column Break"
   },
   {
-   "fieldname": "revise_tcs",
-   "fieldtype": "Data",
-   "label": "Revise TCS"
-  },
-  {
-   "fieldname": "revise_registration_charges",
-   "fieldtype": "Data",
-   "label": "Revise Registration Charges"
-  },
-  {
-   "fieldname": "revise_accessories",
-   "fieldtype": "Data",
-   "label": "Revise Accessories"
-  },
-  {
-   "fieldname": "revised_financed_amount",
-   "fieldtype": "Data",
-   "label": "Revised Financed Amount"
-  },
-  {
-   "fieldname": "revise_quotation_attachment_need_to_be_done",
-   "fieldtype": "Attach",
-   "label": "Revise Quotation (Attachment need to be done)"
-  },
-  {
    "fieldname": "status",
    "fieldtype": "Select",
    "label": "Status",
    "options": "Pending\nApproved\nRejected"
+  },
+  {
+   "fieldname": "car_indent_form_details_section",
+   "fieldtype": "Section Break",
+   "label": "Car Indent Form Details"
+  },
+  {
+   "fieldname": "revised_car_details_section",
+   "fieldtype": "Section Break",
+   "label": "Revised Car Details"
+  },
+  {
+   "fetch_from": "employee_name.location",
+   "fieldname": "location",
+   "fieldtype": "Data",
+   "label": "Location"
+  },
+  {
+   "fetch_from": "employee_name.model",
+   "fieldname": "car_model",
+   "fieldtype": "Data",
+   "label": "Car Model"
+  },
+  {
+   "fetch_from": "employee_name.colour",
+   "fieldname": "color",
+   "fieldtype": "Data",
+   "label": "Color"
+  },
+  {
+   "fetch_from": "employee_name.ex_showroom_price",
+   "fieldname": "ex_showroom_price",
+   "fieldtype": "Currency",
+   "label": "Ex Showroom Price"
+  },
+  {
+   "fetch_from": "employee_name.tcs",
+   "fieldname": "tcs",
+   "fieldtype": "Currency",
+   "label": "TCS"
+  },
+  {
+   "fetch_from": "employee_name.registration_charges",
+   "fieldname": "registration_charges",
+   "fieldtype": "Currency",
+   "label": "Registration Charges"
+  },
+  {
+   "fetch_from": "employee_name.finance_amount",
+   "fieldname": "finance_amount",
+   "fieldtype": "Currency",
+   "label": "Finance Amount"
+  },
+  {
+   "fieldname": "column_break_otzw",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fetch_from": "employee_name.company_name",
+   "fieldname": "meril_entity",
+   "fieldtype": "Data",
+   "label": "Meril Entity"
+  },
+  {
+   "fetch_from": "employee_name.eligibility",
+   "fieldname": "eligibility",
+   "fieldtype": "Currency",
+   "label": "Eligibility"
+  },
+  {
+   "fetch_from": "employee_name.make",
+   "fieldname": "make",
+   "fieldtype": "Data",
+   "label": "Make"
+  },
+  {
+   "fetch_from": "employee_name.engine",
+   "fieldname": "engine",
+   "fieldtype": "Data",
+   "label": "Engine"
+  },
+  {
+   "fetch_from": "employee_name.discount",
+   "fieldname": "discount",
+   "fieldtype": "Currency",
+   "label": "Discount"
+  },
+  {
+   "fetch_from": "employee_name.net_ex_showroom_price",
+   "fieldname": "net_ex_showroom_price",
+   "fieldtype": "Currency",
+   "label": "Net Ex Showroom Price"
+  },
+  {
+   "fetch_from": "employee_name.accessories",
+   "fieldname": "accessories",
+   "fieldtype": "Currency",
+   "label": "Accessories"
+  },
+  {
+   "fetch_from": "employee_name.quotation_document",
+   "fieldname": "quotation_document",
+   "fieldtype": "Attach",
+   "label": "Quotation Document"
+  },
+  {
+   "fieldname": "revised_ex_show_room_price",
+   "fieldtype": "Currency",
+   "label": "Revised Ex Show Room Price"
+  },
+  {
+   "fieldname": "revised_discount",
+   "fieldtype": "Currency",
+   "label": "Revised Discount"
+  },
+  {
+   "fieldname": "revised_tcs",
+   "fieldtype": "Currency",
+   "label": "Revised TCS"
+  },
+  {
+   "fieldname": "revised_accessories",
+   "fieldtype": "Currency",
+   "label": "Revised Accessories"
+  },
+  {
+   "fieldname": "revised_quotation_attachment_need_to_be_done",
+   "fieldtype": "Attach",
+   "label": "Revised Quotation (Attachment need to be done)"
+  },
+  {
+   "fieldname": "revised_registration_charges",
+   "fieldtype": "Currency",
+   "label": "Revised Registration Charges"
+  },
+  {
+   "fieldname": "revised_financed_amount",
+   "fieldtype": "Currency",
+   "label": "Revised Financed Amount"
+  },
+  {
+   "fieldname": "revised_net_ex_showroom_price",
+   "fieldtype": "Currency",
+   "label": "Revised Net Ex Showroom Price"
   }
  ],
  "index_web_pages_for_search": 1,
- "links": [],
- "modified": "2024-11-11 09:59:11.488638",
+ "links": [
+  {
+   "link_doctype": "Car Indent Form",
+   "link_fieldname": "employee_code"
+  }
+ ],
+ "modified": "2024-11-12 11:57:48.136449",
  "modified_by": "Administrator",
  "module": "CRMS",
  "name": "Purchase Team Form",

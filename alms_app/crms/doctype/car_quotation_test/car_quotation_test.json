@@ -2,10 +2,11 @@
  "actions": [],
  "allow_rename": 1,
  "autoname": "format:Quo-{finance_company}-{employee_details}",
- "creation": "2024-09-23 10:04:09.288926",
+ "creation": "2024-11-12 12:43:14.950402",
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
+  "upload_the_excel_file",
   "car_quotation_section",
   "finance_company",
   "employee_details",
@@ -40,7 +41,9 @@
   "pickup_and_drop",
   "std_relief_car_non_accdt",
   "gst_on_fms",
-  "total_emi"
+  "total_emi",
+  "interim_payment",
+  "quarterly_payment"
  ],
  "fields": [
   {
@@ -51,63 +54,75 @@
   {
    "fieldname": "finance_company",
    "fieldtype": "Select",
+   "hidden": 1,
    "label": "Finance Company",
    "options": "-Select-\nEasy Assets\nALD\nXYZ"
   },
   {
    "fieldname": "employee_details",
    "fieldtype": "Link",
+   "hidden": 1,
    "label": "Employee Details",
    "options": "Employee Master"
   },
   {
    "fieldname": "location",
    "fieldtype": "Data",
+   "hidden": 1,
    "label": "Location"
   },
   {
    "fieldname": "kms",
    "fieldtype": "Data",
+   "hidden": 1,
    "label": "KMS"
   },
   {
    "fieldname": "variant",
    "fieldtype": "Data",
+   "hidden": 1,
    "label": "Variant"
   },
   {
    "fieldname": "quote",
    "fieldtype": "Data",
+   "hidden": 1,
    "label": "Quote"
   },
   {
    "fieldname": "interest_rate",
    "fieldtype": "Data",
+   "hidden": 1,
    "label": "Interest Rate"
   },
   {
    "fieldname": "tenure",
    "fieldtype": "Data",
+   "hidden": 1,
    "label": "Tenure"
   },
   {
    "fieldname": "base_price_excluding_gst",
    "fieldtype": "Data",
+   "hidden": 1,
    "label": "Base Price Excluding GST"
   },
   {
    "fieldname": "gst",
    "fieldtype": "Data",
+   "hidden": 1,
    "label": "GST"
   },
   {
    "fieldname": "ex_showroom_amount",
    "fieldtype": "Data",
+   "hidden": 1,
    "label": "Ex-Showroom Amount"
   },
   {
    "fieldname": "accessory",
    "fieldtype": "Data",
+   "hidden": 1,
    "label": "Accessory"
   },
   {
@@ -117,62 +132,74 @@
   {
    "fieldname": "discount_excluding_gst",
    "fieldtype": "Data",
+   "hidden": 1,
    "label": "Discount (Excluding GST)"
   },
   {
    "fieldname": "base_price_less_discounts",
    "fieldtype": "Data",
+   "hidden": 1,
    "label": "Base Price Less Discounts"
   },
   {
    "fieldname": "total_discount",
    "fieldtype": "Data",
+   "hidden": 1,
    "label": "Total Discount"
   },
   {
    "fieldname": "ex_showroom_amount_net_of_discount",
    "fieldtype": "Data",
+   "hidden": 1,
    "label": "Ex-Showroom Amount(Net of Discount)"
   },
   {
    "fieldname": "registration_charges",
    "fieldtype": "Data",
+   "hidden": 1,
    "label": "Registration Charges"
   },
   {
    "fieldname": "residual_value_percent",
    "fieldtype": "Data",
+   "hidden": 1,
    "label": "Residual Value Percent"
   },
   {
    "fieldname": "financed_amount",
    "fieldtype": "Data",
+   "hidden": 1,
    "label": "Financed Amount"
   },
   {
    "fieldname": "residual_value",
    "fieldtype": "Data",
+   "hidden": 1,
    "label": "Residual Value"
   },
   {
    "fieldname": "emi_financing",
    "fieldtype": "Data",
+   "hidden": 1,
    "label": "EMI (Financing)"
   },
   {
    "fieldname": "finance_emi_road_tax",
    "fieldtype": "Data",
+   "hidden": 1,
    "label": "Finance EMI - Road Tax"
   },
   {
    "fieldname": "status",
    "fieldtype": "Select",
+   "hidden": 1,
    "label": "Status",
    "options": "-Select-\nApproved\nRejected"
   },
   {
    "fieldname": "finance_hod_status",
    "fieldtype": "Select",
+   "hidden": 1,
    "label": "Finance HOD Status",
    "options": "-Select-\nApproved\nRejected"
   },
@@ -183,50 +210,75 @@
   {
    "fieldname": "gst_and_cess",
    "fieldtype": "Data",
+   "hidden": 1,
    "label": "GST and Cess"
   },
   {
    "fieldname": "insurance",
    "fieldtype": "Data",
+   "hidden": 1,
    "label": "Insurance"
   },
   {
    "fieldname": "fleet_management_repairs_and_tyres",
    "fieldtype": "Data",
+   "hidden": 1,
    "label": "Fleet Management (Repairs and Tyres)"
   },
   {
    "fieldname": "24x7_assist",
    "fieldtype": "Data",
+   "hidden": 1,
    "label": "24x7 Assist"
   },
   {
    "fieldname": "pickup_and_drop",
    "fieldtype": "Data",
+   "hidden": 1,
    "label": "Pickup & Drop"
   },
   {
    "fieldname": "std_relief_car_non_accdt",
    "fieldtype": "Data",
+   "hidden": 1,
    "label": "Std Relief Car (Non Accdt)"
   },
   {
    "fieldname": "gst_on_fms",
    "fieldtype": "Data",
+   "hidden": 1,
    "label": "GST on FMS"
   },
   {
    "fieldname": "total_emi",
    "fieldtype": "Data",
+   "hidden": 1,
    "label": "Total EMI"
+  },
+  {
+   "fieldname": "interim_payment",
+   "fieldtype": "Data",
+   "hidden": 1,
+   "label": "Interim Payment"
+  },
+  {
+   "fieldname": "quarterly_payment",
+   "fieldtype": "Data",
+   "hidden": 1,
+   "label": "Quarterly Payment"
+  },
+  {
+   "fieldname": "upload_the_excel_file",
+   "fieldtype": "Attach",
+   "label": "Upload the Excel File"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-11-13 17:49:06.527441",
+ "modified": "2024-11-12 12:45:42.154455",
  "modified_by": "Administrator",
  "module": "CRMS",
- "name": "Car Quotation",
+ "name": "Car Quotation Test",
  "naming_rule": "Expression",
  "owner": "Administrator",
  "permissions": [
