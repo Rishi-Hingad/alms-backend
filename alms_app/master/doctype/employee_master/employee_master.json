@@ -12,11 +12,13 @@
   "designation",
   "email_id",
   "eligibility",
+  "reporting_head",
   "column_break_ryfx",
   "employee_code",
   "company",
   "location",
   "contact_number",
+  "reporting_head_email_id",
   "status"
  ],
  "fields": [
@@ -46,8 +48,9 @@
   },
   {
    "fieldname": "designation",
-   "fieldtype": "Data",
-   "label": "Designation"
+   "fieldtype": "Select",
+   "label": "Designation",
+   "options": "Manager\nSenior Manager\nDeputy General Manager\nGeneral Manager\nAdditional General Manager\nVice President\nSenior General Manager"
   },
   {
    "fieldname": "email_id",
@@ -80,11 +83,27 @@
    "in_list_view": 1,
    "label": "Status",
    "options": "Not Sent\nSent"
+  },
+  {
+   "fieldname": "reporting_head",
+   "fieldtype": "Data",
+   "label": "Reporting Head"
+  },
+  {
+   "fieldname": "reporting_head_email_id",
+   "fieldtype": "Data",
+   "label": "Reporting Head Email ID"
   }
  ],
  "index_web_pages_for_search": 1,
- "links": [],
- "modified": "2024-11-12 11:47:32.883837",
+ "links": [
+  {
+   "link_doctype": "Car Indent Form",
+   "link_fieldname": "employee_code",
+   "table_fieldname": "Employee Name"
+  }
+ ],
+ "modified": "2024-11-23 18:04:20.090442",
  "modified_by": "Administrator",
  "module": "master",
  "name": "Employee Master",
