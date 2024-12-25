@@ -39,4 +39,3 @@ function calculate_totals(frm) {
     const finance_amount = (ex_showroom_price - discount + tcs) + registration_charges + accessories;
     frm.set_value("finance_amount", finance_amount);
 }
-
