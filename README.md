@@ -1,6 +1,6 @@
 ## ALMS
 
-ALMS
+Assest Lease Management System
 
 #### License
 

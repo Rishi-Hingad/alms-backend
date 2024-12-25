@@ -1,9 +1,9 @@
 [project]
 name = "alms_app"
 authors = [
-    { name = "Harsh", email = "harsh.somaiya@merillife.com"}
+    { name = "Rishi Hingad", email = "rishi.hingad@merillife.com"}
 ]
-description = "ALMS"
+description = "Assest Lease Management System"
 requires-python = ">=3.10"
 readme = "README.md"
 dynamic = ["version"]
