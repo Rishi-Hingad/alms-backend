@@ -30,8 +30,8 @@
   "finance_amount",
   "quotation_document",
   "reporting_head_approval",
-  "status",
-  "status_head"
+  "hr_approval",
+  "hr_head_approval"
  ],
  "fields": [
   {
@@ -140,18 +140,6 @@
    "label": "Registration Charges"
   },
   {
-   "fieldname": "status",
-   "fieldtype": "Select",
-   "label": "HR Approval",
-   "options": "Pending\nApproved\nRejected"
-  },
-  {
-   "fieldname": "status_head",
-   "fieldtype": "Select",
-   "label": "HR Head Approval",
-   "options": "Pending\nApproved\nRejected"
-  },
-  {
    "fieldname": "net_ex_showroom_price",
    "fieldtype": "Currency",
    "label": "Net Ex Showroom Price",
@@ -174,6 +162,18 @@
   {
    "fieldname": "column_break_wlht",
    "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "hr_approval",
+   "fieldtype": "Select",
+   "label": "HR Approval",
+   "options": "Pending\nApproved\nRejected"
+  },
+  {
+   "fieldname": "hr_head_approval",
+   "fieldtype": "Select",
+   "label": "HR Head Approval",
+   "options": "Pending\nApproved\nRejected"
   }
  ],
  "index_web_pages_for_search": 1,
@@ -183,7 +183,7 @@
    "link_fieldname": "employee_name"
   }
  ],
- "modified": "2024-11-23 10:43:31.105164",
+ "modified": "2024-12-27 18:42:16.438142",
  "modified_by": "Administrator",
  "module": "CRMS",
  "name": "Car Indent Form",
@@ -218,5 +218,6 @@
    "color": "Yellow",
    "title": "Pending"
   }
- ]
+ ],
+ "track_changes": 1
 }
