@@ -1,29 +1,75 @@
-// Copyright (c) 2024, Harsh and contributors
-// For license information, please see license.txt
-
-
-function addButtonForAppovel(frm){
+function addButtonForAppovel(frm) {
     frm.clear_custom_buttons();
     frappe.call({
         method: "frappe.client.get",
         args: {
             doctype: "User",
-            name: frappe.session.user, // Current logged-in user
+            name: frappe.session.user,
         },
         callback: function (response) {
             if (response && response.message) {
                 const designation = response.message.designation;
-                
-                if (designation === "Purchase"){
-                    frm.set_df_property('status','read_only', 1)
-                    
+
+                if (designation === "Purchase") {
+                    frm.set_df_property('status', 'read_only', 1);
                 }
-                if ((designation === "Purchase Head") || (designation === "Admin")){
-                    frm.add_custom_button("Appove by Purchase Head",null)
+
+                // If the status is Pending, allow the user to select Approve/Reject
+                if (frm.doc.status === "Pending") {
+                    frm.add_custom_button("Approve or Reject by Purchase Head", function () {
+                        // Show a dropdown to select Approve or Reject
+                        frappe.prompt(
+                            {
+                                label: __('Select Action'),
+                                fieldname: 'action',
+                                fieldtype: 'Select',
+                                options: ['Approved', 'Rejected'], // Dropdown options
+                                reqd: 1
+                            },
+                            function (data) {
+                                // Update the status based on user selection
+                                frm.set_value('status', data.action);
+                                frm.save_or_update().then(() => {
+                                    frappe.msgprint(__('Status changed to {0}.', [data.action]));
+                                });
+                            },
+                            __('Approval Action'),
+                            __('Submit')
+                        );
+                    });
                 }
-            }}
-        })
+
+                // Add a green-colored non-editable button if status is Approved
+                if (frm.doc.status === "Approved") {
+                    frm.add_custom_button("Approved by Purchase Head", null).css({
+                        "background-color": 'darkgreen',
+                        "color": "white",
+                        "border-color": "darkgreen",
+                        "cursor": "not-allowed"
+                    });
+                }
+
+                // Add a red-colored non-editable button if status is Rejected
+                if (frm.doc.status === "Rejected") {
+                    frm.add_custom_button("Rejected by Purchase Head", null).css({
+                        "background-color": 'darkred',
+                        "color": "white",
+                        "border-color": "darkred",
+                        "cursor": "not-allowed"
+                    });
+                }
+            }
+        }
+    });
 }
+
+// Define your custom logic for the approval process (if needed)
+function customApprovalLogic(frm) {
+    console.log("Executing custom logic before changing the status.");
+    // Add your logic here if necessary
+}
+
+
 
 frappe.ui.form.on("Purchase Team Form", {
         refresh(frm) {

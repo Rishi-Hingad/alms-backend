@@ -22,7 +22,6 @@ function onApprovalByHRHead() {
     frappe.msgprint(__('Successfully approved this request'));
 }
 
-
 function updateStatus(frm) {
     frm.clear_custom_buttons(); // Remove existing buttons
 
@@ -40,61 +39,71 @@ function updateStatus(frm) {
                 // Define buttons for each designation
                 const buttons = [
                     {
-                        label: frm.doc.reporting_head_approval === "Pending" ? "Approve by Reporting Head" : "Approved by Reporting Head",
+                        label: "Reporting Head Action",
                         field: "reporting_head_approval",
                         current_status: frm.doc.reporting_head_approval,
                         designation: "Reporting Head",
-                        enabled: designation === "Reporting Head",
-                        light_color: "lightgreen",
-                        dark_color: "green",
-                        gray_color: "lightgray"
+                        enabled: designation === "Reporting Head"
                     },
                     {
-                        label: frm.doc.status === "Pending" ? "Approve by HR" : "Approved by HR",
+                        label: "HR Action",
                         field: "hr_approval",
                         current_status: frm.doc.hr_approval,
                         designation: "HR",
-                        enabled: designation === "HR",
-                        light_color: "lightgreen",
-                        dark_color: "green",
-                        gray_color: "lightgray"
+                        enabled: designation === "HR"
                     },
                     {
-                        label: frm.doc.status_head === "Pending" ? "Approve by HR Head" : "Approved by HR Head",
+                        label: "HR Head Action",
                         field: "hr_head_approval",
                         current_status: frm.doc.hr_head_approval,
                         designation: "HR Head",
-                        enabled: designation === "HR Head",
-                        light_color: "lightgreen",
-                        dark_color: "green",
-                        gray_color: "lightgray"
+                        enabled: designation === "HR Head"
                     }
                 ];
 
                 // Add buttons
                 buttons.forEach(button => {
-                    const btn_color =
-                        button.current_status === "Pending"
-                            ? button.enabled
-                                ? button.light_color
-                                : button.gray_color
-                            : button.dark_color;
+                    if (button.current_status === "Pending" && button.enabled) {
+                        frm.add_custom_button(button.label, function () {
+                            // Show a dropdown to select Approve or Reject
+                            frappe.prompt(
+                                {
+                                    label: __('Select Action'),
+                                    fieldname: 'action',
+                                    fieldtype: 'Select',
+                                    options: ['Approved', 'Rejected'], // Dropdown options
+                                    reqd: 1
+                                },
+                                function (data) {
+                                    // Update the status based on user selection
+                                    frm.set_value(button.field, data.action);
+                                    frm.save_or_update().then(() => {
+                                        frappe.msgprint(
+                                            __('Status for {0} changed to {1}.', [button.label, data.action])
+                                        );
+                                        frm.refresh_field(button.field);
+                                    });
+                                },
+                                __('Approval Action'),
+                                __('Submit')
+                            );
+                        });
+                    } else {
+                        // Add a non-interactive button to show the current status
+                        const status_color =
+                            button.current_status === "Approved"
+                                ? "darkgreen"
+                                : button.current_status === "Rejected"
+                                ? "darkred"
+                                : "lightgray";
 
-                    const btn = frm.add_custom_button(button.label, function () {
-                        if (button.enabled && button.current_status === "Pending") {
-                            changeStatus(frm, button.field, "Approved");
-                        } else if (!button.enabled) {
-                            frappe.msgprint(__('You are not allowed to perform this action.'));
-                        }
-                    });
-
-                    // Apply button styles
-                    btn.css({
-                        "background-color": btn_color,
-                        "color": "white",
-                        "border-color": button.enabled ? "darkgreen" : "darkgray",
-                        "cursor": button.enabled ? "pointer" : "not-allowed"
-                    });
+                        frm.add_custom_button(`${button.label}: ${button.current_status}`, null).css({
+                            "background-color": status_color,
+                            "color": "white",
+                            "border-color": status_color,
+                            "cursor": "not-allowed"
+                        });
+                    }
                 });
             }
         }

@@ -39,7 +39,7 @@
   "std_relief_car_non_accdt",
   "gst_on_fms",
   "total_emi",
-  "status",
+  "finance_team_status",
   "finance_hod_status"
  ],
  "fields": [
@@ -165,12 +165,6 @@
    "label": "Finance EMI - Road Tax"
   },
   {
-   "fieldname": "status",
-   "fieldtype": "Select",
-   "label": "Status",
-   "options": "-Select-\nApproved\nRejected"
-  },
-  {
    "fieldname": "finance_hod_status",
    "fieldtype": "Select",
    "label": "Finance HOD Status",
@@ -219,11 +213,17 @@
    "fieldname": "total_emi",
    "fieldtype": "Data",
    "label": "Total EMI"
+  },
+  {
+   "fieldname": "finance_team_status",
+   "fieldtype": "Select",
+   "label": "Finance Team Status",
+   "options": "-Select-\nApproved\nRejected"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-11-14 14:34:48.010207",
+ "modified": "2024-12-31 23:29:42.951964",
  "modified_by": "Administrator",
  "module": "CRMS",
  "name": "Car Quotation",
