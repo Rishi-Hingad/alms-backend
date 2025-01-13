@@ -37,6 +37,8 @@
   "revised_accessories",
   "revised_financed_amount",
   "revised_quotation_attachment_need_to_be_done",
+  "purchase_head_status",
+  "purchase_team_status",
   "status"
  ],
  "fields": [
@@ -216,6 +218,20 @@
    "fieldname": "revised_net_ex_showroom_price",
    "fieldtype": "Currency",
    "label": "Revised Net Ex Showroom Price"
+  },
+  {
+   "default": "Pending",
+   "fieldname": "purchase_head_status",
+   "fieldtype": "Select",
+   "label": "Purchase Head Status",
+   "options": "Pending\nApproved\nRejected"
+  },
+  {
+   "default": "Pending",
+   "fieldname": "purchase_team_status",
+   "fieldtype": "Select",
+   "label": "Purchase Team Status",
+   "options": "Pending\nApproved\nRejected"
   }
  ],
  "index_web_pages_for_search": 1,
@@ -225,7 +241,7 @@
    "link_fieldname": "employee_code"
   }
  ],
- "modified": "2024-11-12 11:57:48.136449",
+ "modified": "2025-01-13 11:40:44.294177",
  "modified_by": "Administrator",
  "module": "CRMS",
  "name": "Purchase Team Form",

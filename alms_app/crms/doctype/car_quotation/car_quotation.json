@@ -40,7 +40,8 @@
   "gst_on_fms",
   "total_emi",
   "finance_team_status",
-  "finance_hod_status"
+  "finance_head_status",
+  "status"
  ],
  "fields": [
   {
@@ -165,12 +166,6 @@
    "label": "Finance EMI - Road Tax"
   },
   {
-   "fieldname": "finance_hod_status",
-   "fieldtype": "Select",
-   "label": "Finance HOD Status",
-   "options": "-Select-\nApproved\nRejected"
-  },
-  {
    "fieldname": "column_break_vhla",
    "fieldtype": "Column Break"
   },
@@ -215,15 +210,30 @@
    "label": "Total EMI"
   },
   {
+   "default": "Pending",
    "fieldname": "finance_team_status",
    "fieldtype": "Select",
    "label": "Finance Team Status",
-   "options": "-Select-\nApproved\nRejected"
+   "options": "Pending\nApproved\nRejected"
+  },
+  {
+   "default": "Pending",
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "label": "Status",
+   "options": "Pending\nApproved\nRejected"
+  },
+  {
+   "default": "Pending",
+   "fieldname": "finance_head_status",
+   "fieldtype": "Select",
+   "label": "Finance Head Status",
+   "options": "Pending\nApproved\nRejected"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-12-31 23:29:42.951964",
+ "modified": "2025-01-13 12:15:20.701982",
  "modified_by": "Administrator",
  "module": "CRMS",
  "name": "Car Quotation",

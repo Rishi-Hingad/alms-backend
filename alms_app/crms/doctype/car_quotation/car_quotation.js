@@ -60,142 +60,123 @@ function setValuesInField(frm,data){
 
 
 }
-
-
-function changeStatus(frm, field_to_update, new_status) {
-    frm.set_value(field_to_update, new_status); // Update the specified field with the new status
-
-    if (field_to_update === "finance_hod_status" && new_status === "Approved") {
-        frm.set_value("status", true); // Set the status field to true
-    }
-    
-    frm.save()
-        .then(function () {
-            frm.refresh_field(field_to_update); // Refresh the updated field
-            frm.clear_custom_buttons(); // Clear buttons
-            
-
-        })
-        .catch(function (error) {
-            frappe.msgprint(__('Error saving document: ') + error.message); // Display error if save fails
-        });
-}
-
-function setApproveButton(frm) {
-    // frm.clear_custom_buttons(); // Remove existing buttons
-    // Fetch the user's designation
+function send_email(user,email_send_to){
     frappe.call({
-        method: "frappe.client.get",
+        method: "alms_app.api.emailsService.email_sender",
         args: {
-            doctype: "User",
-            name: frappe.session.user, // Current logged-in user
+            name: user,
+            email_send_to: email_send_to,
         },
         callback: function (response) {
-            if (response && response.message) {
-                const designation = response.message.designation;
-
-                // Set read-only fields based on designation
-                if (designation === "Finance") {
-                    frm.set_df_property('finance_hod_status', 'read_only', 1);
-                }
-                if (designation === "Finance Head") {
-                    frm.set_df_property('finance_team_status', 'read_only', 1);
-                }
-
-                // Define button configurations
-                const buttons = [
-                    {
-                        label: frm.doc.finance_team_status === "Rejected"
-                            ? "Rejected by Finance Team"
-                            : frm.doc.finance_team_status === "Approved"
-                                ? "Approved by Finance Team"
-                                : "Approve or Reject by Finance Team",
-                        field: "finance_team_status",
-                        current_status: frm.doc.finance_team_status,
-                        designation: "Finance",
-                        enabled: designation === "Finance",
-                        colors: {
-                            approved: "green",
-                            rejected: "darkred",
-                            pending: "lightgreen",
-                            disabled: "lightgray"
-                        }
-                    },
-                    {
-                        label: frm.doc.finance_hod_status === "Rejected"
-                            ? "Rejected by Finance Head"
-                            : frm.doc.finance_hod_status === "Approved"
-                                ? "Approved by Finance Head"
-                                : "Approve or Reject by Finance Head",
-                        field: "finance_hod_status",
-                        current_status: frm.doc.finance_hod_status,
-                        designation: "Finance Head",
-                        enabled: designation === "Finance Head",
-                        colors: {
-                            approved: "green",
-                            rejected: "darkred",
-                            pending: "lightgreen",
-                            disabled: "lightgray"
-                        }
-                    }
-                ];
-
-                // Add buttons with appropriate styles and actions
-                buttons.forEach(button => {
-                    const btn_color =
-                        button.current_status === "Approved"
-                            ? button.colors.approved
-                            : button.current_status === "Rejected"
-                                ? button.colors.rejected
-                                : button.enabled
-                                    ? button.colors.pending
-                                    : button.colors.disabled;
-
-                    const btn = frm.add_custom_button(button.label, function () {
-                        if (button.enabled && button.current_status === "Pending") {
-                            frappe.prompt(
-                                {
-                                    label: __('Approve or Reject'),
-                                    fieldname: 'action',
-                                    fieldtype: 'Select',
-                                    options: ['Approved', 'Rejected'],
-                                    reqd: 1
-                                },
-                                function (data) {
-                                    changeStatus(frm, button.field, data.action);
-                                },
-                                __('Select Action'),
-                                __('Submit')
-                            );
-                        } else if (!button.enabled) {
-                            frappe.msgprint(__('You are not allowed to perform this action.'));
-                        }
-                    });
-
-                    // Apply button styles
-                    btn.css({
-                        "background-color": btn_color,
-                        "color": "white",
-                        "border-color": btn_color === "red" ? "darkred" : "darkgreen",
-                        "cursor": button.enabled ? "pointer" : "not-allowed"
-                    });
+            if (!response.exc) {
+                frappe.msgprint("Email sent successfully!");
+            } else {
+                frappe.msgprint({
+                    title: "Error",
+                    indicator: "red",
+                    message: response.exc || "An unknown error occurred while sending the email.",
                 });
             }
+        },
+        error: function (error) {
+            frappe.msgprint({
+                title: "Error",
+                indicator: "red",
+                message: error.message || "An unknown error occurred while sending the email.",
+            });
+        },
+    });
+}
+function updateStatus(frm) {
+    frm.clear_custom_buttons();
+
+    const buttons = [
+        {
+            label: "Finance Team",
+            field: "finance_team_status",
+            current_status: frm.doc.finance_team_status,
+        },
+        {
+            label: "Finance Head",
+            field: "finance_head_status",
+            current_status: frm.doc.finance_head_status,
+        }
+    ];
+
+    buttons.forEach(button => {
+        const status = button.current_status || "Pending";
+        let status_color;
+
+        switch (status) {
+            case "Approved":
+                status_color = "darkgreen";
+                break;
+            case "Rejected":
+                status_color = "darkred";
+                break;
+            default:
+                status_color = "gray";
+        }
+
+        frm.add_custom_button(`${button.label}: ${status}`, null).css({
+            "background-color": status_color,
+            "color": "white",
+            "border-color": status_color,
+            "cursor": "not-allowed"
+        });
+    });
+}
+
+function toggleFieldStatus(frm) {
+    Object.keys(frm.fields_dict).forEach(function(fieldname) {
+        if (frappe.session.user === "financehead@gmail.com") {
+            if (fieldname !== "finance_head_status") {
+                frm.set_df_property(fieldname, "read_only", 1);
+            } else {
+                frm.set_df_property(fieldname, "read_only", 0);
+            }
+        } else if (frappe.session.user === "finance@gmail.com") {
+            if (fieldname === "status" || fieldname === "finance_head_status") {
+                frm.set_df_property(fieldname, "read_only", 1);
+            } else {
+                // frm.set_df_property(fieldname, "read_only", 0);
+            }
+        } else {
+            // Default for other users, make everything read-only
+            // frm.set_df_property(fieldname, "read_only", 1);
         }
     });
 }
 
 
+
 frappe.ui.form.on('Car Quotation', {
     refresh: function (frm) {
+        frm.set_df_property("status", "read_only", true);
         frm.set_df_property('status', 'read_only', 1);
         uploadfile(frm);
-        setApproveButton(frm);
+        updateStatus(frm);
+        toggleFieldStatus(frm);
 
 
     },
     onload: function(frm) {
-        setApproveButton(frm);
+        frm.set_df_property("status", "read_only", true);
+        updateStatus(frm);
+        toggleFieldStatus(frm);
 
-    }
+    },
+    finance_head_status: function(frm) {
+        const new_value = frm.doc.finance_head_status || "No Value";
+        frm.set_value("status", frm.doc.finance_head_status); // Correctly set the "status" field
+        alert(`Finance Head Approval changed to: ${new_value} : ${frm.doc.name}`);
+        send_email(frm.doc.employee_details,"FinanceHead To AccountsTeam")
+    },
+
+
+    finance_team_status: function(frm) {
+        const new_value = frm.doc.finance_team_status || "No Value";
+        alert(`Finance Team Approval changed to: ${new_value} : ${frm.doc.name}`);
+        send_email(frm.doc.employee_details,"FinanceTeam To FinanceHead")
+    },
 });

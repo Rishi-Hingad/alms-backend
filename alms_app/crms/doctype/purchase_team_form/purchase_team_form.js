@@ -1,85 +1,140 @@
-function addButtonForAppovel(frm) {
+function updateStatus(frm) {
     frm.clear_custom_buttons();
-    frappe.call({
-        method: "frappe.client.get",
-        args: {
-            doctype: "User",
-            name: frappe.session.user,
+
+    const buttons = [
+        {
+            label: "Purchase Team",
+            field: "status",
+            current_status: frm.doc.purchase_team_status
         },
-        callback: function (response) {
-            if (response && response.message) {
-                const designation = response.message.designation;
+        {
+            label: "Purchase Head",
+            field: "status",
+            current_status: frm.doc.purchase_head_status
+        },
+    ];
 
-                if (designation === "Purchase") {
-                    frm.set_df_property('status', 'read_only', 1);
-                }
+    buttons.forEach(button => {
+        const status = button.current_status || "Pending";
+        let status_color;
 
-                // If the status is Pending, allow the user to select Approve/Reject
-                if (frm.doc.status === "Pending") {
-                    frm.add_custom_button("Approve or Reject by Purchase Head", function () {
-                        // Show a dropdown to select Approve or Reject
-                        frappe.prompt(
-                            {
-                                label: __('Select Action'),
-                                fieldname: 'action',
-                                fieldtype: 'Select',
-                                options: ['Approved', 'Rejected'], // Dropdown options
-                                reqd: 1
-                            },
-                            function (data) {
-                                // Update the status based on user selection
-                                frm.set_value('status', data.action);
-                                frm.save_or_update().then(() => {
-                                    frappe.msgprint(__('Status changed to {0}.', [data.action]));
-                                });
-                            },
-                            __('Approval Action'),
-                            __('Submit')
-                        );
-                    });
-                }
-
-                // Add a green-colored non-editable button if status is Approved
-                if (frm.doc.status === "Approved") {
-                    frm.add_custom_button("Approved by Purchase Head", null).css({
-                        "background-color": 'darkgreen',
-                        "color": "white",
-                        "border-color": "darkgreen",
-                        "cursor": "not-allowed"
-                    });
-                }
-
-                // Add a red-colored non-editable button if status is Rejected
-                if (frm.doc.status === "Rejected") {
-                    frm.add_custom_button("Rejected by Purchase Head", null).css({
-                        "background-color": 'darkred',
-                        "color": "white",
-                        "border-color": "darkred",
-                        "cursor": "not-allowed"
-                    });
-                }
-            }
+        switch (status) {
+            case "Approved":
+                status_color = "darkgreen";
+                break;
+            case "Rejected":
+                status_color = "darkred";
+                break;
+            default:
+                status_color = "gray";
         }
+
+        frm.add_custom_button(`${button.label}: ${status}`, null).css({
+            "background-color": status_color,
+            "color": "white",
+            "border-color": status_color,
+            "cursor": "not-allowed"
+        });
     });
 }
 
-// Define your custom logic for the approval process (if needed)
-function customApprovalLogic(frm) {
-    console.log("Executing custom logic before changing the status.");
-    // Add your logic here if necessary
+function send_email(user,email_send_to){
+    frappe.call({
+        method: "alms_app.api.emailsService.email_sender",
+        args: {
+            name: user,
+            email_send_to: email_send_to,
+        },
+        callback: function (response) {
+            if (!response.exc) {
+                frappe.msgprint("Email sent successfully!");
+            } else {
+                frappe.msgprint({
+                    title: "Error",
+                    indicator: "red",
+                    message: response.exc || "An unknown error occurred while sending the email.",
+                });
+            }
+        },
+        error: function (error) {
+            frappe.msgprint({
+                title: "Error",
+                indicator: "red",
+                message: error.message || "An unknown error occurred while sending the email.",
+            });
+        },
+    });
 }
 
 
+function toggleFieldStatus(frm) {
+    // if (frappe.session.designation === "Purchase Head") {
+    if (frappe.session.user === "purchasehead@gmail.com") {
+        frm.set_df_property("status", "read_only", true);
+        frm.set_df_property("purchase_team_status", "read_only", true);
+        frm.set_df_property("kilometers_per_year", "read_only", true);
+        frm.set_df_property("tenure_in_years", "read_only", true);
+        frm.set_df_property("total_kilometers", "read_only", true);
+        frm.set_df_property("revised_ex_show_room_price", "read_only", true);
+        frm.set_df_property("revised_discount", "read_only", true);
+        frm.set_df_property("revised_tcs", "read_only", true);
+        frm.set_df_property("revised_net_ex_showroom_price", "read_only", true);
+        frm.set_df_property("revised_registration_charges", "read_only", true);
+        frm.set_df_property("revised_accessories", "read_only", true);
+        frm.set_df_property("revised_financed_amount", "read_only", true);
+    }
+    if (frappe.session.user === "purchase@gmail.com") {
+        frm.set_df_property("purchase_head_status", "read_only", true);
+        frm.set_df_property("status", "read_only", true);
+    }
+    else{
+        frm.set_df_property("status", "read_only", true);
+        frm.set_df_property("purchase_team_status", "read_only", true);
+        frm.set_df_property("kilometers_per_year", "read_only", true);
+        frm.set_df_property("tenure_in_years", "read_only", true);
+        frm.set_df_property("total_kilometers", "read_only", true);
+        frm.set_df_property("revised_ex_show_room_price", "read_only", true);
+        frm.set_df_property("revised_discount", "read_only", true);
+        frm.set_df_property("revised_tcs", "read_only", true);
+        frm.set_df_property("revised_net_ex_showroom_price", "read_only", true);
+        frm.set_df_property("revised_registration_charges", "read_only", true);
+        frm.set_df_property("revised_accessories", "read_only", true);
+        frm.set_df_property("revised_financed_amount", "read_only", true);
+        frm.set_df_property("purchase_head_status", "read_only", true);
+        frm.set_df_property("status", "read_only", true);
+    }
+
+}
 
 frappe.ui.form.on("Purchase Team Form", {
         refresh(frm) {
+
+            updateStatus(frm);
             calculate_totals(frm);
             addButtonForAppovel(frm);
+            toggleFieldStatus(frm);
         },
         onload(frm){
+            updateStatus(frm);
+            toggleFieldStatus(frm);
             addButtonForAppovel(frm); 
         },
+
+        purchase_head_status: function(frm) {
+            const new_value = frm.doc.purchase_head_status || "No Value";
+            frm.set_value("status", frm.doc.purchase_head_status); // Correctly set the "status" field
+            alert(`Purchase Head Approval changed to: ${new_value} : ${frm.doc.name}`);
+            send_email(frm.doc.name,"PurchaseHead To FinanceTeam")
+        },
     
+
+        purchase_team_status: function(frm) {
+            const new_value = frm.doc.purchase_team_status || "No Value";
+            alert(`Purchase Team Approval changed to: ${new_value} : ${frm.doc.name}`);
+            send_email(frm.doc.name,"PurchaseTeam To PurchaseHead")
+        },
+
+
         revised_ex_show_room_price: function(frm) {
             calculate_totals(frm);
         },
@@ -106,8 +161,14 @@ frappe.ui.form.on("Purchase Team Form", {
 
         tenure_in_years: function(frm) {
             calculate_totals(frm);
-        }
+        },
+
+
 });
+
+
+
+
 
 function calculate_totals(frm) {
     const revised_ex_show_room_price = frm.doc.revised_ex_show_room_price || 0;

@@ -31,7 +31,8 @@
   "quotation_document",
   "reporting_head_approval",
   "hr_approval",
-  "hr_head_approval"
+  "hr_head_approval",
+  "status"
  ],
  "fields": [
   {
@@ -174,6 +175,13 @@
    "fieldtype": "Select",
    "label": "HR Head Approval",
    "options": "Pending\nApproved\nRejected"
+  },
+  {
+   "default": "Pending",
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "label": "Status",
+   "options": "Approved\nRejected\nPending"
   }
  ],
  "index_web_pages_for_search": 1,
@@ -183,7 +191,7 @@
    "link_fieldname": "employee_name"
   }
  ],
- "modified": "2024-12-27 18:42:16.438142",
+ "modified": "2025-01-11 15:30:23.238306",
  "modified_by": "Administrator",
  "module": "CRMS",
  "name": "Car Indent Form",

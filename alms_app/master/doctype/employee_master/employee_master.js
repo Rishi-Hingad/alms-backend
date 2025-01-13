@@ -1,5 +1,38 @@
 // Copyright (c) 2024, Harsh and contributors
 // For license information, please see license.txt
+
+function send_email(frm,email_send_to){
+    frappe.call({
+        method: "alms_app.api.emailsService.email_sender",
+        args: {
+            name: frm.doc.name,
+            email_send_to: email_send_to,
+        },
+        callback: function (response) {
+            if (!response.exc) {
+                frappe.msgprint("Email sent successfully!");
+            } else {
+                frappe.msgprint({
+                    title: "Error",
+                    indicator: "red",
+                    message: response.exc || "An unknown error occurred while sending the email.",
+                });
+            }
+        },
+        error: function (error) {
+            frappe.msgprint({
+                title: "Error",
+                indicator: "red",
+                message: error.message || "An unknown error occurred while sending the email.",
+            });
+        },
+    });
+}
+
+
+
+
+
 frappe.ui.form.on("Employee Master", {
     onload(frm) {
         const eligibilityMap = {
@@ -68,31 +101,8 @@ function updateEmailButton(frm) {
                 frappe.msgprint("Email address is not set for this employee.");
                 return;
             }
-        frappe.call({
-            method: "alms_app.master.doctype.employee_master.employee_master.send_email",
-            args: {
-                name: frm.doc.name,
-            },
-            callback: function (response) {
-                if (!response.exc) {
-                    frappe.msgprint("Email sent successfully!");
-                    frm.reload_doc();
-                } else {
-                    frappe.msgprint({
-                        title: "Error",
-                        indicator: "red",
-                        message: response.exc || "An unknown error occurred while sending the email.",
-                    });
-                }
-            },
-            error: function (error) {
-                frappe.msgprint({
-                    title: "Error",
-                    indicator: "red",
-                    message: error.message || "An unknown error occurred while sending the email.",
-                });
-            },
-        });
+            frm.set_value("status", "Sent");
+            send_email(frm,"To Employee")
     })
     .css({
         "background-color": "#afd1f5",

@@ -5,6 +5,10 @@ app_description = "Assest Lease Management System"
 app_email = "rishi.hingad@merillife.com"
 app_license = "mit"
 
+
+
+on_session_creation  = "alms_app.api.session_manager.add_custom_session_data"
+
 # Apps
 # ------------------
 
