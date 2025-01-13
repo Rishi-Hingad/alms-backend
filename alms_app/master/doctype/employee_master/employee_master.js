@@ -10,7 +10,7 @@ function send_email(frm,email_send_to){
         },
         callback: function (response) {
             if (!response.exc) {
-                frappe.msgprint("Email sent successfully!");
+                // frappe.msgprint("Email sent successfully!");
             } else {
                 frappe.msgprint({
                     title: "Error",

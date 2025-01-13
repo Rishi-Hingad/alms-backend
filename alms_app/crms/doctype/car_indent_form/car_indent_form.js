@@ -78,13 +78,13 @@ function setupFieldChangeHandlers(frm) {
     frm.fields_dict["reporting_head_approval"].df.onchange = function () {
         const new_value = frm.doc.reporting_head_approval || "No Value";
         alert(`Reporting Head Approval changed to: ${new_value} : ${frm.doc.name}`);
-        // send_email(frappe.web_form,"Reporting To HR")
+        send_email(frm.doc.name,"Reporting To HR")
     };
 
     frm.fields_dict["hr_approval"].df.onchange = function () {
         const new_value = frm.doc.hr_approval || "No Value";
-    alert(`HR Approval changed to: ${new_value}: ${frm.doc.name}`);
-    // send_email(frappe.web_form,"HR To HRHead")
+        alert(`HR Approval changed to: ${new_value}: ${frm.doc.name}`);
+        send_email(frm.doc.name,"HR To HRHead")
     };
 
     frm.fields_dict["hr_head_approval"].df.onchange = function () {
@@ -92,7 +92,7 @@ function setupFieldChangeHandlers(frm) {
         alert(`HR Head Approval changed to: ${new_value}: ${frm.doc.name}`);
         frm.set_value("status", "Approved");
         frm.save_or_update();
-        // send_email(frm.doc.name,"HRHead To PurchaseTeam")
+        send_email(frm.doc.name,"HRHead To PurchaseTeam")
     };
 }
 
@@ -100,13 +100,13 @@ function setupFieldChangeHandlers(frm) {
 
 function toggleFieldStatus(frm) {
     // alert('Hellow',frappe.session.designation)
-    if (frappe.session.designation === "HR") {
+    if (frappe.session.user === "reporting@gmail.com") {
         frm.set_df_property("reporting_head_approval", "read_only", 0);
     }
-    if (frappe.session.designation === "HR Head") {
+    if (frappe.session.user === "hr@gmail.com") {
         frm.set_df_property("hr_approval", "read_only", 0);
     } 
-    if (frappe.session.designation === "Reporting Head") {
+    if (frappe.session.user === "hrhead@gmail.com") {
         frm.set_df_property("hr_head_approval", "read_only", 0);
     } 
 

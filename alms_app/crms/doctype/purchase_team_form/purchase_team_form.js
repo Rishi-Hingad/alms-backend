@@ -71,6 +71,7 @@ function toggleFieldStatus(frm) {
     // if (frappe.session.designation === "Purchase Head") {
     if (frappe.session.user === "purchasehead@gmail.com") {
         frm.set_df_property("status", "read_only", true);
+        frm.set_df_property("purchase_head_status", "read_only", false);
         frm.set_df_property("purchase_team_status", "read_only", true);
         frm.set_df_property("kilometers_per_year", "read_only", true);
         frm.set_df_property("tenure_in_years", "read_only", true);
@@ -83,7 +84,7 @@ function toggleFieldStatus(frm) {
         frm.set_df_property("revised_accessories", "read_only", true);
         frm.set_df_property("revised_financed_amount", "read_only", true);
     }
-    if (frappe.session.user === "purchase@gmail.com") {
+    else if (frappe.session.user === "purchase@gmail.com") {
         frm.set_df_property("purchase_head_status", "read_only", true);
         frm.set_df_property("status", "read_only", true);
     }
