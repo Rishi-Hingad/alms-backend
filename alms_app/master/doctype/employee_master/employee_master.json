@@ -86,8 +86,9 @@
   },
   {
    "fieldname": "reporting_head",
-   "fieldtype": "Data",
-   "label": "Reporting Head"
+   "fieldtype": "Link",
+   "label": "Reporting Head",
+   "options": "User"
   },
   {
    "fieldname": "reporting_head_email_id",
@@ -103,7 +104,7 @@
    "table_fieldname": "Employee Name"
   }
  ],
- "modified": "2024-11-23 18:04:20.090442",
+ "modified": "2025-01-16 10:47:29.374582",
  "modified_by": "Administrator",
  "module": "master",
  "name": "Employee Master",

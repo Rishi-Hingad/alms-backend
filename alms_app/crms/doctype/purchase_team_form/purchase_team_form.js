@@ -47,7 +47,7 @@ function send_email(user,email_send_to){
         },
         callback: function (response) {
             if (!response.exc) {
-                frappe.msgprint("Email sent successfully!");
+                // frappe.msgprint("Email sent successfully!");
             } else {
                 frappe.msgprint({
                     title: "Error",
@@ -122,17 +122,24 @@ frappe.ui.form.on("Purchase Team Form", {
         },
 
         purchase_head_status: function(frm) {
-            const new_value = frm.doc.purchase_head_status || "No Value";
-            frm.set_value("status", frm.doc.purchase_head_status); // Correctly set the "status" field
-            alert(`Purchase Head Approval changed to: ${new_value} : ${frm.doc.name}`);
-            send_email(frm.doc.name,"PurchaseHead To FinanceTeam")
+            if (frm.doc.purchase_head_status === "Approved"){
+                // const new_value = frm.doc.purchase_head_status || "No Value";
+                frm.set_value("status", frm.doc.purchase_head_status); // Correctly set the "status" field
+                // alert(`Purchase Head Approval changed to: ${new_value} : ${frm.doc.name}`);
+                send_email(frm.doc.name,"PurchaseHead To FinanceTeam")
+                frm.save_or_update();
+            }
         },
     
 
         purchase_team_status: function(frm) {
-            const new_value = frm.doc.purchase_team_status || "No Value";
-            alert(`Purchase Team Approval changed to: ${new_value} : ${frm.doc.name}`);
+            alert(frm.doc.purchase_head_status)
+            if (frm.doc.purchase_team_status === "Approved"){
+            // const new_value = frm.doc.purchase_team_status || "No Value";
+            // alert(`Purchase Team Approval changed to: ${new_value} : ${frm.doc.name}`);
             send_email(frm.doc.name,"PurchaseTeam To PurchaseHead")
+            frm.save_or_update();
+            }
         },
 
 

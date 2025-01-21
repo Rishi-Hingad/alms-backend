@@ -9,6 +9,7 @@
  "field_order": [
   "car_indent_form_section",
   "employee_code",
+  "employee_reporting",
   "company_name",
   "department",
   "designation",
@@ -182,6 +183,13 @@
    "fieldtype": "Select",
    "label": "Status",
    "options": "Approved\nRejected\nPending"
+  },
+  {
+   "fetch_from": "employee_code.reporting_head",
+   "fieldname": "employee_reporting",
+   "fieldtype": "Data",
+   "label": "Employee Reporting",
+   "read_only": 1
   }
  ],
  "index_web_pages_for_search": 1,
@@ -191,7 +199,7 @@
    "link_fieldname": "employee_name"
   }
  ],
- "modified": "2025-01-11 15:30:23.238306",
+ "modified": "2025-01-16 10:46:54.696711",
  "modified_by": "Administrator",
  "module": "CRMS",
  "name": "Car Indent Form",

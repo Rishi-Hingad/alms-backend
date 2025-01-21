@@ -34,7 +34,255 @@ class EmailServices:
         except Exception as e:
             frappe.throw(f"Failed to send email: {str(e)}")
     
-    def create_email_body(self, subject, content, regards=None, link="http://127.0.0.1:8003/login#login"):
+    def create_email_body(self,form, 
+                          user,
+                          subject, 
+                          content,
+                          updated_by, 
+                          regards=None, 
+                          link="http://127.0.0.1:8003/login#login"):
+        body = f"""
+        <html>
+        <head>
+            <style>
+                body {{ font-family: Arial, sans-serif; margin: 20px; }}
+                h2 {{ color: #4CAF50; }}
+                p {{ font-size: 16px; }}
+                .button {{
+                    background-color: #4CAF50;
+                    color: white;
+                    padding: 10px 20px;
+                    text-align: center;
+                    text-decoration: none;
+                    display: inline-block;
+                    font-size: 16px;
+                    border-radius: 5px;
+                    margin-top: 20px;
+                }}
+               
+            </style>
+        </head>
+        <body>
+            <h2>{subject}</h2>
+            <p>{content}</p>
+            
+            <table border="1" cellpadding="5" cellspacing="0">
+            <thead>
+                <tr>
+                    <th>Field</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Company Name</td>
+                    <td>{user.company}</td>
+                </tr>
+                <tr>
+                    <td>Requestor Name</td>
+                    <td>{user.employee_name}</td>
+                </tr>
+                <tr>
+                    <td>Designation</td>
+                    <td>{user.designation}</td>
+                </tr>
+                <tr>
+                    <td>Vehicle Make & Model</td>
+                    <td>{form.make} - {form.model}</td>
+                </tr>
+                <tr>
+                    <td>Eligibility</td>
+                    <td>{user.eligibility}</td>
+                </tr>
+                <tr>
+                    <td>Net Ex-Showroom Price</td>
+                    <td>{form.net_ex_showroom_price}</td>
+                </tr>
+                <tr>
+                    <td>Activity</td>
+                    <td>Employee Vehicle Delivery </td>
+                </tr>
+                
+                <tr>
+                    <td>Updated by</td>
+                    <td>{updated_by}</td>
+                </tr>
+                
+            </tbody>
+        </table>
+        
+        
+            <p>
+                <a href="{link}" class="button"> Login Here </a>
+            </p>
+                
+                
+            <p>Best regards,</p>
+            <p>{regards}</p>
+        </body>
+        </html>
+        """
+        return body
+    
+    
+    
+    def create_email_body_revised(self,
+                                form, 
+                                revised_form, 
+                                user,
+                                subject, 
+                                content,
+                                updated_by, 
+                                regards=None, 
+                                link="http://127.0.0.1:8003/login#login"):
+        body = f"""
+        <html>
+        <head>
+            <style>
+                body {{ font-family: Arial, sans-serif; margin: 20px; }}
+                h2 {{ color: #4CAF50; }}
+                p {{ font-size: 16px; }}
+                .button {{
+                    background-color: #4CAF50;
+                    color: white;
+                    padding: 10px 20px;
+                    text-align: center;
+                    text-decoration: none;
+                    display: inline-block;
+                    font-size: 16px;
+                    border-radius: 5px;
+                    margin-top: 20px;
+                }}
+               
+            </style>
+        </head>
+        <body>
+            <h2>{subject}</h2>
+            <p>{content}</p>     
+            <table border="1" cellpadding="5" cellspacing="0">
+            <thead>
+                <tr>
+                    <th>Field</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Company Name</td>
+                    <td>{user.company}</td>
+                </tr>
+                <tr>
+                    <td>Requestor Name</td>
+                    <td>{user.employee_name}</td>
+                </tr>
+                <tr>
+                    <td>Designation</td>
+                    <td>{user.designation}</td>
+                </tr>
+                <tr>
+                    <td>Vehicle Make & Model</td>
+                    <td>{form.make} - {form.model}</td>
+                </tr>
+                <tr>
+                    <td>Eligibility</td>
+                    <td>{user.eligibility}</td>
+                </tr>
+                <tr>
+                    <td>Net Ex-Showroom Price</td>
+                    <td>{form.net_ex_showroom_price}</td>
+                </tr>
+                <tr>
+                    <td>Revised Net Ex-Showroom Price</td>
+                    <td>{revised_form.revised_net_ex_showroom_price}</td>
+                </tr>
+                <tr>
+                    <td>Activity</td>
+                    <td>Employee Vehicle Delivery </td>
+                </tr>
+                
+                <tr>
+                    <td>Updated by</td>
+                    <td>{updated_by}</td>
+                </tr>
+                
+            </tbody>
+        </table>
+        
+        
+            <p>
+                <a href="{link}" class="button"> Login Here </a>
+            </p>
+                
+                
+            <p>Best regards,</p>
+            <p>{regards}</p>
+        </body>
+        </html>
+        """
+        return body
+    
+    
+    def create_email_body_for_emp(self,user):
+        body = f"""
+        <html>
+            <head>
+                <style>
+                    body {{
+                        font-family: Arial, sans-serif;
+                        line-height: 1.6;
+                        margin: 20px;
+                        color: #333;
+                    }}
+                    h2 {{
+                        color: #4CAF50;
+                    }}
+                    p {{
+                        font-size: 16px;
+                    }}
+                    a {{
+                        color: #007BFF;
+                        text-decoration: none;
+                    }}
+                    a:hover {{
+                        text-decoration: underline;
+                    }}
+                    .button {{
+                        background-color: #4CAF50;
+                        color: white;
+                        padding: 10px 20px;
+                        text-align: center;
+                        text-decoration: none;
+                        display: inline-block;
+                        font-size: 16px;
+                        border-radius: 5px;
+                        margin-top: 20px;
+                    }}
+                </style>
+            </head>
+            <body>
+                <p>Dear {user.employee_name},</p>
+                <p>Congratulations ! </p>
+                <p>We are pleased to inform you that you will be eligible for Company vehicle instead of Car Allowance. </p>
+                <p>Please click on below link and fill the necessary details.</p>
+                <p>
+                    <a href="http://127.0.0.1:8003/car-indent-form/new?employee_code={user.name}" 
+                    class="button">
+                    Fill Car Rental Service Form
+                    </a>
+                </p>
+                <p>You will make the best use of the opportunity offered to you and contribute substantially to 
+                        the success of both yourself and the Organization. </p>
+                <p>Wishing you all the best.  </p>
+                <p>Sincerely,
+                <br>Team HR 
+                </p>
+            </body>
+            </html>
+        """
+        return body
+
+
+    def create_reporting_email(self, subject, content, regards=None,link=None ):
         body = f"""
         <html>
         <head>
@@ -60,53 +308,67 @@ class EmailServices:
             <h2>{subject}</h2>
             <p>{content}</p>
               
-            {f'<a href="{link}" class="button">Click Here</a>' if link else ''}
+            {f'<a href="{link}" class="button">Click Here For Approve</a>' if link else ''}
             <p>Best regards,</p>
             <p>{regards}</p>
         </body>
         </html>
         """
         return body
-
-
+    
+    
     def for_hr_team_to_employee(self, user):
-        link = f"http://127.0.0.1:8003/car-indent-form/new?employee_code={user.name}"
         recipient_email = "jaykumar.patel@merillife.com"
         subject = "You are Eligible for the Car Rental Service"
-        regards = "HR Team"
-        content = f"Dear {user.employee_name},<br><br>We are pleased to inform you that you are eligible for the Car Rental Service.<br><br>Please click on the link below to access the car rental form and complete the process:<br><br>"
+        body = self.create_email_body_for_emp(user)
         
-        body = self.create_email_body(subject, content, regards, link)
         self.send(subject=subject, body=body, recipient_email=recipient_email)
 
 
     def for_employee_to_reporting(self, user):
         recipient_email = "jaykumar.patel@merillife.com"
-        subject = "Car Rental Form Submitted for Your Review"
+        subject =f"Car Rental Form for Submitted by {user.employee_name} for Your Review"
         regards = f"{user.employee_name} (Employee)"
-        content = f"Dear Reporting Manager,<br><br>We are pleased to inform you that {user.employee_name} has submitted the car rental form for your review.<br><br>Kindly check and take necessary action at your earliest convenience.<br><br>"
-        
-        body = self.create_email_body(subject, content, regards)
+        content = f"""
+        Dear Reporting Manager,
+        <br><br>
+        We are pleased to inform you that {user.employee_name} has submitted the car rental form for your review.
+        <br><br>Kindly check and take necessary action at your earliest convenience.<br><br>
+        """
+        link = f"http://127.0.0.1:8003/api/method/alms_app.api.emailsService.approve_car_indent_by_reporting?indent_form={user.name}"
+        body = self.create_reporting_email(subject, content, regards,link)
         self.send(subject=subject, body=body, recipient_email=recipient_email)
 
-
+    
     def for_reporting_to_hr_team(self, user):
         recipient_email = "jaykumar.patel@merillife.com"
         subject = "Car Rental Form Approved by Reporting Manager"
         regards = f"{user.reporting_head} (Reporting Manager)"
-        content = f"Dear HR Team,<br><br>This is to notify you that the car rental form submitted by {user.employee_name} has been approved by the Reporting Manager.<br><br>It now requires your approval.<br><br>"
-        
-        body = self.create_email_body(subject, content, regards)
+        content = f"""
+        Dear HR Team,
+        <br><br>
+        This is to notify you that the car rental form submitted by {user.employee_name} has been approved by the Reporting Manager.<br>
+        """
+        updated_by = user.reporting_head
+        form = frappe.get_doc("Car Indent Form",user.name)
+        body = self.create_email_body(form,user,subject, content,updated_by,regards)
         self.send(subject=subject, body=body, recipient_email=recipient_email)
 
 
     def for_hr_team_to_hr_head(self, user):
+        pass
         recipient_email = "jaykumar.patel@merillife.com"
         subject = "Car Rental Form Approved by HR Team"
         regards = "HR Team"
-        content = f"Dear HR Head,<br><br>The HR team has reviewed and approved the car rental form submitted by {user.employee_name}. We now seek your approval to proceed further.<br><br>"
-        
-        body = self.create_email_body(subject, content, regards)
+        updated_by = "Mrs. Ami Rughani"
+        form = frappe.get_doc("Car Indent Form",user.name)
+        content = f"""
+        Dear HR Head,
+        <br><br>The HR team has reviewed and approved the car rental form submitted by {user.employee_name}.
+        <br>
+        {updated_by} have sent the form for the activity mentioned below:
+        """
+        body = self.create_email_body(form,user,subject, content,updated_by,regards)
         self.send(subject=subject, body=body, recipient_email=recipient_email)
 
 
@@ -114,19 +376,32 @@ class EmailServices:
         recipient_email = "jaykumar.patel@merillife.com"
         subject = "Car Rental Form Approved by HR Head"
         regards = "HR Head"
-        content = f"Dear Purchase Team,<br><br>The HR Head has approved the car rental form submitted by {user.employee_name}. Kindly review and provide your approval.<br><br>"
-        
-        body = self.create_email_body(subject, content, regards)
+        updated_by = "Mr. Hemchandra Panjikar"
+        form = frappe.get_doc("Car Indent Form",user.name)
+        content = f"""
+        Dear Purchase Team,
+        <br><br>
+        The HR Head has approved the car rental form submitted by {user.employee_name}.
+        <br>
+        {updated_by} have approved the request for the activity mentioned below:
+        """
+        body = self.create_email_body(form,user,subject, content,updated_by,regards)
         self.send(subject=subject, body=body, recipient_email=recipient_email)
 
-
+# Done here 
     def for_purchase_team_to_purchase_head(self, user):
         recipient_email = "jaykumar.patel@merillife.com"
         subject = "Car Rental Form Approved by Purchase Team"
         regards = "Purchase Team"
-        content = f"Dear Purchase Head,<br><br>The Purchase Team has reviewed and approved the car rental form form submitted by {user.employee_name}. It now requires your final approval to proceed further.<br><br>"
-        
-        body = self.create_email_body(subject, content, regards)
+        updated_by = "Mr. Tarun Patel"
+        form = frappe.get_doc("Car Indent Form",user.name)
+        revised_form = frappe.get_doc("Purchase Team Form",user.name)
+        content = f"""
+        Dear Purchase Head,
+        <br><br>The Purchase Team has reviewed and approved the car rental form form submitted by {user.employee_name}.
+        <br>{updated_by} have updated the quotation for the activity mentioned below:
+        """
+        body = self.create_email_body_revised(form,revised_form,user,subject, content,updated_by,regards)
         self.send(subject=subject, body=body, recipient_email=recipient_email)
 
 
@@ -134,9 +409,15 @@ class EmailServices:
         recipient_email = "jaykumar.patel@merillife.com"
         subject = "Car Rental Form Approved by Purchase Head"
         regards = "Purchase Head"
-        content = f"Dear Finance Team,<br><br>The Purchase Head has approved the car rental form for {user.employee_name}. Please review and process it further.<br><br>"
-        
-        body = self.create_email_body(subject, content, regards)
+        form = frappe.get_doc("Car Indent Form",user.name)
+        revised_form = frappe.get_doc("Purchase Team Form",user.name)
+        updated_by = "Mr. Sumesh Nair"
+        content = f"""
+        Dear Finance Team,
+        <br><br>The Purchase Head has approved the car rental form for {user.employee_name}.
+        <br>{updated_by} have approved the request for the activity mentioned below:
+        """
+        body = self.create_email_body_revised(form,revised_form,user,subject, content,updated_by,regards)
         self.send(subject=subject, body=body, recipient_email=recipient_email)
 
 

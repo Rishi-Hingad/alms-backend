@@ -102,7 +102,9 @@ function updateEmailButton(frm) {
                 return;
             }
             frm.set_value("status", "Sent");
+
             send_email(frm,"To Employee")
+            frm.save_or_update();
     })
     .css({
         "background-color": "#afd1f5",

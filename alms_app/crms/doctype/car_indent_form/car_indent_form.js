@@ -1,5 +1,6 @@
 
 
+
 function send_email(user,email_send_to){
     frappe.call({
         method: "alms_app.api.emailsService.email_sender",
@@ -9,7 +10,7 @@ function send_email(user,email_send_to){
         },
         callback: function (response) {
             if (!response.exc) {
-                frappe.msgprint("Email sent successfully!");
+                // frappe.msgprint("Email sent successfully!");
             } else {
                 frappe.msgprint({
                     title: "Error",
@@ -75,24 +76,29 @@ function updateStatus(frm) {
 
 function setupFieldChangeHandlers(frm) {
 
-    frm.fields_dict["reporting_head_approval"].df.onchange = function () {
-        const new_value = frm.doc.reporting_head_approval || "No Value";
-        alert(`Reporting Head Approval changed to: ${new_value} : ${frm.doc.name}`);
-        send_email(frm.doc.name,"Reporting To HR")
-    };
+    // frm.fields_dict["reporting_head_approval"].df.onchange = function () {
+    //     const new_value = frm.doc.reporting_head_approval || "No Value";
+    //     // alert(`Reporting Head Approval changed to: ${new_value} : ${frm.doc.name}`);
+    //     if (frm.doc.reporting_head_approval =="Approved"){
+    //         alert(frm.doc.reporting_head_approval)
+    //         // send_email(frm.doc.name,"Reporting To HR")
+    //         frm.save_or_update();
+    //     }
+    // };
 
     frm.fields_dict["hr_approval"].df.onchange = function () {
-        const new_value = frm.doc.hr_approval || "No Value";
-        alert(`HR Approval changed to: ${new_value}: ${frm.doc.name}`);
-        send_email(frm.doc.name,"HR To HRHead")
+        if (frm.doc.hr_approval =="Approved"){
+            send_email(frm.doc.name,"HR To HRHead")
+            frm.save_or_update();
+        }
     };
 
     frm.fields_dict["hr_head_approval"].df.onchange = function () {
-        const new_value = frm.doc.hr_head_approval || "No Value";
-        alert(`HR Head Approval changed to: ${new_value}: ${frm.doc.name}`);
         frm.set_value("status", "Approved");
-        frm.save_or_update();
-        send_email(frm.doc.name,"HRHead To PurchaseTeam")
+        if (frm.doc.hr_head_approval =="Approved"){
+            send_email(frm.doc.name,"HRHead To PurchaseTeam")
+            frm.save_or_update();
+        }
     };
 }
 

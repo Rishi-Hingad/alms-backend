@@ -1,6 +1,6 @@
 {
  "charts": [],
- "content": "[{\"id\":\"Z4i1yNU9Ol\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Reporting Head Dashboard</span>\",\"col\":12}},{\"id\":\"5ut7IPRENL\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Employees Under You\",\"col\":4}}]",
+ "content": "[{\"id\":\"Z4i1yNU9Ol\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Reporting Head Dashboard</span>\",\"col\":12}},{\"id\":\"5ut7IPRENL\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Employees Under You\",\"col\":4}},{\"id\":\"NO7EutAUNN\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\"><b>Car Indent Form User List</b></span>\",\"col\":12}},{\"id\":\"CB38xzaYW_\",\"type\":\"quick_list\",\"data\":{\"quick_list_name\":\"User\",\"col\":12}}]",
  "creation": "2024-11-23 18:17:36.089384",
  "custom_blocks": [],
  "docstatus": 0,
@@ -13,7 +13,7 @@
  "is_hidden": 0,
  "label": "Reporting Head Dashboard",
  "links": [],
- "modified": "2024-11-25 16:18:34.456025",
+ "modified": "2025-01-16 10:44:22.291449",
  "modified_by": "Administrator",
  "module": "CRMS",
  "name": "Reporting Head Dashboard",
@@ -26,7 +26,13 @@
  "owner": "Administrator",
  "parent_page": "",
  "public": 1,
- "quick_lists": [],
+ "quick_lists": [
+  {
+   "document_type": "Car Indent Form",
+   "label": "User",
+   "quick_list_filter": "[]"
+  }
+ ],
  "roles": [
   {
    "role": "Reporting Head"
