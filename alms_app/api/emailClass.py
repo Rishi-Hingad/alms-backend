@@ -34,6 +34,9 @@ class EmailServices:
         except Exception as e:
             frappe.throw(f"Failed to send email: {str(e)}")
     
+    
+    
+    # "-------------------------------------" EMAIL BODY "-------------------------------------"
     def create_email_body(self,form, 
                           user,
                           subject, 
@@ -123,7 +126,6 @@ class EmailServices:
         </html>
         """
         return body
-    
     
     
     def create_email_body_revised(self,
@@ -317,6 +319,9 @@ class EmailServices:
         return body
     
     
+ 
+    # "-------------------------------------" EMAIL SEND TO "-------------------------------------"
+    
     def for_hr_team_to_employee(self, user):
         recipient_email = "jaykumar.patel@merillife.com"
         subject = "You are Eligible for the Car Rental Service"
@@ -388,7 +393,7 @@ class EmailServices:
         body = self.create_email_body(form,user,subject, content,updated_by,regards)
         self.send(subject=subject, body=body, recipient_email=recipient_email)
 
-# Done here 
+ 
     def for_purchase_team_to_purchase_head(self, user):
         recipient_email = "jaykumar.patel@merillife.com"
         subject = "Car Rental Form Approved by Purchase Team"
@@ -404,7 +409,7 @@ class EmailServices:
         body = self.create_email_body_revised(form,revised_form,user,subject, content,updated_by,regards)
         self.send(subject=subject, body=body, recipient_email=recipient_email)
 
-
+# Done here
     def for_purchase_head_to_finance_team(self, user):
         recipient_email = "jaykumar.patel@merillife.com"
         subject = "Car Rental Form Approved by Purchase Head"
@@ -424,10 +429,16 @@ class EmailServices:
     def for_finance_team_to_finance_head(self, user):
         recipient_email = "jaykumar.patel@merillife.com"
         subject = "Car Rental Form Approved by Finance Team"
-        regards = "Finance Team"
-        content = f"Dear Finance Head,<br><br>The Finance Team has reviewed and approved the car rental form submitted by {user.employee_name}. Your final approval is required to proceed with the process.<br><br>"
-        
-        body = self.create_email_body(subject, content, regards)
+        regards ="Finance Team"
+        form = frappe.get_doc("Car Indent Form",user.name)
+        revised_form = frappe.get_doc("Purchase Team Form",user.name)
+        updated_by = "Mr. Sumesh Nair"
+        content = f"""
+        Dear Finance Team,
+        <br><br>The Finance Team has approved the car rental form for {user.employee_name}.
+        <br>{updated_by} have approved the request for the activity mentioned below:
+        """
+        body = self.create_email_body_revised(form,revised_form,user,subject, content,updated_by,regards)
         self.send(subject=subject, body=body, recipient_email=recipient_email)
 
 
@@ -440,3 +451,124 @@ class EmailServices:
         body = self.create_email_body(subject, content, regards)
         self.send(subject=subject, body=body, recipient_email=recipient_email)
 
+
+    # "-------------------------------------" EMAIL BODY FOR VENDOR "-------------------------------------"
+    
+    def create_vendor_email_for_car_quotation(self,compny_name,user,form,link):
+        body = f"""
+            <html>
+            <head>
+                <style>
+                    body {{
+                        font-family: Arial, sans-serif;
+                        margin: 20px;
+                    }}
+                    h2 {{
+                        color: #4CAF50;
+                    }}
+                    p {{
+                        font-size: 16px;
+                    }}
+                    .button {{
+                        background-color: #4CAF50;
+                        color: white;
+                        padding: 10px 20px;
+                        text-align: center;
+                        text-decoration: none;
+                        display: inline-block;
+                        font-size: 16px;
+                        border-radius: 5px;
+                        margin-top: 20px;
+                    }}
+                    .company-name {{
+                        color: blue;
+                        font-size: 24px;
+                        font-weight: bold;
+                    }}
+                    .contact-info {{
+                        font-size: 14px;
+                        color: grey;
+                        margin-top: 20px;
+                    }}
+                    table {{
+                        border-collapse: collapse;
+                        width: 100%;
+                    }}
+                    th, td {{
+                        padding: 8px;
+                        border: 1px solid #ddd;
+                        text-align: left;
+                    }}
+                </style>
+            </head>
+            <body>
+
+                <p class="company-name">Meril</p>
+
+                <h2>{compny_name} - Car Quotation Form</h2>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Field</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Car Quotation For</td>
+                            <td>{user.employee_name}</td>
+                        </tr>
+                        <tr>
+                            <td>Vehicle Make & Model</td>
+                            <td>{form.make} - {form.model}</td>
+                        </tr>
+                        <tr>
+                            <td>Vehicle Engine</td>
+                            <td>{form.engine}</td>
+                        </tr>
+                        <tr>
+                            <td>Vehicle Colour</td>
+                            <td>{form.colour}</td>
+                        </tr>
+                            
+                    </tbody>
+                </table>
+
+                <p>
+                    <a href="{link}" class="button">Fill Quotation Form</a>
+                </p>
+
+                <p class="contact-info">
+                    For assistance, please contact:<br>
+                    Email: support@meril.com<br>
+                    Phone: +91 123 456 7890
+                </p>
+
+                <p>Thank you for your time and cooperation!</p>
+
+            </body>
+            </html>
+                            
+        
+        """
+        
+        return body
+    
+    
+    
+    def for_car_quotation_ALD_EasyAssets_Xyz(self,user):
+        data = [
+            {
+            "name":"Easy Assets",
+            "email":"jaykumar.patel@merillife.com"
+            }  
+            ]
+        form = frappe.get_doc("Car Indent Form",user.name)
+        for i in data:
+            link = f"http://127.0.0.1:8003/vendor-assets-quotation/new?finance_company={i.get('name')}&employee_details={user.name}"
+            body = self.create_vendor_email_for_car_quotation(i.get('name'),user,form,link)
+            subject = f"Car Quotation"
+            self.send(subject=subject, body=body, recipient_email=i.get('email'))
+            
+        

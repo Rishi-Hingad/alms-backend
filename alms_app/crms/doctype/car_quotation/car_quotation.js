@@ -60,6 +60,9 @@ function setValuesInField(frm,data){
 
 
 }
+
+
+
 function send_email(user,email_send_to){
     frappe.call({
         method: "alms_app.api.emailsService.email_sender",
@@ -69,7 +72,7 @@ function send_email(user,email_send_to){
         },
         callback: function (response) {
             if (!response.exc) {
-                frappe.msgprint("Email sent successfully!");
+                // frappe.msgprint("Email sent successfully!");
             } else {
                 frappe.msgprint({
                     title: "Error",
@@ -128,35 +131,25 @@ function updateStatus(frm) {
 }
 
 function toggleFieldStatus(frm) {
+
     Object.keys(frm.fields_dict).forEach(function(fieldname) {
-        if (frappe.session.user === "financehead@gmail.com") {
-            if (fieldname !== "finance_head_status") {
-                frm.set_df_property(fieldname, "read_only", 1);
-            } else {
-                frm.set_df_property(fieldname, "read_only", 0);
-            }
-        } else if (frappe.session.user === "finance@gmail.com") {
-            if (fieldname === "status" || fieldname === "finance_head_status") {
-                frm.set_df_property(fieldname, "read_only", 1);
-            } else {
-                // frm.set_df_property(fieldname, "read_only", 0);
-            }
+        if (frappe.session.user === "financehead@gmail.com" && fieldname === "finance_head_status") {
+             frm.set_df_property(fieldname, "read_only", 0);
+        } else if (frappe.session.user === "finance@gmail.com" && fieldname === "finance_team_status") {
+            frm.set_df_property(fieldname, "read_only", 0);
         } else {
-            // Default for other users, make everything read-only
-            // frm.set_df_property(fieldname, "read_only", 1);
+            frm.set_df_property(fieldname, "read_only", 1);
         }
     });
 }
-
-
 
 frappe.ui.form.on('Car Quotation', {
     refresh: function (frm) {
         frm.set_df_property("status", "read_only", true);
         frm.set_df_property('status', 'read_only', 1);
-        uploadfile(frm);
         updateStatus(frm);
         toggleFieldStatus(frm);
+        uploadfile(frm);
 
 
     },
@@ -164,19 +157,22 @@ frappe.ui.form.on('Car Quotation', {
         frm.set_df_property("status", "read_only", true);
         updateStatus(frm);
         toggleFieldStatus(frm);
+        uploadfile(frm);
 
     },
     finance_head_status: function(frm) {
-        const new_value = frm.doc.finance_head_status || "No Value";
-        frm.set_value("status", frm.doc.finance_head_status); // Correctly set the "status" field
-        alert(`Finance Head Approval changed to: ${new_value} : ${frm.doc.name}`);
+        // const new_value = frm.doc.finance_head_status || "No Value";
+        // frm.set_value("status", frm.doc.finance_head_status); // Correctly set the "status" field
+        // alert(`Finance Head Approval changed to: ${new_value} : ${frm.doc.name}`);
         send_email(frm.doc.employee_details,"FinanceHead To AccountsTeam")
+        frm.save_or_update();
     },
 
 
     finance_team_status: function(frm) {
-        const new_value = frm.doc.finance_team_status || "No Value";
-        alert(`Finance Team Approval changed to: ${new_value} : ${frm.doc.name}`);
+        // const new_value = frm.doc.finance_team_status || "No Value";
+        // alert(`Finance Team Approval changed to: ${new_value} : ${frm.doc.name}`);
         send_email(frm.doc.employee_details,"FinanceTeam To FinanceHead")
+        frm.save_or_update();
     },
 });

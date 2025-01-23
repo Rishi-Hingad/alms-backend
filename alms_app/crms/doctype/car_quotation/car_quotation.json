@@ -210,11 +210,10 @@
    "label": "Total EMI"
   },
   {
-   "default": "Pending",
    "fieldname": "finance_team_status",
    "fieldtype": "Select",
    "label": "Finance Team Status",
-   "options": "Pending\nApproved\nRejected"
+   "options": "-Select-\nPending\nApproved\nRejected"
   },
   {
    "default": "Pending",
@@ -233,7 +232,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-01-13 12:15:20.701982",
+ "modified": "2025-01-22 12:37:10.579434",
  "modified_by": "Administrator",
  "module": "CRMS",
  "name": "Car Quotation",

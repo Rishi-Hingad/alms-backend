@@ -32,7 +32,8 @@ def email_sender(name, email_send_to=None):
             EMail.for_purchase_team_to_purchase_head(user) 
             
         elif email_send_to =="PurchaseHead To FinanceTeam":
-            EMail.for_purchase_head_to_finance_team(user) 
+            # EMail.for_purchase_head_to_finance_team(user) 
+            EMail.for_car_quotation_ALD_EasyAssets_Xyz(user)
         
         elif email_send_to =="FinanceTeam To FinanceHead":
             EMail.for_finance_team_to_finance_head(user) 
