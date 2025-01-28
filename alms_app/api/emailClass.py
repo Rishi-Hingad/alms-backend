@@ -24,18 +24,78 @@ class EmailServices:
                 server.starttls()
                 server.login(self.smtp_user, self.smtp_password)
                 response = server.send_message(msg)
-                print(response)
-
+                
+            print("-----------[EMAIL RESPONSE]-------------",response)
             frappe.msgprint(f"Email sent successfully to {recipient_email}.")
 
         except smtplib.SMTPException as smtp_error:
+            print("-----------[EMAIL ERROR]-------------",smtp_error)
             frappe.throw(f"SMTP error occurred: {smtp_error}")
 
         except Exception as e:
+            print("-----------[EMAIL ERROR]-------------",str(e))
             frappe.throw(f"Failed to send email: {str(e)}")
     
+    # "-------------------------------------" User Acknowledgement Email "-------------------------------------"
     
-    
+    def acknowledgement_email(self, user, statusFrom, statusTo):
+        recipient_email = "jaykumar.patel@merillife.com"
+        subject = "Acknowledgement of Car Allocation Request"
+        body = f"""
+        <html>
+        <head>
+            <style>
+                body {{
+                    font-family: Arial, sans-serif;
+                    margin: 20px;
+                    line-height: 1.6;
+                }}
+                h2 {{
+                    color: #4CAF50;
+                    text-align: center;
+                }}
+                p {{
+                    font-size: 16px;
+                    margin-bottom: 20px;
+                }}
+                .content {{
+                    border: 1px solid #dddddd;
+                    border-radius: 8px;
+                    padding: 20px;
+                    background-color: #f9f9f9;
+                }}
+                .footer {{
+                    margin-top: 30px;
+                    font-size: 14px;
+                    color: #555;
+                }}
+            </style>
+        </head>
+        <body>
+            <h2>Acknowledgement of Car Allocation Request</h2>
+            <div class="content">
+                <p>Dear {user.employee_name},</p>
+                <p>
+                    We are pleased to inform you that your car allocation request has been approved by <strong>{statusFrom}</strong>.
+                    The request is now being reviewed by <strong>{statusTo}</strong>. We will notify you once the next step is completed.
+                </p>
+                <p>
+                    We will keep you informed as your request progresses through each stage. 
+                    If you have any questions, feel free to reach out to us.
+                </p>
+                <p>Best regards,</p>
+                <p><strong>[Your Company Name]</strong></p>
+            </div>
+            <div class="footer">
+                <p>This is an automated email. Please do not reply to this email.</p>
+            </div>
+        </body>
+        </html>
+        """
+
+        self.send(subject=subject, body=body, recipient_email=recipient_email)
+        return body
+
     # "-------------------------------------" EMAIL BODY "-------------------------------------"
     def create_email_body(self,form, 
                           user,
@@ -319,7 +379,6 @@ class EmailServices:
         return body
     
     
- 
     # "-------------------------------------" EMAIL SEND TO "-------------------------------------"
     
     def for_hr_team_to_employee(self, user):
@@ -434,7 +493,7 @@ class EmailServices:
         revised_form = frappe.get_doc("Purchase Team Form",user.name)
         updated_by = "Mr. Sumesh Nair"
         content = f"""
-        Dear Finance Team,
+        Dear Finance Head,
         <br><br>The Finance Team has approved the car rental form for {user.employee_name}.
         <br>{updated_by} have approved the request for the activity mentioned below:
         """
@@ -446,11 +505,19 @@ class EmailServices:
         recipient_email = "jaykumar.patel@merillife.com"
         subject = "Car Rental Form Final Approval"
         regards = "Finance Head"
-        content = f"Dear Accounts Team,<br><br>The car rental form submitted by {user.employee_name} has been approved at all levels and is now ready for processing. Kindly proceed with the final steps.<br><br>"
-        
-        body = self.create_email_body(subject, content, regards)
+        updated_by = "Mr. Hemchandra Panjikar"
+        form = frappe.get_doc("Car Indent Form",user.name)
+        content = f"""
+        Dear Accounts Teams,
+        <br><br>
+        The car rental form submitted by {user.employee_name} has been approved at all levels and is now ready for processing.
+        Kindly proceed with the final steps.
+        <br>
+        {updated_by} have approved the request for the activity mentioned below:
+        """
+        body = self.create_email_body(form,user,subject, content,updated_by,regards)
         self.send(subject=subject, body=body, recipient_email=recipient_email)
-
+        
 
     # "-------------------------------------" EMAIL BODY FOR VENDOR "-------------------------------------"
     
@@ -564,11 +631,24 @@ class EmailServices:
             "email":"jaykumar.patel@merillife.com"
             }  
             ]
-        form = frappe.get_doc("Car Indent Form",user.name)
+        car_indent_form = frappe.get_doc("Car Indent Form",user.name)  
+        car_purchase_form = frappe.get_doc("Purchase Team Form",user.name)  
         for i in data:
-            link = f"http://127.0.0.1:8003/vendor-assets-quotation/new?finance_company={i.get('name')}&employee_details={user.name}"
-            body = self.create_vendor_email_for_car_quotation(i.get('name'),user,form,link)
+            link = (
+                    f"http://127.0.0.1:8003/vendor-assets-quotation/new?"
+                    f"finance_company={i.get('name')}&"
+                    f"employee_details={user.name}&"
+                    f"location={car_indent_form.location}&"
+                    f"kms={car_purchase_form.kilometers_per_year}&"
+                    f"variant={car_indent_form.model}&"
+                    f"accessory={car_purchase_form.revised_accessories}&"
+                    f"discount_excluding_gst={car_purchase_form.revised_discount}&"
+                    f"registration_charges={car_purchase_form.revised_registration_charges}&"
+                    f"financed_amount={car_purchase_form.revised_financed_amount}"
+                )
+            body = self.create_vendor_email_for_car_quotation(i.get('name'),user,car_indent_form,link)
             subject = f"Car Quotation"
+            print("----------[SEND]-----------to",i.get('name'))
             self.send(subject=subject, body=body, recipient_email=i.get('email'))
             
         

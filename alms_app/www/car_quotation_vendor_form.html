@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>File Upload to Frappe</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            padding: 20px;
+        }
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #007bff;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 5px;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        .form-submit {
+            background-color: #007bff;
+            color: #fff;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            display: block;
+            margin: 20px auto;
+            text-align: center;
+        }
+        .form-submit:hover {
+            background-color: #0056b3;
+        }
+        #responseMessage {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Frappe File Upload</h1>
+        <form id="uploadForm">
+            <div class="form-group">
+                <label for="file">Select File:</label>
+                <input type="file" id="file" name="file" required>
+            </div>
+            <button type="submit" class="form-submit">Upload</button>
+        </form>
+        <div id="responseMessage"></div>
+    </div>
+
+    <script>
+        document.getElementById('uploadForm').addEventListener('submit', async function (event) {
+            event.preventDefault(); // Prevent form from submitting normally
+
+            const fileInput = document.getElementById('file');
+            const responseMessage = document.getElementById('responseMessage');
+
+            // Check if a file is selected
+            if (!fileInput.files.length) {
+                responseMessage.textContent = "Please select a file.";
+                responseMessage.style.color = "red";
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('file', fileInput.files[0]);
+
+            try {
+                // POST request to upload file
+                const uploadResponse = await fetch('/api/method/upload_file', {
+                    method: 'POST',
+                    body: formData,
+                });
+
+                if (uploadResponse.ok) {
+                    const uploadResult = await uploadResponse.json();
+                    const filePath = uploadResult.file_path; // Assuming the API returns a 'file_path' field
+                    responseMessage.textContent = `File uploaded successfully! File Path: ${filePath}`;
+                    responseMessage.style.color = "green";
+
+                    
+                } else {
+                    const errorResult = await uploadResponse.json();
+                    responseMessage.textContent = `Error: ${errorResult.message || 'File upload failed.'}`;
+                    responseMessage.style.color = "red";
+                }
+            } catch (error) {
+                console.error('Unexpected error:', error);
+                responseMessage.textContent = "An unexpected error occurred.";
+                responseMessage.style.color = "red";
+            }
+        });
+    </script>
+</body>
+</html>

@@ -113,67 +113,84 @@ class CarQuotation(Document):
 
 
 import pandas as pd 
+from frappe.utils.file_manager import save_file
 
-@frappe.whitelist()
-def process_uploaded_file(file_url):
-    if not file_url:
-            frappe.throw("No file attached for upload.")
+@frappe.whitelist(allow_guest=True)
+def process_uploaded_file(file):
+    file = frappe.request.files['file']  # Access the uploaded file
+    file_doc = save_file(file.filename, file.read(), dt=None, dn=None, folder="Home", is_private=0)
+    return {"file_path": file_doc.file_url}
+    # if 'file' not in frappe.request.files:
+    #     frappe.throw("No file uploaded")
+        
+    # uploaded_file = frappe.request.files['file']
+    # file_name = uploaded_file.filename
+    # if not file_name.endswith(('.xls', '.xlsx')):
+    #     frappe.throw("Please upload a valid Excel file (.xls or .xlsx)")
 
-    try:
-        file_doc = frappe.get_doc("File", {"file_url": file_url})
-        file_path = file_doc.get_full_path()
+    # file_path = frappe.utils.get_site_path('private', 'temp', uploaded_file.filename)
+    # with open(file_path, 'wb') as f:
+    #     f.write(uploaded_file.read())
 
-        if file_path.endswith(".xlsx") or file_path.endswith(".xls"):
-            data_frame = pd.read_excel(file_path)
-        elif file_path.endswith(".csv"):
-            data_frame = pd.read_csv(file_path)
-        else:
-            frappe.throw("Unsupported file format. Please upload an Excel or CSV file.")
+    # print("file_path------------------------------ ")
+    # try:
+    #     file_doc = frappe.get_doc("File", {"file_url": file_url})
+    #     file_path = file_doc.get_full_path()
 
-        for index, row in data_frame.iterrows():
-            car_quotation_item = frappe.get_doc({
-                "doctype": "Car Quotation",
-                "finance_company": row.get("finance_company"),
-                "accessory": row.get("accessory"),
-                "gst_and_cess": row.get("gst_and_cess"),
-                "employee_details": row.get("employee_details"),
-                "discount_excluding_gst": row.get("discount_excluding_gst"),
-                "insurance": row.get("insurance"),
-                "location": row.get("location"),
-                "base_price_less_discounts": row.get("base_price_less_discounts"),
-                "fleet_management_repairs_and_tyres": row.get("fleet_management_repairs_and_tyres"),
-                "kms": row.get("kms"),
-                "total_discount": row.get("total_discount"),
-                "24x7_assist": row.get("24x7_assist"),
-                "variant": row.get("variant"),
-                "ex_showroom_amount_net_of_discount": row.get("ex_showroom_amount_net_of_discount"),
-                "pickup_and_drop": row.get("pickup_and_drop"),
-                "quote": row.get("quote"),
-                "registration_charges": row.get("registration_charges"),
-                "interest_rate": row.get("interest_rate"),
-                "residual_value_percent": row.get("residual_value_percent"),
-                "std_relief_car_non_accdt": row.get("std_relief_car_non_accdt"),
-                "tenure": row.get("tenure"),
-                "financed_amount": row.get("financed_amount"),
-                "gst_on_fms": row.get("gst_on_fms"),
-                "base_price_excluding_gst": row.get("base_price_excluding_gst"),
-                "total_emi": row.get("total_emi"),
-                "gst": row.get("gst"),
-                "emi_financing": row.get("emi_financing"),
-                "status": row.get("status"),
-                "ex_showroom_amount": row.get("ex_showroom_amount"),
-                "finance_emi_road_tax": row.get("finance_emi_road_tax"),
-                "finance_hod_status": row.get("finance_hod_status"),
-            })
+    #     if file_path.endswith(".xlsx") or file_path.endswith(".xls"):
+    #         data_frame = pd.read_excel(file_path)
+    #     elif file_path.endswith(".csv"):
+    #         data_frame = pd.read_csv(file_path)
+    #     else:
+    #         frappe.throw("Unsupported file format. Please upload an Excel or CSV file.")
 
-            # car_quotation_item.insert()
+    #     for index, row in data_frame.iterrows():
+    #         car_quotation_item = frappe.get_doc({
+    #             "doctype": "Car Quotation",
+    #             "finance_company": row.get("finance_company"),
+    #             "accessory": row.get("accessory"),
+    #             "gst_and_cess": row.get("gst_and_cess"),
+    #             "employee_details": row.get("employee_details"),
+    #             "discount_excluding_gst": row.get("discount_excluding_gst"),
+    #             "insurance": row.get("insurance"),
+    #             "location": row.get("location"),
+    #             "base_price_less_discounts": row.get("base_price_less_discounts"),
+    #             "fleet_management_repairs_and_tyres": row.get("fleet_management_repairs_and_tyres"),
+    #             "kms": row.get("kms"),
+    #             "total_discount": row.get("total_discount"),
+    #             "24x7_assist": row.get("24x7_assist"),
+    #             "variant": row.get("variant"),
+    #             "ex_showroom_amount_net_of_discount": row.get("ex_showroom_amount_net_of_discount"),
+    #             "pickup_and_drop": row.get("pickup_and_drop"),
+    #             "quote": row.get("quote"),
+    #             "registration_charges": row.get("registration_charges"),
+    #             "interest_rate": row.get("interest_rate"),
+    #             "residual_value_percent": row.get("residual_value_percent"),
+    #             "std_relief_car_non_accdt": row.get("std_relief_car_non_accdt"),
+    #             "tenure": row.get("tenure"),
+    #             "financed_amount": row.get("financed_amount"),
+    #             "gst_on_fms": row.get("gst_on_fms"),
+    #             "base_price_excluding_gst": row.get("base_price_excluding_gst"),
+    #             "total_emi": row.get("total_emi"),
+    #             "gst": row.get("gst"),
+    #             "emi_financing": row.get("emi_financing"),
+    #             "status": row.get("status"),
+    #             "ex_showroom_amount": row.get("ex_showroom_amount"),
+    #             "finance_emi_road_tax": row.get("finance_emi_road_tax"),
+    #             "finance_hod_status": row.get("finance_hod_status"),
+    #         })
 
-        return {"car_quotation_item":car_quotation_item}
-        # frappe.db.commit()
-        # return f"File processed successfully: {file_path}"
+    #         # car_quotation_item.insert()
 
-    except Exception as e:
-        frappe.log_error(frappe.get_traceback(), "File Processing Error")
-        frappe.throw(f"An error occurred while processing the file: {str(e)}")
+    #     print({"car_quotation_item":car_quotation_item})
+    #     # frappe.db.commit()
+    #     # return f"File processed successfully: {file_path}"
+    #     frappe.local.response["type"] = "redirect"
+    #     frappe.local.response["location"] = "/approved"
 
-           
+    # except Exception as e:
+    #     frappe.log_error(frappe.get_traceback(), "File Processing Error")
+    #     frappe.throw(f"An error occurred while processing the file: {str(e)}")
+    #     frappe.local.response["type"] = "redirect"
+    #     frappe.local.response["location"] = "/somethingwrong"
+    # return {"name":"Jay"}
