@@ -39,7 +39,7 @@ class EmailServices:
     # "-------------------------------------" User Acknowledgement Email "-------------------------------------"
     
     def acknowledgement_email(self, user, statusFrom, statusTo):
-        recipient_email = "jaykumar.patel@merillife.com"
+        recipient_email = user.email_id
         subject = "Acknowledgement of Car Allocation Request"
         body = f"""
         <html>
@@ -84,7 +84,7 @@ class EmailServices:
                     If you have any questions, feel free to reach out to us.
                 </p>
                 <p>Best regards,</p>
-                <p><strong>[Your Company Name]</strong></p>
+                <p><strong>Meril</strong></p>
             </div>
             <div class="footer">
                 <p>This is an automated email. Please do not reply to this email.</p>
@@ -382,7 +382,7 @@ class EmailServices:
     # "-------------------------------------" EMAIL SEND TO "-------------------------------------"
     
     def for_hr_team_to_employee(self, user):
-        recipient_email = "jaykumar.patel@merillife.com"
+        recipient_email = user.email_id
         subject = "You are Eligible for the Car Rental Service"
         body = self.create_email_body_for_emp(user)
         
@@ -491,7 +491,7 @@ class EmailServices:
         regards ="Finance Team"
         form = frappe.get_doc("Car Indent Form",user.name)
         revised_form = frappe.get_doc("Purchase Team Form",user.name)
-        updated_by = "Mr. Sumesh Nair"
+        updated_by = "Mr. Dhrumit Solanki"
         content = f"""
         Dear Finance Head,
         <br><br>The Finance Team has approved the car rental form for {user.employee_name}.
@@ -628,7 +628,7 @@ class EmailServices:
         data = [
             {
             "name":"Easy Assets",
-            "email":"jaykumar.patel@merillife.com"
+            "email":user.email_id
             }  
             ]
         car_indent_form = frappe.get_doc("Car Indent Form",user.name)  
