@@ -39,7 +39,10 @@ def email_sender(name, email_send_to=None):
             
         elif email_send_to =="FinanceHead To AccountsTeam":
             EMail.for_finance_head_to_accounts_team(user)
-            # EMail.acknowledgement_email(user,"Finance Department","Accounts Department")
+            EMail.acknowledgement_email(user,"Finance Department","Final Approvel")
+            
+        elif email_send_to in ["Easy Assets","ALD","XYZ"]:
+            EMail.for_finance_fill_quotation_acknowledgement(user,email_send_to)
             
             
         return {"status": "success", "message": f"Email sent"}
@@ -65,3 +68,6 @@ def approve_car_indent_by_reporting(indent_form):
         frappe.local.response["type"] = "redirect"
         frappe.local.response["location"] = "/somethingwrong"
         return
+
+
+

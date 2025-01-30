@@ -26,7 +26,7 @@ class EmailServices:
                 response = server.send_message(msg)
                 
             print("-----------[EMAIL RESPONSE]-------------",response)
-            frappe.msgprint(f"Email sent successfully to {recipient_email}.")
+            # frappe.msgprint(f"Email sent successfully to {recipient_email}.")
 
         except smtplib.SMTPException as smtp_error:
             print("-----------[EMAIL ERROR]-------------",smtp_error)
@@ -518,6 +518,22 @@ class EmailServices:
         body = self.create_email_body(form,user,subject, content,updated_by,regards)
         self.send(subject=subject, body=body, recipient_email=recipient_email)
         
+        
+        
+    def for_finance_fill_quotation_acknowledgement(self, user,regards=""):
+        recipient_email = "jaykumar.patel@merillife.com"
+        subject = "Car Quotation Form Fiiled"
+        body = f"""
+        Dear Finance Teams,
+        <br><br>
+        The Quotation form has been submitted by for {user.employee_name} .
+        Please log in to your dashboard to review the form and proceed with the next steps.
+        <br>
+        Best regards,
+        {regards}
+        """
+        self.send(subject=subject, body=body, recipient_email=recipient_email)
+        
 
     # "-------------------------------------" EMAIL BODY FOR VENDOR "-------------------------------------"
     
@@ -628,7 +644,7 @@ class EmailServices:
         data = [
             {
             "name":"Easy Assets",
-            "email":user.email_id
+            "email":"jaykumar.patel@merillife.com"
             }  
             ]
         car_indent_form = frappe.get_doc("Car Indent Form",user.name)  
