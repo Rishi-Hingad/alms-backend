@@ -83,10 +83,14 @@ function toggleFieldStatus(frm) {
         frm.set_df_property("revised_registration_charges", "read_only", true);
         frm.set_df_property("revised_accessories", "read_only", true);
         frm.set_df_property("revised_financed_amount", "read_only", true);
+        frm.set_df_property("purchase_head_remarks", "read_only", true);
+        frm.set_df_property("purchase_team_remarks", "read_only", true);
     }
     else if (frappe.session.user === "purchase@gmail.com") {
         frm.set_df_property("purchase_head_status", "read_only", true);
         frm.set_df_property("status", "read_only", true);
+        frm.set_df_property("purchase_head_remarks", "read_only", true);
+        frm.set_df_property("purchase_team_remarks", "read_only", true);
     }
     else{
         frm.set_df_property("status", "read_only", true);
@@ -103,6 +107,8 @@ function toggleFieldStatus(frm) {
         frm.set_df_property("revised_financed_amount", "read_only", true);
         frm.set_df_property("purchase_head_status", "read_only", true);
         frm.set_df_property("status", "read_only", true);
+        frm.set_df_property("purchase_head_remarks", "read_only", true);
+        frm.set_df_property("purchase_team_remarks", "read_only", true);
     }
 
 }
@@ -121,26 +127,57 @@ frappe.ui.form.on("Purchase Team Form", {
             addButtonForAppovel(frm); 
         },
 
-        purchase_head_status: function(frm) {
-            if (frm.doc.purchase_head_status === "Approved"){
-                // const new_value = frm.doc.purchase_head_status || "No Value";
-                frm.set_value("status", frm.doc.purchase_head_status); // Correctly set the "status" field
-                // alert(`Purchase Head Approval changed to: ${new_value} : ${frm.doc.name}`);
+       
+        purchase_head_status:function(frm) {
+            if (frm.doc.purchase_head_status != "Pending") {
+                frappe.prompt([
+                    {
+                        fieldname: 'remarks_input',
+                        label: 'Enter Remarks',
+                        fieldtype: 'Data',
+                        reqd: 1
+                    }
+                ], 
+                function(values) {
+                    frm.set_value('purchase_head_remarks', values.remarks_input);
+                    frm.refresh_field('purchase_head_remarks');
+                    frm.save_or_update();
+                }, 
+                'Remarks Required', 
+                'Submit'
+                );
+                frm.set_value("status", "Approved");
                 send_email(frm.doc.name,"PurchaseHead To FinanceTeam")
+            }else{
                 frm.save_or_update();
             }
         },
-    
 
-        purchase_team_status: function(frm) {
-            alert(frm.doc.purchase_head_status)
-            if (frm.doc.purchase_team_status === "Approved"){
-            // const new_value = frm.doc.purchase_team_status || "No Value";
-            // alert(`Purchase Team Approval changed to: ${new_value} : ${frm.doc.name}`);
-            send_email(frm.doc.name,"PurchaseTeam To PurchaseHead")
-            frm.save_or_update();
+
+        purchase_team_status:function(frm) {
+            if (frm.doc.purchase_head_status != "Pending") {
+                frappe.prompt([
+                    {
+                        fieldname: 'remarks_input',
+                        label: 'Enter Remarks',
+                        fieldtype: 'Data',
+                        reqd: 1
+                    }
+                ], 
+                function(values) {
+                    frm.set_value('purchase_team_remarks', values.remarks_input);
+                    frm.refresh_field('purchase_team_remarks');
+                    frm.save_or_update();
+                }, 
+                'Remarks Required', 
+                'Submit'
+                );
+                send_email(frm.doc.name,"PurchaseTeam To PurchaseHead")
+            }else{
+                frm.save_or_update();
             }
         },
+
 
 
         revised_ex_show_room_price: function(frm) {

@@ -74,36 +74,6 @@ function updateStatus(frm) {
     });
 }
 
-function setupFieldChangeHandlers(frm) {
-
-    // frm.fields_dict["reporting_head_approval"].df.onchange = function () {
-    //     const new_value = frm.doc.reporting_head_approval || "No Value";
-    //     // alert(`Reporting Head Approval changed to: ${new_value} : ${frm.doc.name}`);
-    //     if (frm.doc.reporting_head_approval =="Approved"){
-    //         alert(frm.doc.reporting_head_approval)
-    //         // send_email(frm.doc.name,"Reporting To HR")
-    //         frm.save_or_update();
-    //     }
-    // };
-
-    frm.fields_dict["hr_approval"].df.onchange = function () {
-        if (frm.doc.hr_approval =="Approved"){
-            send_email(frm.doc.name,"HR To HRHead")
-            frm.save_or_update();
-        }
-    };
-
-    frm.fields_dict["hr_head_approval"].df.onchange = function () {
-        frm.set_value("status", "Approved");
-        if (frm.doc.hr_head_approval =="Approved"){
-            send_email(frm.doc.name,"HRHead To PurchaseTeam")
-            frm.save_or_update();
-        }
-    };
-}
-
-
-
 function toggleFieldStatus(frm) {
     // alert('Hellow',frappe.session.designation)
     if (frappe.session.user === "reporting@gmail.com") {
@@ -121,11 +91,16 @@ function toggleFieldStatus(frm) {
         frm.set_df_property("hr_approval", "read_only", 0);
         frm.set_df_property("hr_head_approval", "read_only", 0);
     }
- 
-    // const status = frm.doc[field_name];
-    // const is_read_only = status === "Approved" || status === "Rejected";
-    // frm.set_df_property(field_name, "read_only", is_read_only);
-    // frm.refresh_field(field_name);
+
+
+    if (frappe.session.user === "purchase@gmail.com") {}
+        frm.add_custom_button(__('Redirect to Purchase Form'), function() {
+            let currentUrl = window.location.href;
+                let urlParams = currentUrl.split('/'); // Split the URL by '/'
+                let employeeName = decodeURIComponent(urlParams[urlParams.length - 1]);
+                let apiUrl = `http://127.0.0.1:8003/app/purchase-team-form/new-purchase-team-form?employee_name=${encodeURIComponent(employeeName)}`;
+            window.location.href = apiUrl;
+        });
 }
 
 
@@ -146,9 +121,62 @@ frappe.ui.form.on("Car Indent Form", {
         frm.set_df_property('hr_approval', 'read_only', 1);
         frm.set_df_property('hr_head_approval', 'read_only', 1);
         frm.set_df_property('status', 'read_only', 1);
+        frm.set_df_property('hr_head_remarks', 'read_only', 1);
+        frm.set_df_property('reporting_head_remarks', 'read_only', 1);
+        frm.set_df_property('hr_remarks', 'read_only', 1);
 
         toggleFieldStatus(frm);
         setupFieldChangeHandlers(frm);
+    },
+
+    hr_approval:function(frm) {
+        if (frm.doc.hr_approval != "Pending") {
+            frappe.prompt([
+                {
+                    fieldname: 'remarks_input',
+                    label: 'Enter Remarks',
+                    fieldtype: 'Data',
+                    reqd: 1
+                }
+            ], 
+            function(values) {
+                frm.set_value('hr_remarks', values.remarks_input);
+                frm.refresh_field('hr_remarks');
+                frm.save_or_update();
+            }, 
+            'Remarks Required', 
+            'Submit'
+            );
+            send_email(frm.doc.name,"HR To HRHead")
+        }else{
+            frm.save_or_update();
+        }
+    },
+
+    hr_head_approval:function(frm) {
+        if (frm.doc.hr_head_approval != "Pending") {
+            frappe.prompt([
+                {
+                    fieldname: 'remarks_input',
+                    label: 'Enter Remarks',
+                    fieldtype: 'Data',
+                    reqd: 1
+                }
+            ], 
+            function(values) {
+                frm.set_value('hr_head_remarks', values.remarks_input);
+                frm.refresh_field('hr_head_remarks');
+                frm.save_or_update();
+            }, 
+            'Remarks Required', 
+            'Submit'
+            );
+            frm.set_value("status", "Approved");
+            send_email(frm.doc.name,"HRHead To PurchaseTeam")
+        }
+        else{
+            frm.save_or_update();
+        }
     },
 
     refresh: function (frm) {

@@ -52,11 +52,15 @@ def email_sender(name, email_send_to=None):
 
 
 @frappe.whitelist()
-def approve_car_indent_by_reporting(indent_form):
+def approve_car_indent_by_reporting(indent_form,remarks):
     try: 
+        # indent_form = frappe.form_dict.get("indent_form")
+        # remarks = frappe.form_dict.get("remarks")
         user = frappe.get_doc("Employee Master",indent_form)
         i_form = frappe.get_doc("Car Indent Form", indent_form)
+        
         i_form.reporting_head_approval = "Approved"
+        i_form.reporting_head_remarks = remarks
         i_form.save()
         frappe.db.commit()
         # Redirect to a specific URL on success

@@ -34,6 +34,7 @@ function uploadfile(frm){
         );
     });
 }
+
 function setValuesInField(frm,data){
    
     const ListOfColumns  = [
@@ -160,19 +161,58 @@ frappe.ui.form.on('Car Quotation', {
         uploadfile(frm);
 
     },
-    finance_head_status: function(frm) {
-        // const new_value = frm.doc.finance_head_status || "No Value";
-        // frm.set_value("status", frm.doc.finance_head_status); // Correctly set the "status" field
-        // alert(`Finance Head Approval changed to: ${new_value} : ${frm.doc.name}`);
-        send_email(frm.doc.employee_details,"FinanceHead To AccountsTeam")
-        frm.save_or_update();
+    
+    finance_head_status:function(frm) {
+        if (frm.doc.finance_head_status != "Pending") {
+            frappe.prompt([
+                {
+                    fieldname: 'remarks_input',
+                    label: 'Enter Remarks',
+                    fieldtype: 'Data',
+                    reqd: 1
+                }
+            ], 
+            function(values) {
+                frm.set_value('finance_head_remarks', values.remarks_input);
+                frm.refresh_field('finance_head_remarks');
+                frm.save_or_update();
+            }, 
+            'Remarks Required', 
+            'Submit'
+            );
+            frm.set_value("status", "Approved");
+            send_email(frm.doc.employee_details,"FinanceHead To AccountsTeam")
+        }
+        else{
+            frm.save_or_update();
+        }
     },
+
 
 
     finance_team_status: function(frm) {
-        // const new_value = frm.doc.finance_team_status || "No Value";
-        // alert(`Finance Team Approval changed to: ${new_value} : ${frm.doc.name}`);
-        send_email(frm.doc.employee_details,"FinanceTeam To FinanceHead")
-        frm.save_or_update();
+        if (frm.doc.finance_team_status != "Pending") {
+            frappe.prompt([
+                {
+                    fieldname: 'remarks_input',
+                    label: 'Enter Remarks',
+                    fieldtype: 'Data',
+                    reqd: 1
+                }
+            ], 
+            function(values) {
+                frm.set_value('finance_team_remarks', values.remarks_input);
+                frm.refresh_field('finance_team_remarks');
+                frm.save_or_update();
+            }, 
+            'Remarks Required', 
+            'Submit'
+            );
+            send_email(frm.doc.employee_details,"FinanceTeam To FinanceHead")
+        }
+        else{
+            frm.save_or_update();
+        }
     },
+
 });

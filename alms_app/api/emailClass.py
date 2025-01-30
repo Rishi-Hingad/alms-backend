@@ -10,7 +10,8 @@ class EmailServices:
         self.smtp_user = "emailapikey"
         self.smtp_password = "PHtE6r1cF7jiim598RZVsPW9QMCkMN96/uNveQUTt4tGWPNRTk1U+tgokDO0rRx+UKZAHKPInos5tbqZtbiHdz6/Z2dED2qyqK3sx/VYSPOZsbq6x00as1wSc0TfUILscdds1CLfutnYNA=="
         self.from_address = "noreply@merillife.com"
-        
+    def send1(self,subject,recipient_email,body):
+        pass
     def send(self,subject,recipient_email,body):
         try:
             msg = EmailMessage()
@@ -399,7 +400,7 @@ class EmailServices:
         We are pleased to inform you that {user.employee_name} has submitted the car rental form for your review.
         <br><br>Kindly check and take necessary action at your earliest convenience.<br><br>
         """
-        link = f"http://127.0.0.1:8003/api/method/alms_app.api.emailsService.approve_car_indent_by_reporting?indent_form={user.name}"
+        link = f"http://127.0.0.1:8003/reportnig_head_approval?id={user.name}"
         body = self.create_reporting_email(subject, content, regards,link)
         self.send(subject=subject, body=body, recipient_email=recipient_email)
 

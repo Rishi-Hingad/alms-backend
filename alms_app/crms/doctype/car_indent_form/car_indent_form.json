@@ -31,8 +31,11 @@
   "finance_amount",
   "quotation_document",
   "reporting_head_approval",
+  "reporting_head_remarks",
   "hr_approval",
+  "hr_remarks",
   "hr_head_approval",
+  "hr_head_remarks",
   "status"
  ],
  "fields": [
@@ -190,6 +193,21 @@
    "fieldtype": "Data",
    "label": "Employee Reporting",
    "read_only": 1
+  },
+  {
+   "fieldname": "hr_remarks",
+   "fieldtype": "Data",
+   "label": "HR Remarks"
+  },
+  {
+   "fieldname": "hr_head_remarks",
+   "fieldtype": "Data",
+   "label": "HR Head Remarks"
+  },
+  {
+   "fieldname": "reporting_head_remarks",
+   "fieldtype": "Data",
+   "label": "Reporting Head Remarks"
   }
  ],
  "index_web_pages_for_search": 1,
@@ -199,7 +217,7 @@
    "link_fieldname": "employee_name"
   }
  ],
- "modified": "2025-01-16 10:46:54.696711",
+ "modified": "2025-01-30 14:46:34.724507",
  "modified_by": "Administrator",
  "module": "CRMS",
  "name": "Car Indent Form",
