@@ -93,14 +93,23 @@ function toggleFieldStatus(frm) {
     }
 
 
-    if (frappe.session.user === "purchase@gmail.com") {}
+    if (frappe.session.user === "purchase@gmail.com") {
         frm.add_custom_button(__('Redirect to Purchase Form'), function() {
             let currentUrl = window.location.href;
                 let urlParams = currentUrl.split('/'); // Split the URL by '/'
                 let employeeName = decodeURIComponent(urlParams[urlParams.length - 1]);
                 let apiUrl = `http://127.0.0.1:8003/app/purchase-team-form/new-purchase-team-form?employee_name=${encodeURIComponent(employeeName)}`;
             window.location.href = apiUrl;
+        }).css({
+            'background-color': '#007bff',
+            'color': 'white',
+            'border': 'none',
+            'padding': '10px 20px',
+            'font-size': '14px',  
+            'border-radius': '5px', 
+            'cursor': 'pointer'
         });
+    }
 }
 
 
@@ -142,12 +151,14 @@ frappe.ui.form.on("Car Indent Form", {
             function(values) {
                 frm.set_value('hr_remarks', values.remarks_input);
                 frm.refresh_field('hr_remarks');
-                frm.save_or_update();
+                frm.save().then(() => {
+                    send_email(frm.doc.name,"HR To HRHead")
+                });
             }, 
             'Remarks Required', 
             'Submit'
             );
-            send_email(frm.doc.name,"HR To HRHead")
+           
         }else{
             frm.save_or_update();
         }
@@ -166,13 +177,15 @@ frappe.ui.form.on("Car Indent Form", {
             function(values) {
                 frm.set_value('hr_head_remarks', values.remarks_input);
                 frm.refresh_field('hr_head_remarks');
-                frm.save_or_update();
+                frm.save().then(() => {
+                    frm.set_value("status", "Approved");
+                    send_email(frm.doc.name, "HRHead To PurchaseTeam");
+                });
             }, 
             'Remarks Required', 
             'Submit'
             );
-            frm.set_value("status", "Approved");
-            send_email(frm.doc.name,"HRHead To PurchaseTeam")
+            
         }
         else{
             frm.save_or_update();

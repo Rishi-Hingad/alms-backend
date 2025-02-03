@@ -8,7 +8,7 @@ from alms_app.api.emailClass import EmailServices
 
 EMail = EmailServices()
 @frappe.whitelist()
-def email_sender(name, email_send_to=None):
+def email_sender(name, email_send_to=None,payload=None):
     try:
         user = frappe.get_doc("Employee Master",name)
         print(f"------------[{user.email_id}]-----------------[EMAIL API WORK]--------------[{email_send_to}]---------------")
@@ -31,9 +31,12 @@ def email_sender(name, email_send_to=None):
             
         elif email_send_to =="PurchaseHead To FinanceTeam":
             EMail.for_purchase_head_to_finance_team(user) 
-            EMail.for_car_quotation_ALD_EasyAssets_Xyz(user)
             EMail.acknowledgement_email(user,"Purchase Department","Finance Department")
-        
+            
+        elif email_send_to == "FinanceHead To Quotation Company":
+            EMail.for_car_quotation_ALD_EasyAssets_Xyz(user,payload)
+            
+            
         elif email_send_to =="FinanceTeam To FinanceHead":
             EMail.for_finance_team_to_finance_head(user) 
             

@@ -9,6 +9,7 @@ app_license = "mit"
 
 on_session_creation  = "alms_app.api.session_manager.add_custom_session_data"
 
+
 # Apps
 # ------------------
 

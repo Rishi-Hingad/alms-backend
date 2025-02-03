@@ -391,7 +391,7 @@ class EmailServices:
 
 
     def for_employee_to_reporting(self, user):
-        recipient_email = "jaykumar.patel@merillife.com"
+        recipient_email = user.reporting_head_email_id
         subject =f"Car Rental Form for Submitted by {user.employee_name} for Your Review"
         regards = f"{user.employee_name} (Employee)"
         content = f"""
@@ -469,7 +469,6 @@ class EmailServices:
         body = self.create_email_body_revised(form,revised_form,user,subject, content,updated_by,regards)
         self.send(subject=subject, body=body, recipient_email=recipient_email)
 
-# Done here
     def for_purchase_head_to_finance_team(self, user):
         recipient_email = "jaykumar.patel@merillife.com"
         subject = "Car Rental Form Approved by Purchase Head"
@@ -640,32 +639,42 @@ class EmailServices:
         return body
     
     
-    
-    def for_car_quotation_ALD_EasyAssets_Xyz(self,user):
+    def for_car_quotation_ALD_EasyAssets_Xyz(self,user,payload):
+        import json
+        payload = json.loads(payload)
         data = [
-            {
-            "name":"Easy Assets",
-            "email":"jaykumar.patel@merillife.com"
-            }  
-            ]
+                {
+                "name":"Easy Assets",
+                "email":"jaykumar.patel@merillife.com"
+                },
+                {
+                "name":"ALD",
+                "email":"jaykumar.patel@merillife.com"
+                },
+                {
+                "name":"XYZ",
+                "email":"jaykumar.patel@merillife.com"
+                },
+        ]
         car_indent_form = frappe.get_doc("Car Indent Form",user.name)  
         car_purchase_form = frappe.get_doc("Purchase Team Form",user.name)  
-        for i in data:
-            link = (
-                    f"http://127.0.0.1:8003/vendor-assets-quotation/new?"
-                    f"finance_company={i.get('name')}&"
-                    f"employee_details={user.name}&"
-                    f"location={car_indent_form.location}&"
-                    f"kms={car_purchase_form.kilometers_per_year}&"
-                    f"variant={car_indent_form.model}&"
-                    f"accessory={car_purchase_form.revised_accessories}&"
-                    f"discount_excluding_gst={car_purchase_form.revised_discount}&"
-                    f"registration_charges={car_purchase_form.revised_registration_charges}&"
-                    f"financed_amount={car_purchase_form.revised_financed_amount}"
-                )
-            body = self.create_vendor_email_for_car_quotation(i.get('name'),user,car_indent_form,link)
-            subject = f"Car Quotation"
-            print("----------[SEND]-----------to",i.get('name'))
-            self.send(subject=subject, body=body, recipient_email=i.get('email'))
+        for company_detail in data:
+            if payload.get("email_send_to") == "ALL" or company_detail.get("name") == payload.get("email_send_to"):
+                print(f"----------[SEND-LINK TO {company_detail.get('name')}]------[EMAIL TYPE :{payload.get('email_phase')}]---------------")
+                link = (
+                        f"http://127.0.0.1:8003/vendor-assets-quotation/new?"
+                        f"finance_company={company_detail.get('name')}&"
+                        f"employee_details={user.name}&"
+                        f"location={car_indent_form.location}&"
+                        f"kms={car_purchase_form.kilometers_per_year}&"
+                        f"variant={car_indent_form.model}&"
+                        f"accessory={car_purchase_form.revised_accessories}&"
+                        f"discount_excluding_gst={car_purchase_form.revised_discount}&"
+                        f"registration_charges={car_purchase_form.revised_registration_charges}&"
+                        f"financed_amount={car_purchase_form.revised_financed_amount}"
+                    )
+                body = self.create_vendor_email_for_car_quotation(company_detail.get('name'),user,car_indent_form,link)
+                subject = f"Car Quotation"
+                self.send(subject=subject, body=body, recipient_email=company_detail.get('email'))
             
         

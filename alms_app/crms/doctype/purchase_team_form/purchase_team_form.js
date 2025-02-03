@@ -1,49 +1,92 @@
 function updateStatus(frm) {
-    frm.clear_custom_buttons();
 
-    const buttons = [
-        {
-            label: "Purchase Team",
-            field: "status",
-            current_status: frm.doc.purchase_team_status
-        },
-        {
-            label: "Purchase Head",
-            field: "status",
-            current_status: frm.doc.purchase_head_status
-        },
-    ];
+    let allowed_users = [
+        "purchasehead@gmail.com",
+        "purchase@gmail.com"]
+    if (allowed_users.includes(frappe.session.user)) {
+        frm.clear_custom_buttons();
+        const buttons = [
+            {
+                label: "Purchase Team",
+                field: "status",
+                current_status: frm.doc.purchase_team_status
+            },
+            {
+                label: "Purchase Head",
+                field: "status",
+                current_status: frm.doc.purchase_head_status
+            },
+        ];
 
-    buttons.forEach(button => {
-        const status = button.current_status || "Pending";
-        let status_color;
+        buttons.forEach(button => {
+            const status = button.current_status || "Pending";
+            let status_color;
 
-        switch (status) {
-            case "Approved":
-                status_color = "darkgreen";
-                break;
-            case "Rejected":
-                status_color = "darkred";
-                break;
-            default:
-                status_color = "gray";
-        }
+            switch (status) {
+                case "Approved":
+                    status_color = "darkgreen";
+                    break;
+                case "Rejected":
+                    status_color = "darkred";
+                    break;
+                default:
+                    status_color = "gray";
+            }
 
-        frm.add_custom_button(`${button.label}: ${status}`, null).css({
-            "background-color": status_color,
-            "color": "white",
-            "border-color": status_color,
-            "cursor": "not-allowed"
+            frm.add_custom_button(`${button.label}: ${status}`, null).css({
+                "background-color": status_color,
+                "color": "white",
+                "border-color": status_color,
+                "cursor": "not-allowed"
+            });
         });
+    }
+}
+
+
+function updateQuotationSendRequest(frm) {
+    frm.add_custom_button('Quotations Company Select', () => {
+        frappe.prompt([
+            {
+                fieldname: 'email_phase_select',
+                label: 'Select Email Sending Phase',
+                fieldtype: 'Select',  // Fixed fieldtype from 'Radio' to 'Select'
+                options: ['Initial', 'Modification'],
+                reqd: 1,
+                default: "Initial"
+            },
+            {
+                fieldname: 'company_select',
+                label: 'Select Company',
+                fieldtype: 'Select',
+                options: ['Easy Assets', 'ALD', 'XYZ', 'ALL'],
+                reqd: 1,
+                default: "ALL"
+            }
+        ], 
+        function(values) {
+            send_email(frm.doc.name, "FinanceHead To Quotation Company", {
+                email_send_to: values.company_select, 
+                email_phase: values.email_phase_select
+            });
+        },         
+        'Remarks Required', 
+        'Submit');
+    }).css({
+        "background-color": "darkgreen",
+        "color": "white",
+        "border-color": "green",
     });
 }
 
-function send_email(user,email_send_to){
+
+function send_email(user,email_send_to,payload){
     frappe.call({
         method: "alms_app.api.emailsService.email_sender",
         args: {
             name: user,
             email_send_to: email_send_to,
+            payload:payload
         },
         callback: function (response) {
             if (!response.exc) {
@@ -113,16 +156,21 @@ function toggleFieldStatus(frm) {
 
 }
 
+
+
+
 frappe.ui.form.on("Purchase Team Form", {
         refresh(frm) {
 
-            updateStatus(frm);
+            // updateStatus(frm);
+            updateQuotationSendRequest(frm);
             calculate_totals(frm);
             addButtonForAppovel(frm);
             toggleFieldStatus(frm);
         },
         onload(frm){
-            updateStatus(frm);
+            // updateStatus(frm);
+            updateQuotationSendRequest(frm);
             toggleFieldStatus(frm);
             addButtonForAppovel(frm); 
         },
@@ -141,13 +189,16 @@ frappe.ui.form.on("Purchase Team Form", {
                 function(values) {
                     frm.set_value('purchase_head_remarks', values.remarks_input);
                     frm.refresh_field('purchase_head_remarks');
-                    frm.save_or_update();
+                    frm.save().then(() => {
+                        frm.set_value("status", "Approved");
+                        send_email(frm.doc.name,"PurchaseHead To FinanceTeam")
+                    });
+
                 }, 
                 'Remarks Required', 
                 'Submit'
                 );
-                frm.set_value("status", "Approved");
-                send_email(frm.doc.name,"PurchaseHead To FinanceTeam")
+
             }else{
                 frm.save_or_update();
             }
@@ -155,7 +206,7 @@ frappe.ui.form.on("Purchase Team Form", {
 
 
         purchase_team_status:function(frm) {
-            if (frm.doc.purchase_head_status != "Pending") {
+            if (frm.doc.purchase_team_status != "Pending") {
                 frappe.prompt([
                     {
                         fieldname: 'remarks_input',
@@ -167,12 +218,14 @@ frappe.ui.form.on("Purchase Team Form", {
                 function(values) {
                     frm.set_value('purchase_team_remarks', values.remarks_input);
                     frm.refresh_field('purchase_team_remarks');
-                    frm.save_or_update();
+                    frm.save().then(() => {
+                        send_email(frm.doc.name,"PurchaseTeam To PurchaseHead")
+                    });
                 }, 
                 'Remarks Required', 
                 'Submit'
                 );
-                send_email(frm.doc.name,"PurchaseTeam To PurchaseHead")
+               
             }else{
                 frm.save_or_update();
             }
