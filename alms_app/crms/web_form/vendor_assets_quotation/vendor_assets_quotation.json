@@ -5,10 +5,10 @@
  "allow_incomplete": 0,
  "allow_multiple": 0,
  "allow_print": 0,
- "anonymous": 0,
+ "anonymous": 1,
  "apply_document_permissions": 1,
  "button_label": "Save",
- "client_script": "function send_email(name,email_send_to,indent_form_id){\n    frappe.call({\n        method: \"alms_app.api.emailsService.email_sender\",\n        args: {\n            name: name,\n            email_send_to: email_send_to\n        },\n        callback: function (response) {\n            if (!response.exc) {\n                \n            } else {\n                frappe.msgprint({\n                    title: \"Error\",\n                    indicator: \"red\",\n                    message: response.exc || \"An unknown error occurred while sending the email.\",\n                });\n            }\n        },\n        error: function (error) {\n            frappe.msgprint({\n                title: \"Error\",\n                indicator: \"red\",\n                message: error.message || \"An unknown error occurred while sending the email.\",\n            });\n        },\n    });\n}\n\n\n\n\nfrappe.web_form.validate = () =>{\n\nlet url = window.location.href;\nlet params = new URLSearchParams(window.location.search);\nlet name = params.get(\"employee_code\");\nlet finance_company = params.get(\"finance_company\");\nsend_email(name,finance_company)\n}",
+ "client_script": "function send_email(name,email_send_to,indent_form_id){\n    frappe.call({\n        method: \"alms_app.api.emailsService.email_sender\",\n        args: {\n            name: name,\n            email_send_to: email_send_to\n        },\n        callback: function (response) {\n            if (!response.exc) {\n                \n            } else {\n                frappe.msgprint({\n                    title: \"Error\",\n                    indicator: \"red\",\n                    message: response.exc || \"An unknown error occurred while sending the email.\",\n                });\n            }\n        },\n        error: function (error) {\n            frappe.msgprint({\n                title: \"Error\",\n                indicator: \"red\",\n                message: error.message || \"An unknown error occurred while sending the email.\",\n            });\n        },\n    });\n}\n\n\n\n\nfrappe.web_form.validate = () =>{\n\nlet url = window.location.href;\nlet params = new URLSearchParams(window.location.search);\nlet name = params.get(\"employee_details\");\nlet finance_company = params.get(\"finance_company\");\nsend_email(name,finance_company)\n}",
  "condition_json": "[]",
  "creation": "2025-01-21 12:30:47.575170",
  "doc_type": "Car Quotation",
@@ -19,7 +19,7 @@
  "list_columns": [],
  "login_required": 0,
  "max_attachment_size": 0,
- "modified": "2025-02-01 16:53:49.637924",
+ "modified": "2025-02-04 10:27:20.268556",
  "modified_by": "Administrator",
  "module": "CRMS",
  "name": "vendor-assets-quotation",
@@ -41,7 +41,7 @@
    "max_value": 0,
    "precision": "",
    "read_only": 0,
-   "reqd": 1,
+   "reqd": 0,
    "show_in_filter": 0
   },
   {
@@ -55,7 +55,7 @@
    "options": "-Select-\nEasy Assets\nALD\nXYZ",
    "precision": "",
    "read_only": 1,
-   "reqd": 1,
+   "reqd": 0,
    "show_in_filter": 0
   },
   {
@@ -82,7 +82,7 @@
    "max_value": 0,
    "precision": "",
    "read_only": 1,
-   "reqd": 1,
+   "reqd": 0,
    "show_in_filter": 0
   },
   {
@@ -95,7 +95,7 @@
    "max_value": 0,
    "precision": "",
    "read_only": 0,
-   "reqd": 1,
+   "reqd": 0,
    "show_in_filter": 0
   },
   {
@@ -108,7 +108,7 @@
    "max_value": 0,
    "precision": "",
    "read_only": 0,
-   "reqd": 1,
+   "reqd": 0,
    "show_in_filter": 0
   },
   {
@@ -121,7 +121,7 @@
    "max_value": 0,
    "precision": "",
    "read_only": 0,
-   "reqd": 1,
+   "reqd": 0,
    "show_in_filter": 0
   },
   {
@@ -134,7 +134,7 @@
    "max_value": 0,
    "precision": "",
    "read_only": 0,
-   "reqd": 1,
+   "reqd": 0,
    "show_in_filter": 0
   },
   {
@@ -147,7 +147,7 @@
    "max_value": 0,
    "precision": "",
    "read_only": 0,
-   "reqd": 1,
+   "reqd": 0,
    "show_in_filter": 0
   },
   {
@@ -160,7 +160,7 @@
    "max_value": 0,
    "precision": "",
    "read_only": 0,
-   "reqd": 1,
+   "reqd": 0,
    "show_in_filter": 0
   },
   {
@@ -173,7 +173,7 @@
    "max_value": 0,
    "precision": "",
    "read_only": 0,
-   "reqd": 1,
+   "reqd": 0,
    "show_in_filter": 0
   },
   {
@@ -186,7 +186,7 @@
    "max_value": 0,
    "precision": "",
    "read_only": 0,
-   "reqd": 1,
+   "reqd": 0,
    "show_in_filter": 0
   },
   {
@@ -211,7 +211,7 @@
    "max_value": 0,
    "precision": "",
    "read_only": 0,
-   "reqd": 1,
+   "reqd": 0,
    "show_in_filter": 0
   },
   {
@@ -224,7 +224,7 @@
    "max_value": 0,
    "precision": "",
    "read_only": 0,
-   "reqd": 1,
+   "reqd": 0,
    "show_in_filter": 0
   },
   {
@@ -237,7 +237,7 @@
    "max_value": 0,
    "precision": "",
    "read_only": 0,
-   "reqd": 1,
+   "reqd": 0,
    "show_in_filter": 0
   },
   {
@@ -250,7 +250,7 @@
    "max_value": 0,
    "precision": "",
    "read_only": 0,
-   "reqd": 1,
+   "reqd": 0,
    "show_in_filter": 0
   },
   {
@@ -263,7 +263,7 @@
    "max_value": 0,
    "precision": "",
    "read_only": 0,
-   "reqd": 1,
+   "reqd": 0,
    "show_in_filter": 0
   },
   {
@@ -276,7 +276,7 @@
    "max_value": 0,
    "precision": "",
    "read_only": 0,
-   "reqd": 1,
+   "reqd": 0,
    "show_in_filter": 0
   },
   {
@@ -289,7 +289,7 @@
    "max_value": 0,
    "precision": "",
    "read_only": 0,
-   "reqd": 1,
+   "reqd": 0,
    "show_in_filter": 0
   },
   {
@@ -302,7 +302,7 @@
    "max_value": 0,
    "precision": "",
    "read_only": 0,
-   "reqd": 1,
+   "reqd": 0,
    "show_in_filter": 0
   },
   {
@@ -315,7 +315,7 @@
    "max_value": 0,
    "precision": "",
    "read_only": 0,
-   "reqd": 1,
+   "reqd": 0,
    "show_in_filter": 0
   },
   {
@@ -328,7 +328,7 @@
    "max_value": 0,
    "precision": "",
    "read_only": 0,
-   "reqd": 1,
+   "reqd": 0,
    "show_in_filter": 0
   },
   {
@@ -341,7 +341,7 @@
    "max_value": 0,
    "precision": "",
    "read_only": 0,
-   "reqd": 1,
+   "reqd": 0,
    "show_in_filter": 0
   },
   {
@@ -366,7 +366,7 @@
    "max_value": 0,
    "precision": "",
    "read_only": 0,
-   "reqd": 1,
+   "reqd": 0,
    "show_in_filter": 0
   },
   {
@@ -379,7 +379,7 @@
    "max_value": 0,
    "precision": "",
    "read_only": 0,
-   "reqd": 1,
+   "reqd": 0,
    "show_in_filter": 0
   },
   {
@@ -392,7 +392,7 @@
    "max_value": 0,
    "precision": "",
    "read_only": 0,
-   "reqd": 1,
+   "reqd": 0,
    "show_in_filter": 0
   },
   {
@@ -405,7 +405,7 @@
    "max_value": 0,
    "precision": "",
    "read_only": 0,
-   "reqd": 1,
+   "reqd": 0,
    "show_in_filter": 0
   },
   {
@@ -418,7 +418,7 @@
    "max_value": 0,
    "precision": "",
    "read_only": 0,
-   "reqd": 1,
+   "reqd": 0,
    "show_in_filter": 0
   },
   {
@@ -431,7 +431,7 @@
    "max_value": 0,
    "precision": "",
    "read_only": 0,
-   "reqd": 1,
+   "reqd": 0,
    "show_in_filter": 0
   },
   {
@@ -444,7 +444,7 @@
    "max_value": 0,
    "precision": "",
    "read_only": 0,
-   "reqd": 1,
+   "reqd": 0,
    "show_in_filter": 0
   },
   {
@@ -457,7 +457,7 @@
    "max_value": 0,
    "precision": "",
    "read_only": 0,
-   "reqd": 1,
+   "reqd": 0,
    "show_in_filter": 0
   }
  ]

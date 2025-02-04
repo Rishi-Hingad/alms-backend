@@ -1,13 +1,13 @@
 
 
-function uploadfile(frm){
-    frm.add_custom_button('Upload and Process File', function () {
+function uploadfile(frm) {
+    frm.add_custom_button('Upload File', function () {
         frappe.prompt(
             {
                 label: 'Upload File',
                 fieldname: 'file',
                 fieldtype: 'Attach',
-                reqd: 1,
+                reqd: 1
             },
             function (values) {
                 frappe.call({
@@ -17,7 +17,7 @@ function uploadfile(frm){
                     },
                     callback: function (response) {
                         if (response.message) {
-                            setValuesInField(frm,response.message.car_quotation_item)
+                            setValuesInField(frm, response.message.car_quotation_item);
                         }
                     },
                     error: function () {
@@ -32,8 +32,15 @@ function uploadfile(frm){
             __('Upload File'),
             __('Process')
         );
-    });
+    }, 'Request Menu')
+
+    // Sub-button for sending email
+    frm.add_custom_button('Send Modification Quot Email', function () {
+        frappe.msgprint(__('Email sent successfully!')); 
+        send_email(frm.doc.employee_details,"FinanceHead To Quotation Company",{"email_phase":"Modification","email_send_to":frm.doc.finance_company})
+    }, 'Request Menu')
 }
+
 
 function setValuesInField(frm,data){
    
@@ -48,7 +55,7 @@ function setValuesInField(frm,data){
         "tenure","financed_amount","gst_on_fms",
         "base_price_excluding_gst","financed_amount","total_emi",
         "gst","emi_financing","status",
-        "ex_showroom_amount","finance_emi_road_tax","finance_hod_status"
+        "ex_showroom_amount","finance_emi_road_tax"
     ]
 
     ListOfColumns.forEach(column =>{
@@ -64,12 +71,13 @@ function setValuesInField(frm,data){
 
 
 
-function send_email(user,email_send_to){
+function send_email(user,email_send_to,payload=null){
     frappe.call({
         method: "alms_app.api.emailsService.email_sender",
         args: {
             name: user,
             email_send_to: email_send_to,
+            payload: payload,
         },
         callback: function (response) {
             if (!response.exc) {
@@ -175,13 +183,15 @@ frappe.ui.form.on('Car Quotation', {
             function(values) {
                 frm.set_value('finance_head_remarks', values.remarks_input);
                 frm.refresh_field('finance_head_remarks');
-                frm.save_or_update();
+                frm.save().then(() => {
+                    frm.set_value("status", "Approved");
+                    send_email(frm.doc.employee_details,"FinanceHead To AccountsTeam")
+                });
             }, 
             'Remarks Required', 
             'Submit'
             );
-            frm.set_value("status", "Approved");
-            send_email(frm.doc.employee_details,"FinanceHead To AccountsTeam")
+            
         }
         else{
             frm.save_or_update();
@@ -203,12 +213,13 @@ frappe.ui.form.on('Car Quotation', {
             function(values) {
                 frm.set_value('finance_team_remarks', values.remarks_input);
                 frm.refresh_field('finance_team_remarks');
-                frm.save_or_update();
+                frm.save().then(() => {
+                    send_email(frm.doc.employee_details,"FinanceTeam To FinanceHead")
+                });
             }, 
             'Remarks Required', 
             'Submit'
             );
-            send_email(frm.doc.employee_details,"FinanceTeam To FinanceHead")
         }
         else{
             frm.save_or_update();

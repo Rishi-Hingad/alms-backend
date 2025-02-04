@@ -529,7 +529,7 @@ class EmailServices:
         The Quotation form has been submitted by for {user.employee_name} .
         Please log in to your dashboard to review the form and proceed with the next steps.
         <br>
-        Best regards,
+        Best regards,<br>
         {regards}
         """
         self.send(subject=subject, body=body, recipient_email=recipient_email)
@@ -586,10 +586,7 @@ class EmailServices:
             </head>
             <body>
 
-                <p class="company-name">Meril</p>
-
-                <h2>{compny_name} - Car Quotation Form</h2>
-
+                <h2>{compny_name} need to provide a Car Quotation for Meril based on the basic details mentioned below and as per our previous discussions.</h2>
                 <table>
                     <thead>
                         <tr>
