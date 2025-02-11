@@ -139,6 +139,58 @@ function updateStatus(frm) {
     });
 }
 
+
+function FinalSelectedQuotation(frm) {
+    frappe.call({
+        method: 'frappe.client.get_list',
+        args: {
+            doctype: frm.doc.doctype,
+            fields: ['name'],
+            filters: {
+                'employee_details': frm.doc.employee_details,
+            },
+            limit_page_length: 100 
+        },
+        callback: function(response) {
+            if (response.message && response.message.length > 0) {
+                let rejectedDocs = response.message
+                    .map(doc => doc.name)
+                    .filter(name => name !== frm.doc.name); 
+                
+                // alert("Rejected Quotations: \n" + rejectedDocs.join("\n"));
+                
+
+                rejectedDocs.forEach(docName => {
+                    frappe.call({
+                        method: 'frappe.client.set_value',
+                        args: {
+                            doctype: frm.doc.doctype,
+                            name: docName,
+                            fieldname: 'status',
+                            value: 'Rejected'
+                        },
+                        callback: function(res) {
+                            if (!res.exc) {
+                                console.log(`Updated ${docName} to Rejected`);
+                            } else {
+                                console.log(`Failed to update ${docName}`);
+                            }
+                        }
+                    });
+                });
+            } else {
+                frappe.msgprint(__('No Pending Quotations found.'));
+            }
+        }
+    });
+
+
+    frm.set_value("status", "Approved");
+    frm.save();
+    // frappe.msgprint(__('Current quotation approved, others rejected.'));
+}
+
+
 function toggleFieldStatus(frm) {
 
     Object.keys(frm.fields_dict).forEach(function(fieldname) {
@@ -185,7 +237,8 @@ frappe.ui.form.on('Car Quotation', {
                 frm.refresh_field('finance_head_remarks');
                 frm.save().then(() => {
                     frm.set_value("status", "Approved");
-                    send_email(frm.doc.employee_details,"FinanceHead To AccountsTeam")
+                    send_email(frm.doc.employee_details,"FinanceHead To AccountsTeam",{"quotation_id":frm.doc.name})
+                    FinalSelectedQuotation(frm);
                 });
             }, 
             'Remarks Required', 

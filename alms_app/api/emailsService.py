@@ -4,12 +4,13 @@
 
 import frappe
 from alms_app.api.emailClass import EmailServices
-
+import json
 
 EMail = EmailServices()
-@frappe.whitelist()
+@frappe.whitelist(allow_guest=True)
 def email_sender(name, email_send_to=None,payload=None):
     try:
+        payload = json.loads(payload)
         user = frappe.get_doc("Employee Master",name)
         print(f"------------[{user.email_id}]-----------------[EMAIL API WORK]--------------[{email_send_to}]---------------")
         
@@ -41,8 +42,13 @@ def email_sender(name, email_send_to=None,payload=None):
             EMail.for_finance_team_to_finance_head(user) 
             
         elif email_send_to =="FinanceHead To AccountsTeam":
-            EMail.for_finance_head_to_accounts_team(user)
-            EMail.acknowledgement_email(user,"Finance Department","Final Approvel")
+            print("------------[PAYLOAD Quoatation ID]------------------:",payload)
+            # EMail.for_finance_head_to_accounts_team(user)
+            if payload.get("quotation_id"):
+                EMail.for_selected_compny_process(quotation_id=payload.get("quotation_id"))
+            else:
+                frappe.msgprint("Something Wrong!, Try Again")
+            # EMail.acknowledgement_email(user,"Finance Department","Final Approvel")
             
         elif email_send_to in ["Easy Assets","ALD","XYZ"]:
             EMail.for_finance_fill_quotation_acknowledgement(user,email_send_to)

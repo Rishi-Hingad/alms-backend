@@ -674,4 +674,110 @@ class EmailServices:
                 subject = f"Car Quotation"
                 self.send(subject=subject, body=body, recipient_email=company_detail.get('email'))
             
+    
+    # Jyare COmpny Selected Thay [Approved] then eni process chalu thay e 
+    def create_selected_company_process(self,car_form,user, form_link):
+        body = f"""
+        <html>
+        <head>
+            <style>
+                body {{
+                    font-family: Arial, sans-serif;
+                    margin: 20px;
+                }}
+                h1 {{
+                    color: #4CAF50;
+                }}
+                p {{
+                    font-size: 16px;
+                }}
+                .button {{
+                    background-color: #4CAF50;
+                    color: white;
+                    padding: 10px 20px;
+                    text-align: center;
+                    text-decoration: none;
+                    display: inline-block;
+                    font-size: 16px;
+                    border-radius: 5px;
+                    margin-top: 20px;
+                }}
+                .company-name {{
+                    color: blue;
+                    font-size: 24px;
+                    font-weight: bold;
+                }}
+                .contact-info {{
+                    font-size: 14px;
+                    color: grey;
+                    margin-top: 20px;
+                }}
+                table {{
+                    border-collapse: collapse;
+                    width: 100%;
+                }}
+                th, td {{
+                    padding: 8px;
+                    border: 1px solid #ddd;
+                    text-align: left;
+                }}
+                th {{
+                    background-color: #f2f2f2;
+                }}
+            </style>
+        </head>
+        <body>
+            <h1>Congratulations, <span class="company-name">{car_form.finance_company}</span>!</h1>
+            <p>Your quotation request for <strong>{user.employee_name}</strong> has been selected for further processing.</p>
+            <p>Please fill out the required form by clicking the link below. Ensure you carefully enter the <strong>PO details</strong> and upload the necessary documents.</p>
+
+            <h3>Quotation Details:</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Form</td>
+                        <td>PO</td>
+                    </tr>
+                    <tr>
+                        <td>User Name</td>
+                        <td>{user.employee_name}</td>
+                    </tr>
+                </tbody>
+            </table>
         
+            <p>
+                <a href="{form_link}" class="button">Fill Car Onbord Form</a>
+            </p>
+            <p>Thank you for cooperating with us.</p>
+            <p class="contact-info">
+                For assistance, please contact:<br>
+                Email: support@meril.com<br>
+                Phone: +91 123 456 7890
+            </p>
+
+            <p>Thank you for your time and cooperation!</p>
+        </body>
+        </html>
+        """
+        return body
+
+        
+    def for_selected_compny_process(self,quotation_id):
+        companies = {
+                "Easy Assets":"jaykumar.patel@merillife.com",
+                "ALD":"jaykumar.patel@merillife.com",
+                "XYZ":"jaykumar.patel@merillife.com"
+                }
+        car_quot_form = frappe.get_doc("Car Quotation",quotation_id)  
+        user = frappe.get_doc("Employee Master",car_quot_form.employee_details)  
+        form_link = f"http://127.0.0.1:8003/car-purchase-form/new?quotation_form={quotation_id}&user={user.name}&company={car_quot_form.finance_company}"
+        body = self.create_selected_company_process(car_quot_form,
+                                                    user,form_link)
+        subject = f"Car Onbord Process for {user.employee_name}"
+        self.send(subject=subject, body=body, recipient_email=companies.get(car_quot_form.finance_company))
