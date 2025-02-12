@@ -1,4 +1,8 @@
 
+"""
+this class manage the email for each levele of approvels 
+"""
+
 import smtplib
 from email.message import EmailMessage
 import frappe
@@ -10,9 +14,9 @@ class EmailServices:
         self.smtp_user = "emailapikey"
         self.smtp_password = "PHtE6r1cF7jiim598RZVsPW9QMCkMN96/uNveQUTt4tGWPNRTk1U+tgokDO0rRx+UKZAHKPInos5tbqZtbiHdz6/Z2dED2qyqK3sx/VYSPOZsbq6x00as1wSc0TfUILscdds1CLfutnYNA=="
         self.from_address = "noreply@merillife.com"
-    def send1(self,subject,recipient_email,body):
-        pass
     def send(self,subject,recipient_email,body):
+        pass
+    def send1(self,subject,recipient_email,body):
         try:
             msg = EmailMessage()
             msg.set_content(body, subtype="html")
@@ -187,8 +191,7 @@ class EmailServices:
         </html>
         """
         return body
-    
-    
+        
     def create_email_body_revised(self,
                                 form, 
                                 revised_form, 
@@ -283,8 +286,7 @@ class EmailServices:
         </html>
         """
         return body
-    
-    
+     
     def create_email_body_for_emp(self,user):
         body = f"""
         <html>
@@ -344,7 +346,6 @@ class EmailServices:
         """
         return body
 
-
     def create_reporting_email(self, subject, content, regards=None,link=None ):
         body = f"""
         <html>
@@ -378,8 +379,7 @@ class EmailServices:
         </html>
         """
         return body
-    
-    
+        
     # "-------------------------------------" EMAIL SEND TO "-------------------------------------"
     
     def for_hr_team_to_employee(self, user):
@@ -388,7 +388,6 @@ class EmailServices:
         body = self.create_email_body_for_emp(user)
         
         self.send(subject=subject, body=body, recipient_email=recipient_email)
-
 
     def for_employee_to_reporting(self, user):
         recipient_email = user.reporting_head_email_id
@@ -403,8 +402,7 @@ class EmailServices:
         link = f"http://127.0.0.1:8003/reportnig_head_approval?id={user.name}"
         body = self.create_reporting_email(subject, content, regards,link)
         self.send(subject=subject, body=body, recipient_email=recipient_email)
-
-    
+ 
     def for_reporting_to_hr_team(self, user):
         recipient_email = "jaykumar.patel@merillife.com"
         subject = "Car Rental Form Approved by Reporting Manager"
@@ -418,7 +416,6 @@ class EmailServices:
         form = frappe.get_doc("Car Indent Form",user.name)
         body = self.create_email_body(form,user,subject, content,updated_by,regards)
         self.send(subject=subject, body=body, recipient_email=recipient_email)
-
 
     def for_hr_team_to_hr_head(self, user):
         pass
@@ -436,7 +433,6 @@ class EmailServices:
         body = self.create_email_body(form,user,subject, content,updated_by,regards)
         self.send(subject=subject, body=body, recipient_email=recipient_email)
 
-
     def for_hr_head_to_purchase_team(self, user):
         recipient_email = "jaykumar.patel@merillife.com"
         subject = "Car Rental Form Approved by HR Head"
@@ -453,7 +449,6 @@ class EmailServices:
         body = self.create_email_body(form,user,subject, content,updated_by,regards)
         self.send(subject=subject, body=body, recipient_email=recipient_email)
 
- 
     def for_purchase_team_to_purchase_head(self, user):
         recipient_email = "jaykumar.patel@merillife.com"
         subject = "Car Rental Form Approved by Purchase Team"
@@ -484,7 +479,6 @@ class EmailServices:
         body = self.create_email_body_revised(form,revised_form,user,subject, content,updated_by,regards)
         self.send(subject=subject, body=body, recipient_email=recipient_email)
 
-
     def for_finance_team_to_finance_head(self, user):
         recipient_email = "jaykumar.patel@merillife.com"
         subject = "Car Rental Form Approved by Finance Team"
@@ -499,7 +493,6 @@ class EmailServices:
         """
         body = self.create_email_body_revised(form,revised_form,user,subject, content,updated_by,regards)
         self.send(subject=subject, body=body, recipient_email=recipient_email)
-
 
     def for_finance_head_to_accounts_team(self, user):
         recipient_email = "jaykumar.patel@merillife.com"
@@ -517,9 +510,7 @@ class EmailServices:
         """
         body = self.create_email_body(form,user,subject, content,updated_by,regards)
         self.send(subject=subject, body=body, recipient_email=recipient_email)
-        
-        
-        
+               
     def for_finance_fill_quotation_acknowledgement(self, user,regards=""):
         recipient_email = "jaykumar.patel@merillife.com"
         subject = "Car Quotation Form Fiiled"
@@ -534,7 +525,6 @@ class EmailServices:
         """
         self.send(subject=subject, body=body, recipient_email=recipient_email)
         
-
     # "-------------------------------------" EMAIL BODY FOR VENDOR "-------------------------------------"
     
     def create_vendor_email_for_car_quotation(self,compny_name,user,form,link):
@@ -674,6 +664,7 @@ class EmailServices:
                 subject = f"Car Quotation"
                 self.send(subject=subject, body=body, recipient_email=company_detail.get('email'))
             
+    # "-------------------------------------" EMAIL BODY COMPANY SELECTION EMAILS "-------------------------------------"
     
     # Jyare COmpny Selected Thay [Approved] then eni process chalu thay e 
     def create_selected_company_process(self,car_form,user, form_link):

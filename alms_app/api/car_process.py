@@ -1,3 +1,8 @@
+
+"""
+this file manage the email for each levele of process of onbord  car 
+"""
+
 import frappe
 from alms_app.api.emailClass import EmailServices
 
@@ -101,8 +106,147 @@ def email_formate_for_car_onbord(form_link,user_doc,company,form_name):
     recipient_email = companies.get(company)
     emailer.send(body=body,recipient_email=recipient_email,subject=subject)
 
+def acknowledgement_email_for_employee(user,title,link):
+    recipient_email = user.email_id
+    subject = f"Acknowledgement of {title} Submission"
+
+    body = f"""
+    <html>
+    <head>
+        <style>
+            body {{
+                font-family: Arial, sans-serif;
+                margin: 20px;
+                line-height: 1.6;
+            }}
+            h2 {{
+                color: #4CAF50;
+                text-align: center;
+            }}
+            p {{
+                font-size: 16px;
+                margin-bottom: 20px;
+            }}
+            .content {{
+                border: 1px solid #dddddd;
+                border-radius: 8px;
+                padding: 20px;
+                background-color: #f9f9f9;
+            }}
+            .footer {{
+                margin-top: 30px;
+                font-size: 14px;
+                color: #555;
+            }}
+            .button {{
+                display: inline-block;
+                padding: 10px 20px;
+                font-size: 16px;
+                color: #ffffff;
+                background-color: #4CAF50;
+                text-decoration: none;
+                border-radius: 5px;
+                margin-top: 10px;
+            }}
+        </style>
+    </head>
+    <body>
+        <h2>Acknowledgement of {title} Submission</h2>
+        <div class="content">
+            <p>Dear {user.employee_name},</p>
+            <p>
+                We are pleased to inform you that your {title} details have been successfully submitted.  
+                You can view your car’s {title} details by clicking the link below:
+            </p>
+            <p style="text-align: center;">
+                <a href="{link}" class="button" download>View {title} Details</a>
+            </p>
+            <p>
+                If you have any questions or require further assistance, please feel free to contact Meril.
+            </p>
+            <p>Best regards,</p>
+            <p>Meril</p>
+        </div>
+        <div class="footer">
+            <p>This is an automated email. Please do not reply to this email.</p>
+        </div>
+    </body>
+    </html>
+    """
+
+    emailer.send(subject=subject, body=body, recipient_email=recipient_email)
 
 
+def acknowledgement_email_for_finance(user,title,company):
+    recipient_email = user.email_id
+    link="http://127.0.0.1:8003/login#login"
+    subject = f"{company} has Successfully Filled the {title}"
+
+    body = f"""
+    <html>
+    <head>
+        <style>
+            body {{
+                font-family: Arial, sans-serif;
+                margin: 20px;
+                line-height: 1.6;
+            }}
+            h2 {{
+                color: #4CAF50;
+                text-align: center;
+            }}
+            p {{
+                font-size: 16px;
+                margin-bottom: 20px;
+            }}
+            .content {{
+                border: 1px solid #dddddd;
+                border-radius: 8px;
+                padding: 20px;
+                background-color: #f9f9f9;
+            }}
+            .footer {{
+                margin-top: 30px;
+                font-size: 14px;
+                color: #555;
+            }}
+            .button {{
+                display: inline-block;
+                padding: 10px 20px;
+                font-size: 16px;
+                color: #ffffff;
+                background-color: #4CAF50;
+                text-decoration: none;
+                border-radius: 5px;
+                margin-top: 10px;
+            }}
+        </style>
+    </head>
+    <body>
+        <h2>Acknowledgement of {title} Submission</h2>
+        <div class="content">
+            <p>Dear Finance Team,</p>
+            <p>
+                We are pleased to inform you that {company} has successfully submitted the {title} for {user.employee_name}.  
+                If you would like to review the details, you can log in and check them on the dashboard.
+            </p>
+            <p style="text-align: center;">
+                <a href="{link}" class="button">Login to Dashboard</a>
+            </p>
+            <p>Best regards,</p>
+            <p>Meril</p>
+        </div>
+        <div class="footer">
+            <p>This is an automated email. Please do not reply to this email.</p>
+        </div>
+
+    </body>
+    </html>
+    """
+
+    emailer.send(subject=subject, body=body, recipient_email=recipient_email)
+
+    
 @frappe.whitelist(allow_guest=True)
 def car_form_fill():
     try:
@@ -124,34 +268,53 @@ def car_form_fill():
         if existing_doc:
                 doc = frappe.get_doc("Car Process", existing_doc[0].name)
                 if form_name == "Purchase Form":
-                    doc.purchase_document = form_document
-                    doc.purchase_status = form_status 
-                    form_link = form_link = f"http://127.0.0.1:8003/car-proforma-form/new?quotation_form={quotation_id}&user={user}&company={company}"
-                    email_formate_for_car_onbord(form_link,user_doc,company,"Proforma Invoice")           
+                    pass
+                    # doc.purchase_document = form_document
+                    # doc.purchase_status = form_status 
+                    # form_link = form_link = f"http://127.0.0.1:8003/car-proforma-form/new?quotation_form={quotation_id}&user={user}&company={company}"
+                    # email_formate_for_car_onbord(form_link,user_doc,company,"Proforma Invoice") 
+                    # link  = f"{frappe.utils.get_url()}{doc.purchase_document}"
+                    # acknowledgement_email_for_employee(user_doc,form_name,link)         
+                
+                
                 if form_name == "Proforma Form":
                     doc.proforma_document = form_document
                     doc.proforma_status = form_status
                     form_link = form_link = f"http://127.0.0.1:8003/car-insurance-form/new?quotation_form={quotation_id}&user={user}&company={company}"
                     email_formate_for_car_onbord(form_link,user_doc,company,"Insurance Form")
+                    link  = f"{frappe.utils.get_url()}{doc.purchase_document}"
+                    acknowledgement_email_for_employee(user_doc,form_name,link)  
+                    acknowledgement_email_for_finance(user_doc,form_name,company)  
+                    
                     
                 if form_name == "Insurance Form":
                     print("form_document",form_document)
                     print("form_status",form_status)
                     doc.insurance_document = form_document
                     doc.insurance_status = form_status
-                    # form_link = form_link = f"http://127.0.0.1:8003/car-payment-form/new?quotation_form={quotation_id}&user={user}&company={company}"
-                    # email_formate_for_car_onbord(form_link,user_doc,company,"Payment Form")
-                    
+                    form_link = form_link = f"http://127.0.0.1:8003/car-payment-form/new?quotation_form={quotation_id}&user={user}&company={company}"
+                    email_formate_for_car_onbord(form_link,user_doc,company,"Payment Form")
+                    link  = f"{frappe.utils.get_url()}{doc.purchase_document}"
+                    acknowledgement_email_for_employee(user_doc,form_name,link)  
+                    acknowledgement_email_for_finance(user_doc,form_name,company)
                     
                 if form_name == "Payment Form":
                     doc.payment_document = form_document
                     doc.payment_status = form_status
                     form_link = form_link = f"http://127.0.0.1:8003/car-rto-form/new?quotation_form={quotation_id}&user={user}&company={company}"
                     email_formate_for_car_onbord(form_link,user_doc,company,"RTO Form")
+                    link  = f"{frappe.utils.get_url()}{doc.purchase_document}"
+                    acknowledgement_email_for_employee(user_doc,form_name,link) 
+                    acknowledgement_email_for_finance(user_doc,form_name,company) 
+                    
                     
                 if form_name == "RTO Form":
                     doc.rto_document = form_document
                     doc.rto_status = form_status
+                    link  = f"{frappe.utils.get_url()}{doc.purchase_document}"
+                    acknowledgement_email_for_employee(user_doc,form_name,link)  
+                    acknowledgement_email_for_finance(user_doc,form_name,company)
+                    
                 doc.save(ignore_permissions=True)
                 # frappe.msgprint("Updated existing Car Process document.")
         else:
@@ -181,8 +344,12 @@ def car_form_fill():
             # frappe.msgprint("Created new Car Process document.")
 
         # Next Email Send
-        if form_name == "Purchase Form":
-            pass
+        if form_name == "Purchase Form": 
+            form_link = form_link = f"http://127.0.0.1:8003/car-proforma-form/new?quotation_form={quotation_id}&user={user}&company={company}"
+            email_formate_for_car_onbord(form_link,user_doc,company,"Proforma Invoice") 
+            link  = f"{frappe.utils.get_url()}{doc.purchase_document}"
+            acknowledgement_email_for_employee(user_doc,form_name,link)
+            acknowledgement_email_for_finance(user_doc,form_name,company)
         elif form_name == "Payment Form":
             pass
         elif form_name == "Insurance Form":

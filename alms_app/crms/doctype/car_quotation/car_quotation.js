@@ -166,8 +166,11 @@ function FinalSelectedQuotation(frm) {
                         args: {
                             doctype: frm.doc.doctype,
                             name: docName,
-                            fieldname: 'status',
-                            value: 'Rejected'
+                            fieldname: {
+                                status: 'Rejected',
+                                finance_head_status: 'Rejected',
+                                finance_team_status: 'Rejected'
+                            },
                         },
                         callback: function(res) {
                             if (!res.exc) {
