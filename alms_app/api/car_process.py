@@ -176,7 +176,6 @@ def acknowledgement_email_for_employee(user,title,link):
 
     emailer.send(subject=subject, body=body, recipient_email=recipient_email)
 
-
 def acknowledgement_email_for_finance(user,title,company):
     recipient_email = user.email_id
     link="http://127.0.0.1:8003/login#login"

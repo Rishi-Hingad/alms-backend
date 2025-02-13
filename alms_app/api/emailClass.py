@@ -757,7 +757,6 @@ class EmailServices:
         </html>
         """
         return body
-
         
     def for_selected_compny_process(self,quotation_id):
         companies = {
