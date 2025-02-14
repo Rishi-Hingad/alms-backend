@@ -10,7 +10,9 @@ EMail = EmailServices()
 @frappe.whitelist(allow_guest=True)
 def email_sender(name, email_send_to=None,payload=None):
     try:
-        payload = json.loads(payload)
+        print("PAYLOAD---------------->",type(payload),payload)
+        if payload:
+            payload = json.loads(payload)
         user = frappe.get_doc("Employee Master",name)
         print(f"------------[{user.email_id}]-----------------[EMAIL API WORK]--------------[{email_send_to}]---------------")
         

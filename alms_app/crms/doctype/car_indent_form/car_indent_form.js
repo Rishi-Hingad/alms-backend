@@ -135,7 +135,6 @@ frappe.ui.form.on("Car Indent Form", {
         frm.set_df_property('hr_remarks', 'read_only', 1);
 
         toggleFieldStatus(frm);
-        setupFieldChangeHandlers(frm);
     },
 
     hr_approval:function(frm) {
@@ -175,11 +174,14 @@ frappe.ui.form.on("Car Indent Form", {
                 }
             ], 
             function(values) {
+                console.log(11111)
                 frm.set_value('hr_head_remarks', values.remarks_input);
                 frm.refresh_field('hr_head_remarks');
                 frm.save().then(() => {
-                    frm.set_value("status", "Approved");
+                    console.log(1222222) 
                     send_email(frm.doc.name, "HRHead To PurchaseTeam");
+                    frm.set_value("status", "Approved");
+                    frm.save_or_update();
                 });
             }, 
             'Remarks Required', 

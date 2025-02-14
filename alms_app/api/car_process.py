@@ -245,7 +245,6 @@ def acknowledgement_email_for_finance(user,title,company):
 
     emailer.send(subject=subject, body=body, recipient_email=recipient_email)
 
-    
 @frappe.whitelist(allow_guest=True)
 def car_form_fill():
     try:

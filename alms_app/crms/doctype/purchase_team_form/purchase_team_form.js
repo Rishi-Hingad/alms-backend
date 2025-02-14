@@ -191,6 +191,7 @@ frappe.ui.form.on("Purchase Team Form", {
                     frm.refresh_field('purchase_head_remarks');
                     frm.save().then(() => {
                         frm.set_value("status", "Approved");
+                        frm.save_or_update();
                         send_email(frm.doc.name,"PurchaseHead To FinanceTeam")
                     });
 

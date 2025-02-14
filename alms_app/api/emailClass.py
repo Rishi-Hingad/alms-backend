@@ -67,7 +67,6 @@ class EmailServices:
                     border: 1px solid #dddddd;
                     border-radius: 8px;
                     padding: 20px;
-                    background-color: #f9f9f9;
                 }}
                 .footer {{
                     margin-top: 30px;
@@ -514,15 +513,55 @@ class EmailServices:
     def for_finance_fill_quotation_acknowledgement(self, user,regards=""):
         recipient_email = "jaykumar.patel@merillife.com"
         subject = "Car Quotation Form Fiiled"
+        
+        
         body = f"""
-        Dear Finance Teams,
-        <br><br>
-        The Quotation form has been submitted by for {user.employee_name} .
-        Please log in to your dashboard to review the form and proceed with the next steps.
-        <br>
-        Best regards,<br>
-        {regards}
+        <html>
+        <head>
+            <style>
+                body {{
+                    font-family: Arial, sans-serif;
+                    margin: 20px;
+                    line-height: 1.6;
+                }}
+                h2 {{
+                    color: #4CAF50;
+                    text-align: center;
+                }}
+                p {{
+                    font-size: 16px;
+                    margin-bottom: 20px;
+                }}
+                .content {{
+                    border: 1px solid #dddddd;
+                    border-radius: 8px;
+                    padding: 20px;
+                }}
+                .footer {{
+                    margin-top: 30px;
+                    font-size: 14px;
+                    color: #555;
+                }}
+            </style>
+        </head>
+        <body>
+            <h2>Acknowledgement of Car Allocation Request</h2>
+            <div class="content">
+                <p>Dear Finance Teams,</p>
+                <p>
+                    The Quotation form has been submitted by {regards} for {user.employee_name} .
+                    Please log in to your dashboard to review the form and proceed with the next steps.
+                </p>
+                <p>Best regards,</p>
+                <p><strong>{regards}</strong></p>
+            </div>
+            <div class="footer">
+                <p>This is an automated email. Please do not reply to this email.</p>
+            </div>
+        </body>
+        </html>
         """
+        
         self.send(subject=subject, body=body, recipient_email=recipient_email)
         
     # "-------------------------------------" EMAIL BODY FOR VENDOR "-------------------------------------"
@@ -627,8 +666,6 @@ class EmailServices:
     
     
     def for_car_quotation_ALD_EasyAssets_Xyz(self,user,payload):
-        import json
-        payload = json.loads(payload)
         data = [
                 {
                 "name":"Easy Assets",
@@ -757,6 +794,7 @@ class EmailServices:
         </html>
         """
         return body
+      
         
     def for_selected_compny_process(self,quotation_id):
         companies = {
