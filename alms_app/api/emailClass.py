@@ -14,9 +14,9 @@ class EmailServices:
         self.smtp_user = "emailapikey"
         self.smtp_password = "PHtE6r1cF7jiim598RZVsPW9QMCkMN96/uNveQUTt4tGWPNRTk1U+tgokDO0rRx+UKZAHKPInos5tbqZtbiHdz6/Z2dED2qyqK3sx/VYSPOZsbq6x00as1wSc0TfUILscdds1CLfutnYNA=="
         self.from_address = "noreply@merillife.com"
-    def send(self,subject,recipient_email,body):
-        pass
     def send1(self,subject,recipient_email,body):
+        pass
+    def send(self,subject,recipient_email,body):
         try:
             msg = EmailMessage()
             msg.set_content(body, subtype="html")
@@ -780,7 +780,7 @@ class EmailServices:
             </table>
         
             <p>
-                <a href="{form_link}" class="button">Fill Car Onbord Form</a>
+                <a href="{form_link}" class="button">Fill Car Onboard Form</a>
             </p>
             <p>Thank you for cooperating with us.</p>
             <p class="contact-info">
@@ -807,5 +807,5 @@ class EmailServices:
         form_link = f"http://127.0.0.1:8003/car-purchase-form/new?quotation_form={quotation_id}&user={user.name}&company={car_quot_form.finance_company}"
         body = self.create_selected_company_process(car_quot_form,
                                                     user,form_link)
-        subject = f"Car Onbord Process for {user.employee_name}"
+        subject = f"Car Onboard Process for {user.employee_name}"
         self.send(subject=subject, body=body, recipient_email=companies.get(car_quot_form.finance_company))

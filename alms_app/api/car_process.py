@@ -1,6 +1,6 @@
 
 """
-this file manage the email for each levele of process of onbord  car 
+this file manage the email for each levele of process of Onboard  car 
 """
 
 import frappe
@@ -8,7 +8,7 @@ from alms_app.api.emailClass import EmailServices
 
 
 emailer = EmailServices()
-def email_formate_for_car_onbord(form_link,user_doc,company,form_name):
+def email_formate_for_car_Onboard(form_link,user_doc,company,form_name):
     body = f"""
         <html>
         <head>
@@ -84,7 +84,7 @@ def email_formate_for_car_onbord(form_link,user_doc,company,form_name):
             </table>
         
             <p>
-                <a href="{form_link}" class="button">Fill Car Onbord Form</a>
+                <a href="{form_link}" class="button">Fill Car Onboard Form</a>
             </p>
             <p>Thank you for cooperating with us.</p>
             <p class="contact-info">
@@ -97,7 +97,7 @@ def email_formate_for_car_onbord(form_link,user_doc,company,form_name):
         </body>
         </html>
         """
-    subject =  f"Car Onbord Process for {user_doc.employee_name}"
+    subject =  f"Car Onboard Process for {user_doc.employee_name}"
     companies = {
                 "Easy Assets":"jaykumar.patel@merillife.com",
                 "ALD":"jaykumar.patel@merillife.com",
@@ -177,7 +177,7 @@ def acknowledgement_email_for_employee(user,title,link):
     emailer.send(subject=subject, body=body, recipient_email=recipient_email)
 
 def acknowledgement_email_for_finance(user,title,company):
-    recipient_email = user.email_id
+    recipient_email = "jaykumar.patel@merillife.com"
     link="http://127.0.0.1:8003/login#login"
     subject = f"{company} has Successfully Filled the {title}"
 
@@ -270,7 +270,7 @@ def car_form_fill():
                     # doc.purchase_document = form_document
                     # doc.purchase_status = form_status 
                     # form_link = form_link = f"http://127.0.0.1:8003/car-proforma-form/new?quotation_form={quotation_id}&user={user}&company={company}"
-                    # email_formate_for_car_onbord(form_link,user_doc,company,"Proforma Invoice") 
+                    # email_formate_for_car_Onboard(form_link,user_doc,company,"Proforma Invoice") 
                     # link  = f"{frappe.utils.get_url()}{doc.purchase_document}"
                     # acknowledgement_email_for_employee(user_doc,form_name,link)         
                 
@@ -279,7 +279,7 @@ def car_form_fill():
                     doc.proforma_document = form_document
                     doc.proforma_status = form_status
                     form_link = form_link = f"http://127.0.0.1:8003/car-insurance-form/new?quotation_form={quotation_id}&user={user}&company={company}"
-                    email_formate_for_car_onbord(form_link,user_doc,company,"Insurance Form")
+                    email_formate_for_car_Onboard(form_link,user_doc,company,"Insurance Form")
                     link  = f"{frappe.utils.get_url()}{doc.purchase_document}"
                     acknowledgement_email_for_employee(user_doc,form_name,link)  
                     acknowledgement_email_for_finance(user_doc,form_name,company)  
@@ -291,7 +291,7 @@ def car_form_fill():
                     doc.insurance_document = form_document
                     doc.insurance_status = form_status
                     form_link = form_link = f"http://127.0.0.1:8003/car-payment-form/new?quotation_form={quotation_id}&user={user}&company={company}"
-                    email_formate_for_car_onbord(form_link,user_doc,company,"Payment Form")
+                    email_formate_for_car_Onboard(form_link,user_doc,company,"Payment Form")
                     link  = f"{frappe.utils.get_url()}{doc.purchase_document}"
                     acknowledgement_email_for_employee(user_doc,form_name,link)  
                     acknowledgement_email_for_finance(user_doc,form_name,company)
@@ -300,7 +300,7 @@ def car_form_fill():
                     doc.payment_document = form_document
                     doc.payment_status = form_status
                     form_link = form_link = f"http://127.0.0.1:8003/car-rto-form/new?quotation_form={quotation_id}&user={user}&company={company}"
-                    email_formate_for_car_onbord(form_link,user_doc,company,"RTO Form")
+                    email_formate_for_car_Onboard(form_link,user_doc,company,"RTO Form")
                     link  = f"{frappe.utils.get_url()}{doc.purchase_document}"
                     acknowledgement_email_for_employee(user_doc,form_name,link) 
                     acknowledgement_email_for_finance(user_doc,form_name,company) 
@@ -344,7 +344,7 @@ def car_form_fill():
         # Next Email Send
         if form_name == "Purchase Form": 
             form_link = form_link = f"http://127.0.0.1:8003/car-proforma-form/new?quotation_form={quotation_id}&user={user}&company={company}"
-            email_formate_for_car_onbord(form_link,user_doc,company,"Proforma Invoice") 
+            email_formate_for_car_Onboard(form_link,user_doc,company,"Proforma Invoice") 
             link  = f"{frappe.utils.get_url()}{doc.purchase_document}"
             acknowledgement_email_for_employee(user_doc,form_name,link)
             acknowledgement_email_for_finance(user_doc,form_name,company)

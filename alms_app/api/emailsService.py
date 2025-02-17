@@ -45,12 +45,12 @@ def email_sender(name, email_send_to=None,payload=None):
             
         elif email_send_to =="FinanceHead To AccountsTeam":
             print("------------[PAYLOAD Quoatation ID]------------------:",payload)
-            # EMail.for_finance_head_to_accounts_team(user)
+            EMail.for_finance_head_to_accounts_team(user)
             if payload.get("quotation_id"):
                 EMail.for_selected_compny_process(quotation_id=payload.get("quotation_id"))
             else:
                 frappe.msgprint("Something Wrong!, Try Again")
-            # EMail.acknowledgement_email(user,"Finance Department","Final Approvel")
+            EMail.acknowledgement_email(user,"Finance Department","Final Approvel")
             
         elif email_send_to in ["Easy Assets","ALD","XYZ"]:
             EMail.for_finance_fill_quotation_acknowledgement(user,email_send_to)
