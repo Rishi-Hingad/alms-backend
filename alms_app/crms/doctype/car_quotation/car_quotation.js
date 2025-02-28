@@ -37,7 +37,12 @@ function uploadfile(frm) {
     // Sub-button for sending email
     frm.add_custom_button('Send Modification Quot Email', function () {
         frappe.msgprint(__('Email sent successfully!')); 
-        send_email(frm.doc.employee_details,"FinanceHead To Quotation Company",{"email_phase":"Modification","email_send_to":frm.doc.finance_company})
+        send_email(frm.doc.employee_details,"FinanceHead To Quotation Company",{"email_phase":"New","email_send_to":frm.doc.finance_company})
+    }, 'Request Menu')
+
+    frm.add_custom_button('Send Revised Quot Email', function () {
+        frappe.msgprint(__('Email sent successfully!')); 
+        send_email(frm.doc.employee_details,"FinanceHead To Quotation Company",{"email_phase":"Revised","email_send_to":frm.doc.finance_company})
     }, 'Request Menu')
 }
 

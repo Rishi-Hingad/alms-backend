@@ -48,27 +48,44 @@ function updateQuotationSendRequest(frm) {
     frm.add_custom_button('Quotations Company Select', () => {
         frappe.prompt([
             {
-                fieldname: 'email_phase_select',
-                label: 'Select Email Sending Phase',
-                fieldtype: 'Select',  // Fixed fieldtype from 'Radio' to 'Select'
-                options: ['Initial', 'Modification'],
-                reqd: 1,
-                default: "Initial"
-            },
-            {
                 fieldname: 'company_select',
                 label: 'Select Company',
-                fieldtype: 'Select',
-                options: ['Easy Assets', 'ALD', 'XYZ', 'ALL'],
-                reqd: 1,
-                default: "ALL"
+                fieldtype: 'HTML',
+                options: `
+                    <div id="company-checkboxes">
+                        <label><input type="checkbox" name="company_select" value="Easy Assets"> Easy Assets</label><br>
+                        <label><input type="checkbox" name="company_select" value="ALD"> ALD</label><br>
+                        <label><input type="checkbox" name="company_select" value="XYZ"> XYZ</label><br>
+                        <label><input type="checkbox" name="company_select" value="ALL" checked> ALL</label><br>
+                    </div>
+                `
             }
         ], 
         function(values) {
-            send_email(frm.doc.name, "FinanceHead To Quotation Company", {
-                email_send_to: values.company_select, 
-                email_phase: values.email_phase_select
+            // Get selected checkboxes
+            let selected_companies = [];
+            document.querySelectorAll('input[name="company_select"]:checked').forEach((checkbox) => {
+                selected_companies.push(checkbox.value);
             });
+
+            // alert(selected_companies);
+
+            // Send selected companies in email
+            // send_email(frm.doc.name, "FinanceHead To Quotation Company", {
+            //     email_send_to: selected_companies
+            // });
+
+            selected_companies.forEach(company => {
+                send_email(frm.doc.name, "FinanceHead To Quotation Company", {
+                    email_send_to: company
+                });
+            });
+
+            // ✅ Clear selected checkboxes after submission
+            document.querySelectorAll('#company-checkboxes input[type="checkbox"]').forEach(checkbox => {
+                checkbox.checked = false;  // Uncheck all checkboxes
+            });
+
         },         
         'Remarks Required', 
         'Submit');
@@ -78,6 +95,7 @@ function updateQuotationSendRequest(frm) {
         "border-color": "green",
     });
 }
+
 
 
 function send_email(user,email_send_to,payload){
