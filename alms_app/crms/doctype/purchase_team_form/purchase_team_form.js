@@ -97,6 +97,80 @@ function updateQuotationSendRequest(frm) {
 }
 
 
+function updateQuotationSendRequest(frm) {
+    frm.add_custom_button('Quotations Company Select', () => {
+        // Fetch company names from Vendor Master where company names are stored in "name" field
+        frappe.db.get_list('Vendor Master', {
+            fields: ['name'], // Fetching name field as company name
+            distinct: true
+        }).then(response => {
+            let companies = [...new Set(response.map(item => item.name))]; // Unique values
+            let optionsHTML = '<div id="company-checkboxes">';
+
+            // Generating checkboxes dynamically
+            companies.forEach(company => {
+                optionsHTML += `
+                    <label><input type="checkbox" name="company_select" value="${company}"> ${company}</label><br>
+                `;
+            });
+
+            // Adding "ALL" option as default selected
+            optionsHTML += `<label><input type="checkbox" name="company_select" value="ALL" checked> ALL</label><br>`;
+            optionsHTML += '</div>';
+
+            // Show Prompt
+            frappe.prompt([
+                {
+                    fieldname: 'company_select',
+                    label: 'Select Company',
+                    fieldtype: 'HTML',
+                    options: optionsHTML
+                }
+            ], function () {
+                // Get selected checkboxes
+                let selected_companies = [];
+                document.querySelectorAll('input[name="company_select"]:checked').forEach(checkbox => {
+                    selected_companies.push(checkbox.value);
+                });
+
+                // ✅ If "ALL" is selected, use all companies
+                if (selected_companies.includes("ALL")) {
+                    selected_companies = companies;  // Select all companies dynamically
+                }
+
+                // ✅ Debugging (Remove alert if not needed)
+                console.log("Selected Companies: ", selected_companies);
+
+                // ✅ Send email to all selected companies
+                if (selected_companies.length > 0) {
+                    selected_companies.forEach(company => {
+                        send_email(frm.doc.name, "FinanceHead To Quotation Company", {
+                            email_send_to: company
+                        });
+                    });
+                } else {
+                    frappe.msgprint("Please select at least one company.");
+                }
+
+                // ✅ Clear selected checkboxes after submission
+                document.querySelectorAll('#company-checkboxes input[type="checkbox"]').forEach(checkbox => {
+                    checkbox.checked = false;
+                });
+
+                // ✅ "ALL" checkbox remains checked by default
+                document.querySelector('input[value="ALL"]').checked = true;
+
+            }, 'Remarks Required', 'Submit');
+
+        });
+    }).css({
+        "background-color": "darkgreen",
+        "color": "white",
+        "border-color": "green",
+    });
+}
+
+
 
 function send_email(user,email_send_to,payload){
     frappe.call({

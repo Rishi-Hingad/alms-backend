@@ -21,6 +21,7 @@
   "model",
   "engine",
   "colour",
+  "form_type",
   "column_break_wlht",
   "ex_showroom_price",
   "discount",
@@ -208,6 +209,12 @@
    "fieldname": "reporting_head_remarks",
    "fieldtype": "Data",
    "label": "Reporting Head Remarks"
+  },
+  {
+   "fieldname": "form_type",
+   "fieldtype": "Select",
+   "label": "Form Type",
+   "options": "Car\nAllowance"
   }
  ],
  "index_web_pages_for_search": 1,
@@ -217,7 +224,7 @@
    "link_fieldname": "employee_name"
   }
  ],
- "modified": "2025-01-30 14:46:34.724507",
+ "modified": "2025-02-28 16:20:23.074739",
  "modified_by": "Administrator",
  "module": "CRMS",
  "name": "Car Indent Form",

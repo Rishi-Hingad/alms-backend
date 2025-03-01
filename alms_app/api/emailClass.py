@@ -738,28 +738,17 @@ class EmailServices:
     
     
     def for_car_quotation_ALD_EasyAssets_Xyz(self,user,payload):
-        data = [
-                {
-                "name":"Easy Assets",
-                "email":"jaykumar.patel@merillife.com"
-                },
-                {
-                "name":"ALD",
-                "email":"jaykumar.patel@merillife.com"
-                },
-                {
-                "name":"XYZ",
-                "email":"jaykumar.patel@merillife.com"
-                },
-        ]
+        data = frappe.get_all("Vendor Master",fields="*")
+        # print("-------------------------------[DATA]----------------------",data)
         car_indent_form = frappe.get_doc("Car Indent Form",user.name)  
         car_purchase_form = frappe.get_doc("Purchase Team Form",user.name)  
+        print("-------------------------------[payload]----------------------",payload,data)
         for company_detail in data:
-            if payload.get("email_send_to") == "ALL" or company_detail.get("name") == payload.get("email_send_to"):
-                print(f"----------[SEND-LINK TO {company_detail.get('name')}]------[EMAIL TYPE :{payload.get('email_phase')}]---------------")
+            if payload.get("email_send_to") == "ALL" or company_detail.name == payload.get("email_send_to"):
+                print(f"----------[SEND-LINK TO {company_detail.name}]------[EMAIL TYPE :{payload.get('email_phase')}]---------------")
                 link = (
                         f"http://127.0.0.1:8003/vendor-assets-quotation/new?"
-                        f"finance_company={company_detail.get('name')}&"
+                        f"finance_company={company_detail.name}&"
                         f"employee_details={user.name}&"
                         f"location={car_indent_form.location}&"
                         f"kms={car_purchase_form.kilometers_per_year}&"
@@ -770,11 +759,11 @@ class EmailServices:
                         f"financed_amount={car_purchase_form.revised_financed_amount}"
                     )
                 if payload.get("email_phase") == "Revised":
-                    body = self.create_vendor_email_for_Revised_car_quotation(company_detail.get('name'),user,car_indent_form,link)
+                    body = self.create_vendor_email_for_Revised_car_quotation(company_detail.name,user,car_indent_form,link)
                 else:
-                    body = self.create_vendor_email_for_car_quotation(company_detail.get('name'),user,car_indent_form,link)
+                    body = self.create_vendor_email_for_car_quotation(company_detail.name,user,car_indent_form,link)
                 subject = f"Car Quotation"
-                self.send(subject=subject, body=body, recipient_email=company_detail.get('email'))
+                self.send(subject=subject, body=body, recipient_email=company_detail.contact_email)
             
     # "-------------------------------------" EMAIL BODY COMPANY SELECTION EMAILS "-------------------------------------"
     
@@ -857,7 +846,6 @@ class EmailServices:
             <p>
                 <a href="{form_link}" class="button">Fill Car Onboard Form</a>
             </p>
-            <p>Thank you for cooperating with us.</p>
             <p class="contact-info">
                 For assistance, please contact:<br>
                 Email: support@meril.com<br>
@@ -872,15 +860,11 @@ class EmailServices:
       
         
     def for_selected_compny_process(self,quotation_id):
-        companies = {
-                "Easy Assets":"jaykumar.patel@merillife.com",
-                "ALD":"jaykumar.patel@merillife.com",
-                "XYZ":"jaykumar.patel@merillife.com"
-                }
         car_quot_form = frappe.get_doc("Car Quotation",quotation_id)  
         user = frappe.get_doc("Employee Master",car_quot_form.employee_details)  
         form_link = f"http://127.0.0.1:8003/car-purchase-form/new?quotation_form={quotation_id}&user={user.name}&company={car_quot_form.finance_company}"
         body = self.create_selected_company_process(car_quot_form,
                                                     user,form_link)
         subject = f"Car Onboard Process for {user.employee_name}"
-        self.send(subject=subject, body=body, recipient_email=companies.get(car_quot_form.finance_company))
+        vendor =frappe.get_doc("Vendor Master",car_quot_form.finance_company)
+        self.send(subject=subject, body=body, recipient_email=vendor.contact_email)

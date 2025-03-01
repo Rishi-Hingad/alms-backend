@@ -86,7 +86,7 @@ def email_formate_for_car_Onboard(form_link,user_doc,company,form_name):
             <p>
                 <a href="{form_link}" class="button">Fill Car Onboard Form</a>
             </p>
-            <p>Thank you for cooperating with us.</p>
+
             <p class="contact-info">
                 For assistance, please contact:<br>
                 Email: support@meril.com<br>
@@ -255,6 +255,7 @@ def car_form_fill():
         form_name = frappe.form_dict.get("form_name")
         form_status = frappe.form_dict.get("form_status")
         form_document = frappe.form_dict.get("form_document")
+        form_date = frappe.form_dict.get("form_date")
         
         user_doc = frappe.get_doc("Employee Master",user)  
         
@@ -276,9 +277,9 @@ def car_form_fill():
                 
                 
                 if form_name == "Proforma Form":
-                    doc.proforma_document = form_document
-                    doc.proforma_status = form_status
-                    form_link = form_link = f"http://127.0.0.1:8003/car-insurance-form/new?quotation_form={quotation_id}&user={user}&company={company}"
+                    doc.proforma_invoice_document = form_document
+                    doc.proforma_invoice_received = form_status
+                    form_link = f"http://127.0.0.1:8003/car-insurance-form/new?quotation_form={quotation_id}&user={user}&company={company}"
                     email_formate_for_car_Onboard(form_link,user_doc,company,"Insurance Form")
                     link  = f"{frappe.utils.get_url()}{doc.purchase_document}"
                     acknowledgement_email_for_employee(user_doc,form_name,link)  
@@ -289,8 +290,8 @@ def car_form_fill():
                     print("form_document",form_document)
                     print("form_status",form_status)
                     doc.insurance_document = form_document
-                    doc.insurance_status = form_status
-                    form_link = form_link = f"http://127.0.0.1:8003/car-payment-form/new?quotation_form={quotation_id}&user={user}&company={company}"
+                    doc.insurance_copy_received = form_status
+                    form_link = f"http://127.0.0.1:8003/car-payment-form/new?quotation_form={quotation_id}&user={user}&company={company}"
                     email_formate_for_car_Onboard(form_link,user_doc,company,"Payment Form")
                     link  = f"{frappe.utils.get_url()}{doc.purchase_document}"
                     acknowledgement_email_for_employee(user_doc,form_name,link)  
@@ -298,8 +299,8 @@ def car_form_fill():
                     
                 if form_name == "Payment Form":
                     doc.payment_document = form_document
-                    doc.payment_status = form_status
-                    form_link = form_link = f"http://127.0.0.1:8003/car-rto-form/new?quotation_form={quotation_id}&user={user}&company={company}"
+                    doc.payment_done = form_status
+                    form_link = f"http://127.0.0.1:8003/car-rto-form/new?quotation_form={quotation_id}&user={user}&company={company}"
                     email_formate_for_car_Onboard(form_link,user_doc,company,"RTO Form")
                     link  = f"{frappe.utils.get_url()}{doc.purchase_document}"
                     acknowledgement_email_for_employee(user_doc,form_name,link) 
@@ -307,8 +308,18 @@ def car_form_fill():
                     
                     
                 if form_name == "RTO Form":
-                    doc.rto_document = form_document
-                    doc.rto_status = form_status
+                    doc.registration_document = form_document
+                    doc.registration_done = form_status
+                    form_link = f"http://127.0.0.1:8003/car-delivery-form/new?quotation_form={quotation_id}&user={user}&company={company}"
+                    email_formate_for_car_Onboard(form_link,user_doc,company,"Delivery Form")
+                    link  = f"{frappe.utils.get_url()}{doc.purchase_document}"
+                    acknowledgement_email_for_employee(user_doc,form_name,link)  
+                    acknowledgement_email_for_finance(user_doc,form_name,company)
+                    
+                if form_name == "Delivery Form":
+                    doc.agreement_document = form_document
+                    doc.car_delivery = form_status
+                    doc.delivery_date = form_date
                     link  = f"{frappe.utils.get_url()}{doc.purchase_document}"
                     acknowledgement_email_for_employee(user_doc,form_name,link)  
                     acknowledgement_email_for_finance(user_doc,form_name,company)
@@ -323,29 +334,33 @@ def car_form_fill():
                 "quotation": quotation_id,
                 }
             if form_name == "Purchase Form": 
-                payload["purchase_status"] = form_status
-                payload["purchase_document"] = form_document
+                payload["po"] = form_status
+                payload["po_document"] = form_document
             if form_name == "Payment Form":
-                payload["payment_status"] = form_status
+                payload["payment_done"] = form_status
                 payload["payment_document"] = form_document
             if form_name == "Insurance Form":
-                payload["insurance_status"] = form_status
+                payload["insurance_copy_received"] = form_status
                 payload["insurance_document"] = form_document
             if form_name == "RTO Form":
-                payload["rto_status"] = form_status
-                payload["rto_document"] = form_document
+                payload["registration_done"] = form_status
+                payload["registration_document"] = form_document
             if form_name == "Proforma Form":
-                payload["proforma_status"] = form_status
-                payload["proforma_document"] = form_document
+                payload["proforma_invoice_received"] = form_status
+                payload["proforma_invoice_document"] = form_document
+            if form_name == "Delivery Form":
+                payload["car_delivery"] = form_status
+                payload["car_delivery_document"] = form_document
+                payload["car_delivery_date"] = form_date
             doc = frappe.get_doc(payload)
             doc.insert(ignore_permissions=True)
             # frappe.msgprint("Created new Car Process document.")
 
         # Next Email Send
         if form_name == "Purchase Form": 
-            form_link = form_link = f"http://127.0.0.1:8003/car-proforma-form/new?quotation_form={quotation_id}&user={user}&company={company}"
+            form_link = f"http://127.0.0.1:8003/car-proforma-form/new?quotation_form={quotation_id}&user={user}&company={company}"
             email_formate_for_car_Onboard(form_link,user_doc,company,"Proforma Invoice") 
-            link  = f"{frappe.utils.get_url()}{doc.purchase_document}"
+            link  = f"{frappe.utils.get_url()}{doc.po_document}"
             acknowledgement_email_for_employee(user_doc,form_name,link)
             acknowledgement_email_for_finance(user_doc,form_name,company)
         elif form_name == "Payment Form":
