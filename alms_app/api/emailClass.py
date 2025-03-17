@@ -6,6 +6,9 @@ this class manage the email for each levele of approvels
 import smtplib
 from email.message import EmailMessage
 import frappe
+from alms_app.api.email_master import EmailMaster
+emailMaster = EmailMaster()
+
 
 class EmailServices:
     def __init__(self):
@@ -393,7 +396,7 @@ class EmailServices:
         subject =f"Car Rental Form for Submitted by {user.employee_name} for Your Review"
         regards = f"{user.employee_name} (Employee)"
         content = f"""
-        Dear Reporting Manager,
+        Dear {user.reporting_head},
         <br><br>
         We are pleased to inform you that {user.employee_name} has submitted the car rental form for your review.
         <br><br>Kindly check and take necessary action at your earliest convenience.<br><br>
@@ -403,11 +406,11 @@ class EmailServices:
         self.send(subject=subject, body=body, recipient_email=recipient_email)
  
     def for_reporting_to_hr_team(self, user):
-        recipient_email = "jaykumar.patel@merillife.com"
+        recipient_email = emailMaster.hr_team_email
         subject = "Car Rental Form Approved by Reporting Manager"
         regards = f"{user.reporting_head} (Reporting Manager)"
         content = f"""
-        Dear HR Team,
+        Dear Sir/Madam,
         <br><br>
         This is to notify you that the car rental form submitted by {user.employee_name} has been approved by the Reporting Manager.<br>
         """
@@ -418,13 +421,13 @@ class EmailServices:
 
     def for_hr_team_to_hr_head(self, user):
         pass
-        recipient_email = "jaykumar.patel@merillife.com"
+        recipient_email = emailMaster.hr_head_email
         subject = "Car Rental Form Approved by HR Team"
         regards = "HR Team"
-        updated_by = "Mrs. Ami Rughani"
+        updated_by = emailMaster.hr_team
         form = frappe.get_doc("Car Indent Form",user.name)
         content = f"""
-        Dear HR Head,
+        Dear Sir/Madam,
         <br><br>The HR team has reviewed and approved the car rental form submitted by {user.employee_name}.
         <br>
         {updated_by} have sent the form for the activity mentioned below:
@@ -433,13 +436,13 @@ class EmailServices:
         self.send(subject=subject, body=body, recipient_email=recipient_email)
 
     def for_hr_head_to_purchase_team(self, user):
-        recipient_email = "jaykumar.patel@merillife.com"
+        recipient_email = emailMaster.purchase_team_email
         subject = "Car Rental Form Approved by HR Head"
         regards = "HR Head"
-        updated_by = "Mr. Hemchandra Panjikar"
+        updated_by = emailMaster.hr_head
         form = frappe.get_doc("Car Indent Form",user.name)
         content = f"""
-        Dear Purchase Team,
+        Dear Sir/Madam,
         <br><br>
         The HR Head has approved the car rental form submitted by {user.employee_name}.
         <br>
@@ -449,14 +452,14 @@ class EmailServices:
         self.send(subject=subject, body=body, recipient_email=recipient_email)
 
     def for_purchase_team_to_purchase_head(self, user):
-        recipient_email = "jaykumar.patel@merillife.com"
+        recipient_email = emailMaster.purchase_head_email
         subject = "Car Rental Form Approved by Purchase Team"
         regards = "Purchase Team"
-        updated_by = "Mr. Tarun Patel"
+        updated_by = emailMaster.purchase_team
         form = frappe.get_doc("Car Indent Form",user.name)
         revised_form = frappe.get_doc("Purchase Team Form",user.name)
         content = f"""
-        Dear Purchase Head,
+        Dear Sir/Madam,
         <br><br>The Purchase Team has reviewed and approved the car rental form form submitted by {user.employee_name}.
         <br>{updated_by} have updated the quotation for the activity mentioned below:
         """
@@ -464,14 +467,14 @@ class EmailServices:
         self.send(subject=subject, body=body, recipient_email=recipient_email)
 
     def for_purchase_head_to_finance_team(self, user):
-        recipient_email = "jaykumar.patel@merillife.com"
+        recipient_email = emailMaster.finance_team_email
         subject = "Car Rental Form Approved by Purchase Head"
         regards = "Purchase Head"
         form = frappe.get_doc("Car Indent Form",user.name)
         revised_form = frappe.get_doc("Purchase Team Form",user.name)
-        updated_by = "Mr. Sumesh Nair"
+        updated_by = emailMaster.purchase_head
         content = f"""
-        Dear Finance Team,
+        Dear Sir/Madam,
         <br><br>The Purchase Head has approved the car rental form for {user.employee_name}.
         <br>{updated_by} have approved the request for the activity mentioned below:
         """
@@ -479,14 +482,14 @@ class EmailServices:
         self.send(subject=subject, body=body, recipient_email=recipient_email)
 
     def for_finance_team_to_finance_head(self, user):
-        recipient_email = "jaykumar.patel@merillife.com"
+        recipient_email = emailMaster.purchase_head_email
         subject = "Car Rental Form Approved by Finance Team"
         regards ="Finance Team"
         form = frappe.get_doc("Car Indent Form",user.name)
         revised_form = frappe.get_doc("Purchase Team Form",user.name)
-        updated_by = "Mr. Dhrumit Solanki"
+        updated_by = emailMaster.finance_team
         content = f"""
-        Dear Finance Head,
+        Dear Sir/Madam,
         <br><br>The Finance Team has approved the car rental form for {user.employee_name}.
         <br>{updated_by} have approved the request for the activity mentioned below:
         """
@@ -494,13 +497,13 @@ class EmailServices:
         self.send(subject=subject, body=body, recipient_email=recipient_email)
 
     def for_finance_head_to_accounts_team(self, user):
-        recipient_email = "jaykumar.patel@merillife.com"
+        recipient_email = emailMaster.accounts_team_email
         subject = "Car Rental Form Final Approval"
         regards = "Finance Head"
-        updated_by = "Mr. Hemchandra Panjikar"
+        updated_by = emailMaster.finance_head
         form = frappe.get_doc("Car Indent Form",user.name)
         content = f"""
-        Dear Accounts Teams,
+        Dear Sir/Madam,
         <br><br>
         The car rental form submitted by {user.employee_name} has been approved at all levels and is now ready for processing.
         Kindly proceed with the final steps.
@@ -511,7 +514,7 @@ class EmailServices:
         self.send(subject=subject, body=body, recipient_email=recipient_email)
                
     def for_finance_fill_quotation_acknowledgement(self, user,regards=""):
-        recipient_email = "jaykumar.patel@merillife.com"
+        recipient_email = emailMaster.finance_team_email
         subject = "Car Quotation Form Fiiled"
         
         
@@ -565,7 +568,6 @@ class EmailServices:
         self.send(subject=subject, body=body, recipient_email=recipient_email)
         
     # "-------------------------------------" EMAIL BODY FOR VENDOR "-------------------------------------"
-    
     def create_vendor_email_for_car_quotation(self,compny_name,user,form,link):
         body = f"""
             <html>
@@ -736,7 +738,6 @@ class EmailServices:
         
         return body
     
-    
     def for_car_quotation_ALD_EasyAssets_Xyz(self,user,payload):
         data = frappe.get_all("Vendor Master",fields="*")
         # print("-------------------------------[DATA]----------------------",data)
@@ -763,10 +764,8 @@ class EmailServices:
                 else:
                     body = self.create_vendor_email_for_car_quotation(company_detail.name,user,car_indent_form,link)
                 subject = f"Car Quotation"
-                self.send(subject=subject, body=body, recipient_email=company_detail.contact_email)
-            
+                self.send(subject=subject, body=body, recipient_email=company_detail.contact_email)      
     # "-------------------------------------" EMAIL BODY COMPANY SELECTION EMAILS "-------------------------------------"
-    
     # Jyare COmpny Selected Thay [Approved] then eni process chalu thay e 
     def create_selected_company_process(self,car_form,user, form_link):
         body = f"""
@@ -858,7 +857,6 @@ class EmailServices:
         """
         return body
       
-        
     def for_selected_compny_process(self,quotation_id):
         car_quot_form = frappe.get_doc("Car Quotation",quotation_id)  
         user = frappe.get_doc("Employee Master",car_quot_form.employee_details)  

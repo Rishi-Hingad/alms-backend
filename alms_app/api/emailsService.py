@@ -61,7 +61,6 @@ def email_sender(name, email_send_to=None,payload=None):
         print(f"------------[Error:{e}]---------------")
         return {"status": "error","message":str(e)}
 
-
 @frappe.whitelist()
 def approve_car_indent_by_reporting(indent_form,remarks):
     try: 

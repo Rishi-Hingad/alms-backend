@@ -7,17 +7,19 @@
  "engine": "InnoDB",
  "field_order": [
   "employee_master_section",
+  "company",
+  "employee_code",
   "employee_name",
   "employee_department",
+  "location",
   "designation",
   "email_id",
-  "eligibility",
-  "reporting_head",
   "column_break_ryfx",
-  "employee_code",
-  "company",
-  "location",
+  "date_of_joining",
+  "date_of_birth",
+  "eligibility",
   "contact_number",
+  "reporting_head",
   "reporting_head_email_id",
   "status"
  ],
@@ -48,9 +50,8 @@
   },
   {
    "fieldname": "designation",
-   "fieldtype": "Select",
-   "label": "Designation",
-   "options": "Manager\nSenior Manager\nDeputy General Manager\nGeneral Manager\nAdditional General Manager\nVice President\nSenior General Manager"
+   "fieldtype": "Data",
+   "label": "Designation"
   },
   {
    "fieldname": "email_id",
@@ -78,6 +79,7 @@
    "label": "Contact Number"
   },
   {
+   "default": "Not Sent",
    "fieldname": "status",
    "fieldtype": "Select",
    "in_list_view": 1,
@@ -93,6 +95,16 @@
    "fieldname": "reporting_head_email_id",
    "fieldtype": "Data",
    "label": "Reporting Head Email ID"
+  },
+  {
+   "fieldname": "date_of_joining",
+   "fieldtype": "Date",
+   "label": "Date Of Joining"
+  },
+  {
+   "fieldname": "date_of_birth",
+   "fieldtype": "Date",
+   "label": "Date of Birth"
   }
  ],
  "index_web_pages_for_search": 1,
@@ -103,7 +115,7 @@
    "table_fieldname": "Employee Name"
   }
  ],
- "modified": "2025-01-29 10:38:13.835960",
+ "modified": "2025-03-05 10:00:47.031509",
  "modified_by": "Administrator",
  "module": "master",
  "name": "Employee Master",

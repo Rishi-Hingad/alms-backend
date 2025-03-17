@@ -291,6 +291,17 @@ def car_form_fill():
                     print("form_status",form_status)
                     doc.insurance_document = form_document
                     doc.insurance_copy_received = form_status
+                    form_link = f"http://127.0.0.1:8003/car-rc-book-form/new?quotation_form={quotation_id}&user={user}&company={company}"
+                    email_formate_for_car_Onboard(form_link,user_doc,company,"RC Book Form")
+                    link  = f"{frappe.utils.get_url()}{doc.purchase_document}"
+                    acknowledgement_email_for_employee(user_doc,form_name,link)  
+                    acknowledgement_email_for_finance(user_doc,form_name,company)
+                    
+                if form_name == "RC Book Form":
+                    print("form_document",form_document)
+                    print("form_status",form_status)
+                    doc.rc_book_document = form_document
+                    doc.rc_book_received = form_status
                     form_link = f"http://127.0.0.1:8003/car-payment-form/new?quotation_form={quotation_id}&user={user}&company={company}"
                     email_formate_for_car_Onboard(form_link,user_doc,company,"Payment Form")
                     link  = f"{frappe.utils.get_url()}{doc.purchase_document}"
@@ -342,6 +353,9 @@ def car_form_fill():
             if form_name == "Insurance Form":
                 payload["insurance_copy_received"] = form_status
                 payload["insurance_document"] = form_document
+            if form_name == "RC Book Form":
+                payload["rc_book_received"] = form_status
+                payload["rc_book_document"] = form_document
             if form_name == "RTO Form":
                 payload["registration_done"] = form_status
                 payload["registration_document"] = form_document

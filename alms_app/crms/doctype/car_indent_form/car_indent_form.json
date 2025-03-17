@@ -8,6 +8,7 @@
  "engine": "InnoDB",
  "field_order": [
   "car_indent_form_section",
+  "form_type",
   "employee_code",
   "employee_reporting",
   "company_name",
@@ -21,7 +22,6 @@
   "model",
   "engine",
   "colour",
-  "form_type",
   "column_break_wlht",
   "ex_showroom_price",
   "discount",
@@ -224,7 +224,7 @@
    "link_fieldname": "employee_name"
   }
  ],
- "modified": "2025-02-28 16:20:23.074739",
+ "modified": "2025-03-03 10:04:19.259352",
  "modified_by": "Administrator",
  "module": "CRMS",
  "name": "Car Indent Form",
