@@ -5,5 +5,5 @@
 from frappe.tests.utils import FrappeTestCase
 
 
-class TestCarIndentForm(FrappeTestCase):
+class TestCarRCBookForm(FrappeTestCase):
 	pass

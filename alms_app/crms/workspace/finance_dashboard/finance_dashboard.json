@@ -9,7 +9,7 @@
    "label": "Quotation Status"
   }
  ],
- "content": "[{\"id\":\"8N-Qh09fJU\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Finance Dashboard</span>\",\"col\":12}},{\"id\":\"y1msP-GXAC\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Eligible Employee\",\"col\":4}},{\"id\":\"CDOJUbTtcm\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Total Purchase Team Form\",\"col\":4}},{\"id\":\"SFdJwG_Cte\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Total Car Indent Form\",\"col\":4}},{\"id\":\"6muTzorxB-\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Approved Car Indent Form\",\"col\":4}},{\"id\":\"GzFYhjstkw\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Pending Car Indent Form\",\"col\":4}},{\"id\":\"URJdUnZPe2\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Rejected Car Indent Form\",\"col\":4}},{\"id\":\"9dmfLYh3m5\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"ALD Quotation Count\",\"col\":4}},{\"id\":\"epCHdTrYD8\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Easy Asset Quotation Count\",\"col\":4}},{\"id\":\"mmKWdyL638\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"XYZ Quotation Count\",\"col\":4}},{\"id\":\"FJ_GXH1yJO\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Company And Employee Deduction\",\"col\":9}},{\"id\":\"TFDccfJReN\",\"type\":\"quick_list\",\"data\":{\"quick_list_name\":\"Easy Assets Quotation\",\"col\":4}},{\"id\":\"QMwW-CHWc2\",\"type\":\"quick_list\",\"data\":{\"quick_list_name\":\"ALD Quotations\",\"col\":4}},{\"id\":\"8vOOBdEIVa\",\"type\":\"quick_list\",\"data\":{\"quick_list_name\":\"XYZ Quotations\",\"col\":4}},{\"id\":\"eqlzUHk1cS\",\"type\":\"chart\",\"data\":{\"chart_name\":\"Quotation Count\",\"col\":12}},{\"id\":\"xGT6VGfjfF\",\"type\":\"chart\",\"data\":{\"chart_name\":\"Quotation Status\",\"col\":12}}]",
+ "content": "[{\"id\":\"8N-Qh09fJU\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Finance Dashboard</span>\",\"col\":12}},{\"id\":\"y1msP-GXAC\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Eligible Employee\",\"col\":4}},{\"id\":\"CDOJUbTtcm\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Total Purchase Team Form\",\"col\":4}},{\"id\":\"SFdJwG_Cte\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Total Car Indent Form\",\"col\":4}},{\"id\":\"6muTzorxB-\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Approved Car Indent Form\",\"col\":4}},{\"id\":\"GzFYhjstkw\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Pending Car Indent Form\",\"col\":4}},{\"id\":\"URJdUnZPe2\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Rejected Car Indent Form\",\"col\":4}},{\"id\":\"XPxGIqzvk8\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\"><b>Quotations Details</b></span>\",\"col\":12}},{\"id\":\"epCHdTrYD8\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Easy Asset Quotation Count\",\"col\":4}},{\"id\":\"9dmfLYh3m5\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"ALD Quotation Count\",\"col\":4}},{\"id\":\"mmKWdyL638\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"XYZ Quotation Count\",\"col\":4}},{\"id\":\"N9PiDsBOxb\",\"type\":\"quick_list\",\"data\":{\"quick_list_name\":\"Purchase Team Forms\",\"col\":6}},{\"id\":\"qMZabI5ywQ\",\"type\":\"quick_list\",\"data\":{\"quick_list_name\":\"Car Onboards Forms\",\"col\":6}},{\"id\":\"8vOOBdEIVa\",\"type\":\"quick_list\",\"data\":{\"quick_list_name\":\"XYZ Quotations\",\"col\":4}},{\"id\":\"TFDccfJReN\",\"type\":\"quick_list\",\"data\":{\"quick_list_name\":\"Easy Assets Quotation\",\"col\":4}},{\"id\":\"QMwW-CHWc2\",\"type\":\"quick_list\",\"data\":{\"quick_list_name\":\"ALD Quotations\",\"col\":4}},{\"id\":\"FJ_GXH1yJO\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Company And Employee Deduction\",\"col\":12}},{\"id\":\"eqlzUHk1cS\",\"type\":\"chart\",\"data\":{\"chart_name\":\"Quotation Count\",\"col\":12}},{\"id\":\"xGT6VGfjfF\",\"type\":\"chart\",\"data\":{\"chart_name\":\"Quotation Status\",\"col\":12}}]",
  "creation": "2024-11-05 11:25:34.618276",
  "custom_blocks": [],
  "docstatus": 0,
@@ -22,7 +22,7 @@
  "is_hidden": 0,
  "label": "Finance Dashboard",
  "links": [],
- "modified": "2024-11-23 18:17:40.858713",
+ "modified": "2025-03-22 11:04:14.610453",
  "modified_by": "Administrator",
  "module": "CRMS",
  "name": "Finance Dashboard",
@@ -69,22 +69,39 @@
  "public": 1,
  "quick_lists": [
   {
+   "document_type": "Car Process",
+   "label": "Car Onboards Forms",
+   "quick_list_filter": "[]"
+  },
+  {
+   "document_type": "Purchase Team Form",
+   "label": "Purchase Team Forms",
+   "quick_list_filter": "[[\"Purchase Team Form\",\"status\",\"=\",\"Approved\",false]]"
+  },
+  {
    "document_type": "Car Quotation",
    "label": "Easy Assets Quotation",
-   "quick_list_filter": "[[\"Car Quotation\",\"finance_company\",\"=\",\"Easy Assets\",false]]"
+   "quick_list_filter": "[[\"Car Quotation\",\"finance_company\",\"=\",\"Easy Assets\",false],[\"Car Quotation\",\"status\",\"in\",[\"Pending\",\"Approved\",null],false]]"
   },
   {
    "document_type": "Car Quotation",
    "label": "ALD Quotations",
-   "quick_list_filter": "[[\"Car Quotation\",\"finance_company\",\"=\",\"ALD\",false]]"
+   "quick_list_filter": "[[\"Car Quotation\",\"finance_company\",\"=\",\"ALD\",false],[\"Car Quotation\",\"status\",\"in\",[\"Approved\",\"Pending\",null],false]]"
   },
   {
    "document_type": "Car Quotation",
    "label": "XYZ Quotations",
-   "quick_list_filter": "[[\"Car Quotation\",\"finance_company\",\"=\",\"XYZ\",false]]"
+   "quick_list_filter": "[[\"Car Quotation\",\"finance_company\",\"=\",\"XYZ\",false],[\"Car Quotation\",\"status\",\"in\",[\"Approved\",\"Pending\",null],false]]"
   }
  ],
- "roles": [],
+ "roles": [
+  {
+   "role": "Administrator"
+  },
+  {
+   "role": "Finance Team"
+  }
+ ],
  "sequence_id": 3.0,
  "shortcuts": [
   {
