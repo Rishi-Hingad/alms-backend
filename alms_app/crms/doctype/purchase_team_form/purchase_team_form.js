@@ -43,60 +43,6 @@ function updateStatus(frm) {
     }
 }
 
-
-// function updateQuotationSendRequest(frm) {
-//     frm.add_custom_button('Quotations Company Select', () => {
-//         frappe.prompt([
-//             {
-//                 fieldname: 'company_select',
-//                 label: 'Select Company',
-//                 fieldtype: 'HTML',
-//                 options: `
-//                     <div id="company-checkboxes">
-//                         <label><input type="checkbox" name="company_select" value="Easy Assets"> Easy Assets</label><br>
-//                         <label><input type="checkbox" name="company_select" value="ALD"> ALD</label><br>
-//                         <label><input type="checkbox" name="company_select" value="XYZ"> XYZ</label><br>
-//                         <label><input type="checkbox" name="company_select" value="ALL" checked> ALL</label><br>
-//                     </div>
-//                 `
-//             }
-//         ], 
-//         function(values) {
-//             // Get selected checkboxes
-//             let selected_companies = [];
-//             document.querySelectorAll('input[name="company_select"]:checked').forEach((checkbox) => {
-//                 selected_companies.push(checkbox.value);
-//             });
-
-//             // alert(selected_companies);
-
-//             // Send selected companies in email
-//             // send_email(frm.doc.name, "FinanceHead To Quotation Company", {
-//             //     email_send_to: selected_companies
-//             // });
-
-//             selected_companies.forEach(company => {
-//                 send_email(frm.doc.name, "FinanceHead To Quotation Company", {
-//                     email_send_to: company
-//                 });
-//             });
-
-//             // ✅ Clear selected checkboxes after submission
-//             document.querySelectorAll('#company-checkboxes input[type="checkbox"]').forEach(checkbox => {
-//                 checkbox.checked = false;  // Uncheck all checkboxes
-//             });
-
-//         },         
-//         'Remarks Required', 
-//         'Submit');
-//     }).css({
-//         "background-color": "darkgreen",
-//         "color": "white",
-//         "border-color": "green",
-//     });
-// }
-
-
 function updateQuotationSendRequest(frm) {
     frm.add_custom_button('Quotations Company Select', () => {
         // Fetch company names from Vendor Master where company names are stored in "name" field
@@ -146,8 +92,8 @@ function updateQuotationSendRequest(frm) {
                     alert(selected_companies)
                     selected_companies.forEach(company => {
                         send_email(frm.doc.name, "FinanceHead To Quotation Company", {
-                            // email_send_to: company
-                            selected_companies.p
+                            email_send_to: company
+                            // selected_companies.p
                         });
                         selected_companies = [];
                     });
@@ -206,48 +152,6 @@ function send_email(user,email_send_to,payload){
 
 
 function toggleFieldStatus(frm) {
-    // if (frappe.session.designation === "Purchase Head") {
-    // if (frappe.session.user === "purchasehead@gmail.com") {
-    //     frm.set_df_property("status", "read_only", true);
-    //     frm.set_df_property("purchase_head_status", "read_only", false);
-    //     frm.set_df_property("purchase_team_status", "read_only", true);
-    //     frm.set_df_property("kilometers_per_year", "read_only", true);
-    //     frm.set_df_property("tenure_in_years", "read_only", true);
-    //     frm.set_df_property("total_kilometers", "read_only", true);
-    //     frm.set_df_property("revised_ex_show_room_price", "read_only", true);
-    //     frm.set_df_property("revised_discount", "read_only", true);
-    //     frm.set_df_property("revised_tcs", "read_only", true);
-    //     frm.set_df_property("revised_net_ex_showroom_price", "read_only", true);
-    //     frm.set_df_property("revised_registration_charges", "read_only", true);
-    //     frm.set_df_property("revised_accessories", "read_only", true);
-    //     frm.set_df_property("revised_financed_amount", "read_only", true);
-    //     frm.set_df_property("purchase_head_remarks", "read_only", true);
-    //     frm.set_df_property("purchase_team_remarks", "read_only", true);
-    // }
-    // else if (frappe.session.user === "purchase@gmail.com") {
-    //     frm.set_df_property("purchase_head_status", "read_only", true);
-    //     frm.set_df_property("status", "read_only", true);
-    //     frm.set_df_property("purchase_head_remarks", "read_only", true);
-    //     frm.set_df_property("purchase_team_remarks", "read_only", true);
-    // }
-    // else{
-    //     frm.set_df_property("status", "read_only", true);
-    //     frm.set_df_property("purchase_team_status", "read_only", true);
-    //     frm.set_df_property("kilometers_per_year", "read_only", true);
-    //     frm.set_df_property("tenure_in_years", "read_only", true);
-    //     frm.set_df_property("total_kilometers", "read_only", true);
-    //     frm.set_df_property("revised_ex_show_room_price", "read_only", true);
-    //     frm.set_df_property("revised_discount", "read_only", true);
-    //     frm.set_df_property("revised_tcs", "read_only", true);
-    //     frm.set_df_property("revised_net_ex_showroom_price", "read_only", true);
-    //     frm.set_df_property("revised_registration_charges", "read_only", true);
-    //     frm.set_df_property("revised_accessories", "read_only", true);
-    //     frm.set_df_property("revised_financed_amount", "read_only", true);
-    //     frm.set_df_property("purchase_head_status", "read_only", true);
-    //     frm.set_df_property("status", "read_only", true);
-    //     frm.set_df_property("purchase_head_remarks", "read_only", true);
-    //     frm.set_df_property("purchase_team_remarks", "read_only", true);
-    // }
 
 
     if (frappe.session.user === "purchase@gmail.com") {

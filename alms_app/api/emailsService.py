@@ -61,23 +61,24 @@ def email_sender(name, email_send_to=None,payload=None):
         print(f"------------[Error:{e}]---------------")
         return {"status": "error","message":str(e)}
 
-@frappe.whitelist()
+@frappe.whitelist(allow_guest=True)
 def approve_car_indent_by_reporting(indent_form,remarks):
     try: 
         # indent_form = frappe.form_dict.get("indent_form")
         # remarks = frappe.form_dict.get("remarks")
+        print("----------indent_form",indent_form)
         user = frappe.get_doc("Employee Master",indent_form)
         i_form = frappe.get_doc("Car Indent Form", indent_form)
-        
         i_form.reporting_head_approval = "Approved"
         i_form.reporting_head_remarks = remarks
         i_form.save()
         frappe.db.commit()
-        # Redirect to a specific URL on success
+        # # Redirect to a specific URL on success
         EMail.for_reporting_to_hr_team(user) 
         frappe.local.response["type"] = "redirect"
         frappe.local.response["location"] = "/approved"
     except Exception as e:
+        print(e,"-----------------")
         frappe.log_error(f"Error approving form: {str(e)}", "Car Indent Approval Error")
         frappe.local.response["type"] = "redirect"
         frappe.local.response["location"] = "/somethingwrong"
