@@ -757,9 +757,9 @@ class EmailServices:
                         f"accessory={car_purchase_form.revised_accessories}&"
                         f"discount_excluding_gst={car_purchase_form.revised_discount}&"
                         f"registration_charges={car_purchase_form.revised_registration_charges}&"
-                        f"financed_amount={car_purchase_form.revised_financed_amount}"
-                        f"ex_showroom_amount={car_purchase_form.ex_showroom_amount}"
-                        f"ex_showroom_amount_net_of_discount={car_purchase_form.ex_showroom_amount_net_of_discount}"
+                        f"financed_amount={car_purchase_form.revised_financed_amount}&"
+                        f"ex_showroom_amount={car_purchase_form.revised_ex_show_room_price}&"
+                        f"ex_showroom_amount_net_of_discount={car_purchase_form.revised_net_ex_showroom_price}"
                         
                     )
                 if payload.get("email_phase") == "Revised":
