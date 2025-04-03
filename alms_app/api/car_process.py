@@ -385,7 +385,12 @@ def car_form_fill():
             pass
         elif form_name == "Proforma Form":
             pass
+        elif form_name == "RC Book Form":
+            pass
+        elif form_name == "Delivery Form":
+            pass
         else:
+            frappe.msgprint(form_name)
             frappe.msgprint("Something Wrong Happend!!")
     except Exception as e:
         frappe.log_error(f"Error in car_form_fill: {str(e)}", "Car Form API")

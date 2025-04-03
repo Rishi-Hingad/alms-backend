@@ -1,26 +1,34 @@
-
+import frappe
+import frappe.client
 
 class EmailMaster:
-    hr_team_email = "jaykumar.patel@merillife.com"
-    hr_team = "Mrs. Ami Rughani"
+    hr_user = frappe.get_all('Management Team', filters={'designation': 'HR'}, fields=['full_name', 'email_id'])[0]
+    hr_team_email = hr_user.get("email_id")
+    hr_team = hr_user.get("full_name")
+
+    hr_head_user = frappe.get_all('Management Team', filters={'designation': 'HR Head'}, fields=['full_name', 'email_id'])[0]
+    hr_head_email = hr_user.get("email_id")
+    hr_head = hr_user.get("full_name")
     
-    hr_head_email = "jaykumar.patel@merillife.com"
-    hr_head = "Mr. Hemchandra Panjikar"
+    purchase_user = frappe.get_all('Management Team', filters={'designation': 'Purchase'}, fields=['full_name', 'email_id'])[0]
+    purchase_team_email = purchase_user.get("email_id")
+    purchase_team = purchase_user.get("full_name")
     
-    purchase_team_email = "jaykumar.patel@merillife.com"
-    purchase_team = "Mr. Tarun Patel"
+    purchase_head_user = frappe.get_all('Management Team', filters={'designation': 'Purchase Head'}, fields=['full_name', 'email_id'])[0]
+    purchase_head_email = purchase_head_user.get("email_id")
+    purchase_head = purchase_head_user.get("full_name")
     
-    purchase_head_email = "jaykumar.patel@merillife.com"
-    purchase_head = "Mr. Sumesh Nair"
+    finance_user = frappe.get_all('Management Team', filters={'designation': 'Finance'}, fields=['full_name', 'email_id'])[0]
+    finance_team_email = finance_user.get("email_id")
+    finance_team = finance_user.get("full_name")
     
-    finance_team_email = "jaykumar.patel@merillife.com"
-    finance_team = "Mr. Dhrumit Solanki"
+    finance_head_user = frappe.get_all('Management Team', filters={'designation': 'Finance Head'}, fields=['full_name', 'email_id'])[0]
+    finance_head_email = finance_head_user.get("email_id")
+    finance_head =  finance_head_user.get("full_name")
     
-    finance_head_email = "jaykumar.patel@merillife.com"
-    finance_head =  "Mr. Hemchandra Panjikar"
-    
-    accounts_team_email = "jaykumar.patel@merillife.com"
-    accounts_team = ""
+    accounts_user = frappe.get_all('Management Team', filters={'designation': 'Accounts'}, fields=['full_name', 'email_id'])[0]
+    accounts_team_email = accounts_user.get("email_id")
+    accounts_team = accounts_user.get("full_name")
 
     
     

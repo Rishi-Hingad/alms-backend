@@ -61,28 +61,43 @@ def email_sender(name, email_send_to=None,payload=None):
         print(f"------------[Error:{e}]---------------")
         return {"status": "error","message":str(e)}
 
+import traceback
+
 @frappe.whitelist(allow_guest=True)
-def approve_car_indent_by_reporting(indent_form,remarks):
+def approve_car_indent_by_reporting(indent_form, remarks):
     try: 
-        # indent_form = frappe.form_dict.get("indent_form")
-        # remarks = frappe.form_dict.get("remarks")
-        print("----------indent_form",indent_form)
-        user = frappe.get_doc("Employee Master",indent_form)
+        # Fetch the Employee and Car Indent Form
+        user = frappe.get_doc("Employee Master", indent_form)
         i_form = frappe.get_doc("Car Indent Form", indent_form)
+        
+        # Update the approval status and remarks
         i_form.reporting_head_approval = "Approved"
         i_form.reporting_head_remarks = remarks
         i_form.save()
         frappe.db.commit()
-        # # Redirect to a specific URL on success
+        
+        print(i_form, "---------------SAVE DOC--------------")
+        
+        # Send email notification
         EMail.for_reporting_to_hr_team(user) 
+        
+        # Redirect on success
         frappe.local.response["type"] = "redirect"
         frappe.local.response["location"] = "/approved"
+    
     except Exception as e:
-        print(e,"-----------------")
-        frappe.log_error(f"Error approving form: {str(e)}", "Car Indent Approval Error")
+        # Capture detailed error information
+        error_message = str(e)
+        print("Error occurred:", error_message)  # Print the exception message
+        
+        # Print the type of the exception and the traceback for more detail
+        print("Exception type:", type(e))
+        print("Full Traceback:\n", traceback.format_exc())
+        
+        # Log the error for debugging
+        frappe.log_error(f"Error approving form: {error_message}", "Car Indent Approval Error")
+        
+        # Redirect on error
         frappe.local.response["type"] = "redirect"
         frappe.local.response["location"] = "/somethingwrong"
         return
-
-
-
