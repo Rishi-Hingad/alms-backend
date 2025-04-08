@@ -98,7 +98,7 @@ function toggleFieldStatus(frm) {
             let currentUrl = window.location.href;
                 let urlParams = currentUrl.split('/'); // Split the URL by '/'
                 let employeeName = decodeURIComponent(urlParams[urlParams.length - 1]);
-                let apiUrl = `http://127.0.0.1:8003/app/purchase-team-form/new-purchase-team-form?employee_name=${encodeURIComponent(employeeName)}`;
+                let apiUrl = `http://127.0.0.1:8001/app/purchase-team-form/new-purchase-team-form?employee_name=${encodeURIComponent(employeeName)}`;
             window.location.href = apiUrl;
         }).css({
             'background-color': '#007bff',

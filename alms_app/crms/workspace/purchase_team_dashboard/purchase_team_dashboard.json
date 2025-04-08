@@ -18,7 +18,7 @@
  "is_hidden": 0,
  "label": "Purchase Team Dashboard",
  "links": [],
- "modified": "2025-03-25 09:48:33.662649",
+ "modified": "2025-04-05 15:01:19.041601",
  "modified_by": "Administrator",
  "module": "CRMS",
  "name": "Purchase Team Dashboard",
@@ -66,6 +66,9 @@
  "roles": [
   {
    "role": "Purchase Master Manager"
+  },
+  {
+   "role": "Administrator"
   }
  ],
  "sequence_id": 2.0,

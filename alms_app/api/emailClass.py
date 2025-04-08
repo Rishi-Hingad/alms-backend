@@ -110,7 +110,7 @@ class EmailServices:
                           content,
                           updated_by, 
                           regards=None, 
-                          link="http://127.0.0.1:8003/login#login"):
+                          link="http://127.0.0.1:8001/login#login"):
         body = f"""
         <html>
         <head>
@@ -202,7 +202,7 @@ class EmailServices:
                                 content,
                                 updated_by, 
                                 regards=None, 
-                                link="http://127.0.0.1:8003/login#login"):
+                                link="http://127.0.0.1:8001/login#login"):
         body = f"""
         <html>
         <head>
@@ -332,7 +332,7 @@ class EmailServices:
                 <p>We are pleased to inform you that you will be eligible for Company vehicle instead of Car Allowance. </p>
                 <p>Please click on below link and fill the necessary details.</p>
                 <p>
-                    <a href="http://127.0.0.1:8003/car-indent-form/new?employee_code={user.name}" 
+                    <a href="http://127.0.0.1:8001/car-indent-form/new?employee_code={user.name}" 
                     class="button">
                     Fill Car Rental Service Form
                     </a>
@@ -390,7 +390,7 @@ class EmailServices:
         body = self.create_email_body_for_emp(user)
         
         self.send(subject=subject, body=body, recipient_email=recipient_email)
-
+ 
     def for_employee_to_reporting(self, user):
         recipient_email = user.reporting_head_email_id
         subject =f"Car Rental Form for Submitted by {user.employee_name} for Your Review"
@@ -401,7 +401,7 @@ class EmailServices:
         We are pleased to inform you that {user.employee_name} has submitted the car rental form for your review.
         <br><br>Kindly check and take necessary action at your earliest convenience.<br><br>
         """
-        link = f"http://127.0.0.1:8003/reportnig_head_approval?id={user.name}"
+        link = f"http://127.0.0.1:8001/reportnig_head_approval?id={user.name}"
         body = self.create_reporting_email(subject, content, regards,link)
         self.send(subject=subject, body=body, recipient_email=recipient_email)
  
@@ -420,12 +420,13 @@ class EmailServices:
         self.send(subject=subject, body=body, recipient_email=recipient_email)
 
     def for_hr_team_to_hr_head(self, user):
-        pass
+        # pass
         recipient_email = emailMaster.hr_head_email
         subject = "Car Rental Form Approved by HR Team"
         regards = "HR Team"
         updated_by = emailMaster.hr_team
         form = frappe.get_doc("Car Indent Form",user.name)
+        print(user, recipient_email)
         content = f"""
         Dear Sir/Madam,
         <br><br>The HR team has reviewed and approved the car rental form submitted by {user.employee_name}.
@@ -748,7 +749,7 @@ class EmailServices:
             if payload.get("email_send_to") == "ALL" or company_detail.name == payload.get("email_send_to"):
                 print(f"----------[SEND-LINK TO {company_detail.name}]------[EMAIL TYPE :{payload.get('email_phase')}]---------------")
                 link = (
-                        f"http://127.0.0.1:8003/vendor-assets-quotation/new?"
+                        f"http://127.0.0.1:8001/vendor-assets-quotation/new?"
                         f"finance_company={company_detail.name}&"
                         f"employee_details={user.name}&"
                         f"location={car_indent_form.location}&"
@@ -863,7 +864,7 @@ class EmailServices:
     def for_selected_compny_process(self,quotation_id):
         car_quot_form = frappe.get_doc("Car Quotation",quotation_id)  
         user = frappe.get_doc("Employee Master",car_quot_form.employee_details)  
-        form_link = f"http://127.0.0.1:8003/car-purchase-form/new?quotation_form={quotation_id}&user={user.name}&company={car_quot_form.finance_company}"
+        form_link = f"http://127.0.0.1:8001/car-purchase-form/new?quotation_form={quotation_id}&user={user.name}&company={car_quot_form.finance_company}"
         body = self.create_selected_company_process(car_quot_form,
                                                     user,form_link)
         subject = f"Car Onboard Process for {user.employee_name}"
