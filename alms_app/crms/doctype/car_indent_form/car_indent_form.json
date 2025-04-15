@@ -52,7 +52,7 @@
    "options": "Employee Master"
   },
   {
-   "fetch_from": "employee_code.employee_department",
+   "fetch_from": "employee_code.department",
    "fieldname": "department",
    "fieldtype": "Data",
    "label": "Department"
@@ -224,7 +224,7 @@
    "link_fieldname": "employee_name"
   }
  ],
- "modified": "2025-03-03 10:04:19.259352",
+ "modified": "2025-04-15 12:30:23.158441",
  "modified_by": "Administrator",
  "module": "CRMS",
  "name": "Car Indent Form",
@@ -244,6 +244,7 @@
    "write": 1
   }
  ],
+ "row_format": "Dynamic",
  "sort_field": "modified",
  "sort_order": "DESC",
  "states": [

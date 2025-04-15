@@ -4,13 +4,13 @@
 function send_email(user,email_send_to){
     frappe.call({
         method: "alms_app.api.emailsService.email_sender",
-        args: {
+        args: { 
             name: user,
-            email_send_to: email_send_to,
+            email_send_to: email_send_to, 
         },
         callback: function (response) {
             if (!response.exc) {
-                // frappe.msgprint("Email sent successfully!");
+                // frappe.msgprint("Email sent successfully!"); 
             } else {
                 frappe.msgprint({
                     title: "Error",
@@ -93,23 +93,23 @@ function toggleFieldStatus(frm) {
     }
 
 
-    if (frappe.session.user === "purchase@gmail.com") {
-        frm.add_custom_button(__('Redirect to Purchase Form'), function() {
-            let currentUrl = window.location.href;
-                let urlParams = currentUrl.split('/'); // Split the URL by '/'
-                let employeeName = decodeURIComponent(urlParams[urlParams.length - 1]);
-                let apiUrl = `http://127.0.0.1:8001/app/purchase-team-form/new-purchase-team-form?employee_name=${encodeURIComponent(employeeName)}`;
-            window.location.href = apiUrl;
-        }).css({
-            'background-color': '#007bff',
-            'color': 'white',
-            'border': 'none',
-            'padding': '10px 20px',
-            'font-size': '14px',  
-            'border-radius': '5px', 
-            'cursor': 'pointer'
-        });
-    }
+    // if (frappe.session.user === "purchase@gmail.com") {
+    //     frm.add_custom_button(__('Redirect to Purchase Form'), function() {
+    //         let currentUrl = window.location.href;
+    //             let urlParams = currentUrl.split('/'); // Split the URL by '/'
+    //             let employeeName = decodeURIComponent(urlParams[urlParams.length - 1]);
+    //             let apiUrl = `http://127.0.0.1:8001/app/purchase-team-form/new-purchase-team-form?employee_name=${encodeURIComponent(employeeName)}`;
+    //         window.location.href = apiUrl;
+    //     }).css({
+    //         'background-color': '#007bff',
+    //         'color': 'white',
+    //         'border': 'none',
+    //         'padding': '10px 20px',
+    //         'font-size': '14px',  
+    //         'border-radius': '5px', 
+    //         'cursor': 'pointer'
+    //     });
+    // }
 }
 
 

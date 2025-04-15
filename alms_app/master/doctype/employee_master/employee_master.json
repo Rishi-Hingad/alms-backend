@@ -10,17 +10,16 @@
   "company",
   "employee_code",
   "employee_name",
-  "employee_department",
   "location",
-  "designation",
   "email_id",
+  "department",
+  "designation",
   "column_break_ryfx",
   "date_of_joining",
   "date_of_birth",
   "eligibility",
   "contact_number",
   "reporting_head",
-  "reporting_head_email_id",
   "status"
  ],
  "fields": [
@@ -42,16 +41,6 @@
    "fieldname": "employee_code",
    "fieldtype": "Data",
    "label": "Employee Code"
-  },
-  {
-   "fieldname": "employee_department",
-   "fieldtype": "Data",
-   "label": "Employee Department"
-  },
-  {
-   "fieldname": "designation",
-   "fieldtype": "Data",
-   "label": "Designation"
   },
   {
    "fieldname": "email_id",
@@ -88,13 +77,9 @@
   },
   {
    "fieldname": "reporting_head",
-   "fieldtype": "Data",
-   "label": "Reporting Head"
-  },
-  {
-   "fieldname": "reporting_head_email_id",
-   "fieldtype": "Data",
-   "label": "Reporting Head Email ID"
+   "fieldtype": "Link",
+   "label": "Reporting Head",
+   "options": "Employee Master"
   },
   {
    "fieldname": "date_of_joining",
@@ -105,6 +90,18 @@
    "fieldname": "date_of_birth",
    "fieldtype": "Date",
    "label": "Date of Birth"
+  },
+  {
+   "fieldname": "department",
+   "fieldtype": "Link",
+   "label": "Department",
+   "options": "Employee Department"
+  },
+  {
+   "fieldname": "designation",
+   "fieldtype": "Link",
+   "label": "Designation",
+   "options": "Employee Designation"
   }
  ],
  "index_web_pages_for_search": 1,
@@ -115,7 +112,7 @@
    "table_fieldname": "Employee Name"
   }
  ],
- "modified": "2025-03-05 10:00:47.031509",
+ "modified": "2025-04-12 14:31:37.123429",
  "modified_by": "Administrator",
  "module": "master",
  "name": "Employee Master",
@@ -135,6 +132,7 @@
    "write": 1
   }
  ],
+ "row_format": "Dynamic",
  "sort_field": "modified",
  "sort_order": "DESC",
  "states": [

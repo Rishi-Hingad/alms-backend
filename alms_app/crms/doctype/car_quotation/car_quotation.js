@@ -3,7 +3,7 @@
 function uploadfile(frm) {
     frm.add_custom_button('Upload File', function () {
         frappe.prompt(
-            {
+            { 
                 label: 'Upload File',
                 fieldname: 'file',
                 fieldtype: 'Attach',

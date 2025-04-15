@@ -9,4 +9,10 @@ import frappe
 
 class EmployeeMaster(Document):
     pass
+@frappe.whitelist(allow_guest=True)
+def get_eligibility_from_designation(designation):
+    if not designation:
+        return {"error": "No designation provided"}
 
+    doc = frappe.get_doc("Employee Designation", designation)
+    return {"eligibility": doc.custom_eligibility}
