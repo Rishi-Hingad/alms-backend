@@ -1,9 +1,14 @@
 app_name = "alms_app"
 app_title = "ALMS"
-app_publisher = "Harsh"
-app_description = "ALMS"
-app_email = "harsh.somaiya@merillife.com"
+app_publisher = "Rishi Hingad"
+app_description = "Assest Lease Management System"
+app_email = "rishi.hingad@merillife.com"
 app_license = "mit"
+
+
+
+# on_session_creation  = "alms_app.api.session_manager.add_custom_session_data"
+
 
 # Apps
 # ------------------
@@ -124,14 +129,7 @@ app_license = "mit"
 # has_permission = {
 # 	"Event": "frappe.desk.doctype.event.event.has_permission",
 # }
-fixtures = [
-    "Employee Master",
-    "Car Indent Form",
-    "Purchase Team Form",
-    "Car Quotation",
-    "Car Make Master",
-    "Vendor Rental Invoice",
-]
+
 # DocType Class
 # ---------------
 # Override standard doctype classes

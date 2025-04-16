@@ -1,4 +1,4 @@
-# Copyright (c) 2024, Harsh and Contributors
+# Copyright (c) 2025, Rishi Hingad and Contributors
 # See license.txt
 
 # import frappe

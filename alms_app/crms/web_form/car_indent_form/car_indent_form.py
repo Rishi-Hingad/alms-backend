@@ -6,12 +6,19 @@ import smtplib
 @frappe.whitelist(allow_guest=True)
 def get_employee_details(employee_code):
     employee = frappe.get_all("Employee Master", filters={"name": employee_code}, 
-    fields=["name", "designation", "eligibility", "location", "company", "contact_number", "email_id", "employee_department"])
-
+    # fields=["name", "designation", "eligibility", "location", "company", "contact_number", "email_id", "employee_department"])
+    # fields=["name", "custom_edesignation", "location", "company", "contact_number", "email_id", "custom_edepartment"])
+    fields=["name", "designation", "location", "company", "contact_number", "email_id", "department"])
+    
+    # employee_eligibility = frappe.get_doc("Employee Designation",employee[0].custom_edesignation)
+    employee_eligibility = frappe.get_doc("Employee Designation",employee[0].designation)
+    employee.append({"eligibility":employee_eligibility.eligibility})
+    # return employee_eligibility
     if employee:
         # Return the employee details
         employee_details = employee[0]
-        return employee_details
+        # return employee_details
+        return employee
     else:
         frappe.throw(f"Employee with name '{employee_code}' not found.")
         
@@ -45,12 +52,12 @@ def get_context(context):
 
 import frappe
 
-@frappe.whitelist()
+@frappe.whitelist(allow_guest=True)
 def send_email_to_reporting_head(employee_code):
-    try:
+    try: 
         # Fetch the Employee Master record
         employee = frappe.get_doc("Employee Master", employee_code)
-        
+        # return employee
         # Use the existing send_email method
         employee.send_email()
 

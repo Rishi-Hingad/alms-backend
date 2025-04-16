@@ -26,7 +26,7 @@
  "is_hidden": 0,
  "label": "HR Dashboard",
  "links": [],
- "modified": "2024-11-25 12:33:07.688207",
+ "modified": "2025-04-15 12:32:10.591619",
  "modified_by": "Administrator",
  "module": "CRMS",
  "name": "HR Dashboard",
@@ -64,18 +64,15 @@
   {
    "document_type": "Car Indent Form",
    "label": "Car Indent Form",
-   "quick_list_filter": "[[\"Car Indent Form\",\"status\",\"=\",null,false]]"
+   "quick_list_filter": "[]"
   }
  ],
  "roles": [
   {
    "role": "HR"
-  },
-  {
-   "role": "HR Head"
   }
  ],
- "sequence_id": 1.0,
+ "sequence_id": 2.0,
  "shortcuts": [],
  "title": "HR Dashboard"
 }

@@ -1,11 +1,269 @@
-// Copyright (c) 2024, Harsh and contributors
-// For license information, please see license.txt
+function updateStatus(frm) {
+
+    let allowed_users = [
+        "purchasehead@gmail.com",
+        "purchase@gmail.com"]
+    if (allowed_users.includes(frappe.session.user)) {
+        frm.clear_custom_buttons();
+        const buttons = [
+            {
+                label: "Purchase Team",
+                field: "status",
+                current_status: frm.doc.purchase_team_status
+            },
+            {
+                label: "Purchase Head",
+                field: "status",
+                current_status: frm.doc.purchase_head_status
+            },
+        ];
+
+        buttons.forEach(button => {
+            const status = button.current_status || "Pending";
+            let status_color;
+
+            switch (status) {
+                case "Approved":
+                    status_color = "darkgreen";
+                    break;
+                case "Rejected":
+                    status_color = "darkred";
+                    break;
+                default:
+                    status_color = "gray";
+            }
+
+            frm.add_custom_button(`${button.label}: ${status}`, null).css({
+                "background-color": status_color,
+                "color": "white",
+                "border-color": status_color,
+                "cursor": "not-allowed"
+            });
+        });
+    }
+}
+
+function updateQuotationSendRequest(frm) {
+    frm.add_custom_button('Quotations Company Select', () => {
+        // Fetch company names from Vendor Master where company names are stored in "name" field
+        frappe.db.get_list('Vendor Master', {
+            fields: ['name'], // Fetching name field as company name
+            distinct: true
+        }).then(response => {
+            let companies = [...new Set(response.map(item => item.name))]; // Unique values
+            let optionsHTML = '<div id="company-checkboxes">';
+
+            // Generating checkboxes dynamically
+            companies.forEach(company => {
+                optionsHTML += `
+                    <label><input type="checkbox" name="company_select" value="${company}"> ${company}</label><br>
+                `;
+            });
+
+            // Adding "ALL" option as default selected
+            optionsHTML += `<label><input type="checkbox" name="company_select" value="ALL" checked> ALL</label><br>`;
+            optionsHTML += '</div>';
+
+            // Show Prompt
+            frappe.prompt([
+                {
+                    fieldname: 'company_select',
+                    label: 'Select Company',
+                    fieldtype: 'HTML',
+                    options: optionsHTML
+                }
+            ], function () {
+                // Get selected checkboxes
+                let selected_companies = [];
+                document.querySelectorAll('input[name="company_select"]:checked').forEach(checkbox => {
+                    selected_companies.push(checkbox.value);
+                });
+
+                // ✅ If "ALL" is selected, use all companies
+                if (selected_companies.includes("ALL")) {
+                    selected_companies = companies;  // Select all companies dynamically
+                }
+
+                // ✅ Debugging (Remove alert if not needed)
+                console.log("Selected Companies: ", selected_companies);
+
+                // ✅ Send email to all selected companies
+                if (selected_companies.length > 0) {
+                    alert(selected_companies)
+                    selected_companies.forEach(company => {
+                        console.log("Company Quotation", company)
+                        send_email(frm.doc.name, "FinanceHead To Quotation Company", {
+                            email_send_to: company
+                            // selected_companies.p
+                        });
+                        selected_companies = [];
+                    });
+                } else {
+                    frappe.msgprint("Please select at least one company.");
+                }
+
+                // ✅ Clear selected checkboxes after submission
+                document.querySelectorAll('#company-checkboxes input[type="checkbox"]').forEach(checkbox => {
+                    checkbox.checked = false;
+                });
+
+                // ✅ "ALL" checkbox remains checked by default
+                document.querySelector('input[value="ALL"]').checked = true;
+
+            }, 'Remarks Required', 'Submit');
+
+        });
+    }).css({
+        "background-color": "darkgreen",
+        "color": "white",
+        "border-color": "green",
+    });
+}
+
+
+
+function send_email(user,email_send_to,payload){
+    frappe.call({
+        method: "alms_app.api.emailsService.email_sender",
+        args: {
+            name: user,
+            email_send_to: email_send_to,
+            payload:payload
+        },
+        callback: function (response) {
+            if (!response.exc) {
+                // frappe.msgprint("Email sent successfully!");
+            } else {
+                frappe.msgprint({
+                    title: "Error",
+                    indicator: "red",
+                    message: response.exc || "An unknown error occurred while sending the email.",
+                });
+            }
+        },
+        error: function (error) {
+            frappe.msgprint({
+                title: "Error",
+                indicator: "red",
+                message: error.message || "An unknown error occurred while sending the email.",
+            });
+        },
+    });
+}
+
+
+function toggleFieldStatus(frm) {
+
+
+    if (frappe.session.user === "purchase@gmail.com") {
+        frm.set_df_property("purchase_head_status", "read_only", true);
+        frm.set_df_property("purchase_head_remarks", "read_only", true);
+        frm.set_df_property("purchase_team_remarks", "read_only", true);
+    }
+    else{
+            frm.set_df_property("status", "read_only", true);
+            frm.set_df_property("purchase_team_status", "read_only", true);
+            frm.set_df_property("kilometers_per_year", "read_only", true);
+            frm.set_df_property("tenure_in_years", "read_only", true);
+            frm.set_df_property("total_kilometers", "read_only", true);
+            frm.set_df_property("revised_ex_show_room_price", "read_only", true);
+            frm.set_df_property("revised_discount", "read_only", true);
+            frm.set_df_property("revised_tcs", "read_only", true);
+            frm.set_df_property("revised_net_ex_showroom_price", "read_only", true);
+            frm.set_df_property("revised_registration_charges", "read_only", true);
+            frm.set_df_property("revised_accessories", "read_only", true);
+            frm.set_df_property("revised_financed_amount", "read_only", true);
+            frm.set_df_property("status", "read_only", true);
+            frm.set_df_property("purchase_head_remarks", "read_only", true);
+            frm.set_df_property("purchase_team_remarks", "read_only", true);
+    }
+
+}
+
+
+
 
 frappe.ui.form.on("Purchase Team Form", {
         refresh(frm) {
+
+            // updateStatus(frm);
+            frm.set_df_property("status", "read_only", true);
+            if (frappe.session.user === "finance@gmail.com") {
+                updateQuotationSendRequest(frm);
+            }
             calculate_totals(frm);
+            addButtonForAppovel(frm);
+            toggleFieldStatus(frm);
         },
-    
+        onload(frm){
+            // updateStatus(frm);
+            frm.set_df_property("status", "read_only", true);
+            if (frappe.session.user === "finance@gmail.com") {
+                updateQuotationSendRequest(frm);
+            }
+            toggleFieldStatus(frm);
+            addButtonForAppovel(frm); 
+        },
+
+       
+        purchase_head_status:function(frm) {
+            if (frm.doc.purchase_head_status != "Pending") {
+                frappe.prompt([
+                    {
+                        fieldname: 'remarks_input',
+                        label: 'Enter Remarks',
+                        fieldtype: 'Data',
+                        reqd: 1
+                    }
+                ], 
+                function(values) {
+                    frm.set_value('purchase_head_remarks', values.remarks_input);
+                    frm.refresh_field('purchase_head_remarks');
+                    frm.save().then(() => {
+                        frm.set_value("status", "Approved");
+                        frm.save_or_update();
+                        send_email(frm.doc.name,"PurchaseHead To FinanceTeam")
+                    });
+
+                }, 
+                'Remarks Required', 
+                'Submit'
+                );
+
+            }else{
+                frm.save_or_update();
+            }
+        },
+
+
+        purchase_team_status:function(frm) {
+            if (frm.doc.purchase_team_status != "Pending") {
+                frappe.prompt([
+                    {
+                        fieldname: 'remarks_input',
+                        label: 'Enter Remarks',
+                        fieldtype: 'Data',
+                        reqd: 1
+                    }
+                ], 
+                function(values) {
+                    frm.set_value('purchase_team_remarks', values.remarks_input);
+                    frm.refresh_field('purchase_team_remarks');
+                    frm.save().then(() => {
+                        send_email(frm.doc.name,"PurchaseTeam To PurchaseHead")
+                    });
+                }, 
+                'Remarks Required', 
+                'Submit'
+                );
+               
+            }else{
+                frm.save_or_update();
+            }
+        },
+
+
+
         revised_ex_show_room_price: function(frm) {
             calculate_totals(frm);
         },
@@ -32,8 +290,14 @@ frappe.ui.form.on("Purchase Team Form", {
 
         tenure_in_years: function(frm) {
             calculate_totals(frm);
-        }
+        },
+
+
 });
+
+
+
+
 
 function calculate_totals(frm) {
     const revised_ex_show_room_price = frm.doc.revised_ex_show_room_price || 0;

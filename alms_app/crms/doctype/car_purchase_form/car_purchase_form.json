@@ -1,0 +1,72 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "field:quotation_form",
+ "creation": "2025-02-10 09:31:48.762817",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "user",
+  "company",
+  "quotation_form",
+  "po",
+  "po_document"
+ ],
+ "fields": [
+  {
+   "fieldname": "user",
+   "fieldtype": "Link",
+   "label": "User",
+   "options": "Employee Master"
+  },
+  {
+   "fieldname": "company",
+   "fieldtype": "Select",
+   "label": "Company",
+   "options": "Easy Assets\nALD\nXYZ"
+  },
+  {
+   "fieldname": "quotation_form",
+   "fieldtype": "Link",
+   "label": "Quotation Form",
+   "options": "Car Quotation",
+   "unique": 1
+  },
+  {
+   "fieldname": "po",
+   "fieldtype": "Select",
+   "label": "PO",
+   "options": "Yes\nNo"
+  },
+  {
+   "fieldname": "po_document",
+   "fieldtype": "Attach",
+   "label": "PO Document"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2025-03-25 17:19:46.777546",
+ "modified_by": "Administrator",
+ "module": "CRMS",
+ "name": "Car Purchase Form",
+ "naming_rule": "By fieldname",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

@@ -8,7 +8,9 @@
  "engine": "InnoDB",
  "field_order": [
   "car_indent_form_section",
+  "form_type",
   "employee_code",
+  "employee_reporting",
   "company_name",
   "department",
   "designation",
@@ -30,8 +32,12 @@
   "finance_amount",
   "quotation_document",
   "reporting_head_approval",
-  "status",
-  "status_head"
+  "reporting_head_remarks",
+  "hr_approval",
+  "hr_remarks",
+  "hr_head_approval",
+  "hr_head_remarks",
+  "status"
  ],
  "fields": [
   {
@@ -46,7 +52,7 @@
    "options": "Employee Master"
   },
   {
-   "fetch_from": "employee_code.employee_department",
+   "fetch_from": "employee_code.department",
    "fieldname": "department",
    "fieldtype": "Data",
    "label": "Department"
@@ -140,18 +146,6 @@
    "label": "Registration Charges"
   },
   {
-   "fieldname": "status",
-   "fieldtype": "Select",
-   "label": "HR Approval",
-   "options": "Pending\nApproved\nRejected"
-  },
-  {
-   "fieldname": "status_head",
-   "fieldtype": "Select",
-   "label": "HR Head Approval",
-   "options": "Pending\nApproved\nRejected"
-  },
-  {
    "fieldname": "net_ex_showroom_price",
    "fieldtype": "Currency",
    "label": "Net Ex Showroom Price",
@@ -174,6 +168,53 @@
   {
    "fieldname": "column_break_wlht",
    "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "hr_approval",
+   "fieldtype": "Select",
+   "label": "HR Approval",
+   "options": "Pending\nApproved\nRejected"
+  },
+  {
+   "fieldname": "hr_head_approval",
+   "fieldtype": "Select",
+   "label": "HR Head Approval",
+   "options": "Pending\nApproved\nRejected"
+  },
+  {
+   "default": "Pending",
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "label": "Status",
+   "options": "Approved\nRejected\nPending"
+  },
+  {
+   "fetch_from": "employee_code.reporting_head",
+   "fieldname": "employee_reporting",
+   "fieldtype": "Data",
+   "label": "Employee Reporting",
+   "read_only": 1
+  },
+  {
+   "fieldname": "hr_remarks",
+   "fieldtype": "Data",
+   "label": "HR Remarks"
+  },
+  {
+   "fieldname": "hr_head_remarks",
+   "fieldtype": "Data",
+   "label": "HR Head Remarks"
+  },
+  {
+   "fieldname": "reporting_head_remarks",
+   "fieldtype": "Data",
+   "label": "Reporting Head Remarks"
+  },
+  {
+   "fieldname": "form_type",
+   "fieldtype": "Select",
+   "label": "Form Type",
+   "options": "Car\nAllowance"
   }
  ],
  "index_web_pages_for_search": 1,
@@ -183,7 +224,7 @@
    "link_fieldname": "employee_name"
   }
  ],
- "modified": "2024-11-23 10:43:31.105164",
+ "modified": "2025-04-15 12:30:23.158441",
  "modified_by": "Administrator",
  "module": "CRMS",
  "name": "Car Indent Form",
@@ -203,6 +244,7 @@
    "write": 1
   }
  ],
+ "row_format": "Dynamic",
  "sort_field": "modified",
  "sort_order": "DESC",
  "states": [
@@ -218,5 +260,6 @@
    "color": "Yellow",
    "title": "Pending"
   }
- ]
+ ],
+ "track_changes": 1
 }
