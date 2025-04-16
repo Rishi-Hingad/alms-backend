@@ -1,0 +1,695 @@
+[
+ {
+  "department": "Production",
+  "docstatus": 0,
+  "doctype": "Employee Department",
+  "modified": "2025-04-09 12:02:59.409875",
+  "name": "Production"
+ },
+ {
+  "department": "Regulatory Affairs",
+  "docstatus": 0,
+  "doctype": "Employee Department",
+  "modified": "2025-04-09 12:06:01.683060",
+  "name": "Regulatory Affairs"
+ },
+ {
+  "department": "International Sales",
+  "docstatus": 0,
+  "doctype": "Employee Department",
+  "modified": "2025-04-09 12:06:01.708165",
+  "name": "International Sales"
+ },
+ {
+  "department": "Finance & Accounts",
+  "docstatus": 0,
+  "doctype": "Employee Department",
+  "modified": "2025-04-09 12:06:01.715302",
+  "name": "Finance & Accounts"
+ },
+ {
+  "department": "Stores",
+  "docstatus": 0,
+  "doctype": "Employee Department",
+  "modified": "2025-04-09 12:06:01.725513",
+  "name": "Stores"
+ },
+ {
+  "department": "Human Capital & Administration",
+  "docstatus": 0,
+  "doctype": "Employee Department",
+  "modified": "2025-04-09 12:06:01.732182",
+  "name": "Human Capital & Administration"
+ },
+ {
+  "department": "Operations",
+  "docstatus": 0,
+  "doctype": "Employee Department",
+  "modified": "2025-04-09 12:06:01.739233",
+  "name": "Operations"
+ },
+ {
+  "department": "Purchase",
+  "docstatus": 0,
+  "doctype": "Employee Department",
+  "modified": "2025-04-09 12:06:01.768068",
+  "name": "Purchase"
+ },
+ {
+  "department": "Quality Control",
+  "docstatus": 0,
+  "doctype": "Employee Department",
+  "modified": "2025-04-09 12:06:01.777348",
+  "name": "Quality Control"
+ },
+ {
+  "department": "Logistics & Administration",
+  "docstatus": 0,
+  "doctype": "Employee Department",
+  "modified": "2025-04-09 12:06:01.813350",
+  "name": "Logistics & Administration"
+ },
+ {
+  "department": "Supply Chain Management",
+  "docstatus": 0,
+  "doctype": "Employee Department",
+  "modified": "2025-04-09 12:06:01.821131",
+  "name": "Supply Chain Management"
+ },
+ {
+  "department": "Maintenance",
+  "docstatus": 0,
+  "doctype": "Employee Department",
+  "modified": "2025-04-09 12:06:01.846869",
+  "name": "Maintenance"
+ },
+ {
+  "department": "Research & Development",
+  "docstatus": 0,
+  "doctype": "Employee Department",
+  "modified": "2025-04-09 12:06:01.856869",
+  "name": "Research & Development"
+ },
+ {
+  "department": "Quality Assurance",
+  "docstatus": 0,
+  "doctype": "Employee Department",
+  "modified": "2025-04-09 12:06:01.928125",
+  "name": "Quality Assurance"
+ },
+ {
+  "department": "Packaging Development",
+  "docstatus": 0,
+  "doctype": "Employee Department",
+  "modified": "2025-04-09 12:06:02.009767",
+  "name": "Packaging Development"
+ },
+ {
+  "department": "Production Planning & Control",
+  "docstatus": 0,
+  "doctype": "Employee Department",
+  "modified": "2025-04-09 12:06:02.032536",
+  "name": "Production Planning & Control"
+ },
+ {
+  "department": "Research & Development & Intellectual Property Rights",
+  "docstatus": 0,
+  "doctype": "Employee Department",
+  "modified": "2025-04-09 12:06:02.087904",
+  "name": "Research & Development & Intellectual Property Rights"
+ },
+ {
+  "department": "Design & Development",
+  "docstatus": 0,
+  "doctype": "Employee Department",
+  "modified": "2025-04-09 12:06:02.135674",
+  "name": "Design & Development"
+ },
+ {
+  "department": "Civil",
+  "docstatus": 0,
+  "doctype": "Employee Department",
+  "modified": "2025-04-09 12:06:02.235709",
+  "name": "Civil"
+ },
+ {
+  "department": "Engineering",
+  "docstatus": 0,
+  "doctype": "Employee Department",
+  "modified": "2025-04-09 12:06:02.327895",
+  "name": "Engineering"
+ },
+ {
+  "department": "Business Excellence & Strategy",
+  "docstatus": 0,
+  "doctype": "Employee Department",
+  "modified": "2025-04-09 12:06:02.375191",
+  "name": "Business Excellence & Strategy"
+ },
+ {
+  "department": "Safety",
+  "docstatus": 0,
+  "doctype": "Employee Department",
+  "modified": "2025-04-09 12:06:02.445358",
+  "name": "Safety"
+ },
+ {
+  "department": "Administration",
+  "docstatus": 0,
+  "doctype": "Employee Department",
+  "modified": "2025-04-09 12:06:02.464026",
+  "name": "Administration"
+ },
+ {
+  "department": "Micro Biology",
+  "docstatus": 0,
+  "doctype": "Employee Department",
+  "modified": "2025-04-09 12:06:02.509295",
+  "name": "Micro Biology"
+ },
+ {
+  "department": "Distribution Management",
+  "docstatus": 0,
+  "doctype": "Employee Department",
+  "modified": "2025-04-09 12:06:02.677851",
+  "name": "Distribution Management"
+ },
+ {
+  "department": "Learning & Development",
+  "docstatus": 0,
+  "doctype": "Employee Department",
+  "modified": "2025-04-09 12:06:02.715598",
+  "name": "Learning & Development"
+ },
+ {
+  "department": "Marketing",
+  "docstatus": 0,
+  "doctype": "Employee Department",
+  "modified": "2025-04-09 12:06:02.828052",
+  "name": "Marketing"
+ },
+ {
+  "department": "Clinical Research",
+  "docstatus": 0,
+  "doctype": "Employee Department",
+  "modified": "2025-04-09 12:06:02.963606",
+  "name": "Clinical Research"
+ },
+ {
+  "department": "Travel Desk",
+  "docstatus": 0,
+  "doctype": "Employee Department",
+  "modified": "2025-04-09 12:06:02.970941",
+  "name": "Travel Desk"
+ },
+ {
+  "department": "Digital Marketing",
+  "docstatus": 0,
+  "doctype": "Employee Department",
+  "modified": "2025-04-09 12:06:03.068933",
+  "name": "Digital Marketing"
+ },
+ {
+  "department": "Product Performance Engineering",
+  "docstatus": 0,
+  "doctype": "Employee Department",
+  "modified": "2025-04-09 12:06:03.229641",
+  "name": "Product Performance Engineering"
+ },
+ {
+  "department": "Stores (RM)",
+  "docstatus": 0,
+  "doctype": "Employee Department",
+  "modified": "2025-04-09 12:06:03.312874",
+  "name": "Stores (RM)"
+ },
+ {
+  "department": "Management Assurance Services",
+  "docstatus": 0,
+  "doctype": "Employee Department",
+  "modified": "2025-04-09 12:06:03.422630",
+  "name": "Management Assurance Services"
+ },
+ {
+  "department": "Sales",
+  "docstatus": 0,
+  "doctype": "Employee Department",
+  "modified": "2025-04-09 12:06:03.510242",
+  "name": "Sales"
+ },
+ {
+  "department": "Garden & Facilities",
+  "docstatus": 0,
+  "doctype": "Employee Department",
+  "modified": "2025-04-09 12:06:03.640961",
+  "name": "Garden & Facilities"
+ },
+ {
+  "department": "Projects",
+  "docstatus": 0,
+  "doctype": "Employee Department",
+  "modified": "2025-04-09 12:06:03.659519",
+  "name": "Projects"
+ },
+ {
+  "department": "IPR",
+  "docstatus": 0,
+  "doctype": "Employee Department",
+  "modified": "2025-04-09 12:06:03.688980",
+  "name": "IPR"
+ },
+ {
+  "department": "Engineering & Maintenance",
+  "docstatus": 0,
+  "doctype": "Employee Department",
+  "modified": "2025-04-09 12:06:03.830897",
+  "name": "Engineering & Maintenance"
+ },
+ {
+  "department": "Compliance & Legal",
+  "docstatus": 0,
+  "doctype": "Employee Department",
+  "modified": "2025-04-09 12:06:04.011908",
+  "name": "Compliance & Legal"
+ },
+ {
+  "department": "Corporate Affairs",
+  "docstatus": 0,
+  "doctype": "Employee Department",
+  "modified": "2025-04-09 12:06:04.276268",
+  "name": "Corporate Affairs"
+ },
+ {
+  "department": "Compliance",
+  "docstatus": 0,
+  "doctype": "Employee Department",
+  "modified": "2025-04-09 12:06:04.963381",
+  "name": "Compliance"
+ },
+ {
+  "department": "Clinico Marketing",
+  "docstatus": 0,
+  "doctype": "Employee Department",
+  "modified": "2025-04-09 12:06:05.099965",
+  "name": "Clinico Marketing"
+ },
+ {
+  "department": "House Keeping",
+  "docstatus": 0,
+  "doctype": "Employee Department",
+  "modified": "2025-04-09 12:06:05.245635",
+  "name": "House Keeping"
+ },
+ {
+  "department": "Legal Compliance",
+  "docstatus": 0,
+  "doctype": "Employee Department",
+  "modified": "2025-04-09 12:06:05.316113",
+  "name": "Legal Compliance"
+ },
+ {
+  "department": "Legal",
+  "docstatus": 0,
+  "doctype": "Employee Department",
+  "modified": "2025-04-09 12:06:05.344889",
+  "name": "Legal"
+ },
+ {
+  "department": "International Marketing",
+  "docstatus": 0,
+  "doctype": "Employee Department",
+  "modified": "2025-04-09 12:06:05.421197",
+  "name": "International Marketing"
+ },
+ {
+  "department": "Marketing & Design",
+  "docstatus": 0,
+  "doctype": "Employee Department",
+  "modified": "2025-04-09 12:06:05.535112",
+  "name": "Marketing & Design"
+ },
+ {
+  "department": "Customer Support",
+  "docstatus": 0,
+  "doctype": "Employee Department",
+  "modified": "2025-04-09 12:06:05.661441",
+  "name": "Customer Support"
+ },
+ {
+  "department": "Marketing Support",
+  "docstatus": 0,
+  "doctype": "Employee Department",
+  "modified": "2025-04-09 12:06:05.744943",
+  "name": "Marketing Support"
+ },
+ {
+  "department": "Training & Development",
+  "docstatus": 0,
+  "doctype": "Employee Department",
+  "modified": "2025-04-09 12:06:05.767850",
+  "name": "Training & Development"
+ },
+ {
+  "department": "Company Secretary & Legal",
+  "docstatus": 0,
+  "doctype": "Employee Department",
+  "modified": "2025-04-09 12:06:05.929577",
+  "name": "Company Secretary & Legal"
+ },
+ {
+  "department": "Business Finance",
+  "docstatus": 0,
+  "doctype": "Employee Department",
+  "modified": "2025-04-09 12:06:05.962667",
+  "name": "Business Finance"
+ },
+ {
+  "department": "Sales Administration",
+  "docstatus": 0,
+  "doctype": "Employee Department",
+  "modified": "2025-04-09 12:06:06.352027",
+  "name": "Sales Administration"
+ },
+ {
+  "department": "Clinical Application",
+  "docstatus": 0,
+  "doctype": "Employee Department",
+  "modified": "2025-04-09 12:06:06.691821",
+  "name": "Clinical Application"
+ },
+ {
+  "department": "Marketing & Strategy",
+  "docstatus": 0,
+  "doctype": "Employee Department",
+  "modified": "2025-04-09 12:06:06.977418",
+  "name": "Marketing & Strategy"
+ },
+ {
+  "department": "Event Management",
+  "docstatus": 0,
+  "doctype": "Employee Department",
+  "modified": "2025-04-09 12:06:07.117613",
+  "name": "Event Management"
+ },
+ {
+  "department": "Business Finance & Planning",
+  "docstatus": 0,
+  "doctype": "Employee Department",
+  "modified": "2025-04-09 12:06:07.345800",
+  "name": "Business Finance & Planning"
+ },
+ {
+  "department": "Therapy Market Development",
+  "docstatus": 0,
+  "doctype": "Employee Department",
+  "modified": "2025-04-09 12:06:07.637039",
+  "name": "Therapy Market Development"
+ },
+ {
+  "department": "Corporate Communication",
+  "docstatus": 0,
+  "doctype": "Employee Department",
+  "modified": "2025-04-09 12:06:08.729611",
+  "name": "Corporate Communication"
+ },
+ {
+  "department": "Credit Control",
+  "docstatus": 0,
+  "doctype": "Employee Department",
+  "modified": "2025-04-09 12:06:09.096677",
+  "name": "Credit Control"
+ },
+ {
+  "department": "Design",
+  "docstatus": 0,
+  "doctype": "Employee Department",
+  "modified": "2025-04-09 12:06:09.276378",
+  "name": "Design"
+ },
+ {
+  "department": "Sales Excellence and Support",
+  "docstatus": 0,
+  "doctype": "Employee Department",
+  "modified": "2025-04-09 12:06:11.102152",
+  "name": "Sales Excellence and Support"
+ },
+ {
+  "department": "Archiecture",
+  "docstatus": 0,
+  "doctype": "Employee Department",
+  "modified": "2025-04-09 12:06:11.307971",
+  "name": "Archiecture"
+ },
+ {
+  "department": "SAP",
+  "docstatus": 0,
+  "doctype": "Employee Department",
+  "modified": "2025-04-09 12:06:11.620133",
+  "name": "SAP"
+ },
+ {
+  "department": "Global Orthopedics Sales & Solutions",
+  "docstatus": 0,
+  "doctype": "Employee Department",
+  "modified": "2025-04-09 12:06:11.717520",
+  "name": "Global Orthopedics Sales & Solutions"
+ },
+ {
+  "department": "Corporate Strategy",
+  "docstatus": 0,
+  "doctype": "Employee Department",
+  "modified": "2025-04-09 12:06:11.779267",
+  "name": "Corporate Strategy"
+ },
+ {
+  "department": "Customer Relationship Management",
+  "docstatus": 0,
+  "doctype": "Employee Department",
+  "modified": "2025-04-09 12:06:11.905058",
+  "name": "Customer Relationship Management"
+ },
+ {
+  "department": "Product Management",
+  "docstatus": 0,
+  "doctype": "Employee Department",
+  "modified": "2025-04-09 12:06:11.940671",
+  "name": "Product Management"
+ },
+ {
+  "department": "Customer Satisfaction & Relationship Management",
+  "docstatus": 0,
+  "doctype": "Employee Department",
+  "modified": "2025-04-09 12:06:12.199092",
+  "name": "Customer Satisfaction & Relationship Management"
+ },
+ {
+  "department": "Sales & Service",
+  "docstatus": 0,
+  "doctype": "Employee Department",
+  "modified": "2025-04-09 12:06:12.464939",
+  "name": "Sales & Service"
+ },
+ {
+  "department": "Sales & Marketing",
+  "docstatus": 0,
+  "doctype": "Employee Department",
+  "modified": "2025-04-09 12:06:12.790176",
+  "name": "Sales & Marketing"
+ },
+ {
+  "department": "Legal & Secretarial",
+  "docstatus": 0,
+  "doctype": "Employee Department",
+  "modified": "2025-04-09 12:06:13.524162",
+  "name": "Legal & Secretarial"
+ },
+ {
+  "department": "Service",
+  "docstatus": 0,
+  "doctype": "Employee Department",
+  "modified": "2025-04-09 12:06:13.575017",
+  "name": "Service"
+ },
+ {
+  "department": "Technical Service",
+  "docstatus": 0,
+  "doctype": "Employee Department",
+  "modified": "2025-04-09 12:06:13.584010",
+  "name": "Technical Service"
+ },
+ {
+  "department": "Logistics & Administartion",
+  "docstatus": 0,
+  "doctype": "Employee Department",
+  "modified": "2025-04-09 12:06:14.493092",
+  "name": "Logistics & Administartion"
+ },
+ {
+  "department": "Domestic Sales",
+  "docstatus": 0,
+  "doctype": "Employee Department",
+  "modified": "2025-04-09 12:06:14.579779",
+  "name": "Domestic Sales"
+ },
+ {
+  "department": "Warehouse Operations",
+  "docstatus": 0,
+  "doctype": "Employee Department",
+  "modified": "2025-04-09 12:06:14.774904",
+  "name": "Warehouse Operations"
+ },
+ {
+  "department": "Application & Scientific Support",
+  "docstatus": 0,
+  "doctype": "Employee Department",
+  "modified": "2025-04-09 12:06:16.320206",
+  "name": "Application & Scientific Support"
+ },
+ {
+  "department": "International Sales & Service",
+  "docstatus": 0,
+  "doctype": "Employee Department",
+  "modified": "2025-04-09 12:06:16.669849",
+  "name": "International Sales & Service"
+ },
+ {
+  "department": "Technical Services & Scientific Support",
+  "docstatus": 0,
+  "doctype": "Employee Department",
+  "modified": "2025-04-09 12:06:16.800157",
+  "name": "Technical Services & Scientific Support"
+ },
+ {
+  "department": "Veterinary",
+  "docstatus": 0,
+  "doctype": "Employee Department",
+  "modified": "2025-04-09 12:06:17.245491",
+  "name": "Veterinary"
+ },
+ {
+  "department": "Service Support",
+  "docstatus": 0,
+  "doctype": "Employee Department",
+  "modified": "2025-04-09 12:06:17.375619",
+  "name": "Service Support"
+ },
+ {
+  "department": "Customer Service",
+  "docstatus": 0,
+  "doctype": "Employee Department",
+  "modified": "2025-04-09 12:06:17.389304",
+  "name": "Customer Service"
+ },
+ {
+  "department": "HR",
+  "docstatus": 0,
+  "doctype": "Employee Department",
+  "modified": "2025-04-09 12:06:18.117779",
+  "name": "HR"
+ },
+ {
+  "department": "Business Excellence",
+  "docstatus": 0,
+  "doctype": "Employee Department",
+  "modified": "2025-04-09 12:06:18.901552",
+  "name": "Business Excellence"
+ },
+ {
+  "department": "Animal House",
+  "docstatus": 0,
+  "doctype": "Employee Department",
+  "modified": "2025-04-09 12:06:20.066351",
+  "name": "Animal House"
+ },
+ {
+  "department": "Packing",
+  "docstatus": 0,
+  "doctype": "Employee Department",
+  "modified": "2025-04-09 12:06:20.130448",
+  "name": "Packing"
+ },
+ {
+  "department": "Manufacturing Operations",
+  "docstatus": 0,
+  "doctype": "Employee Department",
+  "modified": "2025-04-09 12:06:20.845217",
+  "name": "Manufacturing Operations"
+ },
+ {
+  "department": "Special Projects",
+  "docstatus": 0,
+  "doctype": "Employee Department",
+  "modified": "2025-04-09 12:06:20.972516",
+  "name": "Special Projects"
+ },
+ {
+  "department": "Rapid Export",
+  "docstatus": 0,
+  "doctype": "Employee Department",
+  "modified": "2025-04-09 12:06:21.069887",
+  "name": "Rapid Export"
+ },
+ {
+  "department": "Engineering and Maintenance",
+  "docstatus": 0,
+  "doctype": "Employee Department",
+  "modified": "2025-04-09 12:06:21.744145",
+  "name": "Engineering and Maintenance"
+ },
+ {
+  "department": "International Business Development",
+  "docstatus": 0,
+  "doctype": "Employee Department",
+  "modified": "2025-04-09 12:06:23.281013",
+  "name": "International Business Development"
+ },
+ {
+  "department": "Utility",
+  "docstatus": 0,
+  "doctype": "Employee Department",
+  "modified": "2025-04-09 12:06:24.718483",
+  "name": "Utility"
+ },
+ {
+  "department": "Meril Academy",
+  "docstatus": 0,
+  "doctype": "Employee Department",
+  "modified": "2025-04-09 12:06:25.093064",
+  "name": "Meril Academy"
+ },
+ {
+  "department": "IPQC",
+  "docstatus": 0,
+  "doctype": "Employee Department",
+  "modified": "2025-04-09 12:06:27.461009",
+  "name": "IPQC"
+ },
+ {
+  "department": "WAREHOUSE",
+  "docstatus": 0,
+  "doctype": "Employee Department",
+  "modified": "2025-04-09 12:06:28.186685",
+  "name": "WAREHOUSE"
+ },
+ {
+  "department": "Technical Training",
+  "docstatus": 0,
+  "doctype": "Employee Department",
+  "modified": "2025-04-09 12:06:29.446503",
+  "name": "Technical Training"
+ },
+ {
+  "department": "Daman Plant",
+  "docstatus": 0,
+  "doctype": "Employee Department",
+  "modified": "2025-04-09 12:06:21.310182",
+  "name": "Daman Plant"
+ },
+ {
+  "department": "Information Technology",
+  "docstatus": 0,
+  "doctype": "Employee Department",
+  "modified": "2025-04-09 12:06:06.705216",
+  "name": "Information Technology"
+ }
+]

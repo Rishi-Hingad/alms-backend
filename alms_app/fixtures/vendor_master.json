@@ -1,0 +1,29 @@
+[
+ {
+  "company_name": "ALD",
+  "contact_email": "itapplication.developer@merillife.com",
+  "contact_number": "+91-7069668308",
+  "docstatus": 0,
+  "doctype": "Vendor Master",
+  "modified": "2025-04-08 16:03:29.327963",
+  "name": "ALD"
+ },
+ {
+  "company_name": "Easy Assets",
+  "contact_email": "ujjawalpatel0@gmail.com",
+  "contact_number": "+91-7069668308",
+  "docstatus": 0,
+  "doctype": "Vendor Master",
+  "modified": "2025-04-11 17:13:46.351452",
+  "name": "Easy Assets"
+ },
+ {
+  "company_name": "XYZ",
+  "contact_email": "saurabhtiwari.direct@gmail.com",
+  "contact_number": "+91-7069668308",
+  "docstatus": 0,
+  "doctype": "Vendor Master",
+  "modified": "2025-04-07 12:26:12.030602",
+  "name": "XYZ"
+ }
+]

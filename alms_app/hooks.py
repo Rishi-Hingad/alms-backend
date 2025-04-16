@@ -29,6 +29,146 @@ app_license = "mit"
 # Includes in <head>
 # ------------------
 
+
+
+# fixtures = [
+#   {
+#     "dt": "ALMS Settings"
+#   },
+#   {
+#     "dt": "Employee Designation"
+#   },
+#   {
+#     "dt": "Car Indent Form"
+#   },
+#   {
+#     "dt": "Employee Master"
+#   },
+#   {
+#     "dt": "Employee Department"
+#   },
+#   {
+#     "dt": "User"
+#   },
+#   {
+#     "dt": "Vendor Rental Invoice"
+#   },
+#   {
+#     "dt": "Purchase Team Form"
+#   },
+#   {
+#     "dt": "Car Delivery Form"
+#   },
+#   {
+#     "dt": "Car Proforma Form"
+#   },
+#   {
+#     "dt": "Vendor Master"
+#   },
+#   {
+#     "dt": "Car RTO Form"
+#   },
+#   {
+#     "dt": "Management Team"
+#   },
+#   {
+#     "dt": "Car Quotation"
+#   },
+#   {
+#     "dt": "Company and Employee Deduction"
+#   },
+#   {
+#     "dt": "Car Purchase Form"
+#   },
+#   {
+#     "dt": "Car Payment Form"
+#   },
+#   {
+#     "dt": "Car RC Book Form"
+#   },
+#   {
+#     "dt": "Car Insurance Form"
+#   },
+#   {
+#     "dt": "Car Process"
+#   },
+#   {
+#     "dt": "Workspace Shortcut"
+#   },
+#   {
+#     "dt": "Email Account"
+#   },
+#   {
+#     "dt": "DocType"
+#   },
+#   {
+#     "dt": "Dashboard Chart"
+#   },
+#   {
+#     "dt": "Number Card"
+#   },
+#   {
+#     "dt": "File"
+#   },
+#   {
+#     "dt": "Web Form"
+#   },
+#   {
+#     "dt": "Allot Assets"
+#   },
+#   {
+#     "dt": "Asset Invoice"
+#   },
+#   {
+#     "dt": "Assets Details"
+#   },
+#   {
+#     "dt": "Car Make Master"
+#   },
+#   {
+#     "dt": "Navbar Item"
+#   },
+#   {
+#     "dt": "Webhook"
+#   },
+#   {
+#     "dt": "DocField"
+#   },
+#   {
+#     "dt": "Customize Form Field"
+#   },
+#   {
+#     "dt": "Custom Field"
+#   },
+#   {
+#     "dt": "Role"
+#   },
+#   {
+#     "dt": "Workspace Link"
+#   },
+#   {
+#     "dt": "Workspace"
+#   },
+#   {
+#     "dt": "Navbar Settings"
+#   },
+#   {
+#     "dt": "Web Form Field"
+#   },
+#   {
+#     "dt": "Web Page"
+#   },
+#   {
+#     "dt": "Server Script"
+#   },
+#   {
+#     "dt": "Website Settings"
+#   },
+#   {
+#     "dt": "Dashboard"
+#   },
+# ]
+
 # include js, css files in header of desk.html
 # app_include_css = "/assets/alms_app/css/alms_app.css"
 # app_include_js = "/assets/alms_app/js/alms_app.js"
