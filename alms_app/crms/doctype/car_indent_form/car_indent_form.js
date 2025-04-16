@@ -138,7 +138,41 @@ frappe.ui.form.on("Car Indent Form", {
         toggleFieldStatus(frm);
     },
 
-    hr_approval:function(frm) {
+    // hr_approval:function(frm) {
+    //     if (frm.doc.hr_approval != "Pending") {
+    //         frappe.prompt([
+    //             {
+    //                 fieldname: 'remarks_input',
+    //                 label: 'Enter Remarks',
+    //                 fieldtype: 'Data',
+    //                 reqd: 1
+    //             }
+    //         ], 
+    //         function(values) {
+    //             frm.set_value('hr_remarks', values.remarks_input);
+    //             frm.refresh_field('hr_remarks');
+    //             frm.save().then(() => {
+    //                 send_email(frm.doc.name,"HR To HRHead")
+    //             });
+    //         }, 
+    //         'Remarks Required', 
+    //         'Submit'
+    //         );
+           
+    //     }else{
+    //         frm.save_or_update();
+    //     }
+    // },
+
+
+
+    hr_approval: function(frm) {
+        if (frm.doc.reporting_head_approval !== "Approved") {
+            frappe.msgprint("Reporting Head must approve before HR can approve.");
+            frm.set_value("hr_approval", "Pending");
+            return;
+        }
+    
         if (frm.doc.hr_approval != "Pending") {
             frappe.prompt([
                 {
@@ -152,19 +186,58 @@ frappe.ui.form.on("Car Indent Form", {
                 frm.set_value('hr_remarks', values.remarks_input);
                 frm.refresh_field('hr_remarks');
                 frm.save().then(() => {
-                    send_email(frm.doc.name,"HR To HRHead")
+                    send_email(frm.doc.name, "HR To HRHead");
                 });
             }, 
             'Remarks Required', 
             'Submit'
             );
-           
-        }else{
+        } else {
             frm.save_or_update();
         }
     },
+    
 
-    hr_head_approval:function(frm) {
+    // hr_head_approval:function(frm) {
+    //     if (frm.doc.hr_head_approval != "Pending") {
+    //         frappe.prompt([
+    //             {
+    //                 fieldname: 'remarks_input',
+    //                 label: 'Enter Remarks',
+    //                 fieldtype: 'Data',
+    //                 reqd: 1
+    //             }
+    //         ], 
+    //         function(values) {
+    //             console.log(11111)
+    //             frm.set_value('hr_head_remarks', values.remarks_input);
+    //             frm.refresh_field('hr_head_remarks');
+    //             frm.save().then(() => {
+    //                 console.log(1222222) 
+    //                 send_email(frm.doc.name, "HRHead To PurchaseTeam");
+    //                 frm.set_value("status", "Approved");
+    //                 frm.save_or_update();
+    //             });
+    //         }, 
+    //         'Remarks Required', 
+    //         'Submit'
+    //         );
+            
+    //     }
+    //     else{
+    //         frm.save_or_update();
+    //     }
+    // },
+
+
+
+    hr_head_approval: function(frm) {
+        if (frm.doc.reporting_head_approval !== "Approved") {
+            frappe.msgprint("Reporting Head must approve before HR Head can approve.");
+            frm.set_value("hr_head_approval", "Pending");
+            return;
+        }
+    
         if (frm.doc.hr_head_approval != "Pending") {
             frappe.prompt([
                 {
@@ -175,11 +248,9 @@ frappe.ui.form.on("Car Indent Form", {
                 }
             ], 
             function(values) {
-                console.log(11111)
                 frm.set_value('hr_head_remarks', values.remarks_input);
                 frm.refresh_field('hr_head_remarks');
                 frm.save().then(() => {
-                    console.log(1222222) 
                     send_email(frm.doc.name, "HRHead To PurchaseTeam");
                     frm.set_value("status", "Approved");
                     frm.save_or_update();
@@ -188,13 +259,11 @@ frappe.ui.form.on("Car Indent Form", {
             'Remarks Required', 
             'Submit'
             );
-            
-        }
-        else{
+        } else {
             frm.save_or_update();
         }
     },
-
+    
     refresh: function (frm) {
         updateStatus(frm);
         toggleFieldStatus(frm);

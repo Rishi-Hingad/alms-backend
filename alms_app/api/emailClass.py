@@ -8,35 +8,6 @@ from email.message import EmailMessage
 import frappe
 from alms_app.api.email_master import EmailMaster
 emailMaster = EmailMaster()
-# import smtplib, ssl
-# from email.message import EmailMessage
-# port = 587
-# smtp_server = "smtp.zeptomail.in"
-# username="emailappsmtp.24077e2cb7f83396"
-# password = "4sxLpHrd3YNj__29edd5373fd7a"
-# message = "Test email sent successfully."
-# msg = EmailMessage()
-# msg['Subject'] = "Test Email"
-# msg['From'] = "noreply@merillife.com"
-# msg['To'] = "mihir.desai@merillife.com"
-# msg.set_content(message)
-# try:
-#  if port == 465:
-#  context = ssl.create_default_context()
-#  with smtplib.SMTP_SSL(smtp_server, port, context=context) as server:
-#  server.login(username, password)
-#  server.send_message(msg)
-#  elif port == 587:
-#  with smtplib.SMTP(smtp_server, port) as server:
-#  server.starttls()
-#  server.login(username, password)
-#  server.send_message(msg)
-#  else:
-#  print ("use 465 / 587 as port value")
-#  exit()
-#  print ("successfully sent")
-# except Exception as e:
-#  print (e)
 
 class EmailServices:
     def __init__(self):
@@ -69,15 +40,15 @@ class EmailServices:
                 server.login(self.smtp_user, self.smtp_password)
                 response = server.send_message(msg)
                 
-            print("-----------[EMAIL RESPONSE]-------------",response)
+            # print("-----------[EMAIL RESPONSE]-------------",response)
             frappe.msgprint(f"Email sent successfully to {recipient_email}.")
 
         except smtplib.SMTPException as smtp_error:
-            print("-----------[EMAIL ERROR]-------------",smtp_error)
+            # print("-----------[EMAIL ERROR]-------------",smtp_error)
             frappe.throw(f"SMTP error occurred: {smtp_error}")
 
         except Exception as e:
-            print("-----------[EMAIL ERROR]-------------",str(e))
+            # print("-----------[EMAIL ERROR]-------------",str(e))
             frappe.throw(f"Failed to send email: {str(e)}")
     
     # "-------------------------------------" User Acknowledgement Email "-------------------------------------"
