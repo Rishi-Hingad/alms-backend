@@ -188,7 +188,8 @@
                     let remarksValue = document.getElementById("remarks").value;
                 
                     // Construct the API URL with query parameters
-                    let apiUrl = `http://127.0.0.1:8003/api/method/alms_app.api.emailsService.approve_car_indent_by_reporting?indent_form=${encodeURIComponent(indentFormValue)}&remarks=${encodeURIComponent(remarksValue)}`;
+                    // let apiUrl = `http://127.0.0.1:8001/api/method/alms_app.api.emailsService.approve_car_indent_by_reporting?indent_form=${encodeURIComponent(indentFormValue)}&remarks=${encodeURIComponent(remarksValue)}`;
+                    let apiUrl = `${window.location.origin}/api/method/alms_app.api.emailsService.approve_car_indent_by_reporting?indent_form=${encodeURIComponent(indentFormValue)}&remarks=${encodeURIComponent(remarksValue)}`;
                 
                     // Redirect the user to the API URL in the same tab
                     window.location.href = apiUrl;
@@ -212,7 +213,7 @@
             // Simulate API call
             alert('Quotation approved successfully!');
             
-            fetch('http://127.0.0.1:8003/api/method/alms_app.api.emailsService.approve_car_indent_by_reporting', {
+            fetch('http://127.0.0.1:8001/api/method/alms_app.api.emailsService.approve_car_indent_by_reporting', {
                     method: "POST",
                     headers: {
                         "X-Frappe-CSRF-Token": frappe.csrf_token,

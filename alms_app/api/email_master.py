@@ -7,8 +7,9 @@ class EmailMaster:
     hr_team = hr_user.get("full_name")
 
     hr_head_user = frappe.get_all('Management Team', filters={'designation': 'HR Head'}, fields=['full_name', 'email_id'])[0]
-    hr_head_email = hr_user.get("email_id")
-    hr_head = hr_user.get("full_name")
+    # hr_head_email = hr_user.get("email_id")
+    hr_head_email = hr_head_user.get("email_id")
+    hr_head = hr_head_user.get("full_name")
     
     purchase_user = frappe.get_all('Management Team', filters={'designation': 'Purchase'}, fields=['full_name', 'email_id'])[0]
     purchase_team_email = purchase_user.get("email_id")

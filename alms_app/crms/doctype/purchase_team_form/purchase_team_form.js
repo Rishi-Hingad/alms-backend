@@ -91,6 +91,7 @@ function updateQuotationSendRequest(frm) {
                 if (selected_companies.length > 0) {
                     alert(selected_companies)
                     selected_companies.forEach(company => {
+                        console.log("Company Quotation", company)
                         send_email(frm.doc.name, "FinanceHead To Quotation Company", {
                             email_send_to: company
                             // selected_companies.p

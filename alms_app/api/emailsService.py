@@ -1,7 +1,4 @@
 
-
-
-
 import frappe
 from alms_app.api.emailClass import EmailServices
 import json
