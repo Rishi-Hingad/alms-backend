@@ -39,16 +39,6 @@ frappe.ui.form.on("Employee Master", {
     },
 
     designation(frm) {
-        // const eligibilityMap = {
-        //     "Manager": 500000,
-        //     "Senior Manager": 750000,
-        //     "Deputy General Manager": 1000000,
-        //     "General Manager": 1500000,
-        //     "Additional General Manager": 1500000,
-        //     "Vice President": 2000000,
-        //     "Senior General Manager": 2000000,
-        // };
-
         if (frm.doc.designation) {
             console.log("Welcome to designation world")
             frappe.call({

@@ -18,5 +18,6 @@ def get_context(context):
     # context["designation"] = user.custom_edesignation
     # context["eligibility"] = frappe.get_doc("Employee Designation",user.custom_edesignation).custom_eligibility
     context["eligibility"] = frappe.get_doc("Employee Designation",user.designation).eligibility
-    context["link"] = f"http://127.0.0.1:8001/api/method/alms_app.api.emailsService.approve_car_indent_by_reporting?indent_form={user.name}"
+    # context["link"] = f"http://127.0.0.1:8001/api/method/alms_app.api.emailsService.approve_car_indent_by_reporting?indent_form={user.name}"
+    context["link"] = f"{frappe.utils.get_url()}/api/method/alms_app.api.emailsService.approve_car_indent_by_reporting?indent_form={user.name}"
     return context

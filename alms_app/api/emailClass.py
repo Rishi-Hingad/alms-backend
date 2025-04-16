@@ -146,7 +146,8 @@ class EmailServices:
                           content,
                           updated_by, 
                           regards=None, 
-                          link="http://127.0.0.1:8001/login#login"):
+                        #   link="http://127.0.0.1:8001/login#login"):
+                          link="{frappe.utils.get_url()}/login#login"):
         # user_eligibility = frappe.get_doc("Employee Designation",user.custom_edesignation).custom_eligibility
         user_eligibility = frappe.get_doc("Employee Designation",user.designation).eligibility
         body = f"""
@@ -242,7 +243,8 @@ class EmailServices:
                                 content,
                                 updated_by, 
                                 regards=None, 
-                                link="http://127.0.0.1:8001/login#login"):
+                                # link="http://127.0.0.1:8001/login#login"):
+                                link=f"{frappe.utils.get_url()}/login#login"):
         # user_eligibility = frappe.get_doc("Employee Designation",user.custom_edesignation).custom_eligibility
         user_eligibility = frappe.get_doc("Employee Designation",user.designation).eligibility
         
@@ -377,7 +379,8 @@ class EmailServices:
                 <p>We are pleased to inform you that you will be eligible for Company vehicle instead of Car Allowance. </p>
                 <p>Please click on below link and fill the necessary details.</p>
                 <p>
-                    <a href="http://127.0.0.1:8001/car-indent-form/new?employee_code={user.name}" 
+                   
+                    <a href="{frappe.utils.get_url()}/car-indent-form/new?employee_code={user.name}" 
                     class="button">
                     Fill Car Rental Service Form
                     </a>
@@ -449,7 +452,8 @@ class EmailServices:
         We are pleased to inform you that {user.employee_name} has submitted the car rental form for your review.
         <br><br>Kindly check and take necessary action at your earliest convenience.<br><br>
         """
-        link = f"http://127.0.0.1:8001/reportnig_head_approval?id={user.name}"
+        # link = f"http://127.0.0.1:8001/reportnig_head_approval?id={user.name}"
+        link = f"{frappe.utils.get_url()}/reportnig_head_approval?id={user.name}"
         body = self.create_reporting_email(subject, content, regards,link)
         self.send(subject=subject, body=body, recipient_email=recipient_email)
         # self.send(subject=subject, body=body, recipient_email=recipient_email,bcc_emails=bcc_emails)
@@ -807,7 +811,8 @@ class EmailServices:
             if payload.get("email_send_to") == "ALL" or company_detail.name == payload.get("email_send_to"):
                 print(f"----------[SEND-LINK TO {company_detail.name}]------[EMAIL TYPE :{payload.get('email_phase')}]---------------")
                 link = (
-                        f"http://127.0.0.1:8001/vendor-assets-quotation/new?"
+                        # f"http://127.0.0.1:8001/vendor-assets-quotation/new?"
+                        f"{frappe.utils.get_url()}/vendor-assets-quotation/new?"
                         f"finance_company={company_detail.name}&"
                         f"employee_details={user.name}&"
                         f"location={car_indent_form.location}&"
@@ -924,7 +929,8 @@ class EmailServices:
         print("Car Quoation form ", car_quot_form)
         user = frappe.get_doc("Employee Master",car_quot_form.employee_details)  
         print("Employee Master form ", user)
-        form_link = f"http://127.0.0.1:8001/car-purchase-form/new?quotation_form={quotation_id}&user={user.name}&company={car_quot_form.finance_company}"
+        # form_link = f"http://127.0.0.1:8001/car-purchase-form/new?quotation_form={quotation_id}&user={user.name}&company={car_quot_form.finance_company}"
+        form_link = f"{frappe.utils.get_url()}/car-purchase-form/new?quotation_form={quotation_id}&user={user.name}&company={car_quot_form.finance_company}"
         body = self.create_selected_company_process(car_quot_form,
                                                     user,form_link)
         subject = f"Car Onboard Process for {user.employee_name}"
