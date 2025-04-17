@@ -131,7 +131,7 @@ frappe.ui.form.on("Car Indent Form", {
         frm.set_df_property('hr_approval', 'read_only', 1);
         frm.set_df_property('hr_head_approval', 'read_only', 1);
         frm.set_df_property('status', 'read_only', 1);
-        frm.set_df_property('hr_head_remarks', 'read_only', 1);
+        frm.set_df_property('model', 'read_only', 1);
         frm.set_df_property('reporting_head_remarks', 'read_only', 1);
         frm.set_df_property('hr_remarks', 'read_only', 1);
 

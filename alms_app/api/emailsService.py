@@ -7,11 +7,11 @@ EMail = EmailServices()
 @frappe.whitelist(allow_guest=True)
 def email_sender(name, email_send_to=None,payload=None):
     try:
-        print("PAYLOAD---------------->",type(payload),payload)
+        # print("PAYLOAD---------------->",type(payload),payload)
         if payload:
             payload = json.loads(payload)
         user = frappe.get_doc("Employee Master",name)
-        print(f"------------[{user.email_id}]-----------------[EMAIL API WORK]--------------[{email_send_to}]---------------")
+        # print(f"------------[{user.email_id}]-----------------[EMAIL API WORK]--------------[{email_send_to}]---------------")
         
         if email_send_to =="To Employee":
             EMail.for_hr_team_to_employee(user)
@@ -41,7 +41,7 @@ def email_sender(name, email_send_to=None,payload=None):
             EMail.for_finance_team_to_finance_head(user) 
             
         elif email_send_to =="FinanceHead To AccountsTeam":# FinanceHead To Vendors also
-            print("------------[PAYLOAD Quoatation ID]------------------:",payload)
+            # print("------------[PAYLOAD Quoatation ID]------------------:",payload)
             EMail.for_finance_head_to_accounts_team(user)
             if payload.get("quotation_id"):
                 EMail.for_selected_compny_process(quotation_id=payload.get("quotation_id"))
@@ -55,7 +55,7 @@ def email_sender(name, email_send_to=None,payload=None):
             
         return {"status": "success", "message": f"Email sent"}
     except Exception as e:
-        print(f"------------[Error:{e}]---------------")
+        # print(f"------------[Error:{e}]---------------")
         return {"status": "error","message":str(e)}
 
 import traceback
@@ -73,7 +73,7 @@ def approve_car_indent_by_reporting(indent_form, remarks):
         i_form.save()
         frappe.db.commit()
         
-        print(i_form, "---------------SAVE DOC--------------")
+        # print(i_form, "---------------SAVE DOC--------------")
         
         # Send email notification
         EMail.for_reporting_to_hr_team(user) 
@@ -85,11 +85,11 @@ def approve_car_indent_by_reporting(indent_form, remarks):
     except Exception as e:
         # Capture detailed error information
         error_message = str(e)
-        print("Error occurred:", error_message)  # Print the exception message
+        # print("Error occurred:", error_message)  # Print the exception message
         
         # Print the type of the exception and the traceback for more detail
-        print("Exception type:", type(e))
-        print("Full Traceback:\n", traceback.format_exc())
+        # print("Exception type:", type(e))
+        # print("Full Traceback:\n", traceback.format_exc())
         
         # Log the error for debugging
         frappe.log_error(f"Error approving form: {error_message}", "Car Indent Approval Error")
