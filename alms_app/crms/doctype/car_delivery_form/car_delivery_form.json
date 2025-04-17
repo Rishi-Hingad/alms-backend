@@ -1,0 +1,75 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2025-03-01 12:32:06.722826",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "user",
+  "company",
+  "quotation_form",
+  "car_deliverd",
+  "delivery_date",
+  "agreement_document"
+ ],
+ "fields": [
+  {
+   "fieldname": "user",
+   "fieldtype": "Link",
+   "label": "User",
+   "options": "Employee Master"
+  },
+  {
+   "fieldname": "company",
+   "fieldtype": "Link",
+   "label": "Company",
+   "options": "Vendor Master"
+  },
+  {
+   "fieldname": "quotation_form",
+   "fieldtype": "Link",
+   "label": "Quotation Form",
+   "options": "Car Quotation"
+  },
+  {
+   "fieldname": "car_deliverd",
+   "fieldtype": "Select",
+   "label": "Car Deliverd",
+   "options": "Yes\nNo"
+  },
+  {
+   "fieldname": "delivery_date",
+   "fieldtype": "Date",
+   "label": "Delivery Date"
+  },
+  {
+   "fieldname": "agreement_document",
+   "fieldtype": "Attach",
+   "label": "Agreement Document"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2025-03-01 12:35:11.528812",
+ "modified_by": "Administrator",
+ "module": "CRMS",
+ "name": "Car Delivery Form",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

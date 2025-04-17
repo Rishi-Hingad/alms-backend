@@ -1,0 +1,70 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2025-03-06 11:24:18.204727",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "user",
+  "company",
+  "quotation_form",
+  "rc_book_received",
+  "rc_book_document"
+ ],
+ "fields": [
+  {
+   "fieldname": "user",
+   "fieldtype": "Link",
+   "label": "User",
+   "options": "Employee Master"
+  },
+  {
+   "fieldname": "company",
+   "fieldtype": "Select",
+   "label": "Company",
+   "options": "Easy Assets\nALD\nXYZ"
+  },
+  {
+   "fieldname": "quotation_form",
+   "fieldtype": "Link",
+   "label": "Quotation Form",
+   "options": "Car Quotation"
+  },
+  {
+   "default": "No",
+   "fieldname": "rc_book_received",
+   "fieldtype": "Select",
+   "label": "RC Book Received  ",
+   "options": "Yes\nNo"
+  },
+  {
+   "fieldname": "rc_book_document",
+   "fieldtype": "Attach",
+   "label": "RC Book Document"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2025-03-06 11:27:15.826011",
+ "modified_by": "Administrator",
+ "module": "CRMS",
+ "name": "Car RC Book Form",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

@@ -1,0 +1,292 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "field:employee_name",
+ "creation": "2024-09-23 10:19:15.791857",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "car_indent_form_details_section",
+  "employee_name",
+  "meril_entity",
+  "eligibility",
+  "location",
+  "car_model",
+  "make",
+  "color",
+  "engine",
+  "column_break_otzw",
+  "ex_showroom_price",
+  "discount",
+  "tcs",
+  "net_ex_showroom_price",
+  "registration_charges",
+  "accessories",
+  "finance_amount",
+  "quotation_document",
+  "revised_car_details_section",
+  "kilometers_per_year",
+  "tenure_in_years",
+  "total_kilometers",
+  "revised_ex_show_room_price",
+  "revised_discount",
+  "revised_tcs",
+  "revised_net_ex_showroom_price",
+  "column_break_xtqz",
+  "revised_registration_charges",
+  "revised_accessories",
+  "revised_financed_amount",
+  "revised_quotation_attachment_need_to_be_done",
+  "purchase_team_status",
+  "purchase_team_remarks",
+  "purchase_head_status",
+  "purchase_head_remarks",
+  "status"
+ ],
+ "fields": [
+  {
+   "fieldname": "employee_name",
+   "fieldtype": "Link",
+   "label": "Employee Name",
+   "options": "Car Indent Form",
+   "unique": 1
+  },
+  {
+   "fieldname": "kilometers_per_year",
+   "fieldtype": "Int",
+   "label": "Kilometers per Year"
+  },
+  {
+   "fieldname": "tenure_in_years",
+   "fieldtype": "Int",
+   "label": "Tenure (in years)"
+  },
+  {
+   "fieldname": "total_kilometers",
+   "fieldtype": "Data",
+   "label": "Total Kilometers",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_xtqz",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "label": "Status",
+   "options": "Pending\nApproved\nRejected"
+  },
+  {
+   "fieldname": "car_indent_form_details_section",
+   "fieldtype": "Section Break",
+   "label": "Car Indent Form Details"
+  },
+  {
+   "fieldname": "revised_car_details_section",
+   "fieldtype": "Section Break",
+   "label": "Revised Car Details"
+  },
+  {
+   "fetch_from": "employee_name.location",
+   "fieldname": "location",
+   "fieldtype": "Data",
+   "label": "Location"
+  },
+  {
+   "fetch_from": "employee_name.model",
+   "fieldname": "car_model",
+   "fieldtype": "Data",
+   "label": "Car Model"
+  },
+  {
+   "fetch_from": "employee_name.colour",
+   "fieldname": "color",
+   "fieldtype": "Data",
+   "label": "Color"
+  },
+  {
+   "fetch_from": "employee_name.ex_showroom_price",
+   "fieldname": "ex_showroom_price",
+   "fieldtype": "Currency",
+   "label": "Ex Showroom Price"
+  },
+  {
+   "fetch_from": "employee_name.tcs",
+   "fieldname": "tcs",
+   "fieldtype": "Currency",
+   "label": "TCS"
+  },
+  {
+   "fetch_from": "employee_name.registration_charges",
+   "fieldname": "registration_charges",
+   "fieldtype": "Currency",
+   "label": "Registration Charges"
+  },
+  {
+   "fetch_from": "employee_name.finance_amount",
+   "fieldname": "finance_amount",
+   "fieldtype": "Currency",
+   "label": "Finance Amount"
+  },
+  {
+   "fieldname": "column_break_otzw",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fetch_from": "employee_name.company_name",
+   "fieldname": "meril_entity",
+   "fieldtype": "Data",
+   "label": "Meril Entity"
+  },
+  {
+   "fetch_from": "employee_name.eligibility",
+   "fieldname": "eligibility",
+   "fieldtype": "Currency",
+   "label": "Eligibility"
+  },
+  {
+   "fetch_from": "employee_name.make",
+   "fieldname": "make",
+   "fieldtype": "Data",
+   "label": "Make"
+  },
+  {
+   "fetch_from": "employee_name.engine",
+   "fieldname": "engine",
+   "fieldtype": "Data",
+   "label": "Engine"
+  },
+  {
+   "fetch_from": "employee_name.discount",
+   "fieldname": "discount",
+   "fieldtype": "Currency",
+   "label": "Discount"
+  },
+  {
+   "fetch_from": "employee_name.net_ex_showroom_price",
+   "fieldname": "net_ex_showroom_price",
+   "fieldtype": "Currency",
+   "label": "Net Ex Showroom Price"
+  },
+  {
+   "fetch_from": "employee_name.accessories",
+   "fieldname": "accessories",
+   "fieldtype": "Currency",
+   "label": "Accessories"
+  },
+  {
+   "fetch_from": "employee_name.quotation_document",
+   "fieldname": "quotation_document",
+   "fieldtype": "Attach",
+   "label": "Quotation Document"
+  },
+  {
+   "fieldname": "revised_ex_show_room_price",
+   "fieldtype": "Currency",
+   "label": "Revised Ex Show Room Price"
+  },
+  {
+   "fieldname": "revised_discount",
+   "fieldtype": "Currency",
+   "label": "Revised Discount"
+  },
+  {
+   "fieldname": "revised_tcs",
+   "fieldtype": "Currency",
+   "label": "Revised TCS"
+  },
+  {
+   "fieldname": "revised_accessories",
+   "fieldtype": "Currency",
+   "label": "Revised Accessories"
+  },
+  {
+   "fieldname": "revised_quotation_attachment_need_to_be_done",
+   "fieldtype": "Attach",
+   "label": "Revised Quotation (Attachment need to be done)"
+  },
+  {
+   "fieldname": "revised_registration_charges",
+   "fieldtype": "Currency",
+   "label": "Revised Registration Charges"
+  },
+  {
+   "fieldname": "revised_financed_amount",
+   "fieldtype": "Currency",
+   "label": "Revised Financed Amount"
+  },
+  {
+   "fieldname": "revised_net_ex_showroom_price",
+   "fieldtype": "Currency",
+   "label": "Revised Net Ex Showroom Price"
+  },
+  {
+   "default": "Pending",
+   "fieldname": "purchase_head_status",
+   "fieldtype": "Select",
+   "label": "Purchase Head Status",
+   "options": "Pending\nApproved\nRejected"
+  },
+  {
+   "default": "Pending",
+   "fieldname": "purchase_team_status",
+   "fieldtype": "Select",
+   "label": "Purchase Team Status",
+   "options": "Pending\nApproved\nRejected"
+  },
+  {
+   "fieldname": "purchase_team_remarks",
+   "fieldtype": "Data",
+   "label": "Purchase Team Remarks"
+  },
+  {
+   "fieldname": "purchase_head_remarks",
+   "fieldtype": "Data",
+   "label": "Purchase Head Remarks"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [
+  {
+   "link_doctype": "Car Indent Form",
+   "link_fieldname": "employee_code"
+  }
+ ],
+ "modified": "2025-02-13 16:35:47.345066",
+ "modified_by": "Administrator",
+ "module": "CRMS",
+ "name": "Purchase Team Form",
+ "naming_rule": "By fieldname",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [
+  {
+   "color": "Yellow",
+   "title": "Pending"
+  },
+  {
+   "color": "Green",
+   "title": "Accepted"
+  },
+  {
+   "color": "Red",
+   "title": "Rejected"
+  }
+ ]
+}

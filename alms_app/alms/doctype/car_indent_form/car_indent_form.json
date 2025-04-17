@@ -8,30 +8,29 @@
  "engine": "InnoDB",
  "field_order": [
   "car_indent_form_section",
-  "company_name",
   "employee_code",
-  "employee_name",
-  "designation",
   "department",
-  "eligibility",
   "contact_number",
-  "e_mail_id",
   "location",
-  "hr_approval",
-  "hr_head_approval",
-  "column_break_dptt",
-  "make",
   "model",
-  "engine",
   "colour",
-  "ex_showroom_price",
   "net_ex_room_price",
-  "discount",
   "tcs",
-  "registration_charges",
   "accessories",
+  "quotation_document",
+  "column_break_dptt",
+  "company_name",
+  "designation",
+  "eligibility",
+  "email_id",
+  "make",
+  "engine",
+  "ex_showroom_price",
+  "discount",
+  "registration_charges",
   "financed_amount",
-  "quotation_document"
+  "status",
+  "status_head"
  ],
  "fields": [
   {
@@ -40,47 +39,43 @@
    "label": "Car Indent Form"
   },
   {
+   "fetch_from": "employee_code.company",
    "fieldname": "company_name",
-   "fieldtype": "Select",
-   "label": "Company Name",
-   "options": "-Select-\nMicro Life Sciences\nMeril Life Sciences"
+   "fieldtype": "Data",
+   "label": "Company Name"
   },
   {
    "fieldname": "employee_code",
-   "fieldtype": "Data",
-   "label": "Employee Code"
+   "fieldtype": "Link",
+   "label": "Employee Code",
+   "options": "Employee Master"
   },
   {
-   "fieldname": "employee_name",
-   "fieldtype": "Data",
-   "label": "Employee Name"
-  },
-  {
+   "fetch_from": "employee_code.designation",
    "fieldname": "designation",
    "fieldtype": "Data",
    "label": "Designation"
   },
   {
+   "fetch_from": "employee_code.employee_department",
    "fieldname": "department",
    "fieldtype": "Data",
    "label": "Department"
   },
   {
+   "fetch_from": "employee_code.eligibility",
    "fieldname": "eligibility",
    "fieldtype": "Data",
    "label": "Eligibility"
   },
   {
+   "fetch_from": "employee_code.contact_number",
    "fieldname": "contact_number",
    "fieldtype": "Phone",
    "label": "Contact Number"
   },
   {
-   "fieldname": "e_mail_id",
-   "fieldtype": "Data",
-   "label": "E-mail ID"
-  },
-  {
+   "fetch_from": "employee_code.location",
    "fieldname": "location",
    "fieldtype": "Data",
    "label": "Location"
@@ -151,21 +146,27 @@
    "fieldtype": "Column Break"
   },
   {
-   "fieldname": "hr_approval",
+   "fieldname": "status",
    "fieldtype": "Select",
    "label": "HR Approval",
-   "options": "-Select-\nApproved\nRejected"
+   "options": "Pending\nApproved\nRejected"
   },
   {
-   "fieldname": "hr_head_approval",
+   "fieldname": "status_head",
    "fieldtype": "Select",
    "label": "HR Head Approval",
-   "options": "-Select-\nApproved\nRejected"
+   "options": "Pending\nApproved\nRejected"
+  },
+  {
+   "fetch_from": "employee_code.email_id",
+   "fieldname": "email_id",
+   "fieldtype": "Data",
+   "label": "E-mail ID"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-11-07 11:19:24.026414",
+ "modified": "2024-11-09 14:57:41.684589",
  "modified_by": "Administrator",
  "module": "ALMS",
  "name": "Car Indent Form",
@@ -187,5 +188,18 @@
  ],
  "sort_field": "modified",
  "sort_order": "DESC",
- "states": []
+ "states": [
+  {
+   "color": "Green",
+   "title": "Approved"
+  },
+  {
+   "color": "Red",
+   "title": "Rejected"
+  },
+  {
+   "color": "Yellow",
+   "title": "Pending"
+  }
+ ]
 }

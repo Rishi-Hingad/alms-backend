@@ -1,0 +1,196 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "field:user",
+ "creation": "2025-02-05 16:10:23.447640",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "user_section",
+  "user",
+  "company",
+  "quotation",
+  "car_delivery_process_section",
+  "po",
+  "proforma_invoice_received",
+  "insurance_copy_received",
+  "rc_book_received",
+  "payment_done",
+  "registration_done",
+  "car_delivery",
+  "delivery_date",
+  "column_break_ybdw",
+  "po_document",
+  "proforma_invoice_document",
+  "insurance_document",
+  "rc_book_document",
+  "payment_document",
+  "registration_document",
+  "agreement_document"
+ ],
+ "fields": [
+  {
+   "fieldname": "user_section",
+   "fieldtype": "Section Break",
+   "label": "User"
+  },
+  {
+   "fieldname": "user",
+   "fieldtype": "Link",
+   "label": "User",
+   "options": "Employee Master",
+   "read_only": 1,
+   "unique": 1
+  },
+  {
+   "fieldname": "company",
+   "fieldtype": "Select",
+   "label": "Company",
+   "options": "Easy Assets\nALD\nXYZ",
+   "read_only": 1
+  },
+  {
+   "fieldname": "quotation",
+   "fieldtype": "Link",
+   "label": "Quotation",
+   "options": "Car Quotation",
+   "read_only": 1
+  },
+  {
+   "fieldname": "car_delivery_process_section",
+   "fieldtype": "Section Break",
+   "label": "Car Delivery Process"
+  },
+  {
+   "default": "No",
+   "fieldname": "po",
+   "fieldtype": "Data",
+   "label": "PO",
+   "options": "Yes\nNo",
+   "read_only": 1
+  },
+  {
+   "default": "No",
+   "fieldname": "proforma_invoice_received",
+   "fieldtype": "Data",
+   "label": "Proforma Invoice Received",
+   "options": "Yes\nNo",
+   "read_only": 1
+  },
+  {
+   "default": "No",
+   "fieldname": "insurance_copy_received",
+   "fieldtype": "Data",
+   "label": "Insurance Copy Received ",
+   "options": "Yes\nNo",
+   "read_only": 1
+  },
+  {
+   "default": "No",
+   "fieldname": "rc_book_received",
+   "fieldtype": "Data",
+   "label": "RC Book Received",
+   "options": "Yes\nNo",
+   "read_only": 1
+  },
+  {
+   "default": "No",
+   "fieldname": "payment_done",
+   "fieldtype": "Data",
+   "label": "Payment Done",
+   "options": "Yes\nNo",
+   "read_only": 1
+  },
+  {
+   "default": "No",
+   "fieldname": "registration_done",
+   "fieldtype": "Data",
+   "label": "Registration Done",
+   "options": "Yes\nNo",
+   "read_only": 1
+  },
+  {
+   "fieldname": "car_delivery",
+   "fieldtype": "Data",
+   "label": "Car Delivery",
+   "read_only": 1
+  },
+  {
+   "fieldname": "delivery_date",
+   "fieldtype": "Date",
+   "label": "Delivery Date",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_ybdw",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "po_document",
+   "fieldtype": "Attach",
+   "label": "PO Document",
+   "read_only": 1
+  },
+  {
+   "fieldname": "proforma_invoice_document",
+   "fieldtype": "Attach",
+   "label": "Proforma Invoice Document",
+   "read_only": 1
+  },
+  {
+   "fieldname": "insurance_document",
+   "fieldtype": "Attach",
+   "label": "Insurance Copy Document",
+   "read_only": 1
+  },
+  {
+   "fieldname": "rc_book_document",
+   "fieldtype": "Attach",
+   "label": "RC Book Document",
+   "read_only": 1
+  },
+  {
+   "fieldname": "payment_document",
+   "fieldtype": "Attach",
+   "label": "Payment Document",
+   "read_only": 1
+  },
+  {
+   "fieldname": "registration_document",
+   "fieldtype": "Attach",
+   "label": "Registration Document",
+   "read_only": 1
+  },
+  {
+   "fieldname": "agreement_document",
+   "fieldtype": "Attach",
+   "label": "Agreement Document",
+   "read_only": 1
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2025-03-25 17:14:58.885548",
+ "modified_by": "Administrator",
+ "module": "CRMS",
+ "name": "Car Process",
+ "naming_rule": "By fieldname",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

@@ -1,0 +1,1433 @@
+[
+ {
+  "custom_eligibility": null,
+  "designation": "Senior Vice President",
+  "docstatus": 0,
+  "doctype": "Employee Designation",
+  "eligibility": null,
+  "modified": "2025-04-09 12:50:44.738135",
+  "name": "Senior Vice President"
+ },
+ {
+  "custom_eligibility": "1000000",
+  "designation": "Deputy General Manager",
+  "docstatus": 0,
+  "doctype": "Employee Designation",
+  "eligibility": null,
+  "modified": "2025-04-09 14:51:47.263260",
+  "name": "Deputy General Manager"
+ },
+ {
+  "custom_eligibility": "750000",
+  "designation": "Senior Manager",
+  "docstatus": 0,
+  "doctype": "Employee Designation",
+  "eligibility": null,
+  "modified": "2025-04-09 14:50:59.182911",
+  "name": "Senior Manager"
+ },
+ {
+  "custom_eligibility": null,
+  "designation": "Assistant Manager",
+  "docstatus": 0,
+  "doctype": "Employee Designation",
+  "eligibility": null,
+  "modified": "2025-04-09 12:50:44.807350",
+  "name": "Assistant Manager"
+ },
+ {
+  "custom_eligibility": null,
+  "designation": "Senior Executive",
+  "docstatus": 0,
+  "doctype": "Employee Designation",
+  "eligibility": null,
+  "modified": "2025-04-09 12:50:44.830928",
+  "name": "Senior Executive"
+ },
+ {
+  "custom_eligibility": "2000000",
+  "designation": "Senior General Manager",
+  "docstatus": 0,
+  "doctype": "Employee Designation",
+  "eligibility": null,
+  "modified": "2025-04-09 14:56:11.111388",
+  "name": "Senior General Manager"
+ },
+ {
+  "custom_eligibility": null,
+  "designation": "Executive",
+  "docstatus": 0,
+  "doctype": "Employee Designation",
+  "eligibility": null,
+  "modified": "2025-04-09 12:50:44.920914",
+  "name": "Executive"
+ },
+ {
+  "custom_eligibility": null,
+  "designation": "Junior Executive",
+  "docstatus": 0,
+  "doctype": "Employee Designation",
+  "eligibility": null,
+  "modified": "2025-04-09 12:50:45.019540",
+  "name": "Junior Executive"
+ },
+ {
+  "custom_eligibility": null,
+  "designation": "Zonal Head",
+  "docstatus": 0,
+  "doctype": "Employee Designation",
+  "eligibility": null,
+  "modified": "2025-04-09 12:50:45.052374",
+  "name": "Zonal Head"
+ },
+ {
+  "custom_eligibility": null,
+  "designation": "Senior Officer",
+  "docstatus": 0,
+  "doctype": "Employee Designation",
+  "eligibility": null,
+  "modified": "2025-04-09 12:50:45.155822",
+  "name": "Senior Officer"
+ },
+ {
+  "custom_eligibility": null,
+  "designation": "Senior Area Manager",
+  "docstatus": 0,
+  "doctype": "Employee Designation",
+  "eligibility": null,
+  "modified": "2025-04-09 12:50:45.374197",
+  "name": "Senior Area Manager"
+ },
+ {
+  "custom_eligibility": null,
+  "designation": "Office Assistant",
+  "docstatus": 0,
+  "doctype": "Employee Designation",
+  "eligibility": null,
+  "modified": "2025-04-09 12:50:45.418949",
+  "name": "Office Assistant"
+ },
+ {
+  "custom_eligibility": null,
+  "designation": "Area Manager",
+  "docstatus": 0,
+  "doctype": "Employee Designation",
+  "eligibility": null,
+  "modified": "2025-04-09 12:50:45.537466",
+  "name": "Area Manager"
+ },
+ {
+  "custom_eligibility": null,
+  "designation": "Assistant Product Manager",
+  "docstatus": 0,
+  "doctype": "Employee Designation",
+  "eligibility": null,
+  "modified": "2025-04-09 12:50:45.544014",
+  "name": "Assistant Product Manager"
+ },
+ {
+  "custom_eligibility": null,
+  "designation": "Regional Therapy Specialist",
+  "docstatus": 0,
+  "doctype": "Employee Designation",
+  "eligibility": null,
+  "modified": "2025-04-09 12:50:45.619401",
+  "name": "Regional Therapy Specialist"
+ },
+ {
+  "custom_eligibility": null,
+  "designation": "Data Manager",
+  "docstatus": 0,
+  "doctype": "Employee Designation",
+  "eligibility": null,
+  "modified": "2025-04-09 12:50:45.844429",
+  "name": "Data Manager"
+ },
+ {
+  "custom_eligibility": null,
+  "designation": "Chief Graphic Designer",
+  "docstatus": 0,
+  "doctype": "Employee Designation",
+  "eligibility": null,
+  "modified": "2025-04-09 12:50:45.991973",
+  "name": "Chief Graphic Designer"
+ },
+ {
+  "custom_eligibility": null,
+  "designation": "Clinical Research Associate",
+  "docstatus": 0,
+  "doctype": "Employee Designation",
+  "eligibility": null,
+  "modified": "2025-04-09 12:50:46.053156",
+  "name": "Clinical Research Associate"
+ },
+ {
+  "custom_eligibility": null,
+  "designation": "Zonal Distribution Manager",
+  "docstatus": 0,
+  "doctype": "Employee Designation",
+  "eligibility": null,
+  "modified": "2025-04-09 12:50:46.107128",
+  "name": "Zonal Distribution Manager"
+ },
+ {
+  "custom_eligibility": null,
+  "designation": "Junior Officer",
+  "docstatus": 0,
+  "doctype": "Employee Designation",
+  "eligibility": null,
+  "modified": "2025-04-09 12:50:46.231739",
+  "name": "Junior Officer"
+ },
+ {
+  "custom_eligibility": null,
+  "designation": "Senior Data Manager",
+  "docstatus": 0,
+  "doctype": "Employee Designation",
+  "eligibility": null,
+  "modified": "2025-04-09 12:50:46.361350",
+  "name": "Senior Data Manager"
+ },
+ {
+  "custom_eligibility": null,
+  "designation": "Clinical Application Specialist",
+  "docstatus": 0,
+  "doctype": "Employee Designation",
+  "eligibility": null,
+  "modified": "2025-04-09 12:50:46.368158",
+  "name": "Clinical Application Specialist"
+ },
+ {
+  "custom_eligibility": null,
+  "designation": "Regional Therapy Specialist -Structural Heart Disease",
+  "docstatus": 0,
+  "doctype": "Employee Designation",
+  "eligibility": null,
+  "modified": "2025-04-09 12:50:46.380754",
+  "name": "Regional Therapy Specialist -Structural Heart Disease"
+ },
+ {
+  "custom_eligibility": null,
+  "designation": "Senior Therapy Development Manager",
+  "docstatus": 0,
+  "doctype": "Employee Designation",
+  "eligibility": null,
+  "modified": "2025-04-09 12:50:46.395085",
+  "name": "Senior Therapy Development Manager"
+ },
+ {
+  "custom_eligibility": null,
+  "designation": "Manager Clinical Application Specialist",
+  "docstatus": 0,
+  "doctype": "Employee Designation",
+  "eligibility": null,
+  "modified": "2025-04-09 12:50:46.403164",
+  "name": "Manager Clinical Application Specialist"
+ },
+ {
+  "custom_eligibility": null,
+  "designation": "Senior Data Analyst",
+  "docstatus": 0,
+  "doctype": "Employee Designation",
+  "eligibility": null,
+  "modified": "2025-04-09 12:50:46.474545",
+  "name": "Senior Data Analyst"
+ },
+ {
+  "custom_eligibility": null,
+  "designation": "Web Developer",
+  "docstatus": 0,
+  "doctype": "Employee Designation",
+  "eligibility": null,
+  "modified": "2025-04-09 12:50:46.506962",
+  "name": "Web Developer"
+ },
+ {
+  "custom_eligibility": null,
+  "designation": "Project Manager",
+  "docstatus": 0,
+  "doctype": "Employee Designation",
+  "eligibility": null,
+  "modified": "2025-04-09 12:50:46.548764",
+  "name": "Project Manager"
+ },
+ {
+  "custom_eligibility": null,
+  "designation": "Assistant Therapy Development Manager",
+  "docstatus": 0,
+  "doctype": "Employee Designation",
+  "eligibility": null,
+  "modified": "2025-04-09 12:50:46.632605",
+  "name": "Assistant Therapy Development Manager"
+ },
+ {
+  "custom_eligibility": null,
+  "designation": "Executive Trainee",
+  "docstatus": 0,
+  "doctype": "Employee Designation",
+  "eligibility": null,
+  "modified": "2025-04-09 12:50:47.005401",
+  "name": "Executive Trainee"
+ },
+ {
+  "custom_eligibility": null,
+  "designation": "Business Development Manager",
+  "docstatus": 0,
+  "doctype": "Employee Designation",
+  "eligibility": null,
+  "modified": "2025-04-09 12:50:47.041459",
+  "name": "Business Development Manager"
+ },
+ {
+  "custom_eligibility": null,
+  "designation": "Graphic Designer",
+  "docstatus": 0,
+  "doctype": "Employee Designation",
+  "eligibility": null,
+  "modified": "2025-04-09 12:50:47.067210",
+  "name": "Graphic Designer"
+ },
+ {
+  "custom_eligibility": null,
+  "designation": "Business Head",
+  "docstatus": 0,
+  "doctype": "Employee Designation",
+  "eligibility": null,
+  "modified": "2025-04-09 12:50:47.130271",
+  "name": "Business Head"
+ },
+ {
+  "custom_eligibility": null,
+  "designation": "Product Manager",
+  "docstatus": 0,
+  "doctype": "Employee Designation",
+  "eligibility": null,
+  "modified": "2025-04-09 12:50:47.174899",
+  "name": "Product Manager"
+ },
+ {
+  "custom_eligibility": null,
+  "designation": "Medical Writer",
+  "docstatus": 0,
+  "doctype": "Employee Designation",
+  "eligibility": null,
+  "modified": "2025-04-09 12:50:47.198282",
+  "name": "Medical Writer"
+ },
+ {
+  "custom_eligibility": null,
+  "designation": "Senior Clinical Application Specialist",
+  "docstatus": 0,
+  "doctype": "Employee Designation",
+  "eligibility": null,
+  "modified": "2025-04-09 12:50:47.234569",
+  "name": "Senior Clinical Application Specialist"
+ },
+ {
+  "custom_eligibility": null,
+  "designation": "Vice President- Business HR",
+  "docstatus": 0,
+  "doctype": "Employee Designation",
+  "eligibility": null,
+  "modified": "2025-04-09 12:50:47.361339",
+  "name": "Vice President- Business HR"
+ },
+ {
+  "custom_eligibility": null,
+  "designation": "Clinical Trial Assistant",
+  "docstatus": 0,
+  "doctype": "Employee Designation",
+  "eligibility": null,
+  "modified": "2025-04-09 12:50:47.494596",
+  "name": "Clinical Trial Assistant"
+ },
+ {
+  "custom_eligibility": null,
+  "designation": "Therapy Manager",
+  "docstatus": 0,
+  "doctype": "Employee Designation",
+  "eligibility": null,
+  "modified": "2025-04-09 12:50:47.506407",
+  "name": "Therapy Manager"
+ },
+ {
+  "custom_eligibility": null,
+  "designation": "Senior Medical Writer",
+  "docstatus": 0,
+  "doctype": "Employee Designation",
+  "eligibility": null,
+  "modified": "2025-04-09 12:50:47.633220",
+  "name": "Senior Medical Writer"
+ },
+ {
+  "custom_eligibility": null,
+  "designation": "Senior Clinical Research Associate",
+  "docstatus": 0,
+  "doctype": "Employee Designation",
+  "eligibility": null,
+  "modified": "2025-04-09 12:50:47.681181",
+  "name": "Senior Clinical Research Associate"
+ },
+ {
+  "custom_eligibility": null,
+  "designation": "Senior Clinical Trial Assistant",
+  "docstatus": 0,
+  "doctype": "Employee Designation",
+  "eligibility": null,
+  "modified": "2025-04-09 12:50:47.835163",
+  "name": "Senior Clinical Trial Assistant"
+ },
+ {
+  "custom_eligibility": null,
+  "designation": "Biostatistician",
+  "docstatus": 0,
+  "doctype": "Employee Designation",
+  "eligibility": null,
+  "modified": "2025-04-09 12:50:47.868130",
+  "name": "Biostatistician"
+ },
+ {
+  "custom_eligibility": null,
+  "designation": "Clinical Regulatory Writer",
+  "docstatus": 0,
+  "doctype": "Employee Designation",
+  "eligibility": null,
+  "modified": "2025-04-09 12:50:47.890003",
+  "name": "Clinical Regulatory Writer"
+ },
+ {
+  "custom_eligibility": null,
+  "designation": "Image Analyst",
+  "docstatus": 0,
+  "doctype": "Employee Designation",
+  "eligibility": null,
+  "modified": "2025-04-09 12:50:48.044714",
+  "name": "Image Analyst"
+ },
+ {
+  "custom_eligibility": null,
+  "designation": "Cluster Head - Africa",
+  "docstatus": 0,
+  "doctype": "Employee Designation",
+  "eligibility": null,
+  "modified": "2025-04-09 12:50:48.229287",
+  "name": "Cluster Head - Africa"
+ },
+ {
+  "custom_eligibility": null,
+  "designation": "Event Manager",
+  "docstatus": 0,
+  "doctype": "Employee Designation",
+  "eligibility": null,
+  "modified": "2025-04-09 12:50:48.317057",
+  "name": "Event Manager"
+ },
+ {
+  "custom_eligibility": null,
+  "designation": "Senior Graphic Designer",
+  "docstatus": 0,
+  "doctype": "Employee Designation",
+  "eligibility": null,
+  "modified": "2025-04-09 12:50:48.519255",
+  "name": "Senior Graphic Designer"
+ },
+ {
+  "custom_eligibility": null,
+  "designation": "District Associate Manager",
+  "docstatus": 0,
+  "doctype": "Employee Designation",
+  "eligibility": null,
+  "modified": "2025-04-09 12:50:48.529954",
+  "name": "District Associate Manager"
+ },
+ {
+  "custom_eligibility": null,
+  "designation": "Senior Product Manager",
+  "docstatus": 0,
+  "doctype": "Employee Designation",
+  "eligibility": null,
+  "modified": "2025-04-09 12:50:48.598889",
+  "name": "Senior Product Manager"
+ },
+ {
+  "custom_eligibility": null,
+  "designation": "Management Trainee",
+  "docstatus": 0,
+  "doctype": "Employee Designation",
+  "eligibility": null,
+  "modified": "2025-04-09 12:50:48.637589",
+  "name": "Management Trainee"
+ },
+ {
+  "custom_eligibility": null,
+  "designation": "Clinical Trail Assistant",
+  "docstatus": 0,
+  "doctype": "Employee Designation",
+  "eligibility": null,
+  "modified": "2025-04-09 12:50:48.734863",
+  "name": "Clinical Trail Assistant"
+ },
+ {
+  "custom_eligibility": null,
+  "designation": "Clinical Data Analyst",
+  "docstatus": 0,
+  "doctype": "Employee Designation",
+  "eligibility": null,
+  "modified": "2025-04-09 12:50:48.990945",
+  "name": "Clinical Data Analyst"
+ },
+ {
+  "custom_eligibility": null,
+  "designation": "Data Analyst",
+  "docstatus": 0,
+  "doctype": "Employee Designation",
+  "eligibility": null,
+  "modified": "2025-04-09 12:50:49.714785",
+  "name": "Data Analyst"
+ },
+ {
+  "custom_eligibility": null,
+  "designation": "Junior Software Developer",
+  "docstatus": 0,
+  "doctype": "Employee Designation",
+  "eligibility": null,
+  "modified": "2025-04-09 12:50:49.816504",
+  "name": "Junior Software Developer"
+ },
+ {
+  "custom_eligibility": null,
+  "designation": "Clinical Operations Training Manager",
+  "docstatus": 0,
+  "doctype": "Employee Designation",
+  "eligibility": null,
+  "modified": "2025-04-09 12:50:49.830186",
+  "name": "Clinical Operations Training Manager"
+ },
+ {
+  "custom_eligibility": null,
+  "designation": "Director",
+  "docstatus": 0,
+  "doctype": "Employee Designation",
+  "eligibility": null,
+  "modified": "2025-04-09 12:50:49.897335",
+  "name": "Director"
+ },
+ {
+  "custom_eligibility": null,
+  "designation": "Franchise Director",
+  "docstatus": 0,
+  "doctype": "Employee Designation",
+  "eligibility": null,
+  "modified": "2025-04-09 12:50:49.906408",
+  "name": "Franchise Director"
+ },
+ {
+  "custom_eligibility": null,
+  "designation": "Senior Technical Application Specialist",
+  "docstatus": 0,
+  "doctype": "Employee Designation",
+  "eligibility": null,
+  "modified": "2025-04-09 12:50:49.919313",
+  "name": "Senior Technical Application Specialist"
+ },
+ {
+  "custom_eligibility": null,
+  "designation": "Technical Application Specialist",
+  "docstatus": 0,
+  "doctype": "Employee Designation",
+  "eligibility": null,
+  "modified": "2025-04-09 12:50:50.053999",
+  "name": "Technical Application Specialist"
+ },
+ {
+  "custom_eligibility": null,
+  "designation": "Regional Sales Manager",
+  "docstatus": 0,
+  "doctype": "Employee Designation",
+  "eligibility": null,
+  "modified": "2025-04-09 12:50:50.190906",
+  "name": "Regional Sales Manager"
+ },
+ {
+  "custom_eligibility": null,
+  "designation": "Global Orthopedics Sales & Solutions Manager",
+  "docstatus": 0,
+  "doctype": "Employee Designation",
+  "eligibility": null,
+  "modified": "2025-04-09 12:50:50.196524",
+  "name": "Global Orthopedics Sales & Solutions Manager"
+ },
+ {
+  "custom_eligibility": null,
+  "designation": "Area Sales Manager",
+  "docstatus": 0,
+  "doctype": "Employee Designation",
+  "eligibility": null,
+  "modified": "2025-04-09 12:50:50.211185",
+  "name": "Area Sales Manager"
+ },
+ {
+  "custom_eligibility": null,
+  "designation": "Territory Sales Manager",
+  "docstatus": 0,
+  "doctype": "Employee Designation",
+  "eligibility": null,
+  "modified": "2025-04-09 12:50:50.228468",
+  "name": "Territory Sales Manager"
+ },
+ {
+  "custom_eligibility": null,
+  "designation": "Senior Area Sales Manager",
+  "docstatus": 0,
+  "doctype": "Employee Designation",
+  "eligibility": null,
+  "modified": "2025-04-09 12:50:50.260507",
+  "name": "Senior Area Sales Manager"
+ },
+ {
+  "custom_eligibility": null,
+  "designation": "Deputy Zonal Manager",
+  "docstatus": 0,
+  "doctype": "Employee Designation",
+  "eligibility": null,
+  "modified": "2025-04-09 12:50:50.272319",
+  "name": "Deputy Zonal Manager"
+ },
+ {
+  "custom_eligibility": null,
+  "designation": "Senior Territory Sales Manager",
+  "docstatus": 0,
+  "doctype": "Employee Designation",
+  "eligibility": null,
+  "modified": "2025-04-09 12:50:50.279909",
+  "name": "Senior Territory Sales Manager"
+ },
+ {
+  "custom_eligibility": null,
+  "designation": "Senior Regional Sales Manager",
+  "docstatus": 0,
+  "doctype": "Employee Designation",
+  "eligibility": null,
+  "modified": "2025-04-09 12:50:50.293015",
+  "name": "Senior Regional Sales Manager"
+ },
+ {
+  "custom_eligibility": null,
+  "designation": "Deputy Zonal Sales Manager",
+  "docstatus": 0,
+  "doctype": "Employee Designation",
+  "eligibility": null,
+  "modified": "2025-04-09 12:50:50.298247",
+  "name": "Deputy Zonal Sales Manager"
+ },
+ {
+  "custom_eligibility": null,
+  "designation": "Senior Designer",
+  "docstatus": 0,
+  "doctype": "Employee Designation",
+  "eligibility": null,
+  "modified": "2025-04-09 12:50:50.311344",
+  "name": "Senior Designer"
+ },
+ {
+  "custom_eligibility": null,
+  "designation": "Deputy Regional Sales Manager",
+  "docstatus": 0,
+  "doctype": "Employee Designation",
+  "eligibility": null,
+  "modified": "2025-04-09 12:50:50.318497",
+  "name": "Deputy Regional Sales Manager"
+ },
+ {
+  "custom_eligibility": null,
+  "designation": "Senior Marketing Manager",
+  "docstatus": 0,
+  "doctype": "Employee Designation",
+  "eligibility": null,
+  "modified": "2025-04-09 12:50:50.360956",
+  "name": "Senior Marketing Manager"
+ },
+ {
+  "custom_eligibility": null,
+  "designation": "Zonal Manager",
+  "docstatus": 0,
+  "doctype": "Employee Designation",
+  "eligibility": null,
+  "modified": "2025-04-09 12:50:50.446692",
+  "name": "Zonal Manager"
+ },
+ {
+  "custom_eligibility": null,
+  "designation": "Territory Sales Executive",
+  "docstatus": 0,
+  "doctype": "Employee Designation",
+  "eligibility": null,
+  "modified": "2025-04-09 12:50:50.593291",
+  "name": "Territory Sales Executive"
+ },
+ {
+  "custom_eligibility": null,
+  "designation": "Deputy Zonal Head",
+  "docstatus": 0,
+  "doctype": "Employee Designation",
+  "eligibility": null,
+  "modified": "2025-04-09 12:50:50.689021",
+  "name": "Deputy Zonal Head"
+ },
+ {
+  "custom_eligibility": null,
+  "designation": "Professional Education Manager",
+  "docstatus": 0,
+  "doctype": "Employee Designation",
+  "eligibility": null,
+  "modified": "2025-04-09 12:50:50.700058",
+  "name": "Professional Education Manager"
+ },
+ {
+  "custom_eligibility": null,
+  "designation": "State Manager - Technical & Clinical",
+  "docstatus": 0,
+  "doctype": "Employee Designation",
+  "eligibility": null,
+  "modified": "2025-04-09 12:50:50.775038",
+  "name": "State Manager - Technical & Clinical"
+ },
+ {
+  "custom_eligibility": null,
+  "designation": "Senior Service Engineer",
+  "docstatus": 0,
+  "doctype": "Employee Designation",
+  "eligibility": null,
+  "modified": "2025-04-09 12:50:50.781559",
+  "name": "Senior Service Engineer"
+ },
+ {
+  "custom_eligibility": null,
+  "designation": "Product Executive",
+  "docstatus": 0,
+  "doctype": "Employee Designation",
+  "eligibility": null,
+  "modified": "2025-04-09 12:50:50.811626",
+  "name": "Product Executive"
+ },
+ {
+  "custom_eligibility": null,
+  "designation": "Clinical & Key Accounts Specialist",
+  "docstatus": 0,
+  "doctype": "Employee Designation",
+  "eligibility": null,
+  "modified": "2025-04-09 12:50:50.817543",
+  "name": "Clinical & Key Accounts Specialist"
+ },
+ {
+  "custom_eligibility": null,
+  "designation": "General Manager - Strategic Key Accounts",
+  "docstatus": 0,
+  "doctype": "Employee Designation",
+  "eligibility": null,
+  "modified": "2025-04-09 12:50:51.500445",
+  "name": "General Manager - Strategic Key Accounts"
+ },
+ {
+  "custom_eligibility": null,
+  "designation": "Senior Product Executive",
+  "docstatus": 0,
+  "doctype": "Employee Designation",
+  "eligibility": null,
+  "modified": "2025-04-09 12:50:51.539133",
+  "name": "Senior Product Executive"
+ },
+ {
+  "custom_eligibility": null,
+  "designation": "Technical Expert",
+  "docstatus": 0,
+  "doctype": "Employee Designation",
+  "eligibility": null,
+  "modified": "2025-04-09 12:50:51.552838",
+  "name": "Technical Expert"
+ },
+ {
+  "custom_eligibility": null,
+  "designation": "Junior Graphic Designer",
+  "docstatus": 0,
+  "doctype": "Employee Designation",
+  "eligibility": null,
+  "modified": "2025-04-09 12:50:51.673549",
+  "name": "Junior Graphic Designer"
+ },
+ {
+  "custom_eligibility": null,
+  "designation": "Zonal Sales Manager",
+  "docstatus": 0,
+  "doctype": "Employee Designation",
+  "eligibility": null,
+  "modified": "2025-04-09 12:50:51.678462",
+  "name": "Zonal Sales Manager"
+ },
+ {
+  "custom_eligibility": null,
+  "designation": "Clinical Training Manager",
+  "docstatus": 0,
+  "doctype": "Employee Designation",
+  "eligibility": null,
+  "modified": "2025-04-09 12:50:51.743152",
+  "name": "Clinical Training Manager"
+ },
+ {
+  "custom_eligibility": null,
+  "designation": "Regional Manager",
+  "docstatus": 0,
+  "doctype": "Employee Designation",
+  "eligibility": null,
+  "modified": "2025-04-09 12:50:51.890427",
+  "name": "Regional Manager"
+ },
+ {
+  "custom_eligibility": null,
+  "designation": "Training Manager",
+  "docstatus": 0,
+  "doctype": "Employee Designation",
+  "eligibility": null,
+  "modified": "2025-04-09 12:50:52.045293",
+  "name": "Training Manager"
+ },
+ {
+  "custom_eligibility": null,
+  "designation": "Software Developer",
+  "docstatus": 0,
+  "doctype": "Employee Designation",
+  "eligibility": null,
+  "modified": "2025-04-09 12:50:52.057605",
+  "name": "Software Developer"
+ },
+ {
+  "custom_eligibility": null,
+  "designation": "Branch Manager",
+  "docstatus": 0,
+  "doctype": "Employee Designation",
+  "eligibility": null,
+  "modified": "2025-04-09 12:50:52.131998",
+  "name": "Branch Manager"
+ },
+ {
+  "custom_eligibility": null,
+  "designation": "Driver",
+  "docstatus": 0,
+  "doctype": "Employee Designation",
+  "eligibility": null,
+  "modified": "2025-04-09 12:50:52.147046",
+  "name": "Driver"
+ },
+ {
+  "custom_eligibility": null,
+  "designation": "Business Manager - Peripheral Products",
+  "docstatus": 0,
+  "doctype": "Employee Designation",
+  "eligibility": null,
+  "modified": "2025-04-09 12:50:52.152107",
+  "name": "Business Manager - Peripheral Products"
+ },
+ {
+  "custom_eligibility": null,
+  "designation": "Regional Business Manager",
+  "docstatus": 0,
+  "doctype": "Employee Designation",
+  "eligibility": null,
+  "modified": "2025-04-09 12:50:52.239737",
+  "name": "Regional Business Manager"
+ },
+ {
+  "custom_eligibility": null,
+  "designation": "Regional Sales Executive",
+  "docstatus": 0,
+  "doctype": "Employee Designation",
+  "eligibility": null,
+  "modified": "2025-04-09 12:50:52.315101",
+  "name": "Regional Sales Executive"
+ },
+ {
+  "custom_eligibility": null,
+  "designation": "Clinico Marketing Head",
+  "docstatus": 0,
+  "doctype": "Employee Designation",
+  "eligibility": null,
+  "modified": "2025-04-09 12:50:52.376055",
+  "name": "Clinico Marketing Head"
+ },
+ {
+  "custom_eligibility": null,
+  "designation": "Regional Clinico Marketing Manager",
+  "docstatus": 0,
+  "doctype": "Employee Designation",
+  "eligibility": null,
+  "modified": "2025-04-09 12:50:52.398242",
+  "name": "Regional Clinico Marketing Manager"
+ },
+ {
+  "custom_eligibility": null,
+  "designation": "Sales Head - North & West",
+  "docstatus": 0,
+  "doctype": "Employee Designation",
+  "eligibility": null,
+  "modified": "2025-04-09 12:50:52.410782",
+  "name": "Sales Head - North & West"
+ },
+ {
+  "custom_eligibility": null,
+  "designation": "Warehouse Manager",
+  "docstatus": 0,
+  "doctype": "Employee Designation",
+  "eligibility": null,
+  "modified": "2025-04-09 12:50:52.449510",
+  "name": "Warehouse Manager"
+ },
+ {
+  "custom_eligibility": null,
+  "designation": "Sales Executive",
+  "docstatus": 0,
+  "doctype": "Employee Designation",
+  "eligibility": null,
+  "modified": "2025-04-09 12:50:52.454909",
+  "name": "Sales Executive"
+ },
+ {
+  "custom_eligibility": null,
+  "designation": "Account Assistant",
+  "docstatus": 0,
+  "doctype": "Employee Designation",
+  "eligibility": null,
+  "modified": "2025-04-09 12:50:52.461028",
+  "name": "Account Assistant"
+ },
+ {
+  "custom_eligibility": null,
+  "designation": "Regional Sales Manager  - North",
+  "docstatus": 0,
+  "doctype": "Employee Designation",
+  "eligibility": null,
+  "modified": "2025-04-09 12:50:52.486018",
+  "name": "Regional Sales Manager  - North"
+ },
+ {
+  "custom_eligibility": null,
+  "designation": "Business Manager",
+  "docstatus": 0,
+  "doctype": "Employee Designation",
+  "eligibility": null,
+  "modified": "2025-04-09 12:50:52.726589",
+  "name": "Business Manager"
+ },
+ {
+  "custom_eligibility": null,
+  "designation": "Sales Coordinator",
+  "docstatus": 0,
+  "doctype": "Employee Designation",
+  "eligibility": null,
+  "modified": "2025-04-09 12:50:52.805771",
+  "name": "Sales Coordinator"
+ },
+ {
+  "custom_eligibility": null,
+  "designation": "General Manager - Business Development Strategic Account (PAN India)",
+  "docstatus": 0,
+  "doctype": "Employee Designation",
+  "eligibility": null,
+  "modified": "2025-04-09 12:50:52.819805",
+  "name": "General Manager - Business Development Strategic Account (PAN India)"
+ },
+ {
+  "custom_eligibility": null,
+  "designation": "Assistant Marketing Manager",
+  "docstatus": 0,
+  "doctype": "Employee Designation",
+  "eligibility": null,
+  "modified": "2025-04-09 12:50:52.925549",
+  "name": "Assistant Marketing Manager"
+ },
+ {
+  "custom_eligibility": null,
+  "designation": "Associate Franchise Director",
+  "docstatus": 0,
+  "doctype": "Employee Designation",
+  "eligibility": null,
+  "modified": "2025-04-09 12:50:52.950853",
+  "name": "Associate Franchise Director"
+ },
+ {
+  "custom_eligibility": null,
+  "designation": "Area Sales Executive",
+  "docstatus": 0,
+  "doctype": "Employee Designation",
+  "eligibility": null,
+  "modified": "2025-04-09 12:50:53.103874",
+  "name": "Area Sales Executive"
+ },
+ {
+  "custom_eligibility": null,
+  "designation": "Business Unit Head",
+  "docstatus": 0,
+  "doctype": "Employee Designation",
+  "eligibility": null,
+  "modified": "2025-04-09 12:50:53.111789",
+  "name": "Business Unit Head"
+ },
+ {
+  "custom_eligibility": null,
+  "designation": "Global Orthopedics Sales & Solutions Regional Manager",
+  "docstatus": 0,
+  "doctype": "Employee Designation",
+  "eligibility": null,
+  "modified": "2025-04-09 12:50:53.122440",
+  "name": "Global Orthopedics Sales & Solutions Regional Manager"
+ },
+ {
+  "custom_eligibility": null,
+  "designation": "Head",
+  "docstatus": 0,
+  "doctype": "Employee Designation",
+  "eligibility": null,
+  "modified": "2025-04-09 12:50:53.139939",
+  "name": "Head"
+ },
+ {
+  "custom_eligibility": null,
+  "designation": "Regional Sales & Application Manager",
+  "docstatus": 0,
+  "doctype": "Employee Designation",
+  "eligibility": null,
+  "modified": "2025-04-09 12:50:53.200306",
+  "name": "Regional Sales & Application Manager"
+ },
+ {
+  "custom_eligibility": null,
+  "designation": "Zonal Head - North & East for Application & Scientific Support",
+  "docstatus": 0,
+  "doctype": "Employee Designation",
+  "eligibility": null,
+  "modified": "2025-04-09 12:50:53.222054",
+  "name": "Zonal Head - North & East for Application & Scientific Support"
+ },
+ {
+  "custom_eligibility": null,
+  "designation": "Regional Service Manager",
+  "docstatus": 0,
+  "doctype": "Employee Designation",
+  "eligibility": null,
+  "modified": "2025-04-09 12:50:53.228000",
+  "name": "Regional Service Manager"
+ },
+ {
+  "custom_eligibility": null,
+  "designation": "Manager - Tender Administration",
+  "docstatus": 0,
+  "doctype": "Employee Designation",
+  "eligibility": null,
+  "modified": "2025-04-09 12:50:53.249658",
+  "name": "Manager - Tender Administration"
+ },
+ {
+  "custom_eligibility": null,
+  "designation": "National Manager",
+  "docstatus": 0,
+  "doctype": "Employee Designation",
+  "eligibility": null,
+  "modified": "2025-04-09 12:50:53.260635",
+  "name": "National Manager"
+ },
+ {
+  "custom_eligibility": null,
+  "designation": "Zonal Service Manager",
+  "docstatus": 0,
+  "doctype": "Employee Designation",
+  "eligibility": null,
+  "modified": "2025-04-09 12:50:53.267368",
+  "name": "Zonal Service Manager"
+ },
+ {
+  "custom_eligibility": null,
+  "designation": "Regional Application Manager",
+  "docstatus": 0,
+  "doctype": "Employee Designation",
+  "eligibility": null,
+  "modified": "2025-04-09 12:50:53.300726",
+  "name": "Regional Application Manager"
+ },
+ {
+  "custom_eligibility": null,
+  "designation": "Area Service Manager",
+  "docstatus": 0,
+  "doctype": "Employee Designation",
+  "eligibility": null,
+  "modified": "2025-04-09 12:50:53.337929",
+  "name": "Area Service Manager"
+ },
+ {
+  "custom_eligibility": null,
+  "designation": "Deputy Regional Service Manager",
+  "docstatus": 0,
+  "doctype": "Employee Designation",
+  "eligibility": null,
+  "modified": "2025-04-09 12:50:53.487843",
+  "name": "Deputy Regional Service Manager"
+ },
+ {
+  "custom_eligibility": null,
+  "designation": "National Manager - Biochemistry",
+  "docstatus": 0,
+  "doctype": "Employee Designation",
+  "eligibility": null,
+  "modified": "2025-04-09 12:50:53.668212",
+  "name": "National Manager - Biochemistry"
+ },
+ {
+  "custom_eligibility": null,
+  "designation": "Senior Area Service Manager",
+  "docstatus": 0,
+  "doctype": "Employee Designation",
+  "eligibility": null,
+  "modified": "2025-04-09 12:50:53.857566",
+  "name": "Senior Area Service Manager"
+ },
+ {
+  "custom_eligibility": null,
+  "designation": "National Manager - Rapids",
+  "docstatus": 0,
+  "doctype": "Employee Designation",
+  "eligibility": null,
+  "modified": "2025-04-09 12:50:53.963525",
+  "name": "National Manager - Rapids"
+ },
+ {
+  "custom_eligibility": null,
+  "designation": "Service Engineer",
+  "docstatus": 0,
+  "doctype": "Employee Designation",
+  "eligibility": null,
+  "modified": "2025-04-09 12:50:54.061788",
+  "name": "Service Engineer"
+ },
+ {
+  "custom_eligibility": null,
+  "designation": "Senior Service Executive",
+  "docstatus": 0,
+  "doctype": "Employee Designation",
+  "eligibility": null,
+  "modified": "2025-04-09 12:50:54.081711",
+  "name": "Senior Service Executive"
+ },
+ {
+  "custom_eligibility": null,
+  "designation": "National Manager - Hematology",
+  "docstatus": 0,
+  "doctype": "Employee Designation",
+  "eligibility": null,
+  "modified": "2025-04-09 12:50:54.479157",
+  "name": "National Manager - Hematology"
+ },
+ {
+  "custom_eligibility": null,
+  "designation": "Sales Manager",
+  "docstatus": 0,
+  "doctype": "Employee Designation",
+  "eligibility": null,
+  "modified": "2025-04-09 12:50:54.587026",
+  "name": "Sales Manager"
+ },
+ {
+  "custom_eligibility": null,
+  "designation": "Regional  Sales & Service Manager",
+  "docstatus": 0,
+  "doctype": "Employee Designation",
+  "eligibility": null,
+  "modified": "2025-04-09 12:50:54.653444",
+  "name": "Regional  Sales & Service Manager"
+ },
+ {
+  "custom_eligibility": null,
+  "designation": "Company Secretary",
+  "docstatus": 0,
+  "doctype": "Employee Designation",
+  "eligibility": null,
+  "modified": "2025-04-09 12:50:55.338043",
+  "name": "Company Secretary"
+ },
+ {
+  "custom_eligibility": null,
+  "designation": "National Sales Manager",
+  "docstatus": 0,
+  "doctype": "Employee Designation",
+  "eligibility": null,
+  "modified": "2025-04-09 12:50:55.853221",
+  "name": "National Sales Manager"
+ },
+ {
+  "custom_eligibility": null,
+  "designation": "General Manager - Commercial",
+  "docstatus": 0,
+  "doctype": "Employee Designation",
+  "eligibility": null,
+  "modified": "2025-04-09 12:50:56.788756",
+  "name": "General Manager - Commercial"
+ },
+ {
+  "custom_eligibility": null,
+  "designation": "Group Head",
+  "docstatus": 0,
+  "doctype": "Employee Designation",
+  "eligibility": null,
+  "modified": "2025-04-09 12:50:57.205586",
+  "name": "Group Head"
+ },
+ {
+  "custom_eligibility": null,
+  "designation": "Global Orthopedics Sales & Solutions Business Manager",
+  "docstatus": 0,
+  "doctype": "Employee Designation",
+  "eligibility": null,
+  "modified": "2025-04-09 12:50:57.382494",
+  "name": "Global Orthopedics Sales & Solutions Business Manager"
+ },
+ {
+  "custom_eligibility": null,
+  "designation": "Global Orthopedics Sales & Solutions Specialist",
+  "docstatus": 0,
+  "doctype": "Employee Designation",
+  "eligibility": null,
+  "modified": "2025-04-09 12:50:57.451718",
+  "name": "Global Orthopedics Sales & Solutions Specialist"
+ },
+ {
+  "custom_eligibility": null,
+  "designation": "Key Account Manager",
+  "docstatus": 0,
+  "doctype": "Employee Designation",
+  "eligibility": null,
+  "modified": "2025-04-09 12:50:57.463216",
+  "name": "Key Account Manager"
+ },
+ {
+  "custom_eligibility": null,
+  "designation": "Key Accounts Manager",
+  "docstatus": 0,
+  "doctype": "Employee Designation",
+  "eligibility": null,
+  "modified": "2025-04-09 12:50:57.732883",
+  "name": "Key Accounts Manager"
+ },
+ {
+  "custom_eligibility": null,
+  "designation": "Head - Business Development",
+  "docstatus": 0,
+  "doctype": "Employee Designation",
+  "eligibility": null,
+  "modified": "2025-04-09 12:50:57.814516",
+  "name": "Head - Business Development"
+ },
+ {
+  "custom_eligibility": null,
+  "designation": "Distribution Manager",
+  "docstatus": 0,
+  "doctype": "Employee Designation",
+  "eligibility": null,
+  "modified": "2025-04-09 12:50:57.829471",
+  "name": "Distribution Manager"
+ },
+ {
+  "custom_eligibility": null,
+  "designation": "Senior Clinical Specialist",
+  "docstatus": 0,
+  "doctype": "Employee Designation",
+  "eligibility": null,
+  "modified": "2025-04-09 12:50:57.872794",
+  "name": "Senior Clinical Specialist"
+ },
+ {
+  "custom_eligibility": null,
+  "designation": "Patient Care Advisor",
+  "docstatus": 0,
+  "doctype": "Employee Designation",
+  "eligibility": null,
+  "modified": "2025-04-09 12:50:58.144535",
+  "name": "Patient Care Advisor"
+ },
+ {
+  "custom_eligibility": null,
+  "designation": "Senior Zonal Sales Manager",
+  "docstatus": 0,
+  "doctype": "Employee Designation",
+  "eligibility": null,
+  "modified": "2025-04-09 12:50:58.177891",
+  "name": "Senior Zonal Sales Manager"
+ },
+ {
+  "custom_eligibility": null,
+  "designation": "Assistant Service Manager",
+  "docstatus": 0,
+  "doctype": "Employee Designation",
+  "eligibility": null,
+  "modified": "2025-04-09 12:50:58.201294",
+  "name": "Assistant Service Manager"
+ },
+ {
+  "custom_eligibility": null,
+  "designation": "Medical Research & Professional Education",
+  "docstatus": 0,
+  "doctype": "Employee Designation",
+  "eligibility": null,
+  "modified": "2025-04-09 12:50:58.299065",
+  "name": "Medical Research & Professional Education"
+ },
+ {
+  "custom_eligibility": null,
+  "designation": "Senior Territory Sales Executive",
+  "docstatus": 0,
+  "doctype": "Employee Designation",
+  "eligibility": null,
+  "modified": "2025-04-09 12:50:58.467881",
+  "name": "Senior Territory Sales Executive"
+ },
+ {
+  "custom_eligibility": null,
+  "designation": "Senior Software Engineer",
+  "docstatus": 0,
+  "doctype": "Employee Designation",
+  "eligibility": null,
+  "modified": "2025-04-09 12:50:58.496104",
+  "name": "Senior Software Engineer"
+ },
+ {
+  "custom_eligibility": null,
+  "designation": "Sales Co-Ordinator",
+  "docstatus": 0,
+  "doctype": "Employee Designation",
+  "eligibility": null,
+  "modified": "2025-04-09 12:50:58.546796",
+  "name": "Sales Co-Ordinator"
+ },
+ {
+  "custom_eligibility": null,
+  "designation": "Clinical Co-Ordinator",
+  "docstatus": 0,
+  "doctype": "Employee Designation",
+  "eligibility": null,
+  "modified": "2025-04-09 12:50:58.552794",
+  "name": "Clinical Co-Ordinator"
+ },
+ {
+  "custom_eligibility": null,
+  "designation": "Software Engineer",
+  "docstatus": 0,
+  "doctype": "Employee Designation",
+  "eligibility": null,
+  "modified": "2025-04-09 12:50:58.595052",
+  "name": "Software Engineer"
+ },
+ {
+  "custom_eligibility": null,
+  "designation": "Manager-Lead FEA",
+  "docstatus": 0,
+  "doctype": "Employee Designation",
+  "eligibility": null,
+  "modified": "2025-04-09 12:50:58.774607",
+  "name": "Manager-Lead FEA"
+ },
+ {
+  "custom_eligibility": null,
+  "designation": "Therapy Specialist",
+  "docstatus": 0,
+  "doctype": "Employee Designation",
+  "eligibility": null,
+  "modified": "2025-04-09 12:50:59.046147",
+  "name": "Therapy Specialist"
+ },
+ {
+  "custom_eligibility": null,
+  "designation": "Senior Manager - Business Development",
+  "docstatus": 0,
+  "doctype": "Employee Designation",
+  "eligibility": null,
+  "modified": "2025-04-09 12:50:59.421587",
+  "name": "Senior Manager - Business Development"
+ },
+ {
+  "custom_eligibility": null,
+  "designation": "Customer Relationship Manager",
+  "docstatus": 0,
+  "doctype": "Employee Designation",
+  "eligibility": null,
+  "modified": "2025-04-09 12:50:59.548700",
+  "name": "Customer Relationship Manager"
+ },
+ {
+  "custom_eligibility": null,
+  "designation": "Program Manager",
+  "docstatus": 0,
+  "doctype": "Employee Designation",
+  "eligibility": null,
+  "modified": "2025-04-09 12:50:59.614098",
+  "name": "Program Manager"
+ },
+ {
+  "custom_eligibility": null,
+  "designation": "Product Champion",
+  "docstatus": 0,
+  "doctype": "Employee Designation",
+  "eligibility": null,
+  "modified": "2025-04-09 12:51:01.684297",
+  "name": "Product Champion"
+ },
+ {
+  "custom_eligibility": null,
+  "designation": "Officer",
+  "docstatus": 0,
+  "doctype": "Employee Designation",
+  "eligibility": null,
+  "modified": "2025-04-09 12:50:45.239142",
+  "name": "Officer"
+ },
+ {
+  "custom_eligibility": "1500000",
+  "designation": "Additional General Manager",
+  "docstatus": 0,
+  "doctype": "Employee Designation",
+  "eligibility": null,
+  "modified": "2025-04-09 14:54:09.967017",
+  "name": "Additional General Manager"
+ },
+ {
+  "custom_eligibility": "2000000",
+  "designation": "Vice President",
+  "docstatus": 0,
+  "doctype": "Employee Designation",
+  "eligibility": null,
+  "modified": "2025-04-09 14:55:11.103207",
+  "name": "Vice President"
+ },
+ {
+  "custom_eligibility": "500000",
+  "designation": "Manager",
+  "docstatus": 0,
+  "doctype": "Employee Designation",
+  "eligibility": null,
+  "modified": "2025-04-09 14:50:28.499472",
+  "name": "Manager"
+ },
+ {
+  "custom_eligibility": "1500000",
+  "designation": "General Manager",
+  "docstatus": 0,
+  "doctype": "Employee Designation",
+  "eligibility": null,
+  "modified": "2025-04-09 14:52:14.760299",
+  "name": "General Manager"
+ },
+ {
+  "custom_eligibility": "1200000",
+  "designation": "Trainee",
+  "docstatus": 0,
+  "doctype": "Employee Designation",
+  "eligibility": null,
+  "modified": "2025-04-10 16:41:13.578298",
+  "name": "Trainee"
+ }
+]

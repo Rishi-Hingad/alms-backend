@@ -1,5 +1,6 @@
 {
  "aggregate_function_based_on": "",
+ "color": "#131eed",
  "creation": "2024-11-05 09:36:51.105446",
  "docstatus": 0,
  "doctype": "Number Card",
@@ -10,8 +11,8 @@
  "idx": 0,
  "is_public": 1,
  "is_standard": 1,
- "label": "Purchase Team Form",
- "modified": "2024-11-05 14:23:15.316487",
+ "label": "Total Purchase Team Form",
+ "modified": "2024-11-09 16:15:15.011687",
  "modified_by": "Administrator",
  "module": "ALMS",
  "name": "purchase_team_form",

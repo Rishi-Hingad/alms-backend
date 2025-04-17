@@ -212,7 +212,7 @@
    "fieldname": "finance_company",
    "fieldtype": "Select",
    "label": "Finance Company",
-   "options": "-Select-\nEasy Assets\nALD\nXYZ"
+   "options": "Easy Assets\nALD\nXYZ"
   },
   {
    "fieldname": "employee_details",
@@ -224,13 +224,13 @@
    "fieldname": "status",
    "fieldtype": "Select",
    "label": "Status",
-   "options": "-Select-\nApproved\nRejected"
+   "options": "Approved\nRejected"
   },
   {
    "fieldname": "finance_hod_status",
    "fieldtype": "Select",
    "label": "Finance HOD Status",
-   "options": "-Select-\nApproved\nRejected"
+   "options": "Approved\nRejected"
   }
  ],
  "index_web_pages_for_search": 1,
