@@ -20,7 +20,7 @@
  "list_columns": [],
  "login_required": 0,
  "max_attachment_size": 0,
- "modified": "2025-04-15 15:54:16.286658",
+ "modified": "2025-04-17 10:45:27.441515",
  "modified_by": "Administrator",
  "module": "CRMS",
  "name": "vendor-assets-quotation",
@@ -97,7 +97,7 @@
    "max_length": 0,
    "max_value": 0,
    "precision": "",
-   "read_only": 0,
+   "read_only": 1,
    "reqd": 1,
    "show_in_filter": 0
   },
@@ -110,7 +110,7 @@
    "max_length": 0,
    "max_value": 0,
    "precision": "",
-   "read_only": 0,
+   "read_only": 1,
    "reqd": 1,
    "show_in_filter": 0
   },
@@ -306,7 +306,7 @@
    "max_length": 0,
    "max_value": 0,
    "precision": "",
-   "read_only": 0,
+   "read_only": 1,
    "reqd": 1,
    "show_in_filter": 0
   },

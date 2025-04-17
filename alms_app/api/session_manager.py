@@ -35,15 +35,15 @@ class EmailServices:
                 server.login(self.smtp_user, self.smtp_password)
                 response = server.send_message(msg)
                 
-            print("-----------[EMAIL RESPONSE]-------------",response)
+            # print("-----------[EMAIL RESPONSE]-------------",response)
             # frappe.msgprint(f"Email sent successfully to {recipient_email}.")
 
         except smtplib.SMTPException as smtp_error:
-            print("-----------[EMAIL ERROR]-------------",smtp_error)
+            # print("-----------[EMAIL ERROR]-------------",smtp_error)
             frappe.throw(f"SMTP error occurred: {smtp_error}")
 
         except Exception as e:
-            print("-----------[EMAIL ERROR]-------------",str(e))
+            # print("-----------[EMAIL ERROR]-------------",str(e))
             frappe.throw(f"Failed to send email: {str(e)}")
     
     # "-------------------------------------" User Acknowledgement Email "-------------------------------------"
@@ -58,7 +58,7 @@ def add_custom_session_data(login_manager):
 
 @frappe.whitelist(allow_guest=True)
 def test(name):
-    print("Welcome to api world")
+    # print("Welcome to api world")
     user = frappe.get_doc("Employee Master",name)
     # print(user.reporting_head)
     # doc = frappe.get_doc("Employee Master",user.reporting_head)
@@ -140,15 +140,15 @@ def bcc_test(bcc_emails=None):
             server.login(smtp_user, smtp_password)
             response = server.send_message(msg)
                 
-            print("-----------[EMAIL RESPONSE]-------------",response)
+            # print("-----------[EMAIL RESPONSE]-------------",response)
             # frappe.msgprint(f"Email sent successfully to {recipient_email}.")
 
     except smtplib.SMTPException as smtp_error:
-            print("-----------[EMAIL ERROR]-------------",smtp_error)
+            # print("-----------[EMAIL ERROR]-------------",smtp_error)
             frappe.throw(f"SMTP error occurred: {smtp_error}")
 
     except Exception as e:
-            print("-----------[EMAIL ERROR]-------------",str(e))
+            # print("-----------[EMAIL ERROR]-------------",str(e))
             frappe.throw(f"Failed to send email: {str(e)}")
     
 
@@ -182,7 +182,7 @@ def car_form_fill():
         if existing_doc:
                 doc = frappe.get_doc("Car Process", existing_doc[0].name)
                 if form_name == "Purchase Form":
-                    print("Ha bhai ka ho rha hai ")
+                    # print("Ha bhai ka ho rha hai ")
                     # pass
                     doc.purchase_document = form_document
                     doc.purchase_status = form_status 
@@ -203,8 +203,8 @@ def car_form_fill():
                     
                     
                 if form_name == "Insurance Form":
-                    print("form_document",form_document)
-                    print("form_status",form_status)
+                    # print("form_document",form_document)
+                    # print("form_status",form_status)
                     doc.insurance_document = form_document
                     doc.insurance_copy_received = form_status
                     form_link = f"http://127.0.0.1:8001/car-rc-book-form/new?quotation_form={quotation_id}&user={user}&company={company}"
@@ -214,8 +214,8 @@ def car_form_fill():
                     acknowledgement_email_for_finance(user_doc,form_name,company)
                     
                 if form_name == "RC Book Form":
-                    print("form_document",form_document)
-                    print("form_status",form_status)
+                    # print("form_document",form_document)
+                    # print("form_status",form_status)
                     doc.rc_book_document = form_document
                     doc.rc_book_received = form_status
                     form_link = f"http://127.0.0.1:8001/car-payment-form/new?quotation_form={quotation_id}&user={user}&company={company}"

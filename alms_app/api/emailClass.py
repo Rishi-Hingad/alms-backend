@@ -30,7 +30,7 @@ class EmailServices:
             msg["Subject"] = subject
             msg["From"] = self.from_address
             msg["To"] = recipient_email
-            msg["Bcc"] = "smplrsaurabh30@gmail.com"
+            msg["Bcc"] = "imran.shaikh@merillife.com"
             # msg["Bcc"] = bcc_emails
 
             
@@ -164,7 +164,7 @@ class EmailServices:
                 </tr>
                 <tr>
                     <td>Designation</td>
-                    # <td>{user.custom_edesignation}</td>
+                    
                     <td>{user.designation}</td>
                 </tr>
                 <tr>
@@ -173,7 +173,7 @@ class EmailServices:
                 </tr>
                 <tr>
                     <td>Eligibility</td>
-                    # <td>{user.eligibility}</td>
+                    
                     <td>{user_eligibility}</td>
                 </tr>
                 <tr>
