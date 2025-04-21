@@ -5,9 +5,38 @@ this file manage the email for each levele of process of Onboard  car
 
 import frappe
 from alms_app.api.emailClass import EmailServices
-
+import shutil
+import frappe
+from frappe.utils.file_manager import save_file_on_filesystem
 
 emailer = EmailServices()
+
+
+
+
+
+
+
+
+
+
+def make_file_public(file_url):
+    # Get file detail
+    file_url = file_url
+    file_doc = frappe.get_doc("File", {"file_url": file_url})
+    
+    old_path = frappe.get_site_path("private", "files", file_doc.file_name)
+    new_path = frappe.get_site_path("public", "files", file_doc.file_name)
+    
+    # Move file to public
+    shutil.move(old_path, new_path)
+    
+    # Update file doc
+    file_doc.is_private = 0
+    file_doc.file_url = "/files/" + file_doc.file_name
+    file_doc.save(ignore_permissions=True)
+    frappe.db.commit()
+    return file_doc.file_url
 def email_formate_for_car_Onboard(form_link,user_doc,company,form_name):
     body = f"""
         <html>
@@ -263,7 +292,8 @@ def car_form_fill():
         form_status = frappe.form_dict.get("form_status")
         form_document = frappe.form_dict.get("form_document")
         form_date = frappe.form_dict.get("form_date")
-        print("Ha bhai ka ho rha hai ","+++++++++++++",user," +++ ",quotation_id," +++++++++++",form_status,"++++++++++",form_document,"++++++++++++++++",form_name,"++++++++",form_date)
+        form_document = make_file_public(form_document)
+        # print("Ha bhai ka ho rha hai ","+++++++++++++",user," +++ ",quotation_id," +++++++++++",form_status,"++++++++++",form_document,"++++++++++++++++",form_name,"++++++++",form_date)
         
         user_doc = frappe.get_doc("Employee Master",user)  
         
@@ -277,6 +307,7 @@ def car_form_fill():
                 if form_name == "Purchase Form":
                     
                     # pass
+                    
                     doc.purchase_document = form_document
                     doc.purchase_status = form_status 
                     # form_link = form_link = f"http://127.0.0.1:8001/car-proforma-form/new?quotation_form={quotation_id}&user={user}&company={company}"
@@ -341,7 +372,7 @@ def car_form_fill():
                     # form_link = f"http://127.0.0.1:8001/car-delivery-form/new?quotation_form={quotation_id}&user={user}&company={company}"
                     form_link = f"{frappe.utils.get_url()}/car-delivery-form/new?quotation_form={quotation_id}&user={user}&company={company}"
                     email_formate_for_car_Onboard(form_link,user_doc,company,"Delivery Form")
-                    link  = f"{frappe.utils.get_url()}{doc.purchase_document}"
+                    link  = f"{frappe.utils.get_url()}{doc.registration_document}"
                     acknowledgement_email_for_employee(user_doc,form_name,link)  
                     acknowledgement_email_for_finance(user_doc,form_name,company)
                     
@@ -349,7 +380,7 @@ def car_form_fill():
                     doc.agreement_document = form_document
                     doc.car_delivery = form_status
                     doc.delivery_date = form_date
-                    link  = f"{frappe.utils.get_url()}{doc.purchase_document}"
+                    link  = f"{frappe.utils.get_url()}{doc.agreement_document}"
                     acknowledgement_email_for_employee(user_doc,form_name,link)  
                     acknowledgement_email_for_finance(user_doc,form_name,company)
                     

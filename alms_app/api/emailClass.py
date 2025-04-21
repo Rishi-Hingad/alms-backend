@@ -9,18 +9,24 @@ import frappe
 from alms_app.api.email_master import EmailMaster
 emailMaster = EmailMaster()
 
+
 class EmailServices:
     def __init__(self):
-        self.smtp_server = "smtp.transmail.co.in"
-        # self.smtp_server = "smtp.zeptomail.in"
-        self.smtp_port = 587
-        # self.smtp_user = "emailappsmtp.24077e2cb7f83396"
-        self.smtp_user = "emailapikey"
-        self.smtp_password = "PHtE6r1cF7jiim598RZVsPW9QMCkMN96/uNveQUTt4tGWPNRTk1U+tgokDO0rRx+UKZAHKPInos5tbqZtbiHdz6/Z2dED2qyqK3sx/VYSPOZsbq6x00as1wSc0TfUILscdds1CLfutnYNA=="
-        # self.smtp_password = "4sxLpHrd3YNj__29edd5373fd7a"
+        
+        config = frappe.get_site_config() 
+        self.smtp_server =  config.get("smtp_server")
+
+        self.smtp_port = config.get("smtp_port")
+
+        self.smtp_user = config.get("smtp_user")
+
+        self.smtp_password = config.get("smtp_password")
+
         self.from_address = "noreply@merillife.com"
-    def send1(self,subject,recipient_email,body):
-        pass
+
+
+        print(self.smtp_server,"++++++",self.smtp_port,"+++++++++++++++",self.smtp_user,"+++++++++++++++",self.smtp_password,"000000000000000000000000000000000000000000000000000")
+
     def send(self,subject,recipient_email,body):
     # def send(self,subject,recipient_email,body,bcc_emails=None):
     
@@ -432,6 +438,7 @@ class EmailServices:
  
     def for_reporting_to_hr_team(self, user):
         recipient_email = emailMaster.hr_team_email
+        # print("ha bhai mila kya +++++++++++++++++++",recipient_email)
         subject = "Car Rental Form Approved by Reporting Manager"
         regards = f"{user.reporting_head} (Reporting Manager)"
         content = f"""
@@ -446,9 +453,10 @@ class EmailServices:
 
     def for_hr_team_to_hr_head(self, user):
         # pass
-        print("A gya hai bhaiya majo a gyaa")
+        
         emailMaster = EmailMaster()
         recipient_email = emailMaster.hr_head_email
+        print("A gya hai bhaiya majo a gyaa")
         print("+++++++++++++",recipient_email,"+++++++++++++++",emailMaster.hr_head_email)
         subject = "Car Rental Form Approved by HR Team"
         regards = "HR Team"
@@ -466,6 +474,7 @@ class EmailServices:
 
     def for_hr_head_to_purchase_team(self, user):
         recipient_email = emailMaster.purchase_team_email
+        
         subject = "Car Rental Form Approved by HR Head"
         regards = "HR Head"
         updated_by = emailMaster.hr_head
@@ -485,6 +494,9 @@ class EmailServices:
 
         recipient_email = emailMaster.purchase_head_email
 
+        print("A gya hai bhaiya majo a gyaa")
+        print("+++++++++++++",recipient_email,"+++++++++++++++",recipient_email)
+
         subject = "Car Rental Form Approved by Purchase Team"
         regards = "Purchase Team"
         updated_by = emailMaster.purchase_team
@@ -500,6 +512,8 @@ class EmailServices:
 
     def for_purchase_head_to_finance_team(self, user):
         recipient_email = emailMaster.finance_team_email
+        print("A gya hai bhaiya majo a gyaa")
+        print("+++++++++++++",recipient_email,"+++++++++++++++",recipient_email)
         subject = "Car Rental Form Approved by Purchase Head"
         regards = "Purchase Head"
         form = frappe.get_doc("Car Indent Form",user.name)
@@ -514,7 +528,10 @@ class EmailServices:
         self.send(subject=subject, body=body, recipient_email=recipient_email)
 
     def for_finance_team_to_finance_head(self, user):
-        recipient_email = emailMaster.purchase_head_email
+        recipient_email = emailMaster.finance_head_email
+
+        print("A gya hai bhaiya majo a gyaa============+++++++++++++++++----------------------")
+        print("+++++++++++++",recipient_email,"+++++++++++++++",recipient_email)
         subject = "Car Rental Form Approved by Finance Team"
         regards ="Finance Team"
         form = frappe.get_doc("Car Indent Form",user.name)

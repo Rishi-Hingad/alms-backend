@@ -74,50 +74,140 @@ function updateStatus(frm) {
     });
 }
 
+// function toggleFieldStatus(frm) {
+//     // alert('Hellow',frappe.session.designation)
+
+    
+//     if (frappe.session.user === "reporting@gmail.com") {
+//         frm.set_df_property("reporting_head_approval", "read_only", 0);
+//     }
+//     if (frappe.session.user === "hr@gmail.com") {
+//         frm.set_df_property("hr_approval", "read_only", 0);
+//     } 
+//     if (frappe.session.user === "hrhead@gmail.com") {
+//         frm.set_df_property("hr_head_approval", "read_only", 0);
+//     } 
+
+//     if (frappe.session.user==="Administrator"){
+//         frm.set_df_property("reporting_head_approval", "read_only", 0);
+//         frm.set_df_property("hr_approval", "read_only", 0);
+//         frm.set_df_property("hr_head_approval", "read_only", 0);
+//     }
+
+
+//     if (frappe.session.user === "purchase@gmail.com") {
+//         frm.add_custom_button(__('Redirect to Purchase Form'), function() {
+//             let currentUrl = window.location.href;
+//                 let urlParams = currentUrl.split('/'); // Split the URL by '/'
+//                 let employeeName = decodeURIComponent(urlParams[urlParams.length - 1]);
+//                 console.log("Employee Name ++++++++++++++++++++", employeeName)
+//                 let apiUrl = `${window.location.origin}/app/purchase-team-form/new-purchase-team-form-?employee_name=${encodeURIComponent(employeeName)}`;
+//             window.location.href = apiUrl;
+//         }).css({
+//             'background-color': '#007bff',
+//             'color': 'white',
+//             'border': 'none',
+//             'padding': '10px 20px',
+//             'font-size': '14px',  
+//             'border-radius': '5px', 
+//             'cursor': 'pointer'
+//         });
+//     }
+// }
+
+
+function get_conf() {
+    // defaults
+    var conf = {
+        socketio_port: 9000,
+    };
+
+    var read_config = function (file_path) {
+        const full_path = path.resolve(bench_path, file_path);
+
+        if (fs.existsSync(full_path)) {
+            var bench_config = JSON.parse(fs.readFileSync(full_path));
+            for (var key in bench_config) {
+                if (bench_config[key]) {
+                    conf[key] = bench_config[key];
+                }
+            }
+        }
+    };
+
+    // get ports from bench/config.json
+    read_config("config.json");
+    read_config("sites/common_site_config.json");
+
+
+    return conf;
+}
+
+
+
+
+
+
+
+
 function toggleFieldStatus(frm) {
-    // alert('Hellow',frappe.session.designation)
-    if (frappe.session.user === "reporting@gmail.com") {
-        frm.set_df_property("reporting_head_approval", "read_only", 0);
-    }
-    if (frappe.session.user === "hr@gmail.com") {
-        frm.set_df_property("hr_approval", "read_only", 0);
-    } 
-    if (frappe.session.user === "hrhead@gmail.com") {
-        frm.set_df_property("hr_head_approval", "read_only", 0);
-    } 
+    const fieldMap = {
+        "Reporting Manager": "reporting_head_approval",
+        "HR": "hr_approval",
+        "HR Head": "hr_head_approval"
+    };
 
-    if (frappe.session.user==="Administrator"){
-        frm.set_df_property("reporting_head_approval", "read_only", 0);
-        frm.set_df_property("hr_approval", "read_only", 0);
-        frm.set_df_property("hr_head_approval", "read_only", 0);
-    }
+    frappe.call({
+        method: "alms_app.crms.doctype.car_indent_form.car_indent_form.management",
+        args: {
+            current_frappe_user: frappe.session.user
+        },
+        callback: function (r) {
+            const designation = r.message;
 
+            console.log("+++++++++++++",designation)
 
-    if (frappe.session.user === "purchase@gmail.com") {
-        frm.add_custom_button(__('Redirect to Purchase Form'), function() {
-            let currentUrl = window.location.href;
-                let urlParams = currentUrl.split('/'); // Split the URL by '/'
-                let employeeName = decodeURIComponent(urlParams[urlParams.length - 1]);
-                console.log("Employee Name ++++++++++++++++++++", employeeName)
-                let apiUrl = `${window.location.origin}/app/purchase-team-form/new-purchase-team-form-?employee_name=${encodeURIComponent(employeeName)}`;
-            window.location.href = apiUrl;
-        }).css({
-            'background-color': '#007bff',
-            'color': 'white',
-            'border': 'none',
-            'padding': '10px 20px',
-            'font-size': '14px',  
-            'border-radius': '5px', 
-            'cursor': 'pointer'
-        });
-    }
+            // Unlock specific approval field based on designation
+            if (designation && fieldMap[designation]) {
+                frm.set_df_property(fieldMap[designation], "read_only", 0);
+            }
+           
+            // Admin has access to all approval fields
+            if (frappe.session.user === "Administrator") {
+                console.log("Yess +++++++++++++++++++++++++++++++")
+                Object.values(fieldMap).forEach(field => {
+
+                    frm.set_df_property(field, "read_only", 1);
+                });
+            }
+
+            // Purchase-specific behavior (custom button)
+            if (designation === "Purchase" || designation === "Purchase Head") {
+                frm.add_custom_button(__('Redirect to Purchase Form'), function () {
+                    let currentUrl = window.location.href;
+                    let urlParams = currentUrl.split('/');
+                    let employeeName = decodeURIComponent(urlParams[urlParams.length - 1]);
+
+                    let apiUrl = `${window.location.origin}/app/purchase-team-form/new-purchase-team-form-?employee_name=${encodeURIComponent(employeeName)}`;
+                    window.location.href = apiUrl;
+                }).css({
+                    'background-color': '#007bff',
+                    'color': 'white',
+                    'border': 'none',
+                    'padding': '10px 20px',
+                    'font-size': '14px',
+                    'border-radius': '5px',
+                    'cursor': 'pointer'
+                });
+            }
+        }
+    });
 }
 
 
 
 frappe.ui.form.on("Car Indent Form", {
     onload: function (frm) {
-
         frm.set_df_property('employee_code', 'read_only', 1);
         frm.set_df_property('ex_showroom_price', 'read_only', 1);
         frm.set_df_property('discount', 'read_only', 1);
@@ -133,6 +223,7 @@ frappe.ui.form.on("Car Indent Form", {
         frm.set_df_property('status', 'read_only', 1);
         frm.set_df_property('model', 'read_only', 1);
         frm.set_df_property('reporting_head_remarks', 'read_only', 1);
+        frm.set_df_property('hr_head_remarks', 'read_only', 1);
         frm.set_df_property('hr_remarks', 'read_only', 1);
 
         toggleFieldStatus(frm);
@@ -265,6 +356,16 @@ frappe.ui.form.on("Car Indent Form", {
     },
     
     refresh: function (frm) {
+        
+        
+        // const conf = get_conf()
+        
+        // // print(conf.redis_cache)
+        console.log("++++++user session=======================")
+        config = frappe.get_site_config()
+        console.log(config.get("redis_cache"))
+
+        
         updateStatus(frm);
         toggleFieldStatus(frm);
     }

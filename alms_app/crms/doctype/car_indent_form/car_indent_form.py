@@ -5,7 +5,7 @@
 from frappe.model.document import Document
 
 
-# import frappe
+import frappe
 from frappe.model.document import Document
 
 class CarIndentForm(Document):    
@@ -19,4 +19,13 @@ class CarIndentForm(Document):
         self.net_ex_room_price = self.ex_showroom_price - self.discount + self.tcs
 
         self.financed_amount = self.net_ex_room_price + self.registration_charges + self.accessories
+
+@frappe.whitelist(allow_guest=True)
+def management(current_frappe_user):
+    designation_record = frappe.get_value("Management Team", {"email_id": current_frappe_user}, ["designation"], as_dict=True)
+    
+    if designation_record:
+        return designation_record.designation
+    else:
+        return None
 
