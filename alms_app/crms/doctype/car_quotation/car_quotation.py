@@ -4,6 +4,8 @@
 import frappe
 from openpyxl import load_workbook
 from frappe.model.document import Document
+import pandas as pd 
+from frappe.utils.file_manager import save_file
 
 class CarQuotation(Document):
     pass
@@ -110,11 +112,7 @@ class CarQuotation(Document):
     #     # Save the changes
     #     self.save(ignore_permissions=True)
 
-
-import pandas as pd 
-from frappe.utils.file_manager import save_file
-
-import pandas as pd 
+# import pandas as pd 
 
 @frappe.whitelist()
 def process_uploaded_file(file_url):
