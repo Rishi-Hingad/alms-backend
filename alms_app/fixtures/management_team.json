@@ -1,0 +1,65 @@
+[
+ {
+  "designation": "HR",
+  "docstatus": 0,
+  "doctype": "Management Team",
+  "email_id": "ujjawalpatel0@gmail.com",
+  "full_name": "Jay Hr",
+  "modified": "2025-04-19 10:28:52.089943",
+  "name": 1
+ },
+ {
+  "designation": "HR Head",
+  "docstatus": 0,
+  "doctype": "Management Team",
+  "email_id": "mohammad.alim@merillife.com",
+  "full_name": "Mohammad Alim",
+  "modified": "2025-04-19 10:29:21.724939",
+  "name": 2
+ },
+ {
+  "designation": "Purchase",
+  "docstatus": 0,
+  "doctype": "Management Team",
+  "email_id": "saurabhtiwari.direct@gmail.com",
+  "full_name": "Ujjawal Purchase",
+  "modified": "2025-04-19 10:29:45.661232",
+  "name": 3
+ },
+ {
+  "designation": "Purchase Head",
+  "docstatus": 0,
+  "doctype": "Management Team",
+  "email_id": "alimalim77@gmail.com",
+  "full_name": "Jay Purchase Haad",
+  "modified": "2025-04-19 10:30:12.860608",
+  "name": 4
+ },
+ {
+  "designation": "Finance",
+  "docstatus": 0,
+  "doctype": "Management Team",
+  "email_id": "goadniteshmeril4813@gmail.com",
+  "full_name": "Jay Finance",
+  "modified": "2025-04-19 10:31:04.596000",
+  "name": 5
+ },
+ {
+  "designation": "Finance Head",
+  "docstatus": 0,
+  "doctype": "Management Team",
+  "email_id": "itapplication.developer@merillife.com",
+  "full_name": "Ujjawal ",
+  "modified": "2025-04-19 10:31:35.097339",
+  "name": 6
+ },
+ {
+  "designation": "Accounts",
+  "docstatus": 0,
+  "doctype": "Management Team",
+  "email_id": "itapplication.developer@merillife.com",
+  "full_name": "Jay Accounts",
+  "modified": "2025-04-07 16:14:49.694975",
+  "name": 7
+ }
+]

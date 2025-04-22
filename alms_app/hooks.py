@@ -34,9 +34,13 @@ import frappe
 
 # Includes in <head>
 # ------------------
-fixtures=[
-    "Custom DocPerm"
-]
+# fixtures=[
+#     "Custom DocPerm",
+#     "Management Team",
+#     # "Employee Designation"
+#     # "Employee Department"
+
+# ]
 
 
 # fixtures = [
