@@ -37,11 +37,15 @@ import frappe
 # fixtures=[
 #     "Custom DocPerm",
 #     "Management Team",
+
 #     # "Employee Designation"
 #     # "Employee Department"
 
 # ]
-
+# fixtures=[
+#     "ALMS Settings",
+#     "User"
+# ]
 
 # fixtures = [
 #   {
