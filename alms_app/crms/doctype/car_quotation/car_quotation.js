@@ -239,6 +239,7 @@ frappe.ui.form.on('Car Quotation', {
         frm.set_df_property("status", "read_only", true);
         frm.set_df_property('status', 'read_only', 1);
         updateStatus(frm);
+        console.log("hello ha  bhai ++++++")
         toggleFieldStatus(frm);
         uploadfile(frm);
 
