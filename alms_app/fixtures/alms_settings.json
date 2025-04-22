@@ -1,0 +1,12 @@
+[
+ {
+  "docstatus": 0,
+  "doctype": "ALMS Settings",
+  "modified": "2025-04-22 14:33:45.101313",
+  "name": "ALMS Settings",
+  "smtp_password": "PHtE6r1cF7jiim598RZVsPW9QMCkMN96/uNveQUTt4tGWPNRTk1U+tgokDO0rRx+UKZAHKPInos5tbqZtbiHdz6/Z2dED2qyqK3sx/VYSPOZsbq6x00as1wSc0TfUILscdds1CLfutnYNA==",
+  "smtp_port": "587",
+  "smtp_server": "smtp.transmail.co.in",
+  "smtp_user": "emailapikey"
+ }
+]

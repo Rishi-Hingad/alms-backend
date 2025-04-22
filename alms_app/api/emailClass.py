@@ -13,16 +13,25 @@ emailMaster = EmailMaster()
 class EmailServices:
     def __init__(self):
         
-        config = frappe.get_site_config() 
-        self.smtp_server =  config.get("smtp_server")
+        # config = frappe.get_site_config() 
+        # self.smtp_server =  config.get("smtp_server")
 
-        self.smtp_port = config.get("smtp_port")
+        # self.smtp_port = config.get("smtp_port")
 
-        self.smtp_user = config.get("smtp_user")
+        # self.smtp_user = config.get("smtp_user")
 
-        self.smtp_password = config.get("smtp_password")
+        # self.smtp_password = config.get("smtp_password")
 
+        # self.from_address = "noreply@merillife.com"
+
+        alms_settings = frappe.get_single("ALMS Settings")
+
+        self.smtp_server = alms_settings.smtp_server
+        self.smtp_port = alms_settings.smtp_port
+        self.smtp_user = alms_settings.smtp_user
+        self.smtp_password = alms_settings.smtp_password
         self.from_address = "noreply@merillife.com"
+
 
 
         print(self.smtp_server,"++++++",self.smtp_port,"+++++++++++++++",self.smtp_user,"+++++++++++++++",self.smtp_password,"000000000000000000000000000000000000000000000000000")
