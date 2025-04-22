@@ -35,7 +35,7 @@ import frappe
 # Includes in <head>
 # ------------------
 fixtures=[
-    "DocPerm"
+    "Custom DocPerm"
 ]
 
 

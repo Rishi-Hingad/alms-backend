@@ -112,7 +112,7 @@ class CarQuotation(Document):
     #     # Save the changes
     #     self.save(ignore_permissions=True)
 
-# import pandas as pd 
+import pandas as pd 
 
 @frappe.whitelist()
 def process_uploaded_file(file_url):
