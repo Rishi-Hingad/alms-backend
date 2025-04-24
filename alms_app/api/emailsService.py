@@ -76,6 +76,7 @@ def approve_car_indent_by_reporting(indent_form, remarks):
         # print(i_form, "---------------SAVE DOC--------------")
         
         # Send email notification
+        print("ja rha hai +++++++++++++++++++++++")
         EMail.for_reporting_to_hr_team(user) 
         
         # Redirect on success

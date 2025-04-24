@@ -133,7 +133,7 @@ class EmailServices:
                           updated_by, 
                           regards=None, 
                         #   link="http://127.0.0.1:8001/login#login"):
-                          link="{frappe.utils.get_url()}/login#login"):
+                          link=f"{frappe.utils.get_url()}/login#login"):
         # user_eligibility = frappe.get_doc("Employee Designation",user.custom_edesignation).custom_eligibility
         user_eligibility = frappe.get_doc("Employee Designation",user.designation).eligibility
         body = f"""
@@ -210,7 +210,7 @@ class EmailServices:
         
         
             <p>
-                <a href="{link}" class="button"> Login Here </a>
+                <a href={link} class="button"> Login Here </a>
             </p>
                 
                 
@@ -311,7 +311,7 @@ class EmailServices:
         
         
             <p>
-                <a href="{link}" class="button"> Login Here </a>
+                <a href={link} class="button"> Login Here </a>
             </p>
                 
                 
@@ -408,7 +408,7 @@ class EmailServices:
             <h2>{subject}</h2>
             <p>{content}</p>
               
-            {f'<a href="{link}" class="button">Click Here For Approve</a>' if link else ''}
+            {f'<a href={link} class="button">Click Here For Approve</a>' if link else ''}
             <p>Best regards,</p>
             <p>{regards}</p>
         </body>
@@ -444,10 +444,11 @@ class EmailServices:
         self.send(subject=subject, body=body, recipient_email=recipient_email)
         # self.send(subject=subject, body=body, recipient_email=recipient_email,bcc_emails=bcc_emails)
 
- 
+  
     def for_reporting_to_hr_team(self, user):
         recipient_email = emailMaster.hr_team_email
-        # print("ha bhai mila kya +++++++++++++++++++",recipient_email)
+        print("ha bhai mila kya +++++++++++++++++++",recipient_email)
+        
         subject = "Car Rental Form Approved by Reporting Manager"
         regards = f"{user.reporting_head} (Reporting Manager)"
         content = f"""
@@ -705,7 +706,7 @@ class EmailServices:
                 </table>
 
                 <p>
-                    <a href="{link}" class="button">Fill Quotation Form</a>
+                    <a href={link} class="button">Fill Quotation Form</a>
                 </p>
 
                 <p class="contact-info">
@@ -777,7 +778,7 @@ class EmailServices:
                 <p>The quote received is on higher side so kindly provide a revised rental.</p>
                 <p>Awaiting for your positive response!! </p>
                 <p>
-                    <a href="{link}" class="button">Fill Quotation Form</a>
+                    <a href={link} class="button">Fill Quotation Form</a>
                 </p>
 
                 <p class="contact-info">
@@ -907,7 +908,7 @@ class EmailServices:
             </table>
         
             <p>
-                <a href="{form_link}" class="button">Fill Car Onboard Form</a>
+                <a href={form_link} class="button">Fill Car Onboard Form</a>
             </p>
             <p class="contact-info">
                 For assistance, please contact:<br>
