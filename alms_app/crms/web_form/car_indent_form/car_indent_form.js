@@ -71,58 +71,58 @@ frappe.ready(function() {
 
 calculate_totals();
 
-// frappe.web_form.on("submit", function () {
-//     const employeeCode = frappe.web_form.get_value("employee_code");
-
-//     frappe.call({
-//         method: "alms_app.crms.web_form.car_indent_form.car_indent_form.send_email_to_reporting_head",
-//         args: {
-//             employee_code: employeeCode
-//         },
-//         callback: function (response) {
-//             console.log("Email sent successfully:", response);
-//         },
-//         error: function (error) {
-//             console.log("Error sending email:", error);
-//         }
-//     });
-// });
-
-frappe.web_form.on("submit", function (form) {
+frappe.web_form.on("submit", function () {
     const employeeCode = frappe.web_form.get_value("employee_code");
 
     frappe.call({
-        method: "alms_app.crms.web_form.car_indent_form.car_indent_form.check_indent_exists",
+        method: "alms_app.crms.web_form.car_indent_form.car_indent_form.send_email_to_reporting_head",
         args: {
             employee_code: employeeCode
         },
         callback: function (response) {
-            const indentExists = response.message;
-
-            if (indentExists) {
-                frappe.msgprint("An indent form already exists for this employee.");
-                // Prevent submission
-                form.prevent_default = true;
-            } else {
-                // Proceed to send email
-                frappe.call({
-                    method: "alms_app.crms.web_form.car_indent_form.car_indent_form.send_email_to_reporting_head",
-                    args: {
-                        employee_code: employeeCode
-                    },
-                    callback: function (response) {
-                        console.log("Email sent successfully:", response);
-                    },
-                    error: function (error) {
-                        console.log("Error sending email:", error);
-                    }
-                });
-            }
+            console.log("Email sent successfully:", response);
         },
         error: function (error) {
-            console.log("Error checking indent existence:", error);
+            console.log("Error sending email:", error);
         }
     });
 });
+
+// frappe.web_form.on("submit", function (form) {
+//     const employeeCode = frappe.web_form.get_value("employee_code");
+
+//     frappe.call({
+//         method: "alms_app.crms.web_form.car_indent_form.car_indent_form.check_indent_exists",
+//         args: {
+//             employee_code: employeeCode
+//         },
+//         callback: function (response) {
+//             const indentExists = response.message;
+
+//             if (indentExists) {
+//                 frappe.msgprint("An indent form already exists for this employee.");
+//                 // Prevent submission
+//                 form.prevent_default = true;
+//             } else {
+//                 // Proceed to send email
+//                 frappe.call({
+//                     method: "alms_app.crms.web_form.car_indent_form.car_indent_form.send_email_to_reporting_head",
+//                     args: {
+//                         employee_code: employeeCode
+//                     },
+//                     callback: function (response) {
+//                         console.log("Email sent successfully:", response);
+//                     },
+//                     error: function (error) {
+//                         console.log("Error sending email:", error);
+//                     }
+//                 });
+//             }
+//         },
+//         error: function (error) {
+//             console.log("Error checking indent existence:", error);
+//         }
+//     });
+// });
 
 });

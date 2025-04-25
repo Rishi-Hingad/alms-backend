@@ -42,10 +42,11 @@ import frappe
 #     # "Employee Department"
 
 # ]
-# fixtures=[
-#     "ALMS Settings",
-#     "User"
-# ]
+fixtures=[
+    # "ALMS Settings",
+    "Vendor Master"
+    # "User"
+]
 
 # fixtures = [
 #   {

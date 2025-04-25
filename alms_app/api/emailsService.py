@@ -34,6 +34,7 @@ def email_sender(name, email_send_to=None,payload=None):
             EMail.acknowledgement_email(user,"Purchase Department","Finance Department")
             
         elif email_send_to == "FinanceHead To Quotation Company":
+            print("*********************** gya ")
             EMail.for_car_quotation_ALD_EasyAssets_Xyz(user,payload)
             
             
