@@ -44,7 +44,9 @@ import frappe
 # ]
 fixtures=[
     # "ALMS Settings",
-    "Vendor Master"
+    "Vendor Master",
+    "Management Team"
+
     # "User"
 ]
 

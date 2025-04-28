@@ -26,7 +26,9 @@ frappe.ready(function() {
 
                     // frappe.web_form.set_value('designation', employeeDetails[0].custom_edesignation);
                     frappe.web_form.set_value('designation', employeeDetails[0].designation);
-                    frappe.web_form.set_value('eligibility', employeeDetails[1].eligibility);
+                    // frappe.web_form.set_value('eligibility', employeeDetails[1].eligibility);
+                    frappe.web_form.set_value('eligibility', employeeDetails[0].eligibility);
+                    frappe.web_form.set_value('ex_showroom_price', employeeDetails[0].eligibility);
                     frappe.web_form.set_value('location', employeeDetails[0].location);
                     frappe.web_form.set_value('company_name', employeeDetails[0].company);
                     frappe.web_form.set_value('contact_number', employeeDetails[0].contact_number);
@@ -35,6 +37,7 @@ frappe.ready(function() {
                     frappe.web_form.set_value('department', employeeDetails[0].department);
 
 					frappe.web_form.set_df_property('designation', 'read_only', true);
+					frappe.web_form.set_df_property('ex_showroom_price', 'read_only', true);
 					frappe.web_form.set_df_property('eligibility', 'read_only', true);
 					frappe.web_form.set_df_property('location', 'read_only', true);
 					frappe.web_form.set_df_property('company_name', 'read_only', true);

@@ -8,7 +8,7 @@ def get_employee_details(employee_code):
     employee = frappe.get_all("Employee Master", filters={"name": employee_code}, 
     # fields=["name", "designation", "eligibility", "location", "company", "contact_number", "email_id", "employee_department"])
     # fields=["name", "custom_edesignation", "location", "company", "contact_number", "email_id", "custom_edepartment"])
-    fields=["name", "designation", "location", "company", "contact_number", "email_id", "department"])
+    fields=["name", "designation", "location", "company", "contact_number", "email_id", "department","eligibility"])
     
     # employee_eligibility = frappe.get_doc("Employee Designation",employee[0].custom_edesignation)
     employee_eligibility = frappe.get_doc("Employee Designation",employee[0].designation)

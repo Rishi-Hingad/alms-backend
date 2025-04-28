@@ -26,6 +26,10 @@ class EmailMaster:
     finance_head_user = frappe.get_all('Management Team', filters={'designation': 'Finance Head'}, fields=['full_name', 'email_id'])[0]
     finance_head_email = finance_head_user.get("email_id")
     finance_head =  finance_head_user.get("full_name")
+
+    finance_head2_user = frappe.get_all('Management Team', filters={'designation': 'Finance Head2'}, fields=['full_name', 'email_id'])[0]
+    finance_head2_email = finance_head2_user.get("email_id")
+    finance_head2 =  finance_head2_user.get("full_name")
     
     accounts_user = frappe.get_all('Management Team', filters={'designation': 'Accounts'}, fields=['full_name', 'email_id'])[0]
     accounts_team_email = accounts_user.get("email_id")

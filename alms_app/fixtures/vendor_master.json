@@ -5,7 +5,7 @@
   "contact_number": "+91-7069668308",
   "docstatus": 0,
   "doctype": "Vendor Master",
-  "modified": "2025-04-25 17:38:42.304127",
+  "modified": "2025-04-28 12:54:57.608614",
   "name": "Easy Assets",
   "person_responsible": []
  },
@@ -25,8 +25,45 @@
   "contact_number": "+91-7069668308",
   "docstatus": 0,
   "doctype": "Vendor Master",
-  "modified": "2025-04-08 16:03:29.327963",
+  "modified": "2025-04-28 14:18:48.760874",
   "name": "ALD",
-  "person_responsible": []
+  "person_responsible": [
+   {
+    "area": "Quotation & new vehicle order",
+    "contact_no": "8657541985",
+    "emailid": "anurag.timothy@ayvens.com",
+    "parent": "ALD",
+    "parentfield": "person_responsible",
+    "parenttype": "Vendor Master",
+    "person_name": "Anurag Timothy"
+   },
+   {
+    "area": "Invoice Billing & Contract",
+    "contact_no": "9930700071",
+    "emailid": "abhijeet.kumbhar@ayvens.com",
+    "parent": "ALD",
+    "parentfield": "person_responsible",
+    "parenttype": "Vendor Master",
+    "person_name": "Abhijeet"
+   },
+   {
+    "area": "Service",
+    "contact_no": "9920424336",
+    "emailid": "pranesh.date@ayvens.com",
+    "parent": "ALD",
+    "parentfield": "person_responsible",
+    "parenttype": "Vendor Master",
+    "person_name": "Pranesh Date"
+   },
+   {
+    "area": "ALL",
+    "contact_no": "9819672434",
+    "emailid": "sharad.jain@ayvens.com",
+    "parent": "ALD",
+    "parentfield": "person_responsible",
+    "parenttype": "Vendor Master",
+    "person_name": "Sharad Jain"
+   }
+  ]
  }
 ]
