@@ -1,0 +1,74 @@
+[
+ {
+  "designation": "HR",
+  "docstatus": 0,
+  "doctype": "Management Team",
+  "email_id": "itapplication.developer@merillife.com",
+  "full_name": "Jay Hr",
+  "modified": "2025-04-24 14:47:52.477959",
+  "name": 1
+ },
+ {
+  "designation": "Purchase",
+  "docstatus": 0,
+  "doctype": "Management Team",
+  "email_id": "saurabhtiwari.direct@gmail.com",
+  "full_name": "Ujjawal Purchase",
+  "modified": "2025-04-19 10:29:45.661232",
+  "name": 3
+ },
+ {
+  "designation": "Purchase Head",
+  "docstatus": 0,
+  "doctype": "Management Team",
+  "email_id": "raajeshrtiwari21@gmail.com",
+  "full_name": "Jay Purchase Haad",
+  "modified": "2025-04-25 11:41:57.155192",
+  "name": 4
+ },
+ {
+  "designation": "Finance",
+  "docstatus": 0,
+  "doctype": "Management Team",
+  "email_id": "saurabhtiwari.connect@gmail.com",
+  "full_name": "Jay Finance",
+  "modified": "2025-04-25 11:42:32.010710",
+  "name": 5
+ },
+ {
+  "designation": "Finance Head",
+  "docstatus": 0,
+  "doctype": "Management Team",
+  "email_id": "cse21074@iiitkalyani.ac.in",
+  "full_name": "saurabh",
+  "modified": "2025-04-25 11:45:21.118536",
+  "name": 6
+ },
+ {
+  "designation": "Accounts",
+  "docstatus": 0,
+  "doctype": "Management Team",
+  "email_id": "itapplication.developer@merillife.com",
+  "full_name": "Jay Accounts",
+  "modified": "2025-04-07 16:14:49.694975",
+  "name": 7
+ },
+ {
+  "designation": "HR Head",
+  "docstatus": 0,
+  "doctype": "Management Team",
+  "email_id": "smplrsaurabh30@gmail.com",
+  "full_name": "Saurya ",
+  "modified": "2025-04-25 11:40:19.179022",
+  "name": 10
+ },
+ {
+  "designation": "Finance Head2",
+  "docstatus": 0,
+  "doctype": "Management Team",
+  "email_id": "ujjawalpatel0@gmail.com",
+  "full_name": "Saurabh Tiwari",
+  "modified": "2025-04-28 09:55:50.480373",
+  "name": 11
+ }
+]

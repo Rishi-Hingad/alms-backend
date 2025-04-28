@@ -136,7 +136,8 @@ class EmailServices:
                         #   link="http://127.0.0.1:8001/login#login"):
                           link=f"{frappe.utils.get_url()}/login#login"):
         # user_eligibility = frappe.get_doc("Employee Designation",user.custom_edesignation).custom_eligibility
-        user_eligibility = frappe.get_doc("Employee Designation",user.designation).eligibility
+        # user_eligibility = frappe.get_doc("Employee Designation",user.designation).eligibility
+        user_eligibility = user.eligibility
         body = f"""
         <html>
         <head>
@@ -163,12 +164,7 @@ class EmailServices:
             <p>{content}</p>
             
             <table border="1" cellpadding="5" cellspacing="0">
-            <thead>
-                <tr>
-                    <th>Field</th>
-                    <th></th>
-                </tr>
-            </thead>
+            
             <tbody>
                 <tr>
                     <td>Company Name</td>
@@ -233,7 +229,8 @@ class EmailServices:
                                 # link="http://127.0.0.1:8001/login#login"):
                                 link=f"{frappe.utils.get_url()}/login#login"):
         # user_eligibility = frappe.get_doc("Employee Designation",user.custom_edesignation).custom_eligibility
-        user_eligibility = frappe.get_doc("Employee Designation",user.designation).eligibility
+        # user_eligibility = frappe.get_doc("Employee Designation",user.designation).eligibility
+        user_eligibility = user.eligibility
         
         body = f"""
         <html>
@@ -466,8 +463,8 @@ class EmailServices:
         
         emailMaster = EmailMaster()
         recipient_email = emailMaster.hr_head_email
-        # print("A gya hai bhaiya majo a gyaa")
-        # print("+++++++++++++",recipient_email,"+++++++++++++++",emailMaster.hr_head_email)
+        print("A gya hai bhaiya majo a gyaa")
+        print("+++++++++++++",recipient_email,"+++++++++++++++",emailMaster.hr_head_email)
         subject = "Car Rental Form Approved by HR Team"
         regards = "HR Team"
         updated_by = emailMaster.hr_team
@@ -538,10 +535,14 @@ class EmailServices:
         self.send(subject=subject, body=body, recipient_email=recipient_email)
 
     def for_finance_team_to_finance_head(self, user):
+        # print("kaha ho ")
         recipient_email = emailMaster.finance_head_email
+        recipient_email2 = emailMaster.finance_head2_email
+        # print(recipient_email2)
+        
 
         # print("A gya hai bhaiya majo a gyaa============+++++++++++++++++----------------------")
-        # print("+++++++++++++",recipient_email,"+++++++++++++++",recipient_email)
+        # print("+++++++++++++",recipient_email,"+++++++++++++++",recipient_email,recipient_email2)
         subject = "Car Rental Form Approved by Finance Team"
         regards ="Finance Team"
         form = frappe.get_doc("Car Indent Form",user.name)
@@ -554,6 +555,8 @@ class EmailServices:
         """
         body = self.create_email_body_revised(form,revised_form,user,subject, content,updated_by,regards)
         self.send(subject=subject, body=body, recipient_email=recipient_email)
+        self.send(subject=subject, body=body, recipient_email=recipient_email2)
+
 
     def for_finance_head_to_accounts_team(self, user):
         recipient_email = emailMaster.accounts_team_email
@@ -701,7 +704,7 @@ class EmailServices:
                 </table>
 
                 <p>
-                    <a href={link} class="button">Fill Quotation Form</a>
+                    <a href="{link}" class="button">Fill Quotation Form</a>
                 </p>
 
                 <p class="contact-info">
@@ -773,7 +776,7 @@ class EmailServices:
                 <p>The quote received is on higher side so kindly provide a revised rental.</p>
                 <p>Awaiting for your positive response!! </p>
                 <p>
-                    <a href={link} class="button">Fill Quotation Form</a>
+                    <a href="{link}" class="button">Fill Quotation Form</a>
                 </p>
 
                 <p class="contact-info">
@@ -905,7 +908,7 @@ class EmailServices:
             </table>
         
             <p>
-                <a href={form_link} class="button">Fill Car Onboard Form</a>
+                <a href="{form_link}" class="button">Fill Car Onboard Form</a>
             </p>
             <p class="contact-info">
                 For assistance, please contact:<br>
