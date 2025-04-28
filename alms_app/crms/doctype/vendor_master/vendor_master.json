@@ -7,7 +7,8 @@
  "field_order": [
   "company_name",
   "contact_number",
-  "contact_email"
+  "contact_email",
+  "person_responsible"
  ],
  "fields": [
   {
@@ -25,11 +26,17 @@
    "fieldname": "contact_email",
    "fieldtype": "Data",
    "label": "Contact Email"
+  },
+  {
+   "fieldname": "person_responsible",
+   "fieldtype": "Table",
+   "label": "Person Responsible",
+   "options": "Person Responsible"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-02-28 14:16:16.048447",
+ "modified": "2025-04-25 17:38:14.205964",
  "modified_by": "Administrator",
  "module": "CRMS",
  "name": "Vendor Master",
@@ -48,6 +55,7 @@
    "write": 1
   }
  ],
+ "row_format": "Dynamic",
  "sort_field": "modified",
  "sort_order": "DESC",
  "states": []

@@ -15,4 +15,4 @@ def get_eligibility_from_designation(designation):
         return {"error": "No designation provided"}
 
     doc = frappe.get_doc("Employee Designation", designation)
-    return {"eligibility": doc.custom_eligibility}
+    return {"eligibility": doc.eligibility}
