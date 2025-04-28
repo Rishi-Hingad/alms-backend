@@ -806,7 +806,7 @@ class EmailServices:
         for company_detail in data:
             # print(company_detail,"++++++++++++___________________++++++++++++++++")
             if payload.get("email_send_to") == "ALL" or company_detail.name == payload.get("email_send_to"):
-                print(f"----------[SEND-LINK TO {company_detail.name}]------[EMAIL TYPE :{payload.get('email_phase')}]---------------")
+                # print(f"----------[SEND-LINK TO {company_detail.name}]------[EMAIL TYPE :{payload.get('email_phase')}]---------------")
                 link = (
                         # f"http://127.0.0.1:8001/vendor-assets-quotation/new?"
                         f"{frappe.utils.get_url()}/vendor-assets-quotation/new?"
