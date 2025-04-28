@@ -1,5 +1,33 @@
 
-
+function send_email(user, email_send_to, payload = null) {
+    frappe.call({
+        method: "alms_app.api.emailsService.email_sender",
+        args: {
+            name: user,
+            email_send_to: email_send_to,
+            payload: payload,
+        },
+        callback: function (response) {
+            if (!response.exc) {
+                console.log("Mail gya ki nhi")
+                frappe.msgprint("Email sent successfully!");
+            } else {
+                frappe.msgprint({
+                    title: "Error",
+                    indicator: "red",
+                    message: response.exc || "An unknown error occurred while sending the email.",
+                });
+            }
+        },
+        error: function (error) {
+            frappe.msgprint({
+                title: "Error",
+                indicator: "red",
+                message: error.message || "An unknown error occurred while sending the email.",
+            });
+        },
+    });
+}
 function uploadfile(frm) {
     frm.add_custom_button('Upload File', function () {
         frappe.prompt(
@@ -76,34 +104,7 @@ function setValuesInField(frm, data) {
 
 
 
-function send_email(user, email_send_to, payload = null) {
-    frappe.call({
-        method: "alms_app.api.emailsService.email_sender",
-        args: {
-            name: user,
-            email_send_to: email_send_to,
-            payload: payload,
-        },
-        callback: function (response) {
-            if (!response.exc) {
-                // frappe.msgprint("Email sent successfully!");
-            } else {
-                frappe.msgprint({
-                    title: "Error",
-                    indicator: "red",
-                    message: response.exc || "An unknown error occurred while sending the email.",
-                });
-            }
-        },
-        error: function (error) {
-            frappe.msgprint({
-                title: "Error",
-                indicator: "red",
-                message: error.message || "An unknown error occurred while sending the email.",
-            });
-        },
-    });
-}
+
 function updateStatus(frm) {
     frm.clear_custom_buttons();
 
@@ -298,6 +299,7 @@ frappe.ui.form.on('Car Quotation', {
                     frm.set_value('finance_team_remarks', values.remarks_input);
                     frm.refresh_field('finance_team_remarks');
                     frm.save().then(() => {
+                        console.log(frm.doc.employee_details,"HA ab bol ab bol na")
                         send_email(frm.doc.employee_details, "FinanceTeam To FinanceHead")
                     });
                 },

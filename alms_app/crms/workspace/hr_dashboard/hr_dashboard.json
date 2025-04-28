@@ -13,7 +13,7 @@
    "label": "Car Indent Form"
   }
  ],
- "content": "[{\"id\":\"Q29g67Yo_2\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">HR Dashboard</span>\",\"col\":12}},{\"id\":\"6GMciSZmeo\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Eligible Employee\",\"col\":6}},{\"id\":\"9h70ROEDHi\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Total Car Indent Form\",\"col\":6}},{\"id\":\"G-7BeJxY7U\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Pending Car Indent Form\",\"col\":4}},{\"id\":\"w-Dsna__jk\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Approved Car Indent Form\",\"col\":4}},{\"id\":\"lt38NROBBW\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Rejected Car Indent Form\",\"col\":4}},{\"id\":\"BMcWErsXLL\",\"type\":\"quick_list\",\"data\":{\"quick_list_name\":\"Employee Master\",\"col\":6}},{\"id\":\"e01Ee43Sti\",\"type\":\"quick_list\",\"data\":{\"quick_list_name\":\"Car Indent Form\",\"col\":6}},{\"id\":\"V7g8id7xHV\",\"type\":\"chart\",\"data\":{\"chart_name\":\"Employee Master\",\"col\":6}},{\"id\":\"fyZSt0QJAe\",\"type\":\"chart\",\"data\":{\"chart_name\":\"Car Indent Form\",\"col\":6}},{\"id\":\"FSkyNmxC_V\",\"type\":\"chart\",\"data\":{\"chart_name\":\"Car Indent Status\",\"col\":12}}]",
+ "content": "[{\"id\":\"Q29g67Yo_2\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">HR Dashboard</span>\",\"col\":12}},{\"id\":\"9h70ROEDHi\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Total Car Indent Form\",\"col\":6}},{\"id\":\"6GMciSZmeo\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Eligible Employee\",\"col\":6}},{\"id\":\"G-7BeJxY7U\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Pending Car Indent Form\",\"col\":4}},{\"id\":\"w-Dsna__jk\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Approved Car Indent Form\",\"col\":4}},{\"id\":\"lt38NROBBW\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Rejected Car Indent Form\",\"col\":4}},{\"id\":\"BMcWErsXLL\",\"type\":\"quick_list\",\"data\":{\"quick_list_name\":\"Employee Master\",\"col\":6}},{\"id\":\"e01Ee43Sti\",\"type\":\"quick_list\",\"data\":{\"quick_list_name\":\"Car Indent Form\",\"col\":6}},{\"id\":\"V7g8id7xHV\",\"type\":\"chart\",\"data\":{\"chart_name\":\"Employee Master\",\"col\":6}},{\"id\":\"fyZSt0QJAe\",\"type\":\"chart\",\"data\":{\"chart_name\":\"Car Indent Form\",\"col\":6}},{\"id\":\"FSkyNmxC_V\",\"type\":\"chart\",\"data\":{\"chart_name\":\"Car Indent Status\",\"col\":12}}]",
  "creation": "2024-10-26 10:37:38.548833",
  "custom_blocks": [],
  "docstatus": 0,
@@ -26,7 +26,7 @@
  "is_hidden": 0,
  "label": "HR Dashboard",
  "links": [],
- "modified": "2025-04-15 12:32:10.591619",
+ "modified": "2025-04-28 10:48:06.578983",
  "modified_by": "Administrator",
  "module": "CRMS",
  "name": "HR Dashboard",

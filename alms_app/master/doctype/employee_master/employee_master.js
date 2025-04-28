@@ -38,60 +38,61 @@ frappe.ui.form.on("Employee Master", {
 
     },
 
-    designation(frm) {
-        if (frm.doc.designation) {
-            console.log("Welcome to designation world")
-            frappe.call({
-                method: "alms_app.master.doctype.employee_master.employee_master.get_eligibility_from_designation",
-                args: {
-                    designation: frm.doc.designation
-                },
-                callback: function (r) {
-                    if (r.message && r.message.eligibility) {
-                        frm.set_value("eligibility", r.message.eligibility);
-                    }
-                }
-            });
-        }// const eligibility = eligibilityMap[frm.doc.designation] || 0;
+    // designation(frm) {
+    //     if (frm.doc.designation) {
+    //         console.log("Welcome to designation world")
+    //         frappe.call({
+    //             method: "alms_app.master.doctype.employee_master.employee_master.get_eligibility_from_designation",
+    //             args: {
+    //                 designation: frm.doc.designation
+    //             },
+    //             callback: function (r) {
+    //                 if (r.message && r.message.eligibility) {
+    //                     frm.set_value("eligibility", r.message.eligibility);
+    //                 }
+    //             }
+    //         });
+    //     }
+        // const eligibility = eligibilityMap[frm.doc.designation] || 0;
 
         // if (eligibility > 0) {
         //     frm.set_value("eligibility", eligibility);
         // }
-    },
+    // },
 
     refresh: function (frm) {
         updateEmailButton(frm);
         if (frm.doc.designation ) {
 
-            frappe.call({
-                method: "alms_app.master.doctype.employee_master.employee_master.get_eligibility_from_designation",
-                args: {
-                    designation: frm.doc.designation
-                },
-                callback: function (r) {
-                    if (r.message && r.message.eligibility) {
+            // frappe.call({
+            //     method: "alms_app.master.doctype.employee_master.employee_master.get_eligibility_from_designation",
+            //     args: {
+            //         designation: frm.doc.designation
+            //     },
+            //     callback: function (r) {
+            //         if (r.message && r.message.eligibility) {
 
-                        eligibility = r.message.eligibility;
-                        frm.add_custom_button("ELIGBILITY", () =>{
-                            if(parseFloat(eligibility)>0)
-                            frappe.msgprint(`${parseFloat(eligibility).toLocaleString('en-IN')}`);
-                        })
+            //             eligibility = r.message.eligibility;
+            //             frm.add_custom_button("ELIGBILITY", () =>{
+            //                 if(parseFloat(eligibility)>0)
+            //                 frappe.msgprint(`${parseFloat(eligibility).toLocaleString('en-IN')}`);
+            //             })
                             
-                            .css({
-                                "background-color": "#daf0e1",
-                                "color": "#16794c",
-                                "border-color": "darkgreen",
-                                "cursor": "allowed",
-                                "font-weight": "semibold",
-                                "text-transform": "uppercase",
-                            })
-                            .html('<i class="fa fa-check"></i> Eligibility');
+            //                 .css({
+            //                     "background-color": "#daf0e1",
+            //                     "color": "#16794c",
+            //                     "border-color": "darkgreen",
+            //                     "cursor": "allowed",
+            //                     "font-weight": "semibold",
+            //                     "text-transform": "uppercase",
+            //                 })
+            //                 .html('<i class="fa fa-check"></i> Eligibility');
                         
-                    }
+            //         }
 
-                }
+            //     }
 
-            });
+            // });
            
         }
     },
