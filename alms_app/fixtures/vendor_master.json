@@ -1,21 +1,13 @@
 [
  {
-  "company_name": "ALD",
-  "contact_email": "itapplication.developer@merillife.com",
-  "contact_number": "+91-7069668308",
-  "docstatus": 0,
-  "doctype": "Vendor Master",
-  "modified": "2025-04-08 16:03:29.327963",
-  "name": "ALD"
- },
- {
   "company_name": "Easy Assets",
-  "contact_email": "ujjawalpatel0@gmail.com",
+  "contact_email": "smplrsaurabh30@gmail.com",
   "contact_number": "+91-7069668308",
   "docstatus": 0,
   "doctype": "Vendor Master",
-  "modified": "2025-04-11 17:13:46.351452",
-  "name": "Easy Assets"
+  "modified": "2025-04-28 12:54:57.608614",
+  "name": "Easy Assets",
+  "person_responsible": []
  },
  {
   "company_name": "XYZ",
@@ -24,6 +16,54 @@
   "docstatus": 0,
   "doctype": "Vendor Master",
   "modified": "2025-04-07 12:26:12.030602",
-  "name": "XYZ"
+  "name": "XYZ",
+  "person_responsible": []
+ },
+ {
+  "company_name": "ALD",
+  "contact_email": "itapplication.developer@merillife.com",
+  "contact_number": "+91-7069668308",
+  "docstatus": 0,
+  "doctype": "Vendor Master",
+  "modified": "2025-04-28 14:18:48.760874",
+  "name": "ALD",
+  "person_responsible": [
+   {
+    "area": "Quotation & new vehicle order",
+    "contact_no": "8657541985",
+    "emailid": "anurag.timothy@ayvens.com",
+    "parent": "ALD",
+    "parentfield": "person_responsible",
+    "parenttype": "Vendor Master",
+    "person_name": "Anurag Timothy"
+   },
+   {
+    "area": "Invoice Billing & Contract",
+    "contact_no": "9930700071",
+    "emailid": "abhijeet.kumbhar@ayvens.com",
+    "parent": "ALD",
+    "parentfield": "person_responsible",
+    "parenttype": "Vendor Master",
+    "person_name": "Abhijeet"
+   },
+   {
+    "area": "Service",
+    "contact_no": "9920424336",
+    "emailid": "pranesh.date@ayvens.com",
+    "parent": "ALD",
+    "parentfield": "person_responsible",
+    "parenttype": "Vendor Master",
+    "person_name": "Pranesh Date"
+   },
+   {
+    "area": "ALL",
+    "contact_no": "9819672434",
+    "emailid": "sharad.jain@ayvens.com",
+    "parent": "ALD",
+    "parentfield": "person_responsible",
+    "parenttype": "Vendor Master",
+    "person_name": "Sharad Jain"
+   }
+  ]
  }
 ]

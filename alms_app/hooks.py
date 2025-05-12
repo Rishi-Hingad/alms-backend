@@ -6,8 +6,14 @@ app_email = "rishi.hingad@merillife.com"
 app_license = "mit"
 
 
+import frappe
 
+# if frappe.flags.in_migrate or frappe.conf.disable_emails_during_migration:
+#     def noop_sendmail(*args, **kwargs):
+#         print("[EMAIL BLOCKED]")
+#     frappe.sendmail = noop_sendmail
 # on_session_creation  = "alms_app.api.session_manager.add_custom_session_data"
+
 
 
 # Apps
@@ -28,8 +34,22 @@ app_license = "mit"
 
 # Includes in <head>
 # ------------------
+# fixtures=[
+    # "Custom DocPerm",
+    # "Management Team",
+    # "Web Form"
 
+    # "Employee Designation"
+    # "Employee Department"
 
+# ]
+# fixtures=[
+#     # "ALMS Settings",
+#     "Vendor Master",
+#     "Management Team"
+
+#     # "User"
+# ]
 
 # fixtures = [
 #   {
@@ -94,9 +114,6 @@ app_license = "mit"
 #   },
 #   {
 #     "dt": "Workspace Shortcut"
-#   },
-#   {
-#     "dt": "Email Account"
 #   },
 #   {
 #     "dt": "DocType"

@@ -26,7 +26,9 @@ frappe.ready(function() {
 
                     // frappe.web_form.set_value('designation', employeeDetails[0].custom_edesignation);
                     frappe.web_form.set_value('designation', employeeDetails[0].designation);
-                    frappe.web_form.set_value('eligibility', employeeDetails[1].eligibility);
+                    // frappe.web_form.set_value('eligibility', employeeDetails[1].eligibility);
+                    frappe.web_form.set_value('eligibility', employeeDetails[0].eligibility);
+                    frappe.web_form.set_value('ex_showroom_price', employeeDetails[0].eligibility);
                     frappe.web_form.set_value('location', employeeDetails[0].location);
                     frappe.web_form.set_value('company_name', employeeDetails[0].company);
                     frappe.web_form.set_value('contact_number', employeeDetails[0].contact_number);
@@ -35,6 +37,7 @@ frappe.ready(function() {
                     frappe.web_form.set_value('department', employeeDetails[0].department);
 
 					frappe.web_form.set_df_property('designation', 'read_only', true);
+					frappe.web_form.set_df_property('ex_showroom_price', 'read_only', true);
 					frappe.web_form.set_df_property('eligibility', 'read_only', true);
 					frappe.web_form.set_df_property('location', 'read_only', true);
 					frappe.web_form.set_df_property('company_name', 'read_only', true);
@@ -87,5 +90,42 @@ frappe.web_form.on("submit", function () {
         }
     });
 });
+
+// frappe.web_form.on("submit", function (form) {
+//     const employeeCode = frappe.web_form.get_value("employee_code");
+
+//     frappe.call({
+//         method: "alms_app.crms.web_form.car_indent_form.car_indent_form.check_indent_exists",
+//         args: {
+//             employee_code: employeeCode
+//         },
+//         callback: function (response) {
+//             const indentExists = response.message;
+
+//             if (indentExists) {
+//                 frappe.msgprint("An indent form already exists for this employee.");
+//                 // Prevent submission
+//                 form.prevent_default = true;
+//             } else {
+//                 // Proceed to send email
+//                 frappe.call({
+//                     method: "alms_app.crms.web_form.car_indent_form.car_indent_form.send_email_to_reporting_head",
+//                     args: {
+//                         employee_code: employeeCode
+//                     },
+//                     callback: function (response) {
+//                         console.log("Email sent successfully:", response);
+//                     },
+//                     error: function (error) {
+//                         console.log("Error sending email:", error);
+//                     }
+//                 });
+//             }
+//         },
+//         error: function (error) {
+//             console.log("Error checking indent existence:", error);
+//         }
+//     });
+// });
 
 });
