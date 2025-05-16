@@ -1,7 +1,7 @@
 
 
-
 function send_email(user,email_send_to){
+    console.log("send_email called with:", user, email_send_to);
     frappe.call({
         method: "alms_app.api.emailsService.email_sender",
         args: { 
@@ -101,6 +101,12 @@ function updateStatus(frm) {
                     designation_match: "HR"
                 },
                 {
+                    label: "Travel Desk",
+                    field: "travel_desk_approval",
+                    current_status: frm.doc.travel_desk_approval,
+                    designation_match: "Travel Desk"
+                },
+                {
                     label: "HR Head",
                     field: "hr_head_approval",
                     current_status: frm.doc.hr_head_approval,
@@ -146,6 +152,9 @@ function updateStatus(frm) {
                             if (button.field === "hr_approval") {
                                 frm.set_value('hr_remarks', values.remarks_input);
                             }
+                            if (button.field === "travel_desk_approval") {
+                                frm.set_value('travel_desk_remarks', values.remarks_input);
+                            }
                             if (button.field === "hr_head_approval") {
                                 frm.set_value('hr_head_remarks', values.remarks_input);
                                 frm.set_value('status', 'Approved');
@@ -155,12 +164,15 @@ function updateStatus(frm) {
                             frm.save().then(() => {
                                 // Send email based on approval
                                 if (button.field === "hr_approval") {
-                                    send_email(frm.doc.name, "HR To HRHead");
+                                    send_email(frm.doc.name, "HR To Travel Desk");
+                                }
+                                if (button.field === "travel_desk_approval") {
+                                    send_email(frm.doc.name, "Travel Desk To HRHead");
                                 }
                                 if (button.field === "hr_head_approval") {
                                     send_email(frm.doc.name, "HRHead To PurchaseTeam");
                                 }
-                                updateStatus(frm); // Refresh buttons
+                                updateStatus(frm);
                             });
                         },
                         'Remarks Required',
@@ -228,17 +240,11 @@ function updateStatus(frm) {
 // }
 
 
-
-
-
-
-
-
-
 function toggleFieldStatus(frm) {
     const fieldMap = {
         "Reporting Manager": "reporting_head_approval",
         "HR": "hr_approval",
+        "Travel Desk": "travel_desk_approval",
         "HR Head": "hr_head_approval"
     };
 
@@ -250,7 +256,7 @@ function toggleFieldStatus(frm) {
         callback: function (r) {
             const designation = r.message;
 
-            console.log("+++++++++++++",designation,frappe.session.user,"+++++++++")
+            console.log("Car Indent Form Desingation +++++++++++++",designation,frappe.session.user,"+++++++++")
 
             // Unlock specific approval field based on designation
             if (designation && fieldMap[designation]) {
@@ -310,6 +316,8 @@ frappe.ui.form.on("Car Indent Form", {
         frm.set_df_property('reporting_head_remarks', 'read_only', 1);
         frm.set_df_property('hr_head_remarks', 'read_only', 1);
         frm.set_df_property('hr_remarks', 'read_only', 1);
+        frm.set_df_property('travel_desk_approval', 'read_only', 1);
+        frm.set_df_property('travel_desk_remarks', 'read_only', 1);
 
         toggleFieldStatus(frm);
     },

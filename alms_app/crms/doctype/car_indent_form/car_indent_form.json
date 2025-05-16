@@ -9,41 +9,50 @@
  "field_order": [
   "car_indent_form_section",
   "form_type",
-  "employee_code",
   "employee_reporting",
-  "company_name",
   "department",
-  "designation",
   "contact_number",
-  "email_id",
   "location",
+  "column_break_ejap",
+  "employee_code",
+  "company_name",
+  "designation",
+  "email_id",
   "eligibility",
+  "vehicle_details_section",
   "make",
   "model",
+  "column_break_kdnd",
   "engine",
   "colour",
-  "column_break_wlht",
+  "vehicle_pricing_details_section",
+  "column_break_xrgt",
   "ex_showroom_price",
-  "discount",
   "tcs",
-  "net_ex_showroom_price",
   "registration_charges",
-  "accessories",
   "finance_amount",
+  "column_break_jycd",
+  "discount",
+  "net_ex_showroom_price",
+  "accessories",
   "quotation_document",
+  "car_indent_form_status_section",
   "reporting_head_approval",
-  "reporting_head_remarks",
+  "travel_desk_approval",
+  "status",
+  "column_break_ebpq",
   "hr_approval",
-  "hr_remarks",
   "hr_head_approval",
-  "hr_head_remarks",
-  "status"
+  "reporting_head_remarks",
+  "travel_desk_remarks",
+  "hr_remarks",
+  "hr_head_remarks"
  ],
  "fields": [
   {
    "fieldname": "car_indent_form_section",
    "fieldtype": "Section Break",
-   "label": "Car Indent Form"
+   "label": "Employee Details"
   },
   {
    "fieldname": "employee_code",
@@ -110,7 +119,7 @@
    "fetch_from": "employee_code.eligibility",
    "fieldname": "eligibility",
    "fieldtype": "Currency",
-   "label": "Eligibility"
+   "label": "Eligibility (Ex-Showroom Price)"
   },
   {
    "fetch_from": "employee_code.email_id",
@@ -166,10 +175,6 @@
    "options": "Pending\nApproved\nRejected"
   },
   {
-   "fieldname": "column_break_wlht",
-   "fieldtype": "Column Break"
-  },
-  {
    "fieldname": "hr_approval",
    "fieldtype": "Select",
    "label": "HR Approval",
@@ -215,6 +220,52 @@
    "fieldtype": "Select",
    "label": "Form Type",
    "options": "Car\nAllowance"
+  },
+  {
+   "fieldname": "travel_desk_approval",
+   "fieldtype": "Select",
+   "label": "Travel Desk Approval",
+   "options": "Pending\nApproved\nRejected"
+  },
+  {
+   "fieldname": "travel_desk_remarks",
+   "fieldtype": "Data",
+   "label": "Travel Desk Remarks"
+  },
+  {
+   "fieldname": "column_break_jycd",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "car_indent_form_status_section",
+   "fieldtype": "Section Break",
+   "label": "Car Indent Form Status"
+  },
+  {
+   "fieldname": "column_break_ebpq",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "vehicle_details_section",
+   "fieldtype": "Section Break",
+   "label": "Vehicle Details Section"
+  },
+  {
+   "fieldname": "column_break_kdnd",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "vehicle_pricing_details_section",
+   "fieldtype": "Section Break",
+   "label": "vehicle_pricing_details_section"
+  },
+  {
+   "fieldname": "column_break_xrgt",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_ejap",
+   "fieldtype": "Column Break"
   }
  ],
  "index_web_pages_for_search": 1,
@@ -224,7 +275,7 @@
    "link_fieldname": "employee_name"
   }
  ],
- "modified": "2025-04-15 12:30:23.158441",
+ "modified": "2025-05-14 16:07:03.027220",
  "modified_by": "Administrator",
  "module": "CRMS",
  "name": "Car Indent Form",
@@ -244,7 +295,6 @@
    "write": 1
   }
  ],
- "row_format": "Dynamic",
  "sort_field": "modified",
  "sort_order": "DESC",
  "states": [

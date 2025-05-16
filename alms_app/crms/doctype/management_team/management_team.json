@@ -14,7 +14,7 @@
    "fieldname": "designation",
    "fieldtype": "Select",
    "label": "Designation",
-   "options": "HR\nHR Head\nPurchase\nPurchase Head\nFinance\nFinance Head\nFinance Head2\nAccounts"
+   "options": "HR\nHR Head\nPurchase\nPurchase Head\nFinance\nFinance Head\nFinance Head2\nTravel Desk\nAccounts"
   },
   {
    "fieldname": "full_name",
@@ -29,7 +29,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-04-28 09:48:55.673790",
+ "modified": "2025-05-14 14:48:26.166436",
  "modified_by": "Administrator",
  "module": "CRMS",
  "name": "Management Team",
@@ -49,7 +49,6 @@
    "write": 1
   }
  ],
- "row_format": "Dynamic",
  "sort_field": "modified",
  "sort_order": "DESC",
  "states": []
