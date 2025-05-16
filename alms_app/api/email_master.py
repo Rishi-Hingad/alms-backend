@@ -6,6 +6,10 @@ class EmailMaster:
     hr_team_email = hr_user.get("email_id")
     hr_team = hr_user.get("full_name")
 
+    travel_desk = frappe.get_all('Management Team', filters={'designation': 'Travel Desk'}, fields=['full_name', 'email_id'])[0]
+    travel_desk_email = hr_user.get("email_id")
+    travel_desk_team = hr_user.get("full_name")
+
     hr_head_user = frappe.get_all('Management Team', filters={'designation': 'HR Head'}, fields=['full_name', 'email_id'])[0]
     # hr_head_email = hr_user.get("email_id")
     hr_head_email = hr_head_user.get("email_id")

@@ -11,15 +11,6 @@ from frappe.utils.file_manager import save_file_on_filesystem
 
 emailer = EmailServices()
 
-
-
-
-
-
-
-
-
-
 def make_file_public(file_url):
     # Get file detail
     file_url = file_url
@@ -37,6 +28,7 @@ def make_file_public(file_url):
     file_doc.save(ignore_permissions=True)
     frappe.db.commit()
     return file_doc.file_url
+
 def email_formate_for_car_Onboard(form_link,user_doc,company,form_name):
     body = f"""
         <html>

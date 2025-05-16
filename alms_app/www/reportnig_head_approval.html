@@ -156,8 +156,12 @@
                 <td>{{vehicle_make_model}}</td>
             </tr>
             <tr>
-                <th>Ex Showroom Amount</th>
+                <th>Net Ex Showroom Amount</th>
                 <td>₹{{net_ex_showroom_price}}</td>
+            </tr>
+            <tr>
+                <th>Finance Amount</th>
+                <td>₹{{finance_amount}}</td>
             </tr>
         </table>
 
@@ -181,18 +185,14 @@
                 
                 <script>
                 document.getElementById("approveBtn").addEventListener("click", function(event) {
-                    event.preventDefault(); // Prevent the default link behavior (like opening in a new tab)
-                
-                    // Get values from input fields
+                    event.preventDefault();
+
                     let indentFormValue = document.getElementById("indent_form").value;
                     let remarksValue = document.getElementById("remarks").value;
                 
-                    // Construct the API URL with query parameters
-                    // let apiUrl = `http://127.0.0.1:8001/api/method/alms_app.api.emailsService.approve_car_indent_by_reporting?indent_form=${encodeURIComponent(indentFormValue)}&remarks=${encodeURIComponent(remarksValue)}`;
                     let apiUrl = `${window.location.origin}/api/method/alms_app.api.emailsService.approve_car_indent_by_reporting?indent_form=${encodeURIComponent(indentFormValue)}&remarks=${encodeURIComponent(remarksValue)}`;
                     console.log("Api Url",apiUrl)
                     console.log(window.location.origin,"+")
-                    // Redirect the user to the API URL in the same tab
                     window.location.href = apiUrl;
                 });
                 </script>

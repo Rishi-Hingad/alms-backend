@@ -12,32 +12,14 @@ emailMaster = EmailMaster()
 
 class EmailServices:
     def __init__(self):
-        
-        # config = frappe.get_site_config() 
-        # self.smtp_server =  config.get("smtp_server")
-
-        # self.smtp_port = config.get("smtp_port")
-
-        # self.smtp_user = config.get("smtp_user")
-
-        # self.smtp_password = config.get("smtp_password")
-
-        # self.from_address = "noreply@merillife.com"
-
         alms_settings = frappe.get_single("ALMS Settings")
-
         self.smtp_server = alms_settings.smtp_server
         self.smtp_port = alms_settings.smtp_port
         self.smtp_user = alms_settings.smtp_user
         self.smtp_password = alms_settings.smtp_password
         self.from_address = "noreply@merillife.com"
 
-
-
-        # print(self.smtp_server,"++++++",self.smtp_port,"+++++++++++++++",self.smtp_user,"+++++++++++++++",self.smtp_password,"000000000000000000000000000000000000000000000000000")
-
     def send(self,subject,recipient_email,body):
-    # def send(self,subject,recipient_email,body,bcc_emails=None):
     
         try:
             msg = EmailMessage()
@@ -45,18 +27,14 @@ class EmailServices:
             msg["Subject"] = subject
             msg["From"] = self.from_address
             msg["To"] = recipient_email
-            msg["Bcc"] = "imran.shaikh@merillife.com"
-            # msg["Bcc"] = bcc_emails
-
+            msg["Bcc"] = "rishi.hingad@merillife.com"
             
             with smtplib.SMTP(self.smtp_server, self.smtp_port) as server:
                 server.set_debuglevel(1)
                 server.starttls()
                 server.login(self.smtp_user, self.smtp_password)
                 response = server.send_message(msg)
-                print("Message gya kya ")
-                
-            # print("-----------[EMAIL RESPONSE]-------------",response)
+                print("Email Sent Successfully!")
             frappe.msgprint(f"Email sent successfully to {recipient_email}.")
 
         except smtplib.SMTPException as smtp_error:
@@ -106,7 +84,7 @@ class EmailServices:
             <div class="content">
                 <p>Dear {user.employee_name},</p>
                 <p>
-                    We are pleased to inform you that your car allocation request has been approved by <strong>{statusFrom}</strong>.
+                    We are pleased to inform that your car allocation request has been approved by <strong>{statusFrom}</strong>.
                     The request is now being reviewed by <strong>{statusTo}</strong>. We will notify you once the next step is completed.
                 </p>
                 <p>
@@ -127,16 +105,7 @@ class EmailServices:
         return body
 
     # "-------------------------------------" EMAIL BODY "-------------------------------------"
-    def create_email_body(self,form, 
-                          user,
-                          subject, 
-                          content,
-                          updated_by, 
-                          regards=None, 
-                        #   link="http://127.0.0.1:8001/login#login"):
-                          link=f"{frappe.utils.get_url()}/login#login"):
-        # user_eligibility = frappe.get_doc("Employee Designation",user.custom_edesignation).custom_eligibility
-        # user_eligibility = frappe.get_doc("Employee Designation",user.designation).eligibility
+    def create_email_body(self, form, user, subject, content, updated_by, regards=None, link=f"{frappe.utils.get_url()}/login#login"):
         user_eligibility = user.eligibility
         body = f"""
         <html>
@@ -176,7 +145,6 @@ class EmailServices:
                 </tr>
                 <tr>
                     <td>Designation</td>
-                    
                     <td>{user.designation}</td>
                 </tr>
                 <tr>
@@ -185,18 +153,16 @@ class EmailServices:
                 </tr>
                 <tr>
                     <td>Eligibility</td>
-                    
                     <td>{user_eligibility}</td>
                 </tr>
                 <tr>
-                    <td>Net Ex-Showroom Price</td>
-                    <td>{form.net_ex_showroom_price}</td>
+                    <td>Finance Amount</td>
+                    <td>{form.finance_amount}</td>
                 </tr>
                 <tr>
-                    <td>Activity</td>
-                    <td>Employee Vehicle Delivery </td>
+                    <td>Remarks</td>
+                    <td>{form.reporting_head_remarks}</td>
                 </tr>
-                
                 <tr>
                     <td>Updated by</td>
                     <td>{updated_by}</td>
@@ -205,14 +171,12 @@ class EmailServices:
             </tbody>
         </table>
         
-        
             <p>
                 <a href="{link}" class="button"> Login Here </a>
             </p>
                 
-                
             <p>Best regards,</p>
-            <p>{regards}</p>
+            <p>CRMS Team</p>
         </body>
         </html>
         """
@@ -226,10 +190,7 @@ class EmailServices:
                                 content,
                                 updated_by, 
                                 regards=None, 
-                                # link="http://127.0.0.1:8001/login#login"):
                                 link=f"{frappe.utils.get_url()}/login#login"):
-        # user_eligibility = frappe.get_doc("Employee Designation",user.custom_edesignation).custom_eligibility
-        # user_eligibility = frappe.get_doc("Employee Designation",user.designation).eligibility
         user_eligibility = user.eligibility
         
         body = f"""
@@ -278,7 +239,6 @@ class EmailServices:
                 </tr>
                 <tr>
                     <td>Eligibility</td>
-                  
                     <td>{user_eligibility}</td>
                 </tr>
                 <tr>
@@ -289,9 +249,10 @@ class EmailServices:
                     <td>Revised Net Ex-Showroom Price</td>
                     <td>{revised_form.revised_net_ex_showroom_price}</td>
                 </tr>
+                
                 <tr>
-                    <td>Activity</td>
-                    <td>Employee Vehicle Delivery </td>
+                    <td>Remarks</td>
+                    <td>{form.reporting_head_remarks}</td>
                 </tr>
                 
                 <tr>
@@ -302,11 +263,9 @@ class EmailServices:
             </tbody>
         </table>
         
-        
             <p>
                 <a href={link} class="button"> Login Here </a>
-            </p>
-                
+            </p>        
                 
             <p>Best regards,</p>
             <p>{regards}</p>
@@ -355,18 +314,16 @@ class EmailServices:
             <body>
                 <p>Dear {user.employee_name},</p>
                 <p>Congratulations ! </p>
-                <p>We are pleased to inform you that you will be eligible for Company vehicle instead of Car Allowance. </p>
+                <p>We are pleased to inform that you are eligible for Company vehicle.</p>
                 <p>Please click on below link and fill the necessary details.</p>
                 <p>
-                   
                     <a href="{frappe.utils.get_url()}/car-indent-form/new?employee_code={user.name}" 
                     class="button">
                     Fill Car Rental Service Form
                     </a>
                 </p>
-                <p>You will make the best use of the opportunity offered to you and contribute substantially to 
-                        the success of both yourself and the Organization. </p>
-                <p>Wishing you all the best.  </p>
+                <p>You will make the best use of the opportunity offered to you and contribute substantially to the success of both yourself and the Organization.</p>
+                <p>Wishing you all the best.</p>
                 <p>Sincerely,
                 <br>Team HR 
                 </p>
@@ -375,9 +332,7 @@ class EmailServices:
         """
         return body
 
-    def create_reporting_email(self, subject, content, regards=None,link=None ):
-        # print("Reporting hai kya ++",link)
-        
+    def create_reporting_email(self, subject, content, regards=None,link=None ):    
         body = f"""
         <html>
         <head>
@@ -403,49 +358,44 @@ class EmailServices:
             <h2>{subject}</h2>
             <p>{content}</p>
               
-            {f'<a href="{link}" class="button">Click Here For Approve</a>' if link else ''}
+            {f'<a href="{link}" class="button">Click Here To Approve</a>' if link else ''}
             <p>Best regards,</p>
             <p>{regards}</p>
         </body>
         </html>
         """
-        # print(body,"Body a gyi hai")
         return body
         
     # "-------------------------------------" EMAIL SEND TO "-------------------------------------"
     
     def for_hr_team_to_employee(self, user):
         recipient_email = user.email_id
-        # bcc_emails = "smplrsaurabh30@gmail.com"
+        # bcc_emails = "rishi.hingad@merillife.com"
         subject = "You are Eligible for the Car Rental Service"
         body = self.create_email_body_for_emp(user)
         
         self.send(subject=subject, body=body, recipient_email=recipient_email) 
  
     def for_employee_to_reporting(self, user):
-        # recipient_email = user.reporting_head_email_id
         doc = frappe.get_doc("Employee Master",user.reporting_head)
+        print("------------[EMPLOYEE TO REPORTING]------------------:",doc)
+        reporting_head_name = doc.employee_name
         recipient_email = doc.email_id
         subject =f"Car Rental Form Submitted by {user.employee_name} for Your Review"
         regards = f"{user.employee_name} (Employee)"
         content = f"""
-        Dear {user.reporting_head},
+        Dear {reporting_head_name},
         <br><br>
         We are pleased to inform you that {user.employee_name} has submitted the car rental form for your review.
         <br><br>Kindly check and take necessary action at your earliest convenience.<br><br>
         """
-        # link = f"http://127.0.0.1:8001/reportnig_head_approval?id={user.name}"
         link = f"{frappe.utils.get_url()}/reportnig_head_approval?id={user.name}"
-        # print("Link a rha hai ", link,"employee +++",user.name, "==== ",frappe.utils.get_url(),"====", f"{frappe.utils.get_url()}/reportnig_head_approval?id" )
         body = self.create_reporting_email(subject, content, regards,link)
         self.send(subject=subject, body=body, recipient_email=recipient_email)
         # self.send(subject=subject, body=body, recipient_email=recipient_email,bcc_emails=bcc_emails)
 
-  
     def for_reporting_to_hr_team(self, user):
-        recipient_email = emailMaster.hr_team_email
-        # print("ha bhai mila kya +++++++++++++++++++",recipient_email)
-        
+        recipient_email = emailMaster.hr_team_email        
         subject = "Car Rental Form Approved by Reporting Manager"
         regards = f"{user.reporting_head} (Reporting Manager)"
         content = f"""
@@ -458,21 +408,34 @@ class EmailServices:
         body = self.create_email_body(form,user,subject, content,updated_by,regards)
         self.send(subject=subject, body=body, recipient_email=recipient_email)
 
-    def for_hr_team_to_hr_head(self, user):
-        # pass
-        
+    def for_hr_team_to_travel_desk(self, user):
         emailMaster = EmailMaster()
-        recipient_email = emailMaster.hr_head_email
-        print("A gya hai bhaiya majo a gyaa")
-        print("+++++++++++++",recipient_email,"+++++++++++++++",emailMaster.hr_head_email)
+        recipient_email = emailMaster.travel_desk_email
+        print(" for hr team to hr head------",recipient_email,"+++++++++++++++",emailMaster.travel_desk_email)
         subject = "Car Rental Form Approved by HR Team"
         regards = "HR Team"
         updated_by = emailMaster.hr_team
         form = frappe.get_doc("Car Indent Form",user.name)
-        # print(user, recipient_email,"---------------------------------------")
         content = f"""
         Dear Sir/Madam,
         <br><br>The HR team has reviewed and approved the car rental form submitted by {user.employee_name}.
+        <br>
+        {updated_by} have sent the form for the activity mentioned below:
+        """
+        body = self.create_email_body(form,user,subject, content,updated_by,regards)
+        self.send(subject=subject, body=body, recipient_email=recipient_email)
+
+    def for_travel_desk_to_hr_head(self, user):
+        emailMaster = EmailMaster()
+        recipient_email = emailMaster.hr_head_email
+        print(" for hr team to hr head------",recipient_email,"+++++++++++++++",emailMaster.hr_head_email)
+        subject = "Car Rental Form Approved by Travel Desk Team"
+        regards = "Travel Desk Team"
+        updated_by = emailMaster.trvel_desk_team
+        form = frappe.get_doc("Car Indent Form",user.name)
+        content = f"""
+        Dear Sir/Madam,
+        <br><br>The Travel Desk team has reviewed and approved the car rental form submitted by {user.employee_name}.
         <br>
         {updated_by} have sent the form for the activity mentioned below:
         """
@@ -497,13 +460,8 @@ class EmailServices:
         self.send(subject=subject, body=body, recipient_email=recipient_email)
 
     def for_purchase_team_to_purchase_head(self, user):
-
-
         recipient_email = emailMaster.purchase_head_email
-
-        print("A gya hai bhaiya majo a gyaa")
-        print("+++++++++++++",recipient_email,"+++++++++++++++",recipient_email)
-
+        print("FOR pt TO ph-----",recipient_email,"+++++++++++++++",recipient_email)
         subject = "Car Rental Form Approved by Purchase Team"
         regards = "Purchase Team"
         updated_by = emailMaster.purchase_team
@@ -519,8 +477,6 @@ class EmailServices:
 
     def for_purchase_head_to_finance_team(self, user):
         recipient_email = emailMaster.finance_team_email
-        # print("A gya hai bhaiya majo a gyaa")
-        # print("+++++++++++++",recipient_email,"+++++++++++++++",recipient_email)
         subject = "Car Rental Form Approved by Purchase Head"
         regards = "Purchase Head"
         form = frappe.get_doc("Car Indent Form",user.name)
@@ -535,14 +491,8 @@ class EmailServices:
         self.send(subject=subject, body=body, recipient_email=recipient_email)
 
     def for_finance_team_to_finance_head(self, user):
-        # print("kaha ho ")
         recipient_email = emailMaster.finance_head_email
         recipient_email2 = emailMaster.finance_head2_email
-        # print(recipient_email2)
-        
-
-        # print("A gya hai bhaiya majo a gyaa============+++++++++++++++++----------------------")
-        # print("+++++++++++++",recipient_email,"+++++++++++++++",recipient_email,recipient_email2)
         subject = "Car Rental Form Approved by Finance Team"
         regards ="Finance Team"
         form = frappe.get_doc("Car Indent Form",user.name)
