@@ -38,11 +38,11 @@
   "quotation_document",
   "car_indent_form_status_section",
   "reporting_head_approval",
+  "hr_approval",
   "travel_desk_approval",
+  "hr_head_approval",
   "status",
   "column_break_ebpq",
-  "hr_approval",
-  "hr_head_approval",
   "reporting_head_remarks",
   "travel_desk_remarks",
   "hr_remarks",
@@ -257,7 +257,7 @@
   {
    "fieldname": "vehicle_pricing_details_section",
    "fieldtype": "Section Break",
-   "label": "vehicle_pricing_details_section"
+   "label": "Vehicle Pricing Details Section"
   },
   {
    "fieldname": "column_break_xrgt",
@@ -275,7 +275,7 @@
    "link_fieldname": "employee_name"
   }
  ],
- "modified": "2025-05-14 16:07:03.027220",
+ "modified": "2025-05-29 09:50:27.147113",
  "modified_by": "Administrator",
  "module": "CRMS",
  "name": "Car Indent Form",
