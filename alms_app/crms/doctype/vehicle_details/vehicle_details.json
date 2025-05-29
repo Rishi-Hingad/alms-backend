@@ -1,6 +1,8 @@
 {
  "actions": [],
+ "allow_import": 1,
  "allow_rename": 1,
+ "autoname": "field:contract_number",
  "creation": "2025-05-29 09:52:58.352448",
  "doctype": "DocType",
  "engine": "InnoDB",
@@ -19,7 +21,8 @@
   "duration",
   "with_maintenance",
   "rc_received",
-  "status"
+  "status",
+  "remarks"
  ],
  "fields": [
   {
@@ -30,7 +33,8 @@
   {
    "fieldname": "contract_number",
    "fieldtype": "Data",
-   "label": "Contract Number"
+   "label": "Contract Number",
+   "unique": 1
   },
   {
    "fieldname": "company_name",
@@ -39,14 +43,8 @@
    "options": "Company Master"
   },
   {
-   "fieldname": "employee_code_and_name",
-   "fieldtype": "Link",
-   "label": "Employee Code and Name",
-   "options": "Employee Master"
-  },
-  {
    "fieldname": "reallotment_employee_code_and_name",
-   "fieldtype": "Link",
+   "fieldtype": "Data",
    "label": "Re-allotment Employee Code and Name",
    "options": "Employee Master"
   },
@@ -84,12 +82,14 @@
   {
    "fieldname": "with_maintenance",
    "fieldtype": "Select",
-   "label": "With Maintenance"
+   "label": "With Maintenance",
+   "options": "Yes\nNo"
   },
   {
    "fieldname": "status",
    "fieldtype": "Select",
-   "label": "Status"
+   "label": "Status",
+   "options": "New (In Process)\nRunning\nClosed\nExtended"
   },
   {
    "fieldname": "column_break_nxaj",
@@ -98,15 +98,28 @@
   {
    "fieldname": "rc_received",
    "fieldtype": "Select",
-   "label": "RC received"
+   "label": "RC received",
+   "options": "Yes\nNo"
+  },
+  {
+   "fieldname": "remarks",
+   "fieldtype": "Small Text",
+   "label": "Remarks"
+  },
+  {
+   "fieldname": "employee_code_and_name",
+   "fieldtype": "Link",
+   "label": "Employee Code and Name",
+   "options": "Employee Master"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-05-29 10:27:28.228565",
+ "modified": "2025-05-29 16:49:22.317131",
  "modified_by": "Administrator",
  "module": "CRMS",
  "name": "Vehicle Details",
+ "naming_rule": "By fieldname",
  "owner": "Administrator",
  "permissions": [
   {
