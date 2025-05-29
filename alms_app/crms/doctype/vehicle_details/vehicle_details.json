@@ -1,0 +1,128 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2025-05-29 09:52:58.352448",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "vehicle_details_section",
+  "contract_number",
+  "company_name",
+  "employee_code_and_name",
+  "reallotment_employee_code_and_name",
+  "registration_city",
+  "registration_number",
+  "vehicle_description",
+  "column_break_nxaj",
+  "date_begin",
+  "date_end",
+  "duration",
+  "with_maintenance",
+  "rc_received",
+  "status"
+ ],
+ "fields": [
+  {
+   "fieldname": "vehicle_details_section",
+   "fieldtype": "Section Break",
+   "label": "Vehicle Details"
+  },
+  {
+   "fieldname": "contract_number",
+   "fieldtype": "Data",
+   "label": "Contract Number"
+  },
+  {
+   "fieldname": "company_name",
+   "fieldtype": "Link",
+   "label": "Company Name",
+   "options": "Company Master"
+  },
+  {
+   "fieldname": "employee_code_and_name",
+   "fieldtype": "Link",
+   "label": "Employee Code and Name",
+   "options": "Employee Master"
+  },
+  {
+   "fieldname": "reallotment_employee_code_and_name",
+   "fieldtype": "Link",
+   "label": "Re-allotment Employee Code and Name",
+   "options": "Employee Master"
+  },
+  {
+   "fieldname": "registration_city",
+   "fieldtype": "Link",
+   "label": "Registration City",
+   "options": "City Master"
+  },
+  {
+   "fieldname": "registration_number",
+   "fieldtype": "Data",
+   "label": "Registration Number (Plate Number)"
+  },
+  {
+   "fieldname": "vehicle_description",
+   "fieldtype": "Data",
+   "label": "Vehicle Description"
+  },
+  {
+   "fieldname": "date_begin",
+   "fieldtype": "Date",
+   "label": "Date Begin"
+  },
+  {
+   "fieldname": "date_end",
+   "fieldtype": "Date",
+   "label": "Date End"
+  },
+  {
+   "fieldname": "duration",
+   "fieldtype": "Data",
+   "label": "Duration"
+  },
+  {
+   "fieldname": "with_maintenance",
+   "fieldtype": "Select",
+   "label": "With Maintenance"
+  },
+  {
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "label": "Status"
+  },
+  {
+   "fieldname": "column_break_nxaj",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "rc_received",
+   "fieldtype": "Select",
+   "label": "RC received"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2025-05-29 10:27:28.228565",
+ "modified_by": "Administrator",
+ "module": "CRMS",
+ "name": "Vehicle Details",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}
