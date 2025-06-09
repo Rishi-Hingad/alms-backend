@@ -75,7 +75,7 @@ function updateQuotationSendRequest(frm) {
             });
 
             // Adding "ALL" option as default selected
-            optionsHTML += `<label><input type="checkbox" name="company_select" value="ALL" checked> ALL</label><br>`;
+            optionsHTML += `<label><input type="checkbox" name="company_select" value="ALL"> ALL</label><br>`;
             optionsHTML += '</div>';
 
             // Show Prompt
@@ -103,7 +103,7 @@ function updateQuotationSendRequest(frm) {
 
                 // ✅ Send email to all selected companies
                 if (selected_companies.length > 0) {
-                    alert(selected_companies)
+                    // alert(selected_companies)
                     selected_companies.forEach(company => {
                         console.log("Company Quotation", company)
                         send_email(frm.doc.name, "FinanceHead To Quotation Company", {
@@ -122,7 +122,7 @@ function updateQuotationSendRequest(frm) {
                 });
 
                 // ✅ "ALL" checkbox remains checked by default
-                document.querySelector('input[value="ALL"]').checked = true;
+                //document.querySelector('input[value="ALL"]').checked = true;
 
             }, 'Remarks Required', 'Submit');
 
@@ -230,7 +230,7 @@ function toggleFieldStatus(frm) {
                 frm.set_df_property("revised_accessories", "read_only", true);
                 frm.set_df_property("revised_financed_amount", "read_only", true);
                 frm.set_df_property("status", "read_only", true);
-                // frm.set_df_property("purchase_head_remarks", "read_only", true);
+                frm.set_df_property("purchase_head_remarks", "read_only", true);
                 frm.set_df_property("purchase_team_remarks", "read_only", true);
             }
         }

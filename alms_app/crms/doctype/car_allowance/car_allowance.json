@@ -1,0 +1,122 @@
+{
+ "actions": [],
+ "allow_import": 1,
+ "allow_rename": 1,
+ "autoname": "format:{employee_code}",
+ "creation": "2025-06-06 15:56:46.899152",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "employee_details_section",
+  "form_type",
+  "employee_reporting",
+  "department",
+  "contact_number",
+  "location",
+  "column_break_qijg",
+  "employee_code",
+  "company_name",
+  "designation",
+  "email_id",
+  "eligibility"
+ ],
+ "fields": [
+  {
+   "fieldname": "employee_details_section",
+   "fieldtype": "Section Break",
+   "label": "Employee Details"
+  },
+  {
+   "fieldname": "form_type",
+   "fieldtype": "Select",
+   "label": "Form Type",
+   "options": "Car\nAllowance"
+  },
+  {
+   "fetch_from": "employee_code.reporting_head",
+   "fieldname": "employee_reporting",
+   "fieldtype": "Data",
+   "label": "Employee Reporting",
+   "read_only": 1
+  },
+  {
+   "fetch_from": "employee_code.department",
+   "fieldname": "department",
+   "fieldtype": "Data",
+   "label": "Department"
+  },
+  {
+   "fetch_from": "employee_code.contact_number",
+   "fieldname": "contact_number",
+   "fieldtype": "Data",
+   "label": "Contact Number"
+  },
+  {
+   "fetch_from": "employee_code.location",
+   "fieldname": "location",
+   "fieldtype": "Data",
+   "label": "Location"
+  },
+  {
+   "fieldname": "column_break_qijg",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "employee_code",
+   "fieldtype": "Link",
+   "label": "Employee Code",
+   "options": "Employee Master"
+  },
+  {
+   "fetch_from": "employee_code.company",
+   "fieldname": "company_name",
+   "fieldtype": "Data",
+   "label": "Company Name"
+  },
+  {
+   "fetch_from": "employee_code.designation",
+   "fieldname": "designation",
+   "fieldtype": "Data",
+   "label": "Designation"
+  },
+  {
+   "fetch_from": "employee_code.email_id",
+   "fieldname": "email_id",
+   "fieldtype": "Data",
+   "label": "E-mail ID"
+  },
+  {
+   "fetch_from": "employee_code.eligibility",
+   "fieldname": "eligibility",
+   "fieldtype": "Currency",
+   "label": "Eligibility (Ex-Showroom Price)"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2025-06-06 16:11:44.458129",
+ "modified_by": "Administrator",
+ "module": "CRMS",
+ "name": "Car Allowance",
+ "naming_rule": "Expression",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

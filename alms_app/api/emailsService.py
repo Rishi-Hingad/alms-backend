@@ -16,12 +16,15 @@ def email_sender(name, email_send_to=None,payload=None):
             EMail.for_hr_team_to_employee(user)
             
         elif email_send_to == "To Reporting":
-            EMail.for_employee_to_reporting(user) 
+            EMail.for_employee_to_reporting(user)
+
+        elif email_send_to =="ReportingHead To HR":
+            EMail.for_reporting_to_hr_team(user) #changed here
                    
         elif email_send_to =="HR To Travel Desk":
             EMail.for_hr_team_to_travel_desk(user)
         
-        elif email_send_to =="Travel Desk to HRHead":
+        elif email_send_to =="Travel Desk To HRHead":
             EMail.for_travel_desk_to_hr_head(user)            
             EMail.acknowledgement_email(user,"Travel Desk Department","HR Head")
         
