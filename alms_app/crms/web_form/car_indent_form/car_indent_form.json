@@ -18,7 +18,7 @@
  "doctype": "Web Form",
  "idx": 0,
  "introduction_text": "<div class=\"ql-editor read-mode\"><p>You are currently aligned for the car selection. Please choose your preferred option from 'Car' or 'Allowance'.</p></div>",
- "is_standard": 1,
+ "is_standard": 0,
  "list_columns": [],
  "login_required": 0,
  "max_attachment_size": 24,
