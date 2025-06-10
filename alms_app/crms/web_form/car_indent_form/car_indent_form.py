@@ -101,3 +101,10 @@ def send_allowance_email(employee_code):
         frappe.log_error(f"Error in send_allowance_email: {str(e)}")
         return {"status": "failed", "message": str(e)}
 
+
+
+
+
+
+
+# test comment
