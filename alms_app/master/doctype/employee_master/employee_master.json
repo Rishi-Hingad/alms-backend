@@ -20,8 +20,7 @@
   "eligibility",
   "contact_number",
   "reporting_head",
-  "status",
-  "purchase_type"
+  "status"
  ],
  "fields": [
   {
@@ -103,12 +102,6 @@
    "fieldtype": "Link",
    "label": "Designation",
    "options": "Employee Designation"
-  },
-  {
-   "fieldname": "purchase_type",
-   "fieldtype": "Select",
-   "label": "Purchase Type",
-   "options": "On Lease\nDirect"
   }
  ],
  "index_web_pages_for_search": 1,
@@ -119,7 +112,7 @@
    "table_fieldname": "Employee Name"
   }
  ],
- "modified": "2025-05-13 14:45:47.540172",
+ "modified": "2025-06-09 14:52:54.008897",
  "modified_by": "Administrator",
  "module": "master",
  "name": "Employee Master",
@@ -139,6 +132,7 @@
    "write": 1
   }
  ],
+ "row_format": "Dynamic",
  "sort_field": "modified",
  "sort_order": "DESC",
  "states": [

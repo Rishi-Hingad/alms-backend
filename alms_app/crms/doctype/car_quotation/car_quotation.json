@@ -244,7 +244,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-01-30 12:37:51.281640",
+ "modified": "2025-06-10 09:48:46.559696",
  "modified_by": "Administrator",
  "module": "CRMS",
  "name": "Car Quotation",
@@ -264,6 +264,7 @@
    "write": 1
   }
  ],
+ "row_format": "Dynamic",
  "sort_field": "modified",
  "sort_order": "DESC",
  "states": []

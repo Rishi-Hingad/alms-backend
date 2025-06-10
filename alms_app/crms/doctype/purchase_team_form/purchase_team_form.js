@@ -1,5 +1,210 @@
+//latest
+// function handleStatusUpdate(frm, status_field, remarks_field, email_template, new_status) {
+//     return new Promise((resolve) => {
+//         // Always show remarks prompt for any status change
+//         frappe.prompt([
+//             {
+//                 fieldname: 'remarks_input',
+//                 label: `Enter Remarks`,
+//                 fieldtype: 'Data',
+//                 reqd: 1
+//             }
+//         ], (values) => {
+//             // Set remarks and status
+//             frm.set_value(remarks_field, values.remarks_input);
+//             frm.set_value(status_field, new_status);
+//             // console.log(values.remarks_input)
+//             // console.log("hello")
+//             // console.log(status_field==='purchase_head_status')
+//             // console.log(new_status==='Approved')
+//             // if(status_field==='purchase_head_status' && new_status==='Approved'){
+//             //     frm.set_value('status','Approved')
+//             // }
+            
+//             frm.save().then(() => {
+//                 // Send email only for Approved/Rejected
+//                 if (["Approved", "Rejected"].includes(new_status)) {
+//                     send_email(frm.doc.name, email_template);
+//                 }
+//                 resolve();
+//             });
+//         }, 'Remarks Required', 'Submit');
+//     });
+// }
 
+// // Unified status update function
+// function updateStatus(frm) {
+//     frm.clear_custom_buttons();
+    
+//     frappe.call({
+//         method: "alms_app.crms.doctype.car_indent_form.car_indent_form.management",
+//         args: { current_frappe_user: frappe.session.user },
+//         callback: function(r) {
+//             const userData = r.message;
+//             if (!userData) return;
+
+//             const allowedDesignations = ["Purchase", "Purchase Head"];
+//             if (!allowedDesignations.includes(userData)) return;
+
+//             const buttons = [
+//                 {
+//                     label: "Purchase Team",
+//                     status_field: "purchase_team_status",
+//                     remarks_field: "purchase_team_remarks",
+//                     designation_match: "Purchase",
+//                     email_template: "PurchaseTeam To PurchaseHead"
+//                 },
+//                 {
+//                     label: "Purchase Head",
+//                     status_field: "purchase_head_status",
+//                     remarks_field: "purchase_head_remarks",
+//                     designation_match: "Purchase Head",
+//                     email_template: "PurchaseHead To FinanceTeam"
+//                 }
+//             ];
+
+//             buttons.forEach(button => {
+//                 const current_status = frm.doc[button.status_field] || "Pending";
+//                 const status_color = {
+//                     "Approved": "darkgreen",
+//                     "Rejected": "darkred",
+//                     "Pending": "gray"
+//                 }[current_status];
+
+//                 const btn = frm.add_custom_button(
+//                     `${button.label}: ${current_status}`,
+//                     async () => {
+//                         if (current_status === "Pending" && userData === button.designation_match) {
+//                             // Enforce sequential approval
+//                             if (button.status_field === 'purchase_head_status' && 
+//                                 frm.doc.purchase_team_status !== "Approved") {
+//                                 frappe.msgprint("Purchase Team must approve first.");
+//                                 return;
+//                             }
+
+//                             await handleStatusUpdate(
+//                                 frm, 
+//                                 button.status_field, 
+//                                 button.remarks_field, 
+//                                 button.email_template,
+//                                 "Approved" // Button always approves
+//                             );
+                            
+//                             updateStatus(frm); // Refresh buttons
+//                         }
+//                     }
+//                 );
+
+//                 // Button styling
+//                 btn.css({
+//                     "background-color": status_color,
+//                     "color": "white",
+//                     "border-color": status_color,
+//                     "cursor": (current_status === "Pending" && userData === button.designation_match) 
+//                         ? "pointer" : "not-allowed"
+//                 });
+
+//                 if (!(current_status === "Pending" && userData === button.designation_match)) {
+//                     btn.off("click");
+//                 }
+//             });
+//         }
+//     });
+// }
+
+
+// latest
+// function updateStatus(frm) {
+//     frm.clear_custom_buttons();
+    
+//     frappe.call({
+//         method: "alms_app.crms.doctype.car_indent_form.car_indent_form.management",
+//         args: { current_frappe_user: frappe.session.user },
+//         callback: function(r) {
+//             const userData = r.message;
+//             if (!userData) return;
+
+//             const allowedDesignations = ["Purchase", "Purchase Head"];
+//             if (!allowedDesignations.includes(userData)) return;
+
+//             const buttons = [
+//                 {
+//                     label: "Purchase Team",
+//                     status_field: "purchase_team_status",
+//                     remarks_field: "purchase_team_remarks",
+//                     designation_match: "Purchase",
+//                     email_template: "PurchaseTeam To PurchaseHead"
+//                 },
+//                 {
+//                     label: "Purchase Head",
+//                     status_field: "purchase_head_status",
+//                     remarks_field: "purchase_head_remarks",
+//                     designation_match: "Purchase Head",
+//                     email_template: "PurchaseHead To FinanceTeam"
+//                 }
+//             ];
+
+//             buttons.forEach(button => {
+//                 const current_status = frm.doc[button.status_field] || "Pending";
+//                 const status_color = {
+//                     "Approved": "darkgreen",
+//                     "Rejected": "darkred",
+//                     "Pending": "gray"
+//                 }[current_status];
+
+//                 const btn = frm.add_custom_button(
+//                     `${button.label}: ${current_status}`,
+//                     () => {} // Empty handler, we'll attach the real one below
+//                 );
+
+//                 // Only make the button clickable if it's Pending and matches user's designation
+//                 if (current_status === "Pending" && userData === button.designation_match) {
+//                     btn.on("click", async () => {
+//                         // Enforce sequential approval
+//                         if (button.status_field === 'purchase_head_status' && 
+//                             frm.doc.purchase_team_status !== "Approved") {
+//                             frappe.msgprint("Purchase Team must approve first.");
+//                             return;
+//                         }
+
+//                         // Mark that this is coming from a button click
+//                         frm.doc.__from_button_click = true;
+//                         console.log(frm.doc.__from_button_click)  ///
+//                         await handleStatusUpdate(
+//                             frm, 
+//                             button.status_field, 
+//                             button.remarks_field, 
+//                             button.email_template,
+//                             "Approved" // Button always approves
+//                         );
+                        
+//                         updateStatus(frm); // Refresh buttons
+//                     });
+//                 }
+
+//                 // Button styling
+//                 btn.css({
+//                     "background-color": status_color,
+//                     "color": "white",
+//                     "border-color": status_color,
+//                     "cursor": (current_status === "Pending" && userData === button.designation_match) 
+//                         ? "pointer" : "not-allowed"
+//                 });
+
+//                 // Disable hover effects for non-clickable buttons
+//                 if (!(current_status === "Pending" && userData === button.designation_match)) {
+//                     btn.off("click");
+//                 }
+//             });
+//         }
+//     });
+// }
+
+//decent working
+
+let by_button=false
 function updateStatus(frm) {
+    frm.clear_custom_buttons();
     frappe.call({
         method: "alms_app.crms.doctype.car_indent_form.car_indent_form.management",
         args: {
@@ -21,12 +226,18 @@ function updateStatus(frm) {
                     {
                         label: "Purchase Team",
                         field: "status",
-                        current_status: frm.doc.purchase_team_status
+                        current_status: frm.doc.purchase_team_status,
+                        //added here
+                        designation_match:"Purchase",
+                        btn_field:"purchase_team_status"
                     },
                     {
                         label: "Purchase Head",
                         field: "status",
-                        current_status: frm.doc.purchase_head_status
+                        current_status: frm.doc.purchase_head_status,
+                        //added here
+                        designation_match:"Purchase Head",
+                        btn_field:"purchase_head_status"
                     },
                 ];
 
@@ -45,12 +256,74 @@ function updateStatus(frm) {
                             status_color = "gray";
                     }
 
-                    frm.add_custom_button(`${button.label}: ${status}`, null).css({
+                    const btn = frm.add_custom_button(`${button.label}: ${status}`, () => {
+                        if (status === "Pending" && userData === button.designation_match) {
+                            console.log("here")
+                            // Enforce sequential approval
+                            if (button.btn_field !== 'purchase_team_status' && frm.doc.purchase_team_status !== "Approved") {
+                                frappe.msgprint("Purchase Team must approve before further approvals.");
+                                return;
+                            }
+
+                            // Prompt for remarks
+                            frappe.prompt([
+                                {
+                                    fieldname: 'remarks_input',
+                                    label: `Enter ${button.label} Remarks`,
+                                    fieldtype: 'Data',
+                                    reqd: 1
+                                }
+                            ],
+                            function (values) {
+                                // Set remarks
+                                if (button.btn_field === "purchase_team_status") {
+                                    frm.set_value('purchase_team_remarks', values.remarks_input);
+                                }
+                                if (button.btn_field === "purchase_head_status") {
+                                    frm.set_value('purchase_head_remarks', values.remarks_input);
+                                }
+
+                                frm.set_value(button.btn_field, 'Approved');
+                                frm.refresh_field(button.btn_field);
+
+                                frm.save().then(() => {
+                                    // Trigger next-step email
+                                    //email check kara tha
+                                    if (button.btn_field === "purchase_team_status") {
+                                        send_email(frm.doc.name, "PurchaseTeam To PurchaseHead")
+                                    }
+                                    if (button.btn_field=== "purchase_head_status") {
+                                        send_email(frm.doc.name, "PurchaseHead To FinanceTeam")
+                                        
+                                    }
+
+                                    updateStatus(frm); // refresh buttons
+                                });
+                            },
+                            'Remarks Required',
+                            'Submit');
+                        }
+                        by_button=true;
+
+                    });
+                    // Button styling
+                    btn.css({
                         "background-color": status_color,
                         "color": "white",
                         "border-color": status_color,
-                        "cursor": "not-allowed"
+                        "cursor": (status === "Pending" && userData === button.designation_match) ? "pointer" : "not-allowed"
                     });
+
+                    // Disable button click if not allowed
+                    if (!(status === "Pending" && userData === button.designation_match)) {
+                        btn.off("click");
+                    }
+                    // frm.add_custom_button(`${button.label}: ${status}`, null).css({
+                    //     "background-color": status_color,
+                    //     "color": "white",
+                    //     "border-color": status_color,
+                    //     "cursor": "not-allowed"
+                    // });
                 });
             }
         }
@@ -304,8 +577,15 @@ frappe.ui.form.on("Purchase Team Form", {
         // addButtonForAppovel(frm);
     },
 
-
+    //old
     purchase_head_status: function (frm) {
+        if(by_button===true){
+            frm.set_value("status", "Approved");
+           
+            by_button=false;
+            frm.save_or_update();
+            return;
+        }
         if (frm.doc.purchase_head_status != "Pending") {
             frappe.prompt([
                 {
@@ -317,11 +597,22 @@ frappe.ui.form.on("Purchase Team Form", {
             ],
                 function (values) {
                     frm.set_value('purchase_head_remarks', values.remarks_input);
+                    console.log("purchase status:",frm.doc.purchase_head_status)
                     frm.refresh_field('purchase_head_remarks');
                     frm.save().then(() => {
-                        frm.set_value("status", "Approved");
+                        if(frm.doc.purchase_head_status==="Approved"){
+                            frm.set_value("status", "Approved");
+                        }
+                        else if(frm.doc.purchase_head_status==="Rejected"){
+                            frm.set_value("status", "Rejected");
+                        }
+                        // frm.set_value("status", "Approved");
                         frm.save_or_update();
-                        send_email(frm.doc.name, "PurchaseHead To FinanceTeam")
+                        if(frm.doc.purchase_head_status==="Approved"){
+                            send_email(frm.doc.name, "PurchaseHead To FinanceTeam")
+                        }
+                        
+
                     });
 
                 },
@@ -330,13 +621,38 @@ frappe.ui.form.on("Purchase Team Form", {
             );
 
         } else {
+            frappe.prompt([
+                {
+                    fieldname: 'remarks_input',
+                    label: 'Enter Remarks',
+                    fieldtype: 'Data',
+                    reqd: 1
+                }
+            ],
+                function (values) {
+                    frm.set_value('purchase_head_remarks', values.remarks_input);
+                    frm.refresh_field('purchase_head_remarks');
+                    frm.set_value("status", "Pending");
+                    frm.save().then(() => {
+                        frm.save_or_update();
+                    });
+
+                },
+                'Remarks Required',
+                'Submit'
+            );
             frm.save_or_update();
         }
     },
 
 
     purchase_team_status: function (frm) {
-        if (frm.doc.purchase_team_status != "Pending") {
+        if(by_button===true){
+            by_button=false;
+
+            return;
+        }
+        if (frm.doc.purchase_team_status && frm.doc.purchase_team_status !== "Pending") {
             frappe.prompt([
                 {
                     fieldname: 'remarks_input',
@@ -349,7 +665,12 @@ frappe.ui.form.on("Purchase Team Form", {
                     frm.set_value('purchase_team_remarks', values.remarks_input);
                     frm.refresh_field('purchase_team_remarks');
                     frm.save().then(() => {
-                        send_email(frm.doc.name, "PurchaseTeam To PurchaseHead")
+                        if(frm.doc.purchase_team_status==="Approved"){
+                            send_email(frm.doc.name, "PurchaseTeam To PurchaseHead")
+                        }
+                        else{
+                            console.log("rejected")
+                        }
                     });
                 },
                 'Remarks Required',
@@ -357,12 +678,74 @@ frappe.ui.form.on("Purchase Team Form", {
             );
 
         } else {
+            frappe.prompt([
+                {
+                    fieldname: 'remarks_input',
+                    label: 'Enter Remarks',
+                    fieldtype: 'Data',
+                    reqd: 1
+                }
+            ],
+                function (values) {
+                    frm.set_value('purchase_team_remarks', values.remarks_input);
+                    frm.refresh_field('purchase_team_remarks');
+                    frm.save().then(() => {
+                        frm.save_or_update();
+                    });
+
+                },
+                'Remarks Required',
+                'Submit'
+            );
             frm.save_or_update();
         }
     },
 
+    // purchase_head_status: function(frm, cdt, cdn) {
+    //     const doc = frappe.get_doc(cdt, cdn);
+    //     // Skip if this is coming from a button click (handled by the button)
+    //     if (doc.__from_button_click) {
+    //         delete doc.__from_button_click;
+    //         return;
+    //     }
+        
+    //     // Only handle if the value actually changed
+    //     if (doc.__unsaved || doc.purchase_head_status !== doc.__last_purchase_head_status) {
+    //         handleStatusUpdate(
+    //             frm, 
+    //             "purchase_head_status", 
+    //             "purchase_head_remarks", 
+    //             "PurchaseHead To FinanceTeam",
+    //             doc.purchase_head_status
+    //         ).then(() => {
+    //             updateStatus(frm);
+    //             doc.__last_purchase_head_status = doc.purchase_head_status;
+    //         });
+    //     }
+    // },
 
-
+    // purchase_team_status: function(frm, cdt, cdn) {
+    //     const doc = frappe.get_doc(cdt, cdn);
+    //     // Skip if this is coming from a button click (handled by the button)
+    //     if (doc.__from_button_click) {
+    //         delete doc.__from_button_click;
+    //         return;
+    //     }
+        
+    //     // Only handle if the value actually changed
+    //     if (doc.__unsaved && doc.purchase_team_status !== doc.__last_purchase_team_status) {
+    //         handleStatusUpdate(
+    //             frm, 
+    //             "purchase_team_status", 
+    //             "purchase_team_remarks", 
+    //             "PurchaseTeam To PurchaseHead",
+    //             doc.purchase_team_status
+    //         ).then(() => {
+    //             updateStatus(frm);
+    //             doc.__last_purchase_team_status = doc.purchase_team_status;
+    //         });
+    //     }
+    // },
     revised_ex_show_room_price: function (frm) {
         calculate_totals(frm);
     },

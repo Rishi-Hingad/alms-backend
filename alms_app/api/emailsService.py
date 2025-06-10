@@ -53,7 +53,7 @@ def email_sender(name, email_send_to=None,payload=None):
                 EMail.for_selected_compny_process(quotation_id=payload.get("quotation_id"))
             else:
                 frappe.msgprint("Something Wrong!, Try Again")
-            EMail.acknowledgement_email(user,"Finance Department","Final Approvel")
+            EMail.acknowledgement_email(user,"Finance Department","Final Approval")  #change to congratualate mail,  finance head to employee
             
         elif email_send_to in ["Easy Assets","ALD","XYZ"]:
             EMail.for_finance_fill_quotation_acknowledgement(user,email_send_to)

@@ -278,6 +278,110 @@ class EmailServices:
         </html>
         """
         return body
+    
+    def create_email_body_quot(self,
+                                form,
+                                revised_form, 
+                                quot_form, 
+                                user,
+                                subject, 
+                                content,
+                                updated_by,
+                                remarks_by, 
+                                regards=None, 
+                                link=f"{frappe.utils.get_url()}/login#login"):
+        user_eligibility = user.eligibility
+        remark_text = getattr(quot_form, remarks_by, None)
+        print("+++++++++++++++++++++++++remark text found")
+        # changed here, eligibility
+        body = f"""
+        <html>
+        <head>
+            <style>
+                body {{ font-family: Arial, sans-serif; margin: 20px; }}
+                h2 {{ color: #4CAF50; }}
+                p {{ font-size: 16px; }}
+                .button {{
+                    background-color: #4CAF50;
+                    color: white;
+                    padding: 10px 20px;
+                    text-align: center;
+                    text-decoration: none;
+                    display: inline-block;
+                    font-size: 16px;
+                    border-radius: 5px;
+                    margin-top: 20px;
+                }}
+               
+            </style>
+        </head>
+        <body>
+            <h2>{subject}</h2>
+            <p>{content}</p>     
+            <table border="1" cellpadding="5" cellspacing="0">
+           
+            <tbody>
+                <tr>
+                    <td>Company Name</td>
+                    <td>{user.company}</td>
+                </tr>
+                <tr>
+                    <td>Requestor Name</td>
+                    <td>{user.employee_name}</td>
+                </tr>
+                <tr>
+                    <td>Designation</td>
+                    <td>{user.designation}</td>
+                    
+                </tr>
+                <tr>
+                    <td>Vehicle Make & Model</td>
+                    <td>{form.make} - {form.model}</td>
+                </tr>
+                <tr>
+                    <td>Eligibility</td>
+                    <td>{user.eligibility}</td>
+                </tr>
+                <tr>
+                    <td>Net Ex-Showroom Price</td>
+                    <td>{form.net_ex_showroom_price}</td>
+                </tr>
+                <tr>
+                    <td>Revised Financed Amount</td>
+                    <td>{revised_form.revised_financed_amount}</td>
+                </tr>
+                <tr>
+                    <td>EMI (Financing)</td>
+                    <td>{quot_form.emi_financing}</td>
+                </tr>
+                <tr>
+                    <td>EMI (Financing)</td>
+                    <td>{quot_form.total_emi}</td>
+                </tr>
+                
+                <tr>
+                    <td>Remarks</td>
+                    <td>{remark_text}</td>
+                </tr>
+                
+                <tr>
+                    <td>Updated by</td>
+                    <td>{updated_by}</td>
+                </tr>
+                
+            </tbody>
+        </table>
+        
+            <p>
+                <a href={link} class="button"> Login Here </a>
+            </p>        
+                
+            <p>Best regards,</p>
+            <p>{regards}</p>
+        </body>
+        </html>
+        """
+        return body
      
     def create_email_body_for_emp(self,user):
         body = f"""
@@ -502,31 +606,46 @@ class EmailServices:
         self.send(subject=subject, body=body, recipient_email=recipient_email)
 
     def for_finance_team_to_finance_head(self, user):
+        # print("FInacne Team to Finance Head",user.employee_details)
+
         recipient_email = emailMaster.finance_head_email
+        print("Finance head email---->",recipient_email)
         recipient_email2 = emailMaster.finance_head2_email
+        print("Finance head 2 email---->",recipient_email2)
+
         subject = "Car Rental Form Approved by Finance Team"
         regards ="Finance Team"
         form = frappe.get_doc("Car Indent Form",user.name)
+        print("form done++++++++++++++++++++++++++++++++++")
         revised_form = frappe.get_doc("Purchase Team Form",user.name)
+        print("purchase form done +++++++++++++++++++++++++++++++++++++++++")
+        quot_form=frappe.get_last_doc(doctype="Car Quotation",filters={"employee_details": user.name})
+
+        print("quot form done +++++++++++++++++++++++++++++++++++++++++", quot_form)
         updated_by = emailMaster.finance_team
-        remarks_by="purchase_head_remarks" #to change here
+        remarks_by="finance_team_remarks" #to change here  // finance team remarks // need another form car quotation // to add new fields in email body
         content = f"""
         Dear Sir/Madam,
         <br><br>The Finance Team has approved the car rental form for {user.employee_name}.
         <br>{updated_by} have approved the request for the activity mentioned below:
         """
-        body = self.create_email_body_revised(form,revised_form,user,subject, content,updated_by,remarks_by,regards) 
+        body = self.create_email_body_quot(form,revised_form,quot_form,user,subject, content,updated_by,remarks_by,regards) 
+        # print(body)
         self.send(subject=subject, body=body, recipient_email=recipient_email)
         self.send(subject=subject, body=body, recipient_email=recipient_email2)
 
 
     def for_finance_head_to_accounts_team(self, user):
         recipient_email = emailMaster.accounts_team_email
+        print(user)
         subject = "Car Rental Form Final Approval"
         regards = "Finance Head"
         updated_by = emailMaster.finance_head
-        remarks_by="hr_head_remarks" #to change/check here
+         #to change/check here  finance head remarks  new form needed- car quotation form // add new fields in email body // must create new function for email body
         form = frappe.get_doc("Car Indent Form",user.name)
+        revised_form = frappe.get_doc("Purchase Team Form",user.name)
+        quot_form=frappe.get_last_doc(doctype="Car Quotation",filters={"employee_details": user.name})
+        remarks_by="finance_head_remarks"
         content = f"""
         Dear Sir/Madam,
         <br><br>
@@ -535,7 +654,8 @@ class EmailServices:
         <br>
         {updated_by} have approved the request for the activity mentioned below:
         """
-        body = self.create_email_body(form,user,subject, content,updated_by,remarks_by,regards)
+        body = self.create_email_body_quot(form,revised_form,quot_form,user,subject, content,updated_by,remarks_by,regards) 
+        # body = self.create_email_body_revised(form,revised_form,user,subject, content,updated_by,remarks_by,regards)
         self.send(subject=subject, body=body, recipient_email=recipient_email)
                
     def for_finance_fill_quotation_acknowledgement(self, user,regards=""):

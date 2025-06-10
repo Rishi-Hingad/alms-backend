@@ -2,7 +2,7 @@
  "actions": [],
  "allow_import": 1,
  "allow_rename": 1,
- "autoname": "format:{employee_code}",
+ "autoname": "format:{employee_code}-{form_type}",
  "creation": "2024-09-21 16:06:06.381987",
  "doctype": "DocType",
  "engine": "InnoDB",
@@ -275,7 +275,7 @@
    "link_fieldname": "employee_name"
   }
  ],
- "modified": "2025-05-29 09:50:27.147113",
+ "modified": "2025-06-09 22:08:30.331876",
  "modified_by": "Administrator",
  "module": "CRMS",
  "name": "Car Indent Form",
@@ -295,6 +295,7 @@
    "write": 1
   }
  ],
+ "row_format": "Dynamic",
  "sort_field": "modified",
  "sort_order": "DESC",
  "states": [
