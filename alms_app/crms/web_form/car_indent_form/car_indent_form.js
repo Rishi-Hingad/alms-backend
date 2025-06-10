@@ -166,47 +166,48 @@ frappe.ready(function () {
                 }
             });
             return false;
-        }
+        }else{
     
-        return new Promise((resolve, reject) => {
-            if (formType === "Car") {
-                frappe.call({
-                    method: "alms_app.crms.web_form.car_indent_form.car_indent_form.check_indent_exists",
-                    args: { employee_code: employeeCode },
-                    callback: function (response) {
-                        if (response.message === "redirect") {
-                            console.log("Indent exists, redirecting...");
-                            setTimeout(() => {
-                                window.location.href = "/already-present";
-                            }, 1000);
-                            reject("Indent exists");
-                        } else {
-                            console.log("Indent does not exist, sending email...");
-                            frappe.call({
-                                method: "alms_app.crms.web_form.car_indent_form.car_indent_form.send_email_to_reporting_head",
-                                args: { employee_code: employeeCode },
-                                callback: function () {
-                                    console.log("Email sent, resolving form submission...");
-                                    resolve();
-                                },
-                                error: function (error) {
-                                    console.error("Error sending email:", error);
-                                    frappe.msgprint("Something went wrong while sending the email.");
-                                    reject(error);
-                                }
-                            });
+            return new Promise((resolve, reject) => {
+                if (formType === "Car") {
+                    frappe.call({
+                        method: "alms_app.crms.web_form.car_indent_form.car_indent_form.check_indent_exists",
+                        args: { employee_code: employeeCode },
+                        callback: function (response) {
+                            if (response.message === "redirect") {
+                                console.log("Indent exists, redirecting...");
+                                setTimeout(() => {
+                                    window.location.href = "/already-present";
+                                }, 1000);
+                                reject("Indent exists");
+                            } else {
+                                console.log("Indent does not exist, sending email...");
+                                frappe.call({
+                                    method: "alms_app.crms.web_form.car_indent_form.car_indent_form.send_email_to_reporting_head",
+                                    args: { employee_code: employeeCode },
+                                    callback: function () {
+                                        console.log("Email sent, resolving form submission...");
+                                        resolve();
+                                    },
+                                    error: function (error) {
+                                        console.error("Error sending email:", error);
+                                        frappe.msgprint("Something went wrong while sending the email.");
+                                        reject(error);
+                                    }
+                                });
+                            }
+                        },
+                        error: function (error) {
+                            console.error("Error checking indent existence:", error);
+                            reject(error);
                         }
-                    },
-                    error: function (error) {
-                        console.error("Error checking indent existence:", error);
-                        reject(error);
-                    }
-                });
-            } else {
-                frappe.msgprint("Invalid form type selected.");
-                reject("Invalid form type");
-            }
-        });
+                    });
+                } else {
+                    frappe.msgprint("Invalid form type selected.");
+                    reject("Invalid form type");
+                }
+            });
+        }
     };
     
 });
