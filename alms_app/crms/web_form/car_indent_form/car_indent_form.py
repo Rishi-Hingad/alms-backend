@@ -89,22 +89,14 @@ def send_allowance_email(employee_code):
         message = f"Dear {hr_name},<br><br> {employee.employee_name} has requested for <strong>Car Allowance</strong> instead of Company Vehicle. Please reach out to the employee to share the process to get the car on allowance.<br><br>Thanks & Regards,<br>CRMS<br><br><strong>Note:</strong> This is an auto-generated email. Please do not reply to this email.<br><br>"
         # print("------------[EMAIL MESSAGE]------------------:",email_to,email_cc,hr_email)
         frappe.sendmail(
-            recipients=[hr_email],
+            recipients=hr_email,
             subject=subject,
             message=message,
-            bcc=["rishi.hingad@merillife.com",email_to],
-            cc=[email_cc]
+            bcc="rishi.hingad@merillife.com",
+            cc=email_cc
         )
         return {"status": "success", "message": f"Email sent successfully to {email_to}."}
 
     except Exception as e:
         frappe.log_error(f"Error in send_allowance_email: {str(e)}")
         return {"status": "failed", "message": str(e)}
-
-
-
-
-
-
-
-# test comment
