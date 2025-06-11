@@ -57,8 +57,21 @@ def email_sender(name, email_send_to=None,payload=None):
             
         elif email_send_to in ["Easy Assets","ALD","XYZ"]:
             EMail.for_finance_fill_quotation_acknowledgement(user,email_send_to)
-            
-            
+            # negative track starts here
+         
+         #rejection
+        elif email_send_to=="Reject Reporting to Employee":
+            EMail.for_reject_by_reporting(user)
+        
+        elif email_send_to=="Reject HRTeam to Employee":
+            EMail.for_reject_by_hr_team(user)
+        
+        elif email_send_to=="Reject TravelDesk to Employee":
+            EMail.for_reject_by_travel_desk(user)
+        
+        elif email_send_to=="Reject HRHead to Employee":
+            EMail.for_reject_by_hr_head(user)
+           
         return {"status": "success", "message": f"Email sent"}
     except Exception as e:
         # print(f"------------[Error:{e}]---------------")
