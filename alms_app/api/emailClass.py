@@ -516,7 +516,7 @@ class EmailServices:
         <head>
             <style>
                 body {{ font-family: Arial, sans-serif; margin: 20px; }}
-                h2 {{ color: #4CAF50; }}
+                h2 {{ color: red; }}
                 p {{ font-size: 16px; }}
                 .button {{
                     background-color: #4CAF50;
@@ -788,6 +788,18 @@ class EmailServices:
         body = self.create_reject_email_body(form,subject,content,remarks_by)
         self.send_reject(subject,recipient_email,cc_list,body)
 
+    def for_reject_by_purchase_head(self,user):
+        recipient_email=emailMaster.purchase_team_email
+        subject="Purchase Form Rejected by Purchase Head"
+        remarks_by="purchase_head_remarks"
+        content = f"""
+        Dear Sir/Madam,
+        <br><br>
+        This is to notify the Purchase Team that the car rental form of {user.employee_name} submitted by you has been rejected by the Purchase Head for the following remarks:<br>
+        """
+        form = frappe.get_doc("Purchase Team Form",user.name)
+        body = self.create_reject_email_body(form,subject,content,remarks_by)
+        self.send(subject,recipient_email,body)
 
            
     def for_finance_fill_quotation_acknowledgement(self, user,regards=""):
@@ -1151,3 +1163,39 @@ class EmailServices:
         # print("Vendor form ", vendor)
         # print("Vendor form cotact details ", vendor.contact_email)
         self.send(subject=subject, body=body, recipient_email=vendor.contact_email)
+
+
+    # rejection for car quotation
+    def for_reject_finance_head_to_vendor(self,quotation_id):
+        car_quot_form = frappe.get_doc("Car Quotation",quotation_id)  #ismei se milega finance company
+        vendor =frappe.get_doc("Vendor Master",car_quot_form.finance_company) #this is vendor details recipient humara
+        user = frappe.get_doc("Employee Master",car_quot_form.employee_details)  #yaha se milega employee, jiska sirf naam chahiye
+        recipient_email=vendor.contact_email
+        subject="Car Quotation Rejected by Finance Head"
+        remarks_by="finance_head_remarks"
+        cc_list=[emailMaster.finance_head2_email, emailMaster.finance_team_email]
+
+        content = f"""
+        Dear {vendor.company_name},
+        <br><br>
+        This is to notify you that the Car Quotation Form of {user.employee_name} is rejected by the Finance Head for the following reasons:<br>
+        """
+        body = self.create_reject_email_body(car_quot_form,subject,content,remarks_by)  
+        self.send_reject(subject,recipient_email,cc_list,body)  
+
+    def for_reject_finance_team_to_vendor(self,quotation_id):
+        car_quot_form = frappe.get_doc("Car Quotation",quotation_id)  #ismei se milega finance company
+        vendor =frappe.get_doc("Vendor Master",car_quot_form.finance_company) #this is vendor details recipient humara
+        user = frappe.get_doc("Employee Master",car_quot_form.employee_details)  #yaha se milega employee, jiska sirf naam chahiye
+        recipient_email=vendor.contact_email
+        subject="Car Quotation Rejected by Finance Team"
+        remarks_by="finance_team_remarks"
+        cc_list=[emailMaster.finance_head2_email, emailMaster.finance_head_email]
+
+        content = f"""
+        Dear {vendor.company_name},
+        <br><br>
+        This is to notify you that the Car Quotation Form of {user.employee_name} is rejected by the Finance Team for the following reasons:<br>
+        """
+        body = self.create_reject_email_body(car_quot_form,subject,content,remarks_by)  
+        self.send_reject(subject,recipient_email,cc_list,body)  
