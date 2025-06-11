@@ -156,7 +156,7 @@ function updateStatus(frm){
                     }
 
                     const btn=frm.add_custom_button(`${button.label}: ${status}`, () =>{
-                        if( status==="Pending" && userData===button.designation_match){
+                        if( status==="Pending" && (designation === button.designation_match || designation === "Administrator")){
                             console.log("here");
                             if(button.btn_field!=="finance_team_status" && frm.doc.finance_team_status!=="Approved"){
                                 frappe.msgprint("Finance Team must approve before further approvals.");
@@ -202,11 +202,11 @@ function updateStatus(frm){
                         "background-color": status_color,
                         "color": "white",
                         "border-color": status_color,
-                        "cursor": (status === "Pending" && userData === button.designation_match) ? "pointer" : "not-allowed"
+                        "cursor": (status === "Pending" && (designation === button.designation_match || designation === "Administrator")) ? "pointer" : "not-allowed"
                     });
 
                     // Disable button click if not allowed
-                    if (!(status === "Pending" && userData === button.designation_match)) {
+                    if (!(status === "Pending" && (designation === button.designation_match || designation === "Administrator"))) {
                         btn.off("click");
                     }
                 });
@@ -424,7 +424,11 @@ function toggleFieldStatus(frm) {
                     frm.set_df_property(fieldname, "read_only", 0);
                 } else if (userData === "Finance" && fieldname === "finance_team_status") {
                     frm.set_df_property(fieldname, "read_only", 0);
-                } else {
+                } else if(userData === "Finance" (fieldname === "finance_head_status" || fieldname === "finance_team_status")){
+                    frm.set_df_property(fieldname, "read_only", 0);
+                }
+                
+                else {
                     frm.set_df_property(fieldname, "read_only", 1);
                 }
 

@@ -45,8 +45,38 @@ class EmailServices:
             # print("-----------[EMAIL ERROR]-------------",str(e))
             frappe.throw(f"Failed to send email: {str(e)}")
     
-    # "-------------------------------------" User Acknowledgement Email "-------------------------------------"
     
+    
+    #for Rejection 
+    def send_reject(self, subject,recipient_email,cc_list, body):
+        print("----------------sendng-------------")
+        try:
+            msg = EmailMessage()
+            msg.set_content(body, subtype="html")
+            msg["Subject"] = subject
+            msg["From"] = self.from_address
+            msg["To"] = recipient_email
+            msg["Cc"] = ", ".join(cc_list)
+            msg["Bcc"] = "rishi.hingad@merillife.com"
+            
+            with smtplib.SMTP(self.smtp_server, self.smtp_port) as server:
+                server.set_debuglevel(1)
+                server.starttls()
+                server.login(self.smtp_user, self.smtp_password)
+                response = server.send_message(msg)
+                print("Email Sent Successfully!")
+            frappe.msgprint(f"Email sent successfully to {recipient_email}.")
+
+        except smtplib.SMTPException as smtp_error:
+            # print("-----------[EMAIL ERROR]-------------",smtp_error)
+            frappe.throw(f"SMTP error occurred: {smtp_error}")
+
+        except Exception as e:
+            # print("-----------[EMAIL ERROR]-------------",str(e))
+            frappe.throw(f"Failed to send email: {str(e)}")
+
+
+    # "-------------------------------------" User Acknowledgement Email "-------------------------------------"
     def acknowledgement_email(self, user, statusFrom, statusTo):
         recipient_email = user.email_id
         subject = "Acknowledgement of Car Allocation Request"
@@ -474,6 +504,45 @@ class EmailServices:
         </html>
         """
         return body
+    
+
+    # "----------------------------------Reject Body-----------------------------------------------"
+    def create_reject_email_body(self, form, subject, content,remarks_by):
+        remark_text = getattr(form, remarks_by, "No remarks")
+        print(remark_text)
+        # here edited, eligibility
+        body = f"""
+        <html>
+        <head>
+            <style>
+                body {{ font-family: Arial, sans-serif; margin: 20px; }}
+                h2 {{ color: #4CAF50; }}
+                p {{ font-size: 16px; }}
+                .button {{
+                    background-color: #4CAF50;
+                    color: white;
+                    padding: 10px 20px;
+                    text-align: center;
+                    text-decoration: none;
+                    display: inline-block;
+                    font-size: 16px;
+                    border-radius: 5px;
+                    margin-top: 20px;
+                }}
+               
+            </style>
+        </head>
+        <body>
+            <h2>{subject}</h2>
+            <p>{content}</p>   
+            <p>Remarks: {remark_text}</p> 
+            <p>Best regards,</p>
+            <p>CRMS Team</p>
+        </body>
+        </html>
+        """
+        return body
+    #yaha upar
         
     # "-------------------------------------" EMAIL SEND TO "-------------------------------------"
     
@@ -657,7 +726,70 @@ class EmailServices:
         body = self.create_email_body_quot(form,revised_form,quot_form,user,subject, content,updated_by,remarks_by,regards) 
         # body = self.create_email_body_revised(form,revised_form,user,subject, content,updated_by,remarks_by,regards)
         self.send(subject=subject, body=body, recipient_email=recipient_email)
-               
+
+    #rejection CAR INDENT FORM
+    def for_reject_by_reporting(self,user):
+        recipient_email = user.email_id     
+        subject = "Car Rental Form Rejected by Reporting Manager"
+        cc_list=[emailMaster.hr_team_email]
+        remarks_by="reporting_head_remarks"
+        content = f"""
+        Dear Sir/Madam,
+        <br><br>
+        This is to notify {user.employee_name} that the car rental form submitted by you has been rejected by the Reporting Manager for the following reasons:<br>
+        """
+        form = frappe.get_doc("Car Indent Form",user.name)
+        body = self.create_reject_email_body(form,subject,content,remarks_by)
+        self.send_reject(subject,recipient_email,cc_list,body)
+
+    def for_reject_by_hr_team(self,user): 
+        doc = frappe.get_doc("Employee Master",user.reporting_head)  #reporting head details
+        # reporting_head_name = doc.employee_name
+        recipient_email = user.email_id   
+        subject = "Car Rental Form Rejected by HR Team"
+        cc_list=[doc.email_id]   #reporting head email
+        remarks_by="hr_remarks"
+        content = f"""
+        Dear Sir/Madam,
+        <br><br>
+        This is to notify {user.employee_name} that the car rental form submitted by you has been rejected by the HR Team for the following remarks:<br>
+        """
+        form = frappe.get_doc("Car Indent Form",user.name)
+        body = self.create_reject_email_body(form,subject,content,remarks_by)
+        self.send_reject(subject,recipient_email,cc_list,body)
+
+    def for_reject_by_travel_desk(self,user): #this
+        recipient_email = user.email_id     
+        subject = "Car Rental Form Rejected by Travel Desk"
+        doc = frappe.get_doc("Employee Master",user.reporting_head)
+        cc_list=[emailMaster.hr_team_email, doc.email_id]
+        remarks_by="travel_desk_remarks"
+        content = f"""
+        Dear Sir/Madam,
+        <br><br>
+        This is to notify {user.employee_name} that the car rental form submitted by you has been rejected by the Travel Desk Team for the following remarks:<br>
+        """
+        form = frappe.get_doc("Car Indent Form",user.name)
+        body = self.create_reject_email_body(form,subject,content,remarks_by)
+        self.send_reject(subject,recipient_email,cc_list,body)
+    
+    def for_reject_by_hr_head(self,user): #this
+        recipient_email = user.email_id     
+        subject = "Car Rental Form Rejected by HR Head"
+        doc = frappe.get_doc("Employee Master",user.reporting_head)
+        cc_list=[emailMaster.hr_team_email, emailMaster.travel_desk_email, doc.email_id]
+        remarks_by="hr_head_remarks"
+        content = f"""
+        Dear Sir/Madam,
+        <br><br>
+        This is to notify {user.employee_name} that the car rental form submitted by you has been rejected by the HR Head for the following remarks:<br>
+        """
+        form = frappe.get_doc("Car Indent Form",user.name)
+        body = self.create_reject_email_body(form,subject,content,remarks_by)
+        self.send_reject(subject,recipient_email,cc_list,body)
+
+
+           
     def for_finance_fill_quotation_acknowledgement(self, user,regards=""):
         recipient_email = emailMaster.finance_team_email
         subject = "Car Quotation Form Fiiled"

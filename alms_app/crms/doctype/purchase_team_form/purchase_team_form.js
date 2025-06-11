@@ -257,7 +257,7 @@ function updateStatus(frm) {
                     }
 
                     const btn = frm.add_custom_button(`${button.label}: ${status}`, () => {
-                        if (status === "Pending" && userData === button.designation_match) {
+                        if (status === "Pending" && (userData === button.designation_match || userData==="Administrator")) {
                             console.log("here")
                             // Enforce sequential approval
                             if (button.btn_field !== 'purchase_team_status' && frm.doc.purchase_team_status !== "Approved") {
@@ -311,19 +311,13 @@ function updateStatus(frm) {
                         "background-color": status_color,
                         "color": "white",
                         "border-color": status_color,
-                        "cursor": (status === "Pending" && userData === button.designation_match) ? "pointer" : "not-allowed"
+                        "cursor": (status === "Pending" && (userData === button.designation_match || userData === "Administrator")) ? "pointer" : "not-allowed"
                     });
 
                     // Disable button click if not allowed
-                    if (!(status === "Pending" && userData === button.designation_match)) {
+                    if (!(status === "Pending" && (userData === button.designation_match || userData=== "Administrator"))) {
                         btn.off("click");
                     }
-                    // frm.add_custom_button(`${button.label}: ${status}`, null).css({
-                    //     "background-color": status_color,
-                    //     "color": "white",
-                    //     "border-color": status_color,
-                    //     "cursor": "not-allowed"
-                    // });
                 });
             }
         }
@@ -489,7 +483,7 @@ function toggleFieldStatus(frm) {
                 frm.set_df_property("purchase_head_remarks", "read_only", true);
                 frm.set_df_property("purchase_team_remarks", "read_only", true);
             }
-            else {
+            else if(designation === "Purchase Head"){
                 frm.set_df_property("status", "read_only", true);
                 frm.set_df_property("purchase_team_status", "read_only", true);
                 frm.set_df_property("kilometers_per_year", "read_only", true);
@@ -505,6 +499,40 @@ function toggleFieldStatus(frm) {
                 frm.set_df_property("status", "read_only", true);
                 frm.set_df_property("purchase_head_remarks", "read_only", true);
                 frm.set_df_property("purchase_team_remarks", "read_only", true);
+            }
+            else if(designation==="Administrator"){
+                frm.set_df_property("status", "read_only", true);
+                // frm.set_df_property("purchase_team_status", "read_only", true);
+                frm.set_df_property("kilometers_per_year", "read_only", true);
+                frm.set_df_property("tenure_in_years", "read_only", true);
+                frm.set_df_property("total_kilometers", "read_only", true);
+                frm.set_df_property("revised_ex_show_room_price", "read_only", true);
+                frm.set_df_property("revised_discount", "read_only", true);
+                frm.set_df_property("revised_tcs", "read_only", true);
+                frm.set_df_property("revised_net_ex_showroom_price", "read_only", true);
+                frm.set_df_property("revised_registration_charges", "read_only", true);
+                frm.set_df_property("revised_accessories", "read_only", true);
+                frm.set_df_property("revised_financed_amount", "read_only", true);
+                frm.set_df_property("status", "read_only", true);
+                frm.set_df_property("purchase_head_remarks", "read_only", true);
+                frm.set_df_property("purchase_team_remarks", "read_only", true);
+            }else{
+                frm.set_df_property("status", "read_only", true);
+                frm.set_df_property("purchase_team_status", "read_only", true);
+                frm.set_df_property("kilometers_per_year", "read_only", true);
+                frm.set_df_property("tenure_in_years", "read_only", true);
+                frm.set_df_property("total_kilometers", "read_only", true);
+                frm.set_df_property("revised_ex_show_room_price", "read_only", true);
+                frm.set_df_property("revised_discount", "read_only", true);
+                frm.set_df_property("revised_tcs", "read_only", true);
+                frm.set_df_property("revised_net_ex_showroom_price", "read_only", true);
+                frm.set_df_property("revised_registration_charges", "read_only", true);
+                frm.set_df_property("revised_accessories", "read_only", true);
+                frm.set_df_property("revised_financed_amount", "read_only", true);
+                frm.set_df_property("status", "read_only", true);
+                frm.set_df_property("purchase_head_remarks", "read_only", true);
+                frm.set_df_property("purchase_team_remarks", "read_only", true);
+                frm.set_df_property("purchase_head_status", "read_only", true);
             }
         }
     });
