@@ -15,8 +15,6 @@ class CarIndentForm(Document):
 
 @frappe.whitelist(allow_guest=True)
 def management(current_frappe_user):
-    # console.log(current_frappe_user)
-    # print("hello",current_frappe_user)
     designation_record = frappe.get_value("Management Team", {"email_id": current_frappe_user}, ["designation"], as_dict=True)
     
     if designation_record:

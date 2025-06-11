@@ -2,7 +2,7 @@
  "actions": [],
  "allow_import": 1,
  "allow_rename": 1,
- "autoname": "format:{employee_code}-{form_type}",
+ "autoname": "format:{employee_code}",
  "creation": "2024-09-21 16:06:06.381987",
  "doctype": "DocType",
  "engine": "InnoDB",
@@ -46,7 +46,8 @@
   "reporting_head_remarks",
   "travel_desk_remarks",
   "hr_remarks",
-  "hr_head_remarks"
+  "hr_head_remarks",
+  "default_currency"
  ],
  "fields": [
   {
@@ -266,6 +267,13 @@
   {
    "fieldname": "column_break_ejap",
    "fieldtype": "Column Break"
+  },
+  {
+   "default": "INR",
+   "fieldname": "default_currency",
+   "fieldtype": "Link",
+   "label": "Default Currency",
+   "options": "Currency"
   }
  ],
  "index_web_pages_for_search": 1,
@@ -275,7 +283,7 @@
    "link_fieldname": "employee_name"
   }
  ],
- "modified": "2025-06-09 22:08:30.331876",
+ "modified": "2025-06-11 11:55:16.642091",
  "modified_by": "Administrator",
  "module": "CRMS",
  "name": "Car Indent Form",
@@ -295,7 +303,6 @@
    "write": 1
   }
  ],
- "row_format": "Dynamic",
  "sort_field": "modified",
  "sort_order": "DESC",
  "states": [
