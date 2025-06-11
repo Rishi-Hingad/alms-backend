@@ -414,6 +414,7 @@ class EmailServices:
         return body
      
     def create_email_body_for_emp(self,user):
+        form_url = f"{frappe.utils.get_url()}/car-indent-form/new?employee_code={user.name}"
         body = f"""
         <html>
             <head>
@@ -456,8 +457,7 @@ class EmailServices:
                 <p>We are pleased to inform that you are eligible for Company vehicle.</p>
                 <p>Please click on below link and fill the necessary details.</p>
                 <p>
-                    <a href="{frappe.utils.get_url()}/car-indent-form/new?employee_code={user.name}" 
-                    class="button">
+                    <a href="{form_url}" class="button">
                     Fill Car Rental Service Form
                     </a>
                 </p>
@@ -548,7 +548,7 @@ class EmailServices:
     
     def for_hr_team_to_employee(self, user):
         recipient_email = user.email_id
-        # bcc_emails = "rishi.hingad@merillife.com"
+        bcc_emails = "rishi.hingad@merillife.com"
         subject = "You are Eligible for the Car Rental Service"
         body = self.create_email_body_for_emp(user)
         
