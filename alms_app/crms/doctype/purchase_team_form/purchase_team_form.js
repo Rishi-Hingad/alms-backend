@@ -434,6 +434,10 @@ frappe.ui.form.on("Purchase Team Form", {
                         if(frm.doc.purchase_head_status==="Approved"){
                             send_email(frm.doc.name, "PurchaseHead To FinanceTeam")
                         }
+                        else if(frm.doc.purchase_head_status==="Rejected"){
+                            // send email to Purchase Team
+                            send_email(frm.doc.name, "Reject PurchaseHead to PurchaseTeam")
+                        }
                         
 
                     });
@@ -491,7 +495,7 @@ frappe.ui.form.on("Purchase Team Form", {
                         if(frm.doc.purchase_team_status==="Approved"){
                             send_email(frm.doc.name, "PurchaseTeam To PurchaseHead")
                         }
-                        else{
+                        else{  
                             console.log("rejected")
                         }
                     });

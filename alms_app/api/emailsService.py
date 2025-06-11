@@ -71,7 +71,23 @@ def email_sender(name, email_send_to=None,payload=None):
         
         elif email_send_to=="Reject HRHead to Employee":
             EMail.for_reject_by_hr_head(user)
-           
+
+        elif email_send_to=="Reject PurchaseHead to PurchaseTeam":
+            EMail.for_reject_by_purchase_head(user)  
+
+        elif email_send_to== "Reject FinanceHead to Vendor":
+            if payload.get("quotation_id"):
+                EMail.for_reject_finance_head_to_vendor(quotation_id=payload.get("quotation_id"))
+            else:
+                frappe.msgprint("Something Wrong!, Try Again!!!")
+
+        elif email_send_to== "Reject FinanceTeam to Vendor":
+            if payload.get("quotation_id"):
+                EMail.for_reject_finance_team_to_vendor(quotation_id=payload.get("quotation_id"))
+            else:
+                frappe.msgprint("Something Wrong!, Try Again!!")
+
+
         return {"status": "success", "message": f"Email sent"}
     except Exception as e:
         # print(f"------------[Error:{e}]---------------")

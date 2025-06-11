@@ -156,7 +156,7 @@ function updateStatus(frm){
                     }
 
                     const btn=frm.add_custom_button(`${button.label}: ${status}`, () =>{
-                        if( status==="Pending" && (designation === button.designation_match || designation === "Administrator")){
+                        if( status==="Pending" && (userData === button.designation_match || userData === "Administrator")){
                             console.log("here");
                             if(button.btn_field!=="finance_team_status" && frm.doc.finance_team_status!=="Approved"){
                                 frappe.msgprint("Finance Team must approve before further approvals.");
@@ -202,11 +202,11 @@ function updateStatus(frm){
                         "background-color": status_color,
                         "color": "white",
                         "border-color": status_color,
-                        "cursor": (status === "Pending" && (designation === button.designation_match || designation === "Administrator")) ? "pointer" : "not-allowed"
+                        "cursor": (status === "Pending" && (userData === button.designation_match || userData === "Administrator")) ? "pointer" : "not-allowed"
                     });
 
                     // Disable button click if not allowed
-                    if (!(status === "Pending" && (designation === button.designation_match || designation === "Administrator"))) {
+                    if (!(status === "Pending" && (userData === button.designation_match || userData === "Administrator"))) {
                         btn.off("click");
                     }
                 });
@@ -424,7 +424,7 @@ function toggleFieldStatus(frm) {
                     frm.set_df_property(fieldname, "read_only", 0);
                 } else if (userData === "Finance" && fieldname === "finance_team_status") {
                     frm.set_df_property(fieldname, "read_only", 0);
-                } else if(userData === "Finance" (fieldname === "finance_head_status" || fieldname === "finance_team_status")){
+                } else if(userData === "Administrator" &&  (fieldname === "finance_head_status" || fieldname === "finance_team_status")){
                     frm.set_df_property(fieldname, "read_only", 0);
                 }
                 
@@ -447,7 +447,6 @@ frappe.ui.form.on('Car Quotation', {
         console.log("hello ha  bhai ++++++")
         toggleFieldStatus(frm);
         uploadfile(frm);
-
 
     },
     onload: function (frm) {
@@ -551,6 +550,12 @@ frappe.ui.form.on('Car Quotation', {
                     if(frm.doc.finance_head_status==="Approved"){
                         send_email(frm.doc.employee_details, "FinanceHead To AccountsTeam", { "quotation_id": frm.doc.name })
                     }
+                    else if(frm.doc.finance_head_status==="Rejected"){
+                        // yaha change here
+                        //mail to vendor (payload) cc finance team
+                        send_email(frm.doc.employee_details, "Reject FinanceHead to Vendor",{ "quotation_id": frm.doc.name})
+
+                    }
                 });
 
             },
@@ -606,8 +611,12 @@ frappe.ui.form.on('Car Quotation', {
                         if(frm.doc.finance_team_status==="Approved"){
                             send_email(frm.doc.employee_details, "FinanceTeam To FinanceHead")
                         }
-                        else{
+                        else if(frm.doc.finance_team_status==="Rejected"){
                             console.log("rejected")
+                            //cc finance head
+                            //send to vendor 
+                            send_email(frm.doc.employee_details, "Reject FinanceTeam to Vendor",{ "quotation_id": frm.doc.name})
+
                         }
                     });
                 },
