@@ -703,7 +703,6 @@ class EmailServices:
         self.send(subject=subject, body=body, recipient_email=recipient_email)
         self.send(subject=subject, body=body, recipient_email=recipient_email2)
 
-
     def for_finance_head_to_accounts_team(self, user):
         recipient_email = emailMaster.accounts_team_email
         print(user)
@@ -800,8 +799,7 @@ class EmailServices:
         form = frappe.get_doc("Purchase Team Form",user.name)
         body = self.create_reject_email_body(form,subject,content,remarks_by)
         self.send(subject,recipient_email,body)
-
-           
+       
     def for_finance_fill_quotation_acknowledgement(self, user,regards=""):
         recipient_email = emailMaster.finance_team_email
         subject = "Car Quotation Form Fiiled"
@@ -1151,19 +1149,12 @@ class EmailServices:
       
     def for_selected_compny_process(self,quotation_id):
         car_quot_form = frappe.get_doc("Car Quotation",quotation_id)  
-        # print("Car Quoation form ", car_quot_form)
         user = frappe.get_doc("Employee Master",car_quot_form.employee_details)  
-        # print("Employee Master form ", user)
-        # form_link = f"http://127.0.0.1:8001/car-purchase-form/new?quotation_form={quotation_id}&user={user.name}&company={car_quot_form.finance_company}"
         form_link = f"{frappe.utils.get_url()}/car-purchase-form/new?quotation_form={quotation_id}&user={user.name}&company={car_quot_form.finance_company}"
-        body = self.create_selected_company_process(car_quot_form,
-                                                    user,form_link)
+        body = self.create_selected_company_process(car_quot_form,user,form_link)
         subject = f"Car Onboard Process for {user.employee_name}"
         vendor =frappe.get_doc("Vendor Master",car_quot_form.finance_company)
-        # print("Vendor form ", vendor)
-        # print("Vendor form cotact details ", vendor.contact_email)
         self.send(subject=subject, body=body, recipient_email=vendor.contact_email)
-
 
     # rejection for car quotation
     def for_reject_finance_head_to_vendor(self,quotation_id):

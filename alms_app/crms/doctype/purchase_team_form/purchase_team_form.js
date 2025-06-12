@@ -1,7 +1,7 @@
 
 let by_button=false
 function updateStatus(frm) {
-    frm.clear_custom_buttons();
+    // frm.clear_custom_buttons();
     frappe.call({
         method: "alms_app.crms.doctype.car_indent_form.car_indent_form.management",
         args: {
@@ -17,7 +17,7 @@ function updateStatus(frm) {
             const allowedDesignations = ["Purchase", "Purchase Head", "Administrator"];
 
             if (allowedDesignations.includes(userData)) {
-                frm.clear_custom_buttons();
+                // frm.clear_custom_buttons();
 
                 const buttons = [
                     {
@@ -56,13 +56,10 @@ function updateStatus(frm) {
                     const btn = frm.add_custom_button(`${button.label}: ${status}`, () => {
                         if (status === "Pending" && (userData === button.designation_match || userData==="Administrator")) {
                             console.log("here")
-                            // Enforce sequential approval
                             if (button.btn_field !== 'purchase_team_status' && frm.doc.purchase_team_status !== "Approved") {
                                 frappe.msgprint("Purchase Team must approve before further approvals.");
                                 return;
                             }
-
-                            // Prompt for remarks
                             frappe.prompt([
                                 {
                                     fieldname: 'remarks_input',
@@ -72,7 +69,6 @@ function updateStatus(frm) {
                                 }
                             ],
                             function (values) {
-                                // Set remarks
                                 if (button.btn_field === "purchase_team_status") {
                                     frm.set_value('purchase_team_remarks', values.remarks_input);
                                 }
@@ -84,17 +80,13 @@ function updateStatus(frm) {
                                 frm.refresh_field(button.btn_field);
 
                                 frm.save().then(() => {
-                                    // Trigger next-step email
-                                    //email check kara tha
                                     if (button.btn_field === "purchase_team_status") {
                                         send_email(frm.doc.name, "PurchaseTeam To PurchaseHead")
                                     }
                                     if (button.btn_field=== "purchase_head_status") {
                                         send_email(frm.doc.name, "PurchaseHead To FinanceTeam")
-                                        
                                     }
-
-                                    updateStatus(frm); // refresh buttons
+                                    updateStatus(frm);
                                 });
                             },
                             'Remarks Required',
@@ -103,15 +95,12 @@ function updateStatus(frm) {
                         by_button=true;
 
                     });
-                    // Button styling
                     btn.css({
                         "background-color": status_color,
                         "color": "white",
                         "border-color": status_color,
                         "cursor": (status === "Pending" && (userData === button.designation_match || userData === "Administrator")) ? "pointer" : "not-allowed"
                     });
-
-                    // Disable button click if not allowed
                     if (!(status === "Pending" && (userData === button.designation_match || userData=== "Administrator"))) {
                         btn.off("click");
                     }
@@ -159,10 +148,8 @@ function updateQuotationSendRequest(frm) {
 
                 // ✅ If "ALL" is selected, use all companies
                 if (selected_companies.includes("ALL")) {
-                    selected_companies = companies;  // Select all companies dynamically
+                    selected_companies = companies;
                 }
-
-                // ✅ Debugging (Remove alert if not needed)
                 console.log("Selected Companies: ", selected_companies);
 
                 // ✅ Send email to all selected companies
@@ -172,7 +159,6 @@ function updateQuotationSendRequest(frm) {
                         console.log("Company Quotation", company)
                         send_email(frm.doc.name, "FinanceHead To Quotation Company", {
                             email_send_to: company
-                            // selected_companies.p
                         });
                         selected_companies = [];
                     });
@@ -180,7 +166,6 @@ function updateQuotationSendRequest(frm) {
                     frappe.msgprint("Please select at least one company.");
                 }
 
-                // ✅ Clear selected checkboxes after submission
                 document.querySelectorAll('#company-checkboxes input[type="checkbox"]').forEach(checkbox => {
                     checkbox.checked = false;
                 });
@@ -197,8 +182,6 @@ function updateQuotationSendRequest(frm) {
         "border-color": "green",
     });
 }
-
-
 
 function send_email(user, email_send_to, payload) {
     frappe.call({
@@ -228,41 +211,6 @@ function send_email(user, email_send_to, payload) {
         },
     });
 }
-
-
-// function toggleFieldStatus(frm) {
-
-
-// if (frappe.session.user === "purchase@gmail.com") {
-//     frm.set_df_property("purchase_head_status", "read_only", true);
-//     frm.set_df_property("purchase_head_remarks", "read_only", true);
-//     frm.set_df_property("purchase_team_remarks", "read_only", true);
-// }
-// else{
-//         frm.set_df_property("status", "read_only", true);
-//         frm.set_df_property("purchase_team_status", "read_only", true);
-//         frm.set_df_property("kilometers_per_year", "read_only", true);
-//         frm.set_df_property("tenure_in_years", "read_only", true);
-//         frm.set_df_property("total_kilometers", "read_only", true);
-//         frm.set_df_property("revised_ex_show_room_price", "read_only", true);
-//         frm.set_df_property("revised_discount", "read_only", true);
-//         frm.set_df_property("revised_tcs", "read_only", true);
-//         frm.set_df_property("revised_net_ex_showroom_price", "read_only", true);
-//         frm.set_df_property("revised_registration_charges", "read_only", true);
-//         frm.set_df_property("revised_accessories", "read_only", true);
-//         frm.set_df_property("revised_financed_amount", "read_only", true);
-//         frm.set_df_property("status", "read_only", true);
-//         frm.set_df_property("purchase_head_remarks", "read_only", true);
-//         frm.set_df_property("purchase_team_remarks", "read_only", true);
-// }
-
-
-
-
-
-
-// }
-
 
 
 function toggleFieldStatus(frm) {

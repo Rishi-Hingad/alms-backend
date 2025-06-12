@@ -1,7 +1,7 @@
 {
  "actions": [],
  "allow_rename": 1,
- "autoname": "format:Quo-{finance_company}-{employee_details}",
+ "autoname": "format:Quo-{finance_company}-{employee_details}-{###}",
  "creation": "2024-09-23 10:04:09.288926",
  "doctype": "DocType",
  "engine": "InnoDB",
@@ -9,6 +9,7 @@
   "car_quotation_section",
   "finance_company",
   "employee_details",
+  "car_indent_form_id",
   "location",
   "kms",
   "variant",
@@ -39,9 +40,15 @@
   "std_relief_car_non_accdt",
   "gst_on_fms",
   "total_emi",
+  "interim_payment",
+  "quarterly_payment",
+  "approval_fields_section",
   "finance_team_status",
-  "finance_team_remarks",
   "finance_head_status",
+  "revised_modify_quotation_id",
+  "quotation_status",
+  "column_break_rxya",
+  "finance_team_remarks",
   "finance_head_remarks",
   "status"
  ],
@@ -240,11 +247,48 @@
    "fieldname": "finance_head_remarks",
    "fieldtype": "Data",
    "label": "Finance Head Remarks"
+  },
+  {
+   "fieldname": "interim_payment",
+   "fieldtype": "Data",
+   "label": "Interim Payment"
+  },
+  {
+   "fieldname": "quarterly_payment",
+   "fieldtype": "Data",
+   "label": "Quarterly Payment"
+  },
+  {
+   "fieldname": "approval_fields_section",
+   "fieldtype": "Section Break",
+   "label": "Approval Fields"
+  },
+  {
+   "fieldname": "column_break_rxya",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "car_indent_form_id",
+   "fieldtype": "Link",
+   "label": "Car Indent Form ID",
+   "options": "Car Indent Form"
+  },
+  {
+   "fieldname": "quotation_status",
+   "fieldtype": "Select",
+   "label": "Quotation Status",
+   "options": "Modified\nRevised"
+  },
+  {
+   "fieldname": "revised_modify_quotation_id",
+   "fieldtype": "Link",
+   "label": "Revised/Modify Quotation ID",
+   "options": "Car Quotation"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-06-12 10:40:33.770503",
+ "modified": "2025-06-12 16:47:45.560101",
  "modified_by": "Administrator",
  "module": "CRMS",
  "name": "Car Quotation",
@@ -264,7 +308,6 @@
    "write": 1
   }
  ],
- "row_format": "Dynamic",
  "sort_field": "modified",
  "sort_order": "DESC",
  "states": []

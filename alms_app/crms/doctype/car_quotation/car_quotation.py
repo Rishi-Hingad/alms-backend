@@ -1,6 +1,3 @@
-# Copyright (c) 2024, Harsh and contributors
-# For license information, please see license.txt
-
 import frappe
 from openpyxl import load_workbook
 from frappe.model.document import Document
@@ -111,8 +108,6 @@ class CarQuotation(Document):
 
     #     # Save the changes
     #     self.save(ignore_permissions=True)
-
-import pandas as pd 
 
 @frappe.whitelist()
 def process_uploaded_file(file_url):
