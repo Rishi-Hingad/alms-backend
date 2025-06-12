@@ -64,13 +64,19 @@ function uploadfile(frm) {
     }, 'Request Menu')
 
     // Sub-button for sending email
-    frm.add_custom_button('Send Modification Quot Email', function () {
-        frappe.msgprint(__('Email sent successfully!'));
-        send_email(frm.doc.employee_details, "FinanceHead To Quotation Company", { "email_phase": "New", "email_send_to": frm.doc.finance_company })
-    }, 'Request Menu')
+    // frm.add_custom_button('Send Modification Quot Email', function () {
+    //     frappe.msgprint(__('Email sent successfully!'));
+    //     frm.set_value("revised_modified_quotation_id",frm.name);
+    //     frm.set_value("quotation_status","Modified")
+    //     send_email(frm.doc.employee_details, "FinanceHead To Quotation Company", { "email_phase": "New", "email_send_to": frm.doc.finance_company })
+    // }, 'Request Menu')
 
     frm.add_custom_button('Send Revised Quot Email', function () {
         frappe.msgprint(__('Email sent successfully!'));
+        frm.set_value("revised_modified_quotation_id",frm.name);
+        frm.set_value("quotation_status","Revised") //here
+        frm.refresh_field("revised_modified_quotation_id")
+        frm.refresh_field("quotation_status")
         send_email(frm.doc.employee_details, "FinanceHead To Quotation Company", { "email_phase": "Revised", "email_send_to": frm.doc.finance_company })
     }, 'Request Menu')
 }
@@ -293,7 +299,7 @@ function toggleFieldStatus(frm) {
 frappe.ui.form.on('Car Quotation', {
     refresh: function (frm) {
         frm.set_df_property("status", "read_only", true);
-        frm.set_df_property('status', 'read_only', 1);
+        // frm.set_df_property('status', 'read_only', 1);
         updateStatus(frm);
         console.log("hello ha  bhai ++++++")
         toggleFieldStatus(frm);

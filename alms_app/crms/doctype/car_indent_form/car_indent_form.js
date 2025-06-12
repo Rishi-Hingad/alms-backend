@@ -470,6 +470,9 @@ frappe.ui.form.on("Car Indent Form", {
         frm.set_df_property('hr_remarks', 'read_only', 1);
         frm.set_df_property('travel_desk_approval', 'read_only', 1);
         frm.set_df_property('travel_desk_remarks', 'read_only', 1);
+        frm.set_df_property('default_currency', 'read_only', 1);
+        frm.set_df_property('form_type', 'read_only', 1);
+        frm.set_df_property('employee_code', 'read_only', 1);
 
         toggleFieldStatus(frm);
     },
@@ -787,11 +790,15 @@ frappe.ui.form.on("Car Indent Form", {
             by_button=false;
             return;
         }
+
+        console.log("insiderrr functionnnn")
         if(frm.doc.hr_approval!=="Approved" && frm.doc.reporting_head_approval!=="Approved" && frm.doc.travel_desk_approval!=="Approved"){
             frappe.msgprint("Reporting Head, HR and Travel Desk must approve before further approvals!"); 
             return;
         }
-        if(frm.doc.hr_head_approval && frm.doc.hr_head_approval!=="Pending"){
+
+        // frm.doc.hr_head_approval &&
+        if(frm.doc.hr_head_approval!=="Pending"){
             frappe.prompt([
                 {
                     fieldname: 'remarks_input',
@@ -805,21 +812,28 @@ frappe.ui.form.on("Car Indent Form", {
                 frm.set_value("hr_head_remarks",values.remarks_input);
                 frm.refresh_field("hr_head_remarks");
                 frm.save().then(() => {
+                    console.log("here we areeee")
                     if(frm.doc.hr_head_approval==="Approved"){
-                        send_email(frm.doc.name, "HRHead to PurchaseTeam");
+                        console.log("WE are approvinggg- hr head")
                         frm.set_value("status","Approved");
+                        send_email(frm.doc.name, "HRHead To PurchaseTeam");
+                        
                     }
                     else if(frm.doc.hr_head_approval==="Rejected"){
                         console.log("WE are rejecting- hr head")
-                        send_email(frm.doc.name,"Reject HRHead to Employee"); //change here
                         frm.set_value("status", "Rejected");
+                        send_email(frm.doc.name,"Reject HRHead to Employee"); //change here
+                        
                     }
+                    frm.refresh_field("status");
                 });
             },
             'Remarks Required',
             'Submit'
         );
         }else{
+
+            console.log("++++++++++++pending mei aa raha")
             frappe.prompt([
                 {
                     fieldname: 'remarks_input',

@@ -50,7 +50,10 @@
   "column_break_rxya",
   "finance_team_remarks",
   "finance_head_remarks",
-  "status"
+  "status",
+  "column_break_zdme",
+  "revised_modified_quotation_id",
+  "quotation_status"
  ],
  "fields": [
   {
