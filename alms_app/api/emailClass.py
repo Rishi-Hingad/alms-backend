@@ -385,7 +385,7 @@ class EmailServices:
                     <td>{quot_form.emi_financing}</td>
                 </tr>
                 <tr>
-                    <td>EMI (Financing)</td>
+                    <td>Total EMI</td>
                     <td>{quot_form.total_emi}</td>
                 </tr>
                 

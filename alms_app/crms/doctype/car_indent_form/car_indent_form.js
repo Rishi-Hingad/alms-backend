@@ -425,7 +425,7 @@ function toggleFieldStatus(frm) {
             }
 
             // Purchase-specific behavior (custom button)
-            if (designation === "Purchase" || designation === "Purchase Head") {
+            if (designation === "Purchase" || designation === "Purchase Head" || designation === "Administrator") {
                 frm.add_custom_button(__('Redirect to Purchase Form'), function () {
                     let currentUrl = window.location.href;
                     let urlParams = currentUrl.split('/');

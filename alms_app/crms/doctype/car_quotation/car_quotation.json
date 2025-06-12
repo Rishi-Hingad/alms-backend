@@ -215,7 +215,7 @@
    "fieldname": "finance_team_status",
    "fieldtype": "Select",
    "label": "Finance Team Status",
-   "options": "-Select-\nPending\nApproved\nRejected"
+   "options": "Pending\nApproved\nRejected"
   },
   {
    "default": "Pending",
@@ -244,7 +244,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-06-10 09:48:46.559696",
+ "modified": "2025-06-12 10:40:33.770503",
  "modified_by": "Administrator",
  "module": "CRMS",
  "name": "Car Quotation",
