@@ -75,6 +75,8 @@ function uploadfile(frm) {
         frappe.msgprint(__('Email sent successfully!'));
         frm.set_value("revised_modified_quotation_id",frm.name);
         frm.set_value("quotation_status","Revised") //here
+        frm.refresh_field("revised_modified_quotation_id")
+        frm.refresh_field("quotation_status")
         send_email(frm.doc.employee_details, "FinanceHead To Quotation Company", { "email_phase": "Revised", "email_send_to": frm.doc.finance_company })
     }, 'Request Menu')
 }
