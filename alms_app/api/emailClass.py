@@ -804,7 +804,7 @@ class EmailServices:
            
     def for_finance_fill_quotation_acknowledgement(self, user,regards=""):
         recipient_email = emailMaster.finance_team_email
-        subject = "Car Quotation Form Fiiled"
+        subject = f"""Car Quotation Form Fiiled by {regards}"""
         
         
         body = f"""
@@ -1022,6 +1022,78 @@ class EmailServices:
         
         return body
     
+    # def create_vendor_email_for_Modified_car_quotation(self,compny_name,user,form,link):
+    #     body = f"""
+    #         <html>
+    #         <head>
+    #             <style>
+    #                 body {{
+    #                     font-family: Arial, sans-serif;
+    #                     margin: 20px;
+    #                 }}
+    #                 h2 {{
+    #                     color: #4CAF50;
+    #                 }}
+    #                 p {{
+    #                     font-size: 16px;
+    #                 }}
+    #                 .button {{
+    #                     background-color: #4CAF50;
+    #                     color: white;
+    #                     padding: 10px 20px;
+    #                     text-align: center;
+    #                     text-decoration: none;
+    #                     display: inline-block;
+    #                     font-size: 16px;
+    #                     border-radius: 5px;
+    #                     margin-top: 20px;
+    #                 }}
+    #                 .company-name {{
+    #                     color: blue;
+    #                     font-size: 24px;
+    #                     font-weight: bold;
+    #                 }}
+    #                 .contact-info {{
+    #                     font-size: 14px;
+    #                     color: grey;
+    #                     margin-top: 20px;
+    #                 }}
+    #                 table {{
+    #                     border-collapse: collapse;
+    #                     width: 100%;
+    #                 }}
+    #                 th, td {{
+    #                     padding: 8px;
+    #                     border: 1px solid #ddd;
+    #                     text-align: left;
+    #                 }}
+    #             </style>
+    #         </head>
+    #         <body>
+
+    #             <h2>Dear {compny_name}</h2>
+    #             <p>The quote received is on higher side so kindly provide a modified rental.</p>
+    #             <p>Awaiting for your positive response!! </p>
+    #             <p>
+    #                 <a href="{link}" class="button">Fill Quotation Form</a>
+    #             </p>
+
+    #             <p class="contact-info">
+    #                 For assistance, please contact:<br>
+    #                 Email: support@meril.com<br>
+    #                 Phone: +91 123 456 7890
+    #             </p>
+
+    #             <p>Thank you for your time and cooperation!</p>
+
+    #         </body>
+    #         </html>
+                            
+        
+    #     """
+        
+    #     return body
+    
     def for_car_quotation_ALD_EasyAssets_Xyz(self,user,payload):
         data = frappe.get_all("Vendor Master",fields="*")
         # print("-------------------------------[DATA]----------------------",data)
@@ -1052,9 +1124,11 @@ class EmailServices:
                     )
                 if payload.get("email_phase") == "Revised":
                     body = self.create_vendor_email_for_Revised_car_quotation(company_detail.name,user,car_indent_form,link)
+                # elif payload.get("email_phase") == "Modified":
+                #     body = self.create_vendor_email_for_Modified_car_quotation(company_detail.name,user,car_indent_form,link)
                 else:
                     body = self.create_vendor_email_for_car_quotation(company_detail.name,user,car_indent_form,link)
-                subject = f"Car Quotation"
+                subject = f"Car Quotation for {company_detail.name}"
                 self.send(subject=subject, body=body, recipient_email=company_detail.contact_email)   
                 # frappe.msgprint(f"Email sent successfully")   
     # "-------------------------------------" EMAIL BODY COMPANY SELECTION EMAILS "-------------------------------------"
@@ -1171,7 +1245,7 @@ class EmailServices:
         vendor =frappe.get_doc("Vendor Master",car_quot_form.finance_company) #this is vendor details recipient humara
         user = frappe.get_doc("Employee Master",car_quot_form.employee_details)  #yaha se milega employee, jiska sirf naam chahiye
         recipient_email=vendor.contact_email
-        subject="Car Quotation Rejected by Finance Head"
+        subject=f"""{vendor.company_name} Car Quotation Rejected by Finance Head"""
         remarks_by="finance_head_remarks"
         cc_list=[emailMaster.finance_head2_email, emailMaster.finance_team_email]
 
@@ -1188,7 +1262,7 @@ class EmailServices:
         vendor =frappe.get_doc("Vendor Master",car_quot_form.finance_company) #this is vendor details recipient humara
         user = frappe.get_doc("Employee Master",car_quot_form.employee_details)  #yaha se milega employee, jiska sirf naam chahiye
         recipient_email=vendor.contact_email
-        subject="Car Quotation Rejected by Finance Team"
+        subject=f"""{vendor.company_name} Car Quotation Rejected by Finance Team"""
         remarks_by="finance_team_remarks"
         cc_list=[emailMaster.finance_head2_email, emailMaster.finance_head_email]
 

@@ -253,7 +253,7 @@
    "link_fieldname": "employee_code"
   }
  ],
- "modified": "2025-02-13 16:35:47.345066",
+ "modified": "2025-06-12 16:03:06.915242",
  "modified_by": "Administrator",
  "module": "CRMS",
  "name": "Purchase Team Form",
@@ -273,6 +273,7 @@
    "write": 1
   }
  ],
+ "row_format": "Dynamic",
  "sort_field": "modified",
  "sort_order": "DESC",
  "states": [
