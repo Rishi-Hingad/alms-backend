@@ -1,5 +1,5 @@
 
-let by_button=false
+let by_button = false
 function updateStatus(frm) {
     // frm.clear_custom_buttons();
     frappe.call({
@@ -25,16 +25,16 @@ function updateStatus(frm) {
                         field: "status",
                         current_status: frm.doc.purchase_team_status,
                         //added here
-                        designation_match:"Purchase",
-                        btn_field:"purchase_team_status"
+                        designation_match: "Purchase",
+                        btn_field: "purchase_team_status"
                     },
                     {
                         label: "Purchase Head",
                         field: "status",
                         current_status: frm.doc.purchase_head_status,
                         //added here
-                        designation_match:"Purchase Head",
-                        btn_field:"purchase_head_status"
+                        designation_match: "Purchase Head",
+                        btn_field: "purchase_head_status"
                     },
                 ];
 
@@ -54,7 +54,7 @@ function updateStatus(frm) {
                     }
 
                     const btn = frm.add_custom_button(`${button.label}: ${status}`, () => {
-                        if (status === "Pending" && (userData === button.designation_match || userData==="Administrator")) {
+                        if (status === "Pending" && (userData === button.designation_match || userData === "Administrator")) {
                             console.log("here")
                             if (button.btn_field !== 'purchase_team_status' && frm.doc.purchase_team_status !== "Approved") {
                                 frappe.msgprint("Purchase Team must approve before further approvals.");
@@ -68,31 +68,31 @@ function updateStatus(frm) {
                                     reqd: 1
                                 }
                             ],
-                            function (values) {
-                                if (button.btn_field === "purchase_team_status") {
-                                    frm.set_value('purchase_team_remarks', values.remarks_input);
-                                }
-                                if (button.btn_field === "purchase_head_status") {
-                                    frm.set_value('purchase_head_remarks', values.remarks_input);
-                                }
-
-                                frm.set_value(button.btn_field, 'Approved');
-                                frm.refresh_field(button.btn_field);
-
-                                frm.save().then(() => {
+                                function (values) {
                                     if (button.btn_field === "purchase_team_status") {
-                                        send_email(frm.doc.name, "PurchaseTeam To PurchaseHead")
+                                        frm.set_value('purchase_team_remarks', values.remarks_input);
                                     }
-                                    if (button.btn_field=== "purchase_head_status") {
-                                        send_email(frm.doc.name, "PurchaseHead To FinanceTeam")
+                                    if (button.btn_field === "purchase_head_status") {
+                                        frm.set_value('purchase_head_remarks', values.remarks_input);
                                     }
-                                    updateStatus(frm);
-                                });
-                            },
-                            'Remarks Required',
-                            'Submit');
+
+                                    frm.set_value(button.btn_field, 'Approved');
+                                    frm.refresh_field(button.btn_field);
+
+                                    frm.save().then(() => {
+                                        if (button.btn_field === "purchase_team_status") {
+                                            send_email(frm.doc.name, "PurchaseTeam To PurchaseHead")
+                                        }
+                                        if (button.btn_field === "purchase_head_status") {
+                                            send_email(frm.doc.name, "PurchaseHead To FinanceTeam")
+                                        }
+                                        updateStatus(frm);
+                                    });
+                                },
+                                'Remarks Required',
+                                'Submit');
                         }
-                        by_button=true;
+                        by_button = true;
 
                     });
                     btn.css({
@@ -101,87 +101,302 @@ function updateStatus(frm) {
                         "border-color": status_color,
                         "cursor": (status === "Pending" && (userData === button.designation_match || userData === "Administrator")) ? "pointer" : "not-allowed"
                     });
-                    if (!(status === "Pending" && (userData === button.designation_match || userData=== "Administrator"))) {
+                    if (!(status === "Pending" && (userData === button.designation_match || userData === "Administrator"))) {
                         btn.off("click");
                     }
                 });
             }
+            if (["Administrator", "Finance"].includes(userData)) {
+                frm.add_custom_button("Compare Quotations", () => {
+                    frappe.call({
+                        method: "frappe.client.get_list",
+                        args: {
+                            doctype: "Car Quotation",
+                            filters: {
+                                employee_details: frm.doc.name
+                            },
+                            fields: [
+                                "name", "finance_company", "variant", "base_price_excluding_gst",
+                                "gst", "total_emi", "status"
+                            ],
+                            limit_page_length: 100
+                        },
+                        callback: function (res) {
+                            const quotations = res.message;
+
+                            if (!quotations || quotations.length === 0) {
+                                frappe.msgprint("No Car Quotations found.");
+                                return;
+                            }
+
+                            const fieldsToDisplay = [
+                                { label: "Name", key: "name" },
+                                { label: "Finance Company", key: "finance_company" },
+                                { label: "Variant", key: "variant" },
+                                { label: "Base Price (Excl. GST)", key: "base_price_excluding_gst" },
+                                { label: "GST", key: "gst" },
+                                { label: "Total EMI", key: "total_emi" },
+                                { label: "Status", key: "status" },
+                                { label: "Action", key: "action" },
+                            ];
+
+                            const tableHeader = quotations.map(q => `<th style="text-align:center">${q.finance_company}</th>`).join("");
+
+                            const tableRows = fieldsToDisplay.map(field => {
+                                const rowCells = quotations.map(q => {
+                                    if (field.key === "action") {
+                                        return `
+                                <td style="text-align:center">
+                                    <button class="btn btn-success btn-sm" onclick="approveQuotation('${q.name}', '${frm.doc.name}')">✔</button>
+                                    <button class="btn btn-danger btn-sm" onclick="rejectQuotation('${q.name}')">✖</button>
+                                </td>
+                            `;
+                                    } else {
+                                        return `<td style="text-align:center">${q[field.key] || "-"}</td>`;
+                                    }
+                                }).join("");
+
+                                return `<tr><th>${field.label}</th>${rowCells}</tr>`;
+                            }).join("");
+
+                            const html = `
+                    <div style="overflow-x:auto">
+                        <table class="table table-bordered table-sm" style="min-width:800px;">
+                            <thead><tr><th>Field</th>${tableHeader}</tr></thead>
+                            <tbody>${tableRows}</tbody>
+                        </table>
+                    </div>
+                `;
+
+                            const dialog = new frappe.ui.Dialog({
+                                title: 'Compare Car Quotations',
+                                fields: [
+                                    {
+                                        fieldtype: 'HTML',
+                                        fieldname: 'quotation_table',
+                                        options: html
+                                    }
+                                ],
+                                size: 'extra-large'
+                            });
+
+                            dialog.show();
+
+                            // Define global action handlers
+                            window.approveQuotation = function (approved_name, employee_details) {
+                                frappe.call({
+                                    method: "frappe.client.set_value",
+                                    args: {
+                                        doctype: "Car Quotation",
+                                        name: approved_name,
+                                        fieldname: { status: "Approved" }
+                                    },
+                                    callback: function () {
+                                        frappe.call({
+                                            method: "frappe.client.get_list",
+                                            args: {
+                                                doctype: "Car Quotation",
+                                                filters: {
+                                                    employee_details: employee_details,
+                                                    name: ["!=", approved_name]
+                                                },
+                                                fields: ["name"]
+                                            },
+                                            callback: function (res2) {
+                                                res2.message.forEach(other => {
+                                                    frappe.call({
+                                                        method: "frappe.client.set_value",
+                                                        args: {
+                                                            doctype: "Car Quotation",
+                                                            name: other.name,
+                                                            fieldname: { status: "Rejected" }
+                                                        }
+                                                    });
+                                                });
+                                                frappe.msgprint("Comparison updated.");
+                                                dialog.hide();
+                                            }
+                                        });
+                                    }
+                                });
+                            };
+
+                            window.rejectQuotation = function (name) {
+                                frappe.call({
+                                    method: "frappe.client.set_value",
+                                    args: {
+                                        doctype: "Car Quotation",
+                                        name: name,
+                                        fieldname: { status: "Rejected" }
+                                    },
+                                    callback: function () {
+                                        frappe.msgprint("Quotation rejected.");
+                                        dialog.hide();
+                                    }
+                                });
+                            };
+                        }
+                    });
+                });
+            } else {
+                frm.remove_custom_button("Compare Quotations");
+            }
+
         }
     });
 }
+// old function to send quotation request to all companies do not delete by RISHI
+
+// function updateQuotationSendRequest(frm) {
+//     frm.add_custom_button('Quotations Company Select', () => {
+//         // Fetch company names from Vendor Master where company names are stored in "name" field
+//         frappe.db.get_list('Vendor Master', {
+//             fields: ['name'], // Fetching name field as company name
+//             distinct: true
+//         }).then(response => {
+//             let companies = [...new Set(response.map(item => item.name))]; // Unique values
+//             let optionsHTML = '<div id="company-checkboxes">';
+
+//             // Generating checkboxes dynamically
+//             companies.forEach(company => {
+//                 optionsHTML += `
+//                     <label><input type="checkbox" name="company_select" value="${company}"> ${company}</label><br>
+//                 `;
+//             });
+
+//             // Adding "ALL" option as default selected
+//             optionsHTML += `<label><input type="checkbox" name="company_select" value="ALL"> ALL</label><br>`;
+//             optionsHTML += '</div>';
+
+//             // Show Prompt
+//             frappe.prompt([
+//                 {
+//                     fieldname: 'company_select',
+//                     label: 'Select Company',
+//                     fieldtype: 'HTML',
+//                     options: optionsHTML
+//                 }
+//             ], function () {
+//                 // Get selected checkboxes
+//                 let selected_companies = [];
+//                 document.querySelectorAll('input[name="company_select"]:checked').forEach(checkbox => {
+//                     selected_companies.push(checkbox.value);
+//                 });
+
+//                 // ✅ If "ALL" is selected, use all companies
+//                 if (selected_companies.includes("ALL")) {
+//                     selected_companies = companies;
+//                 }
+//                 console.log("Selected Companies: ", selected_companies);
+
+//                 // ✅ Send email to all selected companies
+//                 if (selected_companies.length > 0) {
+//                     // alert(selected_companies)
+//                     selected_companies.forEach(company => {
+//                         console.log("Company Quotation", company)
+//                         send_email(frm.doc.name, "FinanceHead To Quotation Company", {
+//                             email_send_to: company
+//                         });
+//                         selected_companies = [];
+//                     });
+//                 } else {
+//                     frappe.msgprint("Please select at least one company.");
+//                 }
+
+//                 document.querySelectorAll('#company-checkboxes input[type="checkbox"]').forEach(checkbox => {
+//                     checkbox.checked = false;
+//                 });
+
+//                 // ✅ "ALL" checkbox remains checked by default
+//                 //document.querySelector('input[value="ALL"]').checked = true;
+
+//             }, 'Remarks Required', 'Submit');
+
+//         });
+//     }).css({
+//         "background-color": "darkgreen",
+//         "color": "white",
+//         "border-color": "green",
+//     });
+// }
 
 function updateQuotationSendRequest(frm) {
     frm.add_custom_button('Quotations Company Select', () => {
-        // Fetch company names from Vendor Master where company names are stored in "name" field
-        frappe.db.get_list('Vendor Master', {
-            fields: ['name'], // Fetching name field as company name
-            distinct: true
-        }).then(response => {
-            let companies = [...new Set(response.map(item => item.name))]; // Unique values
-            let optionsHTML = '<div id="company-checkboxes">';
+        // Step 1: Fetch existing quotations for this Purchase Team
+        frappe.db.get_list('Car Quotation', {
+            filters: {
+                employee_details: frm.doc.name
+            },
+            fields: ['finance_company'],
+            limit: 100
+        }).then(existingQuotations => {
+            const sentCompanies = existingQuotations.map(q => q.finance_company);
 
-            // Generating checkboxes dynamically
-            companies.forEach(company => {
-                optionsHTML += `
-                    <label><input type="checkbox" name="company_select" value="${company}"> ${company}</label><br>
-                `;
-            });
+            // Step 2: Fetch all vendor companies
+            frappe.db.get_list('Vendor Master', {
+                fields: ['name']
+            }).then(response => {
+                let companies = [...new Set(response.map(item => item.name))];
 
-            // Adding "ALL" option as default selected
-            optionsHTML += `<label><input type="checkbox" name="company_select" value="ALL"> ALL</label><br>`;
-            optionsHTML += '</div>';
-
-            // Show Prompt
-            frappe.prompt([
-                {
-                    fieldname: 'company_select',
-                    label: 'Select Company',
-                    fieldtype: 'HTML',
-                    options: optionsHTML
-                }
-            ], function () {
-                // Get selected checkboxes
-                let selected_companies = [];
-                document.querySelectorAll('input[name="company_select"]:checked').forEach(checkbox => {
-                    selected_companies.push(checkbox.value);
+                let optionsHTML = '<div id="company-checkboxes">';
+                companies.forEach(company => {
+                    optionsHTML += `
+                        <label><input type="checkbox" name="company_select" value="${company}"> ${company}</label><br>
+                    `;
                 });
+                optionsHTML += `<label><input type="checkbox" name="company_select" value="ALL"> ALL</label><br>`;
+                optionsHTML += '</div>';
 
-                // ✅ If "ALL" is selected, use all companies
-                if (selected_companies.includes("ALL")) {
-                    selected_companies = companies;
-                }
-                console.log("Selected Companies: ", selected_companies);
-
-                // ✅ Send email to all selected companies
-                if (selected_companies.length > 0) {
-                    // alert(selected_companies)
-                    selected_companies.forEach(company => {
-                        console.log("Company Quotation", company)
-                        send_email(frm.doc.name, "FinanceHead To Quotation Company", {
-                            email_send_to: company
-                        });
-                        selected_companies = [];
+                // Step 3: Show selection prompt
+                frappe.prompt([
+                    {
+                        fieldname: 'company_select',
+                        label: 'Select Company',
+                        fieldtype: 'HTML',
+                        options: optionsHTML
+                    }
+                ], function () {
+                    let selected_companies = [];
+                    document.querySelectorAll('input[name="company_select"]:checked').forEach(checkbox => {
+                        selected_companies.push(checkbox.value);
                     });
-                } else {
-                    frappe.msgprint("Please select at least one company.");
-                }
 
-                document.querySelectorAll('#company-checkboxes input[type="checkbox"]').forEach(checkbox => {
-                    checkbox.checked = false;
-                });
+                    if (selected_companies.includes("ALL")) {
+                        selected_companies = companies;
+                    }
 
-                // ✅ "ALL" checkbox remains checked by default
-                //document.querySelector('input[value="ALL"]').checked = true;
+                    if (selected_companies.length > 0) {
+                        selected_companies.forEach(company => {
+                            if (sentCompanies.includes(company)) {
+                                setTimeout(() => {
+                                    frappe.msgprint(`Quotation to <b>${company}</b> has already been sent.`);
+                                }, delay);
+                                delay += 600;
+                            } else {
+                                send_email(frm.doc.name, "FinanceHead To Quotation Company", {
+                                    email_send_to: company
+                                });
+                            }
+                        });
+                    } else {
+                        frappe.msgprint("Please select at least one company.");
+                    }
 
-            }, 'Remarks Required', 'Submit');
+                    // Reset checkboxes
+                    document.querySelectorAll('#company-checkboxes input[type="checkbox"]').forEach(checkbox => {
+                        checkbox.checked = false;
+                    });
 
+                }, 'Remarks Required', 'Submit');
+            });
         });
     }).css({
         "background-color": "darkgreen",
         "color": "white",
-        "border-color": "green",
+        "border-color": "green"
     });
 }
+
 
 function send_email(user, email_send_to, payload) {
     frappe.call({
@@ -214,7 +429,6 @@ function send_email(user, email_send_to, payload) {
 
 
 function toggleFieldStatus(frm) {
-
     frappe.call({
         method: "alms_app.crms.doctype.car_indent_form.car_indent_form.management",
         args: {
@@ -228,7 +442,7 @@ function toggleFieldStatus(frm) {
                 frm.set_df_property("purchase_head_remarks", "read_only", true);
                 frm.set_df_property("purchase_team_remarks", "read_only", true);
             }
-            else if(designation === "Purchase Head"){
+            else if (designation === "Purchase Head") {
                 frm.set_df_property("status", "read_only", true);
                 frm.set_df_property("purchase_team_status", "read_only", true);
                 frm.set_df_property("kilometers_per_year", "read_only", true);
@@ -245,7 +459,7 @@ function toggleFieldStatus(frm) {
                 frm.set_df_property("purchase_head_remarks", "read_only", true);
                 frm.set_df_property("purchase_team_remarks", "read_only", true);
             }
-            else if(designation==="Administrator"){
+            else if (designation === "Administrator") {
                 frm.set_df_property("status", "read_only", true);
                 // frm.set_df_property("purchase_team_status", "read_only", true);
                 frm.set_df_property("kilometers_per_year", "read_only", true);
@@ -261,7 +475,7 @@ function toggleFieldStatus(frm) {
                 frm.set_df_property("status", "read_only", true);
                 frm.set_df_property("purchase_head_remarks", "read_only", true);
                 frm.set_df_property("purchase_team_remarks", "read_only", true);
-            }else{
+            } else {
                 frm.set_df_property("status", "read_only", true);
                 frm.set_df_property("purchase_team_status", "read_only", true);
                 frm.set_df_property("kilometers_per_year", "read_only", true);
@@ -285,27 +499,6 @@ function toggleFieldStatus(frm) {
 
 
 frappe.ui.form.on("Purchase Team Form", {
-    // refresh(frm) {
-
-    //     updateStatus(frm);
-    //     frm.set_df_property("status", "read_only", true);
-    //     if (frappe.session.user === "finance@gmail.com") {
-    //         updateQuotationSendRequest(frm);
-    //     }
-    //     calculate_totals(frm);
-    //     // addButtonForAppovel(frm);
-    //     toggleFieldStatus(frm);
-    // },
-    // onload(frm) {
-    //     // updateStatus(frm);
-    //     frm.set_df_property("status", "read_only", true);
-    //     if (frappe.session.user === "finance@gmail.com") {
-    //         updateQuotationSendRequest(frm);
-    //     }
-    //     toggleFieldStatus(frm);
-    //     // addButtonForAppovel(frm);
-    // },
-
     refresh(frm) {
         updateStatus(frm);
         frappe.call({
@@ -319,7 +512,6 @@ frappe.ui.form.on("Purchase Team Form", {
                 if (designation == "Finance" || designation == "Administrator") {
                     updateQuotationSendRequest(frm);
                 }
-
             }
         })
         calculate_totals(frm);
@@ -350,10 +542,10 @@ frappe.ui.form.on("Purchase Team Form", {
 
     //old
     purchase_head_status: function (frm) {
-        if(by_button===true){
+        if (by_button === true) {
             frm.set_value("status", "Approved");
-           
-            by_button=false;
+
+            by_button = false;
             frm.save_or_update();
             return;
         }
@@ -368,25 +560,25 @@ frappe.ui.form.on("Purchase Team Form", {
             ],
                 function (values) {
                     frm.set_value('purchase_head_remarks', values.remarks_input);
-                    console.log("purchase status:",frm.doc.purchase_head_status)
+                    console.log("purchase status:", frm.doc.purchase_head_status)
                     frm.refresh_field('purchase_head_remarks');
                     frm.save().then(() => {
-                        if(frm.doc.purchase_head_status==="Approved"){
+                        if (frm.doc.purchase_head_status === "Approved") {
                             frm.set_value("status", "Approved");
                         }
-                        else if(frm.doc.purchase_head_status==="Rejected"){
+                        else if (frm.doc.purchase_head_status === "Rejected") {
                             frm.set_value("status", "Rejected");
                         }
                         // frm.set_value("status", "Approved");
                         frm.save_or_update();
-                        if(frm.doc.purchase_head_status==="Approved"){
+                        if (frm.doc.purchase_head_status === "Approved") {
                             send_email(frm.doc.name, "PurchaseHead To FinanceTeam")
                         }
-                        else if(frm.doc.purchase_head_status==="Rejected"){
+                        else if (frm.doc.purchase_head_status === "Rejected") {
                             // send email to Purchase Team
                             send_email(frm.doc.name, "Reject PurchaseHead to PurchaseTeam")
                         }
-                        
+
 
                     });
 
@@ -422,8 +614,8 @@ frappe.ui.form.on("Purchase Team Form", {
 
 
     purchase_team_status: function (frm) {
-        if(by_button===true){
-            by_button=false;
+        if (by_button === true) {
+            by_button = false;
 
             return;
         }
@@ -440,10 +632,10 @@ frappe.ui.form.on("Purchase Team Form", {
                     frm.set_value('purchase_team_remarks', values.remarks_input);
                     frm.refresh_field('purchase_team_remarks');
                     frm.save().then(() => {
-                        if(frm.doc.purchase_team_status==="Approved"){
+                        if (frm.doc.purchase_team_status === "Approved") {
                             send_email(frm.doc.name, "PurchaseTeam To PurchaseHead")
                         }
-                        else{  
+                        else {
                             console.log("rejected")
                         }
                     });
@@ -483,7 +675,7 @@ frappe.ui.form.on("Purchase Team Form", {
     //         delete doc.__from_button_click;
     //         return;
     //     }
-        
+
     //     // Only handle if the value actually changed
     //     if (doc.__unsaved || doc.purchase_head_status !== doc.__last_purchase_head_status) {
     //         handleStatusUpdate(
@@ -506,7 +698,7 @@ frappe.ui.form.on("Purchase Team Form", {
     //         delete doc.__from_button_click;
     //         return;
     //     }
-        
+
     //     // Only handle if the value actually changed
     //     if (doc.__unsaved && doc.purchase_team_status !== doc.__last_purchase_team_status) {
     //         handleStatusUpdate(
