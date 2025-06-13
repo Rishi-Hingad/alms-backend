@@ -30,55 +30,58 @@ function send_email(user, email_send_to, payload = null) {
     });
 }
 function uploadfile(frm) {
-    frm.add_custom_button('Upload File', function () {
-        frappe.prompt(
-            {
-                label: 'Upload File',
-                fieldname: 'file',
-                fieldtype: 'Attach',
-                reqd: 1
-            },
-            function (values) {
-                frappe.call({
-                    method: 'alms_app.crms.doctype.car_quotation.car_quotation.process_uploaded_file',
-                    args: {
-                        file_url: values.file,
-                    },
-                    callback: function (response) {
-                        if (response.message) {
-                            setValuesInField(frm, response.message.car_quotation_item);
-                        }
-                    },
-                    error: function () {
-                        frappe.msgprint({
-                            title: __('Error'),
-                            message: __('An error occurred while processing the file.'),
-                            indicator: 'red',
-                        });
-                    },
-                });
-            },
-            __('Upload File'),
-            __('Process')
-        );
-    }, 'Request Menu')
+    if (frm.doc.finance_team_status !== "Approved") {
 
-    // Sub-button for sending email
-    // frm.add_custom_button('Send Modification Quot Email', function () {
-    //     frappe.msgprint(__('Email sent successfully!'));
-    //     frm.set_value("revised_modified_quotation_id",frm.name);
-    //     frm.set_value("quotation_status","Modified")
-    //     send_email(frm.doc.employee_details, "FinanceHead To Quotation Company", { "email_phase": "New", "email_send_to": frm.doc.finance_company })
-    // }, 'Request Menu')
+        frm.add_custom_button('Upload File', function () {
+            frappe.prompt(
+                {
+                    label: 'Upload File',
+                    fieldname: 'file',
+                    fieldtype: 'Attach',
+                    reqd: 1
+                },
+                function (values) {
+                    frappe.call({
+                        method: 'alms_app.crms.doctype.car_quotation.car_quotation.process_uploaded_file',
+                        args: {
+                            file_url: values.file,
+                        },
+                        callback: function (response) {
+                            if (response.message) {
+                                setValuesInField(frm, response.message.car_quotation_item);
+                            }
+                        },
+                        error: function () {
+                            frappe.msgprint({
+                                title: __('Error'),
+                                message: __('An error occurred while processing the file.'),
+                                indicator: 'red',
+                            });
+                        },
+                    });
+                },
+                __('Upload File'),
+                __('Process')
+            );
+        }, 'Request Menu')
 
-    frm.add_custom_button('Send Revised Quot Email', function () {
-        frappe.msgprint(__('Email sent successfully!'));
-        frm.set_value("revised_modified_quotation_id",frm.name);
-        frm.set_value("quotation_status","Revised") //here
-        frm.refresh_field("revised_modified_quotation_id")
-        frm.refresh_field("quotation_status")
-        send_email(frm.doc.employee_details, "FinanceHead To Quotation Company", { "email_phase": "Revised", "email_send_to": frm.doc.finance_company })
-    }, 'Request Menu')
+        // Sub-button for sending email
+        // frm.add_custom_button('Send Modification Quot Email', function () {
+        //     frappe.msgprint(__('Email sent successfully!'));
+        //     frm.set_value("revised_modified_quotation_id",frm.name);
+        //     frm.set_value("quotation_status","Modified")
+        //     send_email(frm.doc.employee_details, "FinanceHead To Quotation Company", { "email_phase": "New", "email_send_to": frm.doc.finance_company })
+        // }, 'Request Menu')
+
+        frm.add_custom_button('Send Revised Quot Email', function () {
+            frappe.msgprint(__('Email sent successfully!'));
+            frm.set_value("revised_modified_quotation_id", frm.name);
+            frm.set_value("quotation_status", "Revised") //here
+            frm.refresh_field("revised_modified_quotation_id")
+            frm.refresh_field("quotation_status")
+            send_email(frm.doc.employee_details, "FinanceHead To Quotation Company", { "email_phase": "Revised", "email_send_to": frm.doc.finance_company })
+        }, 'Request Menu')
+    }
 }
 
 function setValuesInField(frm, data) {
@@ -284,9 +287,9 @@ function toggleFieldStatus(frm) {
                     frm.set_df_property(fieldname, "read_only", 0);
                 } else if (userData === "Administrator" && (fieldname === "finance_head_status" || fieldname === "finance_team_status")) {
                     frm.set_df_property(fieldname, "read_only", 0);
-                }
-
-                else {
+                } else if (userData === "Administrator") {
+                    frm.set_df_property(fieldname, "read_only", 0);
+                } else {
                     frm.set_df_property(fieldname, "read_only", 1);
                 }
 

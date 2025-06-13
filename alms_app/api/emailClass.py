@@ -45,8 +45,6 @@ class EmailServices:
             # print("-----------[EMAIL ERROR]-------------",str(e))
             frappe.throw(f"Failed to send email: {str(e)}")
     
-    
-    
     #for Rejection 
     def send_reject(self, subject,recipient_email,cc_list, body):
         print("----------------sendng-------------")
@@ -66,6 +64,31 @@ class EmailServices:
                 response = server.send_message(msg)
                 print("Email Sent Successfully!")
             frappe.msgprint(f"Email sent successfully to {recipient_email}.")
+
+        except smtplib.SMTPException as smtp_error:
+            # print("-----------[EMAIL ERROR]-------------",smtp_error)
+            frappe.throw(f"SMTP error occurred: {smtp_error}")
+
+        except Exception as e:
+            # print("-----------[EMAIL ERROR]-------------",str(e))
+            frappe.throw(f"Failed to send email: {str(e)}")
+
+    def send_quotations(self,subject,recipient_email,body):
+    
+        try:
+            msg = EmailMessage()
+            msg.set_content(body, subtype="html")
+            msg["Subject"] = subject
+            msg["From"] = self.from_address
+            msg["To"] = recipient_email
+            msg["Bcc"] = "rishi.hingad@merillife.com"
+            
+            with smtplib.SMTP(self.smtp_server, self.smtp_port) as server:
+                server.set_debuglevel(1)
+                server.starttls()
+                server.login(self.smtp_user, self.smtp_password)
+                response = server.send_message(msg)
+                print("Email Sent Successfully!")
 
         except smtplib.SMTPException as smtp_error:
             # print("-----------[EMAIL ERROR]-------------",smtp_error)
@@ -1100,6 +1123,7 @@ class EmailServices:
         # print("0000000000000000000000000000000000000000000000000000[payload]----------------------")
         # print(payload,data,"0000000000000000000000000000000000000000000000000000000000000000000")
         # print(payload.get("email_send_to"),"Payload Data ")
+        emails_sent = []
         for company_detail in data:
             # print(company_detail,"++++++++++++___________________++++++++++++++++")
             if payload.get("email_send_to") == "ALL" or company_detail.name == payload.get("email_send_to"):
@@ -1127,8 +1151,13 @@ class EmailServices:
                 else:
                     body = self.create_vendor_email_for_car_quotation(company_detail.name,user,car_indent_form,link)
                 subject = f"Car Quotation for {company_detail.name}"
-                self.send(subject=subject, body=body, recipient_email=company_detail.contact_email)   
-                # frappe.msgprint(f"Email sent successfully")   
+                self.send_quotations(subject=subject, body=body, recipient_email=company_detail.contact_email)   
+                # frappe.msgprint(f"Email sent successfully")
+                emails_sent.append(f"<li>{company_detail.name} &lt;{company_detail.contact_email}&gt;</li>")
+        if emails_sent:
+            frappe.msgprint(f"<b>Emails sent successfully to:</b><ul>{''.join(emails_sent)}</ul>")
+        else:
+            frappe.msgprint("No matching vendors found to send emails.")
     # "-------------------------------------" EMAIL BODY COMPANY SELECTION EMAILS "-------------------------------------"
     # Jyare COmpny Selected Thay [Approved] then eni process chalu thay e 
     def create_selected_company_process(self,car_form,user, form_link):

@@ -3,6 +3,7 @@ from openpyxl import load_workbook
 from frappe.model.document import Document
 import pandas as pd 
 from frappe.utils.file_manager import save_file
+import xlrd
 
 class CarQuotation(Document):
     pass
@@ -118,10 +119,17 @@ def process_uploaded_file(file_url):
         file_doc = frappe.get_doc("File", {"file_url": file_url})
         file_path = file_doc.get_full_path()
 
-        if file_path.endswith(".xlsx") or file_path.endswith(".xls"):
-            data_frame = pd.read_excel(file_path)
+        # if file_path.endswith(".xlsx") or file_path.endswith(".xls"):
+        #     data_frame = pd.read_excel(file_path)
+        # elif file_path.endswith(".csv"):
+        #     data_frame = pd.read_csv(file_path)
+        if file_path.endswith(".xlsx"):
+            data_frame = pd.read_excel(file_path, engine='openpyxl')
+        elif file_path.endswith(".xls"):
+            data_frame = pd.read_excel(file_path, engine='xlrd')
         elif file_path.endswith(".csv"):
             data_frame = pd.read_csv(file_path)
+
         else:
             frappe.throw("Unsupported file format. Please upload an Excel or CSV file.")
 
