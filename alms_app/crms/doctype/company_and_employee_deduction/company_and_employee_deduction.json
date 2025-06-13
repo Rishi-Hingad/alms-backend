@@ -6,19 +6,21 @@
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
-  "car_quotation_section",
+  "basic_details_section",
   "finance_quotation_id",
-  "employee_name",
   "location",
-  "variant",
   "kms",
-  "quote",
   "interest_rate",
+  "column_break_iyzk",
+  "employee_name",
+  "variant",
+  "quote",
   "tenure",
+  "car_quotation_section",
+  "column_break_xjhs",
   "base_price_excluding_gst",
   "gst",
   "ex_showroom_amount",
-  "column_break_xjhs",
   "accessory",
   "discount_excluding_gst",
   "base_price_less_discounts",
@@ -28,10 +30,9 @@
   "residual_value_percent",
   "financed_amount",
   "residual_value",
-  "emi_financing",
-  "finance_emi_road_tax",
   "column_break_vhla",
-  "gst_and_cess_percent",
+  "finance_emi_road_tax",
+  "emi_financing",
   "gst_and_cess",
   "insurance",
   "fleet_management_repairs_and_tyres",
@@ -43,30 +44,16 @@
   "interim_payment",
   "quarterly_payment",
   "employee_deduction_section",
-  "employee_location",
-  "employee_kms",
-  "employee_variant",
-  "employee_quote",
-  "employee_interest_rate",
-  "employee_tenure",
-  "employee_base_price_excluding_gst",
-  "employee_gst",
-  "employee_ex_showroom_amount",
-  "employee_accessory",
   "column_break_vnjn",
-  "employee_discount_excluding_gst",
-  "employee_base_price_less_discounts",
-  "employee_total_discount",
   "employee_ex_showroom_amount_net_of_discount",
-  "employee_registration_charges",
   "employee_residual_value_percent",
   "employee_financed_amount",
   "employee_residual_value",
   "employee_emi_financing",
   "employee_finance_emi_road_tax",
-  "column_break_ezfg",
   "employee_gst_and_cess",
   "employee_insurance",
+  "column_break_ezfg",
   "employee_fleet_management",
   "employee_24x7_assist",
   "employee_pickup_drop",
@@ -135,6 +122,7 @@
    "label": "Ex-Showroom Amount"
   },
   {
+   "fetch_from": "finance_quotation_id.accessory",
    "fieldname": "accessory",
    "fieldtype": "Currency",
    "label": "Accessory"
@@ -144,16 +132,19 @@
    "fieldtype": "Column Break"
   },
   {
+   "default": "0",
    "fieldname": "discount_excluding_gst",
    "fieldtype": "Currency",
    "label": "Discount (Excluding GST)"
   },
   {
+   "default": "0",
    "fieldname": "base_price_less_discounts",
    "fieldtype": "Currency",
    "label": "Base Price (Less Discounts)"
   },
   {
+   "default": "0",
    "fieldname": "total_discount",
    "fieldtype": "Currency",
    "label": "Total Discount"
@@ -164,11 +155,13 @@
    "label": "Ex-Showroom Amount (Net of Discount)"
   },
   {
+   "fetch_from": "finance_quotation_id.registration_charges",
    "fieldname": "registration_charges",
    "fieldtype": "Currency",
    "label": "Registration Charges"
   },
   {
+   "fetch_from": "finance_quotation_id.residual_value_percent",
    "fieldname": "residual_value_percent",
    "fieldtype": "Int",
    "label": "Residual Value (%)"
@@ -179,6 +172,7 @@
    "label": "Financed Amount"
   },
   {
+   "fetch_from": "finance_quotation_id.residual_value",
    "fieldname": "residual_value",
    "fieldtype": "Currency",
    "label": "Residual Value"
@@ -215,13 +209,11 @@
    "label": "Fleet Management (Repairs and Tyres)"
   },
   {
-   "fetch_from": "finance_quotation_id.pickup_and_drop",
    "fieldname": "pickup_and_drop",
    "fieldtype": "Currency",
    "label": "Pickup & Drop"
   },
   {
-   "fetch_from": "finance_quotation_id.std_relief_car_non_accdt",
    "fieldname": "std_relief_car_non_accdt",
    "fieldtype": "Currency",
    "label": "Std Relief Car (Non Accdt)"
@@ -252,34 +244,15 @@
    "label": "Employee Deduction"
   },
   {
-   "fieldname": "employee_location",
-   "fieldtype": "Data",
-   "label": "Location"
-  },
-  {
    "fieldname": "column_break_vnjn",
    "fieldtype": "Column Break"
-  },
-  {
-   "fieldname": "employee_kms",
-   "fieldtype": "Data",
-   "label": "KMS"
   },
   {
    "fieldname": "column_break_ezfg",
    "fieldtype": "Column Break"
   },
   {
-   "fieldname": "employee_variant",
-   "fieldtype": "Data",
-   "label": "Variant"
-  },
-  {
-   "fieldname": "employee_quote",
-   "fieldtype": "Data",
-   "label": "Quote"
-  },
-  {
+   "default": "0",
    "fieldname": "employee_residual_value",
    "fieldtype": "Data",
    "label": "Residual Value"
@@ -295,11 +268,13 @@
    "label": "Finance EMI (Road Tax)"
   },
   {
+   "default": "0",
    "fieldname": "employee_std_relief_car_non_accdt",
    "fieldtype": "Data",
    "label": "Std Relief Car (Non Accdt)"
   },
   {
+   "default": "0",
    "fieldname": "employee_gst_on_fms",
    "fieldtype": "Data",
    "label": "GST on FMS"
@@ -320,59 +295,9 @@
    "label": "Quarterly Payment"
   },
   {
-   "fieldname": "employee_interest_rate",
-   "fieldtype": "Data",
-   "label": "Interest Rate"
-  },
-  {
-   "fieldname": "employee_tenure",
-   "fieldtype": "Data",
-   "label": "Tenure"
-  },
-  {
-   "fieldname": "employee_base_price_excluding_gst",
-   "fieldtype": "Data",
-   "label": "Base Price Excluding GST"
-  },
-  {
-   "fieldname": "employee_gst",
-   "fieldtype": "Data",
-   "label": "GST"
-  },
-  {
-   "fieldname": "employee_ex_showroom_amount",
-   "fieldtype": "Data",
-   "label": "Ex Showroom Amount"
-  },
-  {
-   "fieldname": "employee_accessory",
-   "fieldtype": "Data",
-   "label": "Accessory"
-  },
-  {
-   "fieldname": "employee_discount_excluding_gst",
-   "fieldtype": "Data",
-   "label": "Discount (Excluding GST)"
-  },
-  {
-   "fieldname": "employee_base_price_less_discounts",
-   "fieldtype": "Data",
-   "label": "Base Price Less Discounts"
-  },
-  {
-   "fieldname": "employee_total_discount",
-   "fieldtype": "Data",
-   "label": "Total Discount"
-  },
-  {
    "fieldname": "employee_ex_showroom_amount_net_of_discount",
    "fieldtype": "Data",
    "label": "Ex Showroom Amount (Net of Discount)"
-  },
-  {
-   "fieldname": "employee_registration_charges",
-   "fieldtype": "Data",
-   "label": "Registration Charges"
   },
   {
    "fieldname": "employee_gst_and_cess",
@@ -380,16 +305,19 @@
    "label": "GST and Cess"
   },
   {
+   "default": "0",
    "fieldname": "employee_insurance",
    "fieldtype": "Data",
    "label": "Insurance"
   },
   {
+   "default": "0",
    "fieldname": "employee_fleet_management",
    "fieldtype": "Data",
    "label": "Fleet Management (Repairs and Tyres)"
   },
   {
+   "default": "0",
    "fieldname": "employee_24x7_assist",
    "fieldtype": "Data",
    "label": "24x7 Assist"
@@ -405,6 +333,7 @@
    "label": "Financed Amount"
   },
   {
+   "fetch_from": "finance_quotation_id.residual_value_percent",
    "fieldname": "employee_residual_value_percent",
    "fieldtype": "Data",
    "label": "Residual Value Percent"
@@ -423,20 +352,23 @@
    "options": "Car Quotation"
   },
   {
-   "fetch_from": "finance_quotation_id.24x7_assist",
    "fieldname": "assist",
    "fieldtype": "Currency",
    "label": "24x7 Assist"
   },
   {
-   "fieldname": "gst_and_cess_percent",
-   "fieldtype": "Float",
-   "label": "GST and Cess Percent"
+   "fieldname": "basic_details_section",
+   "fieldtype": "Section Break",
+   "label": "Basic Details"
+  },
+  {
+   "fieldname": "column_break_iyzk",
+   "fieldtype": "Column Break"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-11-13 18:01:52.312152",
+ "modified": "2025-06-13 11:32:46.864671",
  "modified_by": "Administrator",
  "module": "CRMS",
  "name": "Company and Employee Deduction",
@@ -456,6 +388,7 @@
    "write": 1
   }
  ],
+ "row_format": "Dynamic",
  "sort_field": "modified",
  "sort_order": "DESC",
  "states": []
