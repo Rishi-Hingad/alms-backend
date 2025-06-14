@@ -117,7 +117,7 @@ function updateStatus(frm) {
                             },
                             fields: [
                                 "name", "finance_company", "variant", "base_price_excluding_gst",
-                                "gst", "total_emi", "status"
+                                "gst", "total_emi", "interim_payment", "quarterly_payment", "status", "quotation_status",
                             ],
                             limit_page_length: 100
                         },
@@ -136,37 +136,52 @@ function updateStatus(frm) {
                                 { label: "Base Price (Excl. GST)", key: "base_price_excluding_gst" },
                                 { label: "GST", key: "gst" },
                                 { label: "Total EMI", key: "total_emi" },
+                                { label: "Interim Payment", key: "interim_payment" },
+                                { label: "Quarterly Payment", key: "quarterly_payment" },
                                 { label: "Status", key: "status" },
+                                { label: "Quotation Status", key: "quotation_status" },
                                 { label: "Action", key: "action" },
                             ];
 
-                            const tableHeader = quotations.map(q => `<th style="text-align:center">${q.finance_company}</th>`).join("");
-
+                            const tableHeader = quotations.map(q => `
+                                <th style="text-align:center; background:#a3a1a1; font-weight:bold; font-size:18px;">
+                                    ${q.finance_company || "-"}
+                                </th>`).join("");
+                            
                             const tableRows = fieldsToDisplay.map(field => {
                                 const rowCells = quotations.map(q => {
                                     if (field.key === "action") {
                                         return `
-                                <td style="text-align:center">
-                                    <button class="btn btn-success btn-sm" onclick="approveQuotation('${q.name}', '${frm.doc.name}')">✔</button>
-                                    <button class="btn btn-danger btn-sm" onclick="rejectQuotation('${q.name}')">✖</button>
-                                </td>
-                            `;
+                                            <td style="text-align:center; background:#f9f9f9">
+                                                <button class="btn btn-success btn-sm" 
+                                                        onclick="approveQuotation('${q.name}', '${frm.doc.name}')" 
+                                                        title="Approve Quotation">✔</button>
+                            
+                                                <button class="btn btn-danger btn-sm" 
+                                                        onclick="rejectQuotation('${q.name}')" 
+                                                        title="Reject Quotation">✖</button>
+                                            </td>`;
                                     } else {
-                                        return `<td style="text-align:center">${q[field.key] || "-"}</td>`;
+                                        return `<td style="text-align:center; background:#f9f9f9; font-size:16px; font-weight:medium;">
+                                                    ${q[field.key] || "-"}
+                                                </td>`;
                                     }
                                 }).join("");
-
-                                return `<tr><th>${field.label}</th>${rowCells}</tr>`;
+                            
+                                return `<tr>
+                                    <th style="background:#a3a1a1; font-weight:bold; font-size:18px;">${field.label}</th>
+                                    ${rowCells}
+                                </tr>`;
                             }).join("");
-
+                            
                             const html = `
-                    <div style="overflow-x:auto">
-                        <table class="table table-bordered table-sm" style="min-width:800px;">
-                            <thead><tr><th>Field</th>${tableHeader}</tr></thead>
-                            <tbody>${tableRows}</tbody>
-                        </table>
-                    </div>
-                `;
+                                <div style="overflow-x:auto">
+                                    <table class="table table-bordered table-sm" style="min-width:800px; background:#f7f7f7;">
+                                        <thead><tr><th style="background:#a3a1a1; font-weight:bold; font-size:18px;">Fields</th>${tableHeader}</tr></thead>
+                                        <tbody>${tableRows}</tbody>
+                                    </table>
+                                </div>
+                            `;
 
                             const dialog = new frappe.ui.Dialog({
                                 title: 'Compare Car Quotations',
@@ -183,58 +198,154 @@ function updateStatus(frm) {
                             dialog.show();
 
                             // Define global action handlers
+                            // window.approveQuotation = function (approved_name, employee_details) {
+                            //     frappe.call({
+                            //         method: "frappe.client.set_value",
+                            //         args: {
+                            //             doctype: "Car Quotation",
+                            //             name: approved_name,
+                            //             fieldname: { status: "Approved" }
+                            //         },
+                            //         callback: function () {
+                            //             frappe.call({
+                            //                 method: "frappe.client.get_list",
+                            //                 args: {
+                            //                     doctype: "Car Quotation",
+                            //                     filters: {
+                            //                         employee_details: employee_details,
+                            //                         name: ["!=", approved_name]
+                            //                     },
+                            //                     fields: ["name"]
+                            //                 },
+                            //                 callback: function (res2) {
+                            //                     res2.message.forEach(other => {
+                            //                         frappe.call({
+                            //                             method: "frappe.client.set_value",
+                            //                             args: {
+                            //                                 doctype: "Car Quotation",
+                            //                                 name: other.name,
+                            //                                 fieldname: { status: "Rejected" }
+                            //                             }
+                            //                         });
+                            //                     });
+                            //                     frappe.msgprint("Comparison updated.");
+                            //                     dialog.hide();
+                            //                 }
+                            //             });
+                            //         }
+                            //     });
+                            // };
                             window.approveQuotation = function (approved_name, employee_details) {
-                                frappe.call({
-                                    method: "frappe.client.set_value",
-                                    args: {
-                                        doctype: "Car Quotation",
-                                        name: approved_name,
-                                        fieldname: { status: "Approved" }
-                                    },
-                                    callback: function () {
-                                        frappe.call({
-                                            method: "frappe.client.get_list",
-                                            args: {
-                                                doctype: "Car Quotation",
-                                                filters: {
-                                                    employee_details: employee_details,
-                                                    name: ["!=", approved_name]
-                                                },
-                                                fields: ["name"]
-                                            },
-                                            callback: function (res2) {
-                                                res2.message.forEach(other => {
-                                                    frappe.call({
-                                                        method: "frappe.client.set_value",
-                                                        args: {
-                                                            doctype: "Car Quotation",
-                                                            name: other.name,
-                                                            fieldname: { status: "Rejected" }
-                                                        }
-                                                    });
-                                                });
-                                                frappe.msgprint("Comparison updated.");
-                                                dialog.hide();
-                                            }
-                                        });
+                                frappe.prompt([
+                                    {
+                                        fieldname: 'remarks_input',
+                                        label: 'Enter Finance Team Remarks',
+                                        fieldtype: 'Data',
+                                        reqd: 1
                                     }
-                                });
+                                ], function (values) {
+                                    // 1. Update approved quotation status to Approved
+                                    frappe.call({
+                                        method: "frappe.client.set_value",
+                                        args: {
+                                            doctype: "Car Quotation",
+                                            name: approved_name,
+                                            fieldname: {
+                                                status: "Approved",
+                                                finance_team_status: "Approved",
+                                                finance_team_remarks: values.remarks_input
+                                            }
+                                        },
+                                        callback: function () {
+                                            // 2. Reject all other quotations
+                                            frappe.call({
+                                                method: "frappe.client.get_list",
+                                                args: {
+                                                    doctype: "Car Quotation",
+                                                    filters: {
+                                                        employee_details: employee_details,
+                                                        name: ["!=", approved_name]
+                                                    },
+                                                    fields: ["name"]
+                                                },
+                                                callback: function (res2) {
+                                                    res2.message.forEach(other => {
+                                                        frappe.call({
+                                                            method: "frappe.client.set_value",
+                                                            args: {
+                                                                doctype: "Car Quotation",
+                                                                name: other.name,
+                                                                fieldname: { status: "Rejected" }
+                                                            }
+                                                        });
+                                                    });
+
+                                                    // 3. Send email using existing method
+                                                    send_email(frm.doc.name, "FinanceTeam To FinanceHead Payload",{quotation_id: approved_name });
+
+                                                    frappe.msgprint("Quotation approved, remarks saved, and email sent to Finance Head.");
+                                                    dialog.hide();
+                                                    updateStatus(frm);
+                                                }
+                                            });
+                                        }
+                                    });
+                                }, 'Remarks Required', 'Submit');
                             };
 
+
+                            // window.rejectQuotation = function (name) {
+                            //     frappe.prompt([
+                            //         {
+                            //             fieldname: 'remarks_input',
+                            //             label: 'Enter Finance Team Remarks',
+                            //             fieldtype: 'Data',
+                            //             reqd: 1
+                            //         }])
+                            //     frappe.call({
+                            //         method: "frappe.client.set_value",
+                            //         args: {
+                            //             doctype: "Car Quotation",
+                            //             name: name,
+                            //             fieldname: { status: "Rejected" }
+                            //         },
+                            //         callback: function () {
+                            //             send_email(frm.doc.name, "Reject FinanceTeam to Vendor")
+                            //             frappe.msgprint("Quotation rejected.");
+                            //             dialog.hide();
+                            //         }
+                            //     });
+                            // };
                             window.rejectQuotation = function (name) {
-                                frappe.call({
-                                    method: "frappe.client.set_value",
-                                    args: {
-                                        doctype: "Car Quotation",
-                                        name: name,
-                                        fieldname: { status: "Rejected" }
-                                    },
-                                    callback: function () {
-                                        frappe.msgprint("Quotation rejected.");
-                                        dialog.hide();
+                                frappe.prompt([
+                                    {
+                                        fieldname: 'remarks_input',
+                                        label: 'Enter Finance Team Remarks for Rejection',
+                                        fieldtype: 'Data',
+                                        reqd: 1
                                     }
-                                });
+                                ], function (values) {
+                                    frappe.call({
+                                        method: "frappe.client.set_value",
+                                        args: {
+                                            doctype: "Car Quotation",
+                                            name: name,
+                                            fieldname: {
+                                                status: "Rejected",
+                                                finance_team_status: "Rejected",
+                                                finance_team_remarks: values.remarks_input
+                                            }
+                                        },
+                                        callback: function () {
+                                            send_email(frm.doc.name, "Reject FinanceTeam to Vendor", { quotation_id: name }); // ✅ updated version
+                                            frappe.msgprint("Quotation rejected, remarks saved, and notification sent.");
+                                            dialog.hide();
+                                            updateStatus(frm);
+                                        }
+                                    });
+                                }, 'Remarks Required', 'Submit');
                             };
+
                         }
                     });
                 });
@@ -668,51 +779,6 @@ frappe.ui.form.on("Purchase Team Form", {
         }
     },
 
-    // purchase_head_status: function(frm, cdt, cdn) {
-    //     const doc = frappe.get_doc(cdt, cdn);
-    //     // Skip if this is coming from a button click (handled by the button)
-    //     if (doc.__from_button_click) {
-    //         delete doc.__from_button_click;
-    //         return;
-    //     }
-
-    //     // Only handle if the value actually changed
-    //     if (doc.__unsaved || doc.purchase_head_status !== doc.__last_purchase_head_status) {
-    //         handleStatusUpdate(
-    //             frm, 
-    //             "purchase_head_status", 
-    //             "purchase_head_remarks", 
-    //             "PurchaseHead To FinanceTeam",
-    //             doc.purchase_head_status
-    //         ).then(() => {
-    //             updateStatus(frm);
-    //             doc.__last_purchase_head_status = doc.purchase_head_status;
-    //         });
-    //     }
-    // },
-
-    // purchase_team_status: function(frm, cdt, cdn) {
-    //     const doc = frappe.get_doc(cdt, cdn);
-    //     // Skip if this is coming from a button click (handled by the button)
-    //     if (doc.__from_button_click) {
-    //         delete doc.__from_button_click;
-    //         return;
-    //     }
-
-    //     // Only handle if the value actually changed
-    //     if (doc.__unsaved && doc.purchase_team_status !== doc.__last_purchase_team_status) {
-    //         handleStatusUpdate(
-    //             frm, 
-    //             "purchase_team_status", 
-    //             "purchase_team_remarks", 
-    //             "PurchaseTeam To PurchaseHead",
-    //             doc.purchase_team_status
-    //         ).then(() => {
-    //             updateStatus(frm);
-    //             doc.__last_purchase_team_status = doc.purchase_team_status;
-    //         });
-    //     }
-    // },
     revised_ex_show_room_price: function (frm) {
         calculate_totals(frm);
     },

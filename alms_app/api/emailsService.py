@@ -44,6 +44,9 @@ def email_sender(name, email_send_to=None,payload=None):
             
         elif email_send_to =="FinanceTeam To FinanceHead":
             EMail.for_finance_team_to_finance_head(user) 
+        
+        elif email_send_to =="FinanceTeam To FinanceHead Payload":
+            EMail.for_finance_team_to_finance_head_payload(user,payload) 
             
         elif email_send_to =="FinanceHead To AccountsTeam":# FinanceHead To Vendors also
             # print("------------[PAYLOAD Quoatation ID]------------------:",payload)

@@ -12,7 +12,7 @@
  "client_script": "function send_email(name,email_send_to,indent_form_id){\r\n    frappe.call({\r\n        method: \"alms_app.api.emailsService.email_sender\",\r\n        args: {\r\n            name: name,\r\n            email_send_to: email_send_to\r\n        },\r\n        callback: function (response) {\r\n            if (!response.exc) {\r\n                \r\n            } else {\r\n                frappe.msgprint({\r\n                    title: \"Error\",\r\n                    indicator: \"red\",\r\n                    message: response.exc || \"An unknown error occurred while sending the email.\",\r\n                });\r\n            }\r\n        },\r\n        error: function (error) {\r\n            frappe.msgprint({\r\n                title: \"Error\",\r\n                indicator: \"red\",\r\n                message: error.message || \"An unknown error occurred while sending the email.\",\r\n            });\r\n        },\r\n    });\r\n}\r\n\r\nfrappe.web_form.validate = () =>{\r\n\r\nlet url = window.location.href;\r\nlet params = new URLSearchParams(window.location.search);\r\nlet name = params.get(\"employee_code\");\r\nsend_email(name,\"To Reporting\")\r\n}\r\n\r\nfrappe.web_form.after_load = function () {\r\n    let dropdownContainer = document.createElement(\"div\");\r\n    dropdownContainer.innerHTML = `\r\n        <div>\r\n            <label for=\"toggle-dropdown\">Select Option:</label><br>\r\n            <select id=\"toggle-dropdown\" class=\"form-control\">\r\n                <option value=\"default\" selected>-- Select --</option>\r\n                <option value=\"Car\">Car</option>\r\n                <option value=\"Allowance\">Allowance</option>\r\n            </select>\r\n        </div>\r\n        <hr>\r\n    `;\r\n    document.querySelector(\".web-form-wrapper\").prepend(dropdownContainer);\r\n\r\n    const formFields = document.querySelectorAll(\".frappe-control\");\r\n    const sectionHeads = document.querySelectorAll(\".section-head\");\r\n\r\n    function hideAllFields() {\r\n        formFields.forEach(field => field.style.display = \"none\");\r\n        sectionHeads.forEach(section => section.style.display = \"none\");\r\n    }\r\n\r\n    hideAllFields();\r\n\r\n    document.getElementById(\"toggle-dropdown\").addEventListener(\"change\", function () {\r\n        let selectedValue = this.value;\r\n\r\n        if (selectedValue === \"Car\") {\r\n            formFields.forEach(field => field.style.display = \"block\");\r\n            sectionHeads.forEach(section => section.style.display = \"block\");\r\n        } else {\r\n            hideAllFields();\r\n        }\r\n\r\n        frappe.web_form.set_value(\"form_type\", selectedValue);\r\n    });\r\n};",
  "condition_json": "[]",
  "creation": "2025-06-11 14:46:46.890615",
- "custom_css": ".web-footer{\n    display:none;\n}\n\n.navbar{\n    display:none;\n}\n\n.success-footer{\n    display:none;\n}\n",
+ "custom_css": ".web-footer{\n    display:none;\n}\n\n.navbar{\n    display:none;\n}\n\n.success-footer{\n    display:none;\n}",
  "doc_type": "Car Indent Form",
  "docstatus": 0,
  "doctype": "Web Form",
@@ -22,7 +22,7 @@
  "list_columns": [],
  "login_required": 0,
  "max_attachment_size": 24,
- "modified": "2025-06-11 17:07:29.846365",
+ "modified": "2025-06-13 16:45:48.368201",
  "modified_by": "Administrator",
  "module": "CRMS",
  "name": "car-indent-form-employee",
@@ -46,7 +46,7 @@
    "max_value": 0,
    "options": "Car\nAllowance",
    "precision": "",
-   "read_only": 1,
+   "read_only": 0,
    "reqd": 0,
    "show_in_filter": 0
   },
@@ -73,7 +73,7 @@
    "max_value": 0,
    "options": "Employee Master",
    "precision": "",
-   "read_only": 1,
+   "read_only": 0,
    "reqd": 0,
    "show_in_filter": 0
   },
@@ -86,7 +86,7 @@
    "max_length": 0,
    "max_value": 0,
    "precision": "",
-   "read_only": 1,
+   "read_only": 0,
    "reqd": 0,
    "show_in_filter": 0
   },
@@ -99,7 +99,7 @@
    "max_length": 0,
    "max_value": 0,
    "precision": "",
-   "read_only": 1,
+   "read_only": 0,
    "reqd": 0,
    "show_in_filter": 0
   },
@@ -112,7 +112,7 @@
    "max_length": 0,
    "max_value": 0,
    "precision": "",
-   "read_only": 1,
+   "read_only": 0,
    "reqd": 0,
    "show_in_filter": 0
   },
@@ -150,7 +150,7 @@
    "max_length": 0,
    "max_value": 0,
    "precision": "",
-   "read_only": 1,
+   "read_only": 0,
    "reqd": 0,
    "show_in_filter": 0
   },
@@ -163,7 +163,7 @@
    "max_length": 0,
    "max_value": 0,
    "precision": "",
-   "read_only": 1,
+   "read_only": 0,
    "reqd": 0,
    "show_in_filter": 0
   },
@@ -176,7 +176,7 @@
    "max_length": 0,
    "max_value": 0,
    "precision": "",
-   "read_only": 1,
+   "read_only": 0,
    "reqd": 0,
    "show_in_filter": 0
   },

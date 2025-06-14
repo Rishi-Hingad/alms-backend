@@ -725,6 +725,34 @@ class EmailServices:
         # print(body)
         self.send(subject=subject, body=body, recipient_email=recipient_email)
         self.send(subject=subject, body=body, recipient_email=recipient_email2)
+    
+    def for_finance_team_to_finance_head_payload(self, user, payload):
+        print("FInacne Team to Finance Head Payload",payload)
+
+        recipient_email = emailMaster.finance_head_email
+        print("Finance head email---->",recipient_email)
+        recipient_email2 = emailMaster.finance_head2_email
+        print("Finance head 2 email---->",recipient_email2)
+
+        subject = "Car Rental Form Approved by Finance Team"
+        regards ="Finance Team"
+        form = frappe.get_doc("Car Indent Form",user.name)
+        print("form done++++++++++++++++++++++++++++++++++")
+        revised_form = frappe.get_doc("Purchase Team Form",user.name)
+        print("purchase form done +++++++++++++++++++++++++++++++++++++++++")
+        quot_form = frappe.get_doc("Car Quotation", payload["quotation_id"])
+        print("quot form done +++++++++++++++++++++++++++++++++++++++++", quot_form)
+        updated_by = emailMaster.finance_team
+        remarks_by="finance_team_remarks" #to change here  // finance team remarks // need another form car quotation // to add new fields in email body
+        content = f"""
+        Dear Sir/Madam,
+        <br><br>The Finance Team has approved the car rental form for {user.employee_name}.
+        <br>{updated_by} have approved the request for the activity mentioned below:
+        """
+        body = self.create_email_body_quot(form,revised_form,quot_form,user,subject, content,updated_by,remarks_by,regards) 
+        # print(body)
+        self.send(subject=subject, body=body, recipient_email=recipient_email)
+        self.send(subject=subject, body=body, recipient_email=recipient_email2)
 
     def for_finance_head_to_accounts_team(self, user):
         recipient_email = emailMaster.accounts_team_email
