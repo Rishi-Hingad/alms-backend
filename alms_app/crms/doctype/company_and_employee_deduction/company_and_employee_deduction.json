@@ -51,8 +51,8 @@
   "employee_residual_value",
   "employee_emi_financing",
   "employee_finance_emi_road_tax",
-  "employee_gst_and_cess",
   "employee_insurance",
+  "employee_gst_and_cess",
   "column_break_ezfg",
   "employee_fleet_management",
   "employee_24x7_assist",
@@ -61,7 +61,14 @@
   "employee_gst_on_fms",
   "employee_total_emi",
   "employee_interim_payment",
-  "employee_quarterly_payment"
+  "employee_quarterly_payment",
+  "approvals_section",
+  "finance_team_status",
+  "finance_head_status",
+  "status",
+  "column_break_lpns",
+  "finance_team_remarks",
+  "finance_head_remarks"
  ],
  "fields": [
   {
@@ -254,72 +261,72 @@
   {
    "default": "0",
    "fieldname": "employee_residual_value",
-   "fieldtype": "Data",
+   "fieldtype": "Currency",
    "label": "Residual Value"
   },
   {
    "fieldname": "employee_emi_financing",
-   "fieldtype": "Data",
+   "fieldtype": "Currency",
    "label": "EMI (Financing)"
   },
   {
    "fieldname": "employee_finance_emi_road_tax",
-   "fieldtype": "Data",
+   "fieldtype": "Currency",
    "label": "Finance EMI (Road Tax)"
   },
   {
    "default": "0",
    "fieldname": "employee_std_relief_car_non_accdt",
-   "fieldtype": "Data",
+   "fieldtype": "Currency",
    "label": "Std Relief Car (Non Accdt)"
   },
   {
    "default": "0",
    "fieldname": "employee_gst_on_fms",
-   "fieldtype": "Data",
+   "fieldtype": "Currency",
    "label": "GST on FMS"
   },
   {
    "fieldname": "employee_total_emi",
-   "fieldtype": "Data",
+   "fieldtype": "Currency",
    "label": "Total EMI"
   },
   {
    "fieldname": "employee_interim_payment",
-   "fieldtype": "Data",
+   "fieldtype": "Currency",
    "label": "Interim Payment"
   },
   {
    "fieldname": "employee_quarterly_payment",
-   "fieldtype": "Data",
+   "fieldtype": "Currency",
    "label": "Quarterly Payment"
   },
   {
    "fieldname": "employee_ex_showroom_amount_net_of_discount",
-   "fieldtype": "Data",
+   "fieldtype": "Currency",
    "label": "Ex Showroom Amount (Net of Discount)"
   },
   {
    "fieldname": "employee_gst_and_cess",
-   "fieldtype": "Data",
+   "fieldtype": "Currency",
    "label": "GST and Cess"
   },
   {
    "default": "0",
    "fieldname": "employee_insurance",
-   "fieldtype": "Data",
+   "fieldtype": "Currency",
    "label": "Insurance"
   },
   {
    "default": "0",
    "fieldname": "employee_fleet_management",
-   "fieldtype": "Data",
+   "fieldtype": "Currency",
    "label": "Fleet Management (Repairs and Tyres)"
   },
   {
    "default": "0",
    "fieldname": "employee_24x7_assist",
-   "fieldtype": "Data",
+   "fieldtype": "Currency",
    "label": "24x7 Assist"
   },
   {
@@ -329,13 +336,13 @@
   },
   {
    "fieldname": "employee_financed_amount",
-   "fieldtype": "Data",
+   "fieldtype": "Currency",
    "label": "Financed Amount"
   },
   {
    "fetch_from": "finance_quotation_id.residual_value_percent",
    "fieldname": "employee_residual_value_percent",
-   "fieldtype": "Data",
+   "fieldtype": "Int",
    "label": "Residual Value Percent"
   },
   {
@@ -364,11 +371,48 @@
   {
    "fieldname": "column_break_iyzk",
    "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "approvals_section",
+   "fieldtype": "Section Break",
+   "label": "Approvals"
+  },
+  {
+   "fieldname": "column_break_lpns",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "finance_team_remarks",
+   "fieldtype": "Data",
+   "label": "Finance Team Remarks"
+  },
+  {
+   "fieldname": "finance_head_remarks",
+   "fieldtype": "Data",
+   "label": "Finance Head Remarks"
+  },
+  {
+   "fieldname": "finance_team_status",
+   "fieldtype": "Select",
+   "label": "Finance Team Status",
+   "options": "Pending\nApproved\nRejected"
+  },
+  {
+   "fieldname": "finance_head_status",
+   "fieldtype": "Select",
+   "label": "Finance Head Status",
+   "options": "Pending\nApproved\nRejected"
+  },
+  {
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "label": "Status",
+   "options": "Pending\nApproved\nRejected"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-06-13 11:32:46.864671",
+ "modified": "2025-06-14 10:00:45.474343",
  "modified_by": "Administrator",
  "module": "CRMS",
  "name": "Company and Employee Deduction",

@@ -57,7 +57,12 @@ def email_sender(name, email_send_to=None,payload=None):
         elif email_send_to in ["Easy Assets","ALD","XYZ"]:
             EMail.for_finance_fill_quotation_acknowledgement(user,email_send_to)
             # negative track starts here
-         
+        elif email_send_to == "Deduction Finance Team To Finance Head":
+            EMail.for_deduction_finance_to_finance_head(user,payload)
+        elif email_send_to == "Deduction Finance Head To Accounts":
+            EMail.for_deduction_finance_head_to_accounts(user,payload)
+        elif email_send_to == "Reject Finance Head To Finance Team":
+            EMail.for_reject_deduction_by_finance_head(user,payload)
          #rejection
         elif email_send_to=="Reject Reporting to Employee":
             EMail.for_reject_by_reporting(user)
