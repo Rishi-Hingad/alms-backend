@@ -18,7 +18,6 @@
   "tenure",
   "car_quotation_section",
   "column_break_xjhs",
-  "base_price_excluding_gst",
   "gst",
   "ex_showroom_amount",
   "accessory",
@@ -31,12 +30,12 @@
   "financed_amount",
   "residual_value",
   "column_break_vhla",
+  "assist",
   "finance_emi_road_tax",
   "emi_financing",
   "gst_and_cess",
   "insurance",
   "fleet_management_repairs_and_tyres",
-  "assist",
   "pickup_and_drop",
   "std_relief_car_non_accdt",
   "gst_on_fms",
@@ -112,12 +111,6 @@
    "label": "Tenure"
   },
   {
-   "fetch_from": "finance_quotation_id.base_price_excluding_gst",
-   "fieldname": "base_price_excluding_gst",
-   "fieldtype": "Currency",
-   "label": "Base Price Excluding GST"
-  },
-  {
    "fetch_from": "finance_quotation_id.gst",
    "fieldname": "gst",
    "fieldtype": "Currency",
@@ -129,7 +122,6 @@
    "label": "Ex-Showroom Amount"
   },
   {
-   "fetch_from": "finance_quotation_id.accessory",
    "fieldname": "accessory",
    "fieldtype": "Currency",
    "label": "Accessory"
@@ -361,7 +353,9 @@
   {
    "fieldname": "assist",
    "fieldtype": "Currency",
-   "label": "24x7 Assist"
+   "in_list_view": 1,
+   "label": "24x7 Assist",
+   "reqd": 1
   },
   {
    "fieldname": "basic_details_section",
@@ -412,7 +406,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-06-14 10:00:45.474343",
+ "modified": "2025-06-14 14:20:52.087052",
  "modified_by": "Administrator",
  "module": "CRMS",
  "name": "Company and Employee Deduction",

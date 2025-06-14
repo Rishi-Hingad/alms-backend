@@ -273,8 +273,29 @@ function toggleFieldStatus(frm) {
                     'cursor': 'pointer'
                 });
             }
+
         }
     });
+
+    Object.keys(frm.fields_dict).forEach(function (fieldname) {
+        frappe.call({
+            method:"alms_app.crms.doctype.car_indent_form.car_indent_form.management",
+            args:{
+                current_frappe_user:frappe.session.user
+            },
+            callback:function(r){
+                const userData=r.message;
+                console.log("user data:",userData)
+                
+                if(userData === "Administrator"){
+                    frm.set_df_property(fieldname, "read_only", 0);
+                }
+                else{
+                    frm.set_df_property(fieldname, "read_only", 1);
+                }
+            }
+        })
+     });
 }
 
 
