@@ -435,7 +435,86 @@ class EmailServices:
         </html>
         """
         return body
-     
+
+    def create_email_body_deduction(self,form, revised_form, user,subject, content, updated_by, remarks_by, regards=None, link=f"{frappe.utils.get_url()}/login#login"): 
+        remark_text = getattr(revised_form, remarks_by, None)
+        body = f"""
+        <html>
+        <head>
+            <style>
+                body {{ font-family: Arial, sans-serif; margin: 20px; }}
+                h2 {{ color: #4CAF50; }}
+                p {{ font-size: 16px; }}
+                .button {{
+                    background-color: #4CAF50;
+                    color: white;
+                    padding: 10px 20px;
+                    text-align: center;
+                    text-decoration: none;
+                    display: inline-block;
+                    font-size: 16px;
+                    border-radius: 5px;
+                    margin-top: 20px;
+                }}
+               
+            </style>
+        </head>
+        <body>
+            <h2>{subject}</h2>
+            <p>{content}</p>     
+            <table border="1" cellpadding="5" cellspacing="0">
+           
+            <tbody>
+                <tr>
+                    <td>Company-Total EMI</td>
+                    <td>{form.total_emi}</td>
+                </tr>
+                <tr>
+                    <td>Company-Interim Payment</td>
+                    <td>{form.interim_payment}</td>
+                </tr>
+                <tr>
+                    <td>Company-Quaterly Payment</td>
+                    <td>{form.quarterly_payment}</td>
+                </tr>
+                <tr>
+                    <td>Employee-Total EMI</td>
+                    <td>{form.employee_total_emi}</td>
+                </tr>
+                <tr>
+                    <td>Employee-Interim Payment</td>
+                    <td>{form.employee_interim_payment}</td>
+                </tr>
+                <tr>
+                    <td>Employee-Quaterly Payment</td>
+                    <td>{form.employee_quarterly_payment}</td>
+                </tr>
+                
+                <tr>
+                    <td>Remarks</td>
+                    <td>{remark_text}</td>
+                </tr>
+                
+                <tr>
+                    <td>Updated by</td>
+                    <td>{updated_by}</td>
+                </tr>
+                
+            </tbody>
+        </table>
+        
+            <p>
+                <a href={link} class="button"> Login Here </a>
+            </p>        
+                
+            <p>Best regards,</p>
+            <p>{regards}</p>
+        </body>
+        </html>
+        """
+        return body
+
+
     def create_email_body_for_emp(self,user):
         form_url = f"{frappe.utils.get_url()}/car-indent-form-employee/new?employee_code={user.name}"
         body = f"""
@@ -777,6 +856,78 @@ class EmailServices:
         # body = self.create_email_body_revised(form,revised_form,user,subject, content,updated_by,remarks_by,regards)
         self.send(subject=subject, body=body, recipient_email=recipient_email)
 
+    def for_deduction_finance_to_finance_head(self,user,payload):
+        recipient_email = emailMaster.finance_head_email
+        print("Finance head email---->",recipient_email)
+        recipient_email2 = emailMaster.finance_head2_email
+        print("Finance head 2 email---->",recipient_email2)
+        subject = "Company and Employee Deduction Form Approved by Finance Team"
+        form = frappe.get_doc("Company and Employee Deduction",user.name)
+        print("deduction done +++++++++++++++++++++++++++++++++++++++++",form)
+        revised_form = frappe.get_doc("Car Quotation",payload["quotation_id"])
+        print("quotation form done +++++++++++++++++++++++++++++++++++++++++",revised_form)
+        employee_details=revised_form.employee_details
+        print("employee details____________",employee_details)
+        regards="Finance Team"
+        updated_by = emailMaster.finance_team
+        remarks_by="finance_team_remarks" #to change here  // finance team remarks // need another form car quotation // to add new fields in email body
+        content = f"""
+        Dear Sir/Madam,
+        <br><br>The Finance Team has approved the Company and Employee Deduction Form for {employee_details}.
+        <br>{updated_by} have approved the request for the activity mentioned below:
+        """
+
+        body = self.create_email_body_deduction(form, revised_form, user, subject, content, updated_by, remarks_by, regards)
+        print(body)
+        self.send(subject=subject, body=body, recipient_email=recipient_email)
+        self.send(subject=subject, body=body, recipient_email=recipient_email2)
+
+    def for_deduction_finance_head_to_accounts(self,user,payload):
+        recipient_email = emailMaster.accounts_team_email
+        print("accounts email---->",recipient_email)
+        subject = "Company and Employee Deduction Form Approved by Finance Head"
+        form = frappe.get_doc("Company and Employee Deduction",user.name)
+        print("deduction done +++++++++++++++++++++++++++++++++++++++++")
+        revised_form = frappe.get_doc("Car Quotation",payload["quotation_id"])
+        print("quotation form done +++++++++++++++++++++++++++++++++++++++++")
+        employee_details=revised_form.employee_details
+        print("employee details____________",employee_details)
+        regards="Finance Head"
+        updated_by = emailMaster.finance_head
+        remarks_by="finance_team_remarks" #to change here  // finance team remarks // need another form car quotation // to add new fields in email body
+        content = f"""
+        Dear Sir/Madam,
+        <br><br>The Finance Team has approved the Company and Employee Deduction Form for {employee_details}.
+        <br>{updated_by} has approved the request for the activity mentioned below:
+        """
+
+        body = self.create_email_body_deduction(form, revised_form, user, subject, content, updated_by, remarks_by, regards)
+        self.send(subject=subject, body=body, recipient_email=recipient_email)
+    
+    #reject deduction
+    def for_reject_deduction_by_finance_head(self,user,payload):
+        recipient_email = emailMaster.finance_team_email
+        print("accounts email---->",recipient_email)
+        form = frappe.get_doc("Company and Employee Deduction",user.name)
+        print("deduction done +++++++++++++++++++++++++++++++++++++++++")
+        revised_form = frappe.get_doc("Car Quotation",payload["quotation_id"])
+        print("quotation form done +++++++++++++++++++++++++++++++++++++++++")
+        employee_details=revised_form.employee_details
+        print("employee details____________",employee_details)
+
+        subject = "Company and Employee Deduction Form Rejected by Finance Head"
+        cc_list=[emailMaster.finance_head2_email]
+        remarks_by="finance_head_remarks"
+        content=f"""
+        Dear Sir/Madam,
+        <br><br>
+        This is to notify the Finance Team that the Company and Employee Deduction Form with ID - {user.name} is rejected by the Finance Head.
+
+        """
+        body = self.create_reject_email_body(form,subject,content,remarks_by)
+        self.send_reject(subject,recipient_email,cc_list,body)
+
+
     #rejection CAR INDENT FORM
     def for_reject_by_reporting(self,user):
         recipient_email = user.email_id     
@@ -1071,91 +1222,17 @@ class EmailServices:
         
         return body
     
-    # def create_vendor_email_for_Modified_car_quotation(self,compny_name,user,form,link):
-    #     body = f"""
-    #         <html>
-    #         <head>
-    #             <style>
-    #                 body {{
-    #                     font-family: Arial, sans-serif;
-    #                     margin: 20px;
-    #                 }}
-    #                 h2 {{
-    #                     color: #4CAF50;
-    #                 }}
-    #                 p {{
-    #                     font-size: 16px;
-    #                 }}
-    #                 .button {{
-    #                     background-color: #4CAF50;
-    #                     color: white;
-    #                     padding: 10px 20px;
-    #                     text-align: center;
-    #                     text-decoration: none;
-    #                     display: inline-block;
-    #                     font-size: 16px;
-    #                     border-radius: 5px;
-    #                     margin-top: 20px;
-    #                 }}
-    #                 .company-name {{
-    #                     color: blue;
-    #                     font-size: 24px;
-    #                     font-weight: bold;
-    #                 }}
-    #                 .contact-info {{
-    #                     font-size: 14px;
-    #                     color: grey;
-    #                     margin-top: 20px;
-    #                 }}
-    #                 table {{
-    #                     border-collapse: collapse;
-    #                     width: 100%;
-    #                 }}
-    #                 th, td {{
-    #                     padding: 8px;
-    #                     border: 1px solid #ddd;
-    #                     text-align: left;
-    #                 }}
-    #             </style>
-    #         </head>
-    #         <body>
-
-    #             <h2>Dear {compny_name}</h2>
-    #             <p>The quote received is on higher side so kindly provide a modified rental.</p>
-    #             <p>Awaiting for your positive response!! </p>
-    #             <p>
-    #                 <a href="{link}" class="button">Fill Quotation Form</a>
-    #             </p>
-
-    #             <p class="contact-info">
-    #                 For assistance, please contact:<br>
-    #                 Email: support@meril.com<br>
-    #                 Phone: +91 123 456 7890
-    #             </p>
-
-    #             <p>Thank you for your time and cooperation!</p>
-
-    #         </body>
-    #         </html>
-                            
-        
-    #     """
-        
-    #     return body
     
     def for_car_quotation_ALD_EasyAssets_Xyz(self,user,payload):
         data = frappe.get_all("Vendor Master",fields="*")
         # print("-------------------------------[DATA]----------------------",data)
         car_indent_form = frappe.get_doc("Car Indent Form",user.name)  
         car_purchase_form = frappe.get_doc("Purchase Team Form",user.name)  
-        # print("0000000000000000000000000000000000000000000000000000[payload]----------------------")
-        # print(payload,data,"0000000000000000000000000000000000000000000000000000000000000000000")
-        # print(payload.get("email_send_to"),"Payload Data ")
         emails_sent = []
         for company_detail in data:
-            # print(company_detail,"++++++++++++___________________++++++++++++++++")
+            
             if payload.get("email_send_to") == "ALL" or company_detail.name == payload.get("email_send_to"):
-                # print(f"----------[SEND-LINK TO {company_detail.name}]------[EMAIL TYPE :{payload.get('email_phase')}]---------------")
+               
                 link = (
                         # f"http://127.0.0.1:8001/vendor-assets-quotation/new?"
                         f"{frappe.utils.get_url()}/vendor-assets-quotation/new?"
@@ -1187,7 +1264,6 @@ class EmailServices:
         else:
             frappe.msgprint("No matching vendors found to send emails.")
     # "-------------------------------------" EMAIL BODY COMPANY SELECTION EMAILS "-------------------------------------"
-    # Jyare COmpny Selected Thay [Approved] then eni process chalu thay e 
     def create_selected_company_process(self,car_form,user, form_link):
         body = f"""
         <html>
@@ -1320,4 +1396,6 @@ class EmailServices:
         This is to notify you that the Car Quotation Form of {user.employee_name} is rejected by the Finance Team for the following reasons:<br>
         """
         body = self.create_reject_email_body(car_quot_form,subject,content,remarks_by)  
-        self.send_reject(subject,recipient_email,cc_list,body)  
+        self.send_reject(subject,recipient_email,cc_list,body) 
+
+    

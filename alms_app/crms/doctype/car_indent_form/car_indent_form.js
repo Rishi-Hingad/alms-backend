@@ -27,176 +27,6 @@ function send_email(user, email_send_to) {
     });
 }
 
-// function updateStatus(frm) {
-//     frm.clear_custom_buttons();
-
-//     const buttons = [
-//         {
-//             label: "Reporting Head",
-//             field: "reporting_head_approval",
-//             current_status: frm.doc.reporting_head_approval,
-//         },
-//         {
-//             label: "HR",
-//             field: "hr_approval",
-//             current_status: frm.doc.hr_approval,
-//         },
-//         {
-//             label: "HR Head",
-//             field: "hr_head_approval",
-//             current_status: frm.doc.hr_head_approval,
-//         }
-//     ];
-
-//     buttons.forEach(button => {
-//         const status = button.current_status || "Pending";
-//         let status_color;
-
-//         switch (status) {
-//             case "Approved":
-//                 status_color = "darkgreen";
-//                 break;
-//             case "Rejected":
-//                 status_color = "darkred";
-//                 break;
-//             default:
-//                 status_color = "gray";
-//         }
-
-//         frm.add_custom_button(`${button.label}: ${status}`, null).css({
-//             "background-color": status_color,
-//             "color": "white",
-//             "border-color": status_color,
-//             "cursor": "not-allowed"
-//         });
-//     });
-// }
-
-
-
-// function updateStatus(frm) {
-//     frm.clear_custom_buttons();
-
-//     frappe.call({
-//         method: "alms_app.crms.doctype.car_indent_form.car_indent_form.management",
-//         args: {
-//             current_frappe_user: frappe.session.user
-//         },
-//         callback: function (r) {
-//             const designation = r.message;
-
-//             const buttons = [
-//                 {
-//                     label: "Reporting Head",
-//                     field: "reporting_head_approval",
-//                     current_status: frm.doc.reporting_head_approval,
-//                     designation_match: "Reporting Head"
-//                 },
-//                 {
-//                     label: "HR",
-//                     field: "hr_approval",
-//                     current_status: frm.doc.hr_approval,
-//                     designation_match: "HR"
-//                 },
-//                 {
-//                     label: "Travel Desk",
-//                     field: "travel_desk_approval",
-//                     current_status: frm.doc.travel_desk_approval,
-//                     designation_match: "Travel Desk"
-//                 },
-//                 {
-//                     label: "HR Head",
-//                     field: "hr_head_approval",
-//                     current_status: frm.doc.hr_head_approval,
-//                     designation_match: "HR Head"
-//                 }
-//             ];
-
-//             buttons.forEach(button => {
-//                 const status = button.current_status || "Pending";
-//                 let status_color;
-
-//                 switch (status) {
-//                     case "Approved":
-//                         status_color = "darkgreen";
-//                         break;
-//                     case "Rejected":
-//                         status_color = "darkred";
-//                         break;
-//                     default:
-//                         status_color = "gray";
-//                 }
-
-//                 // Default add button
-//                 const btn = frm.add_custom_button(`${button.label}: ${status}`, () => {
-//                     // Only if status is pending AND designation matches
-//                     if (status === "Pending" && designation === button.designation_match) {
-
-//                         // Additional check: reporting head must approve before HR/HR Head
-//                         if (button.field !== 'reporting_head_approval' && frm.doc.reporting_head_approval !== "Approved") {
-//                             frappe.msgprint("Reporting Head must approve before further approvals.");
-//                             return;
-//                         }
-
-//                         frappe.prompt([
-//                             {
-//                                 fieldname: 'remarks_input',
-//                                 label: `Enter ${button.label} Remarks`,
-//                                 fieldtype: 'Data',
-//                                 reqd: 1
-//                             }
-//                         ],
-//                         function (values) {
-//                             if (button.field === "hr_approval") {
-//                                 frm.set_value('hr_remarks', values.remarks_input);
-//                             }
-//                             if (button.field === "travel_desk_approval") {
-//                                 frm.set_value('travel_desk_remarks', values.remarks_input);
-//                             }
-//                             if (button.field === "hr_head_approval") {
-//                                 frm.set_value('hr_head_remarks', values.remarks_input);
-//                                 frm.set_value('status', 'Approved');
-//                             }
-//                             frm.set_value(button.field, 'Approved');
-//                             frm.refresh_field(button.field);
-//                             frm.save().then(() => {
-//                                 // Send email based on approval
-//                                 if (button.field === "hr_approval") {
-//                                     send_email(frm.doc.name, "HR To Travel Desk");
-//                                 }
-//                                 if (button.field === "travel_desk_approval") {
-//                                     send_email(frm.doc.name, "Travel Desk To HRHead");
-//                                 }
-//                                 if (button.field === "hr_head_approval") {
-//                                     send_email(frm.doc.name, "HRHead To PurchaseTeam");
-//                                 }
-//                                 updateStatus(frm);
-//                             });
-//                         },
-//                         'Remarks Required',
-//                         'Submit');
-//                     }
-//                 });
-
-//                 // Button styling
-//                 btn.css({
-//                     "background-color": status_color,
-//                     "color": "white",
-//                     "border-color": status_color,
-//                     "cursor": (status === "Pending" && designation === button.designation_match) ? "pointer" : "not-allowed"
-//                 });
-
-//                 // Disable button click if not allowed
-//                 if (!(status === "Pending" && designation === button.designation_match)) {
-//                     btn.off("click");
-//                 }
-//             });
-//         }
-//     });
-// }
-
-//Tintin new update Status
-
 let by_button=false;
 function updateStatus(frm) {
     frm.clear_custom_buttons();
@@ -443,8 +273,29 @@ function toggleFieldStatus(frm) {
                     'cursor': 'pointer'
                 });
             }
+
         }
     });
+
+    Object.keys(frm.fields_dict).forEach(function (fieldname) {
+        frappe.call({
+            method:"alms_app.crms.doctype.car_indent_form.car_indent_form.management",
+            args:{
+                current_frappe_user:frappe.session.user
+            },
+            callback:function(r){
+                const userData=r.message;
+                console.log("user data:",userData)
+                
+                if(userData === "Administrator"){
+                    frm.set_df_property(fieldname, "read_only", 0);
+                }
+                else{
+                    frm.set_df_property(fieldname, "read_only", 1);
+                }
+            }
+        })
+     });
 }
 
 
