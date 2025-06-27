@@ -120,7 +120,9 @@
    "fetch_from": "employee_code.eligibility",
    "fieldname": "eligibility",
    "fieldtype": "Currency",
-   "label": "Eligibility (Ex-Showroom Price)"
+   "in_list_view": 1,
+   "label": "Eligibility (Ex-Showroom Price)",
+   "reqd": 1
   },
   {
    "fetch_from": "employee_code.email_id",
@@ -283,7 +285,7 @@
    "link_fieldname": "employee_name"
   }
  ],
- "modified": "2025-06-11 11:55:16.642091",
+ "modified": "2025-06-27 01:12:02.313566",
  "modified_by": "Administrator",
  "module": "CRMS",
  "name": "Car Indent Form",

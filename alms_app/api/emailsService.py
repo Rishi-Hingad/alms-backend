@@ -80,7 +80,10 @@ def email_sender(name, email_send_to=None,payload=None):
             EMail.for_reject_by_hr_head(user)
 
         elif email_send_to=="Reject PurchaseHead to PurchaseTeam":
-            EMail.for_reject_by_purchase_head(user)  
+            EMail.for_reject_by_purchase_head(user)
+
+        elif email_send_to=="Reject PurchaseTeam to HR":
+            EMail.for_reject_by_purchase_team(user) 
 
         elif email_send_to== "Reject FinanceHead to Vendor":
             if payload.get("quotation_id"):

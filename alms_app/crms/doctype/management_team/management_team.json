@@ -8,7 +8,9 @@
  "field_order": [
   "designation",
   "full_name",
-  "email_id"
+  "email_id",
+  "role",
+  "create_user"
  ],
  "fields": [
   {
@@ -26,11 +28,23 @@
    "fieldname": "email_id",
    "fieldtype": "Data",
    "label": "Email Id"
+  },
+  {
+   "fieldname": "role",
+   "fieldtype": "Link",
+   "label": "Role",
+   "options": "Role"
+  },
+  {
+   "default": "0",
+   "fieldname": "create_user",
+   "fieldtype": "Check",
+   "label": "Create User"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-06-10 17:00:14.568695",
+ "modified": "2025-06-27 02:16:16.577664",
  "modified_by": "Administrator",
  "module": "CRMS",
  "name": "Management Team",

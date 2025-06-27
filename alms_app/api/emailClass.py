@@ -1001,6 +1001,19 @@ class EmailServices:
         form = frappe.get_doc("Purchase Team Form",user.name)
         body = self.create_reject_email_body(form,subject,content,remarks_by)
         self.send(subject,recipient_email,body)
+
+    def for_reject_by_purchase_team(self,user):
+        recipient_email=emailMaster.hr_team_email
+        subject="Purchase Form Rejected by Purchase Team"
+        remarks_by="purchase_team_remarks"
+        content = f"""
+        Dear Sir/Madam,
+        <br><br>
+        This is to notify the HR Team that the car rental form of {user.employee_name} submitted by you has been rejected by the Purchase Team for the following remarks:<br>
+        """
+        form = frappe.get_doc("Purchase Team Form",user.name)
+        body = self.create_reject_email_body(form,subject,content,remarks_by)
+        self.send(subject,recipient_email,body)
        
     def for_finance_fill_quotation_acknowledgement(self, user,regards=""):
         recipient_email = emailMaster.finance_team_email

@@ -47,13 +47,12 @@
   "finance_head_status",
   "revised_modify_quotation_id",
   "quotation_status",
+  "status",
   "column_break_rxya",
   "finance_team_remarks",
   "finance_head_remarks",
-  "status",
-  "column_break_zdme",
-  "revised_modified_quotation_id",
-  "quotation_status"
+  "finance_team_action_by",
+  "finance_head_action_by"
  ],
  "fields": [
   {
@@ -287,11 +286,25 @@
    "fieldtype": "Link",
    "label": "Revised/Modify Quotation ID",
    "options": "Car Quotation"
+  },
+  {
+   "fieldname": "finance_team_action_by",
+   "fieldtype": "Data",
+   "hidden": 1,
+   "label": "Finance Team Action By",
+   "read_only": 1
+  },
+  {
+   "fieldname": "finance_head_action_by",
+   "fieldtype": "Data",
+   "hidden": 1,
+   "label": "Finance Head Action By",
+   "read_only": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-06-12 16:47:45.560101",
+ "modified": "2025-06-27 03:31:38.917414",
  "modified_by": "Administrator",
  "module": "CRMS",
  "name": "Car Quotation",

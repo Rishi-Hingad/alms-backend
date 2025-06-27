@@ -1,112 +1,127 @@
 
-let by_button = false
+let by_button = false;
+
 function updateStatus(frm) {
     // frm.clear_custom_buttons();
+
     frappe.call({
         method: "alms_app.crms.doctype.car_indent_form.car_indent_form.management",
         args: {
             current_frappe_user: frappe.session.user
         },
         callback: function (r) {
-            const userData = r.message;
+            const userDesignation = r.message;
 
-            console.log("User Data", userData, "+++++++++++++++++++++++++++++")
+            const stages = [
+                {
+                    label: "Purchase Team",
+                    field: "purchase_team_status",
+                    remarks_field: "purchase_team_remarks",
+                    status: frm.doc.purchase_team_status,
+                    role: "Purchase",
+                    email_on_approve: "PurchaseTeam To PurchaseHead",
+                    email_on_reject: "Reject PurchaseTeam to HR"
+                },
+                {
+                    label: "Purchase Head",
+                    field: "purchase_head_status",
+                    remarks_field: "purchase_head_remarks",
+                    status: frm.doc.purchase_head_status,
+                    role: "Purchase Head",
+                    email_on_approve: "PurchaseHead To FinanceTeam",
+                    email_on_reject: "Reject PurchaseHead to PurchaseTeam"
+                }
+            ];
 
-            if (!userData) return;
+            const editableFields = {
+                "Purchase": ["purchase_team_status"],
+                "Purchase Head": ["purchase_head_status"],
+                "Administrator": ["purchase_team_status", "purchase_head_status"]
+            }[userDesignation] || [];
 
-            const allowedDesignations = ["Purchase", "Purchase Head", "Administrator"];
+            const visibleFields = {
+                "Purchase": ["purchase_team_status"],
+                "Purchase Head": ["purchase_team_status", "purchase_head_status"],
+                "Administrator": ["purchase_team_status", "purchase_head_status"]
+            }[userDesignation] || [];
 
-            if (allowedDesignations.includes(userData)) {
-                // frm.clear_custom_buttons();
+            stages.forEach(stage => {
+                const status = stage.status || "Pending";
+                const statusColor = {
+                    "Approved": "darkgreen",
+                    "Rejected": "darkred",
+                    "Pending": "gray"
+                }[status];
 
-                const buttons = [
-                    {
-                        label: "Purchase Team",
-                        field: "status",
-                        current_status: frm.doc.purchase_team_status,
-                        //added here
-                        designation_match: "Purchase",
-                        btn_field: "purchase_team_status"
-                    },
-                    {
-                        label: "Purchase Head",
-                        field: "status",
-                        current_status: frm.doc.purchase_head_status,
-                        //added here
-                        designation_match: "Purchase Head",
-                        btn_field: "purchase_head_status"
-                    },
-                ];
+                if (visibleFields.includes(stage.field)) {
+                    const canEdit = editableFields.includes(stage.field);
 
-                buttons.forEach(button => {
-                    const status = button.current_status || "Pending";
-                    let status_color;
-
-                    switch (status) {
-                        case "Approved":
-                            status_color = "darkgreen";
-                            break;
-                        case "Rejected":
-                            status_color = "darkred";
-                            break;
-                        default:
-                            status_color = "gray";
-                    }
-
-                    const btn = frm.add_custom_button(`${button.label}: ${status}`, () => {
-                        if (status === "Pending" && (userData === button.designation_match || userData === "Administrator")) {
-                            console.log("here")
-                            if (button.btn_field !== 'purchase_team_status' && frm.doc.purchase_team_status !== "Approved") {
-                                frappe.msgprint("Purchase Team must approve before further approvals.");
-                                return;
-                            }
-                            frappe.prompt([
-                                {
-                                    fieldname: 'remarks_input',
-                                    label: `Enter ${button.label} Remarks`,
-                                    fieldtype: 'Data',
-                                    reqd: 1
-                                }
-                            ],
-                                function (values) {
-                                    if (button.btn_field === "purchase_team_status") {
-                                        frm.set_value('purchase_team_remarks', values.remarks_input);
-                                    }
-                                    if (button.btn_field === "purchase_head_status") {
-                                        frm.set_value('purchase_head_remarks', values.remarks_input);
-                                    }
-
-                                    frm.set_value(button.btn_field, 'Approved');
-                                    frm.refresh_field(button.btn_field);
-
-                                    frm.save().then(() => {
-                                        if (button.btn_field === "purchase_team_status") {
-                                            send_email(frm.doc.name, "PurchaseTeam To PurchaseHead")
-                                        }
-                                        if (button.btn_field === "purchase_head_status") {
-                                            send_email(frm.doc.name, "PurchaseHead To FinanceTeam")
-                                        }
-                                        updateStatus(frm);
-                                    });
-                                },
-                                'Remarks Required',
-                                'Submit');
+                    const btn = frm.add_custom_button(`${stage.label}: ${status}`, () => {
+                        if (!canEdit) {
+                            frappe.msgprint(`You can only view the status of ${stage.label}.`);
+                            return;
                         }
-                        by_button = true;
 
+                        if (stage.field === "purchase_head_status" && frm.doc.purchase_team_status !== "Approved") {
+                            frappe.msgprint("Purchase Team must approve first.");
+                            return;
+                        }
+
+                        frappe.prompt([
+                            {
+                                fieldname: 'action_choice',
+                                label: `Action for ${stage.label}`,
+                                fieldtype: 'Select',
+                                options: ['Approved', 'Rejected'],
+                                reqd: 1
+                            },
+                            {
+                                fieldname: 'remarks_input',
+                                label: `Enter ${stage.label} Remarks`,
+                                fieldtype: 'Data',
+                                reqd: 1
+                            }
+                        ],
+                            function (values) {
+                                frm.set_value(stage.remarks_field, values.remarks_input);
+                                frm.set_value(stage.field, values.action_choice);
+
+                                if (stage.field === "purchase_head_status") {
+                                    frm.set_value("status", values.action_choice);
+                                }
+
+                                frm.save().then(() => {
+                                    const action = values.action_choice;
+                                    const email_type = action === "Approved" ? stage.email_on_approve : stage.email_on_reject;
+                                    console.log(`[Email Trigger] ${stage.label} => ${action} => Email: ${email_type}`);
+                                    if (email_type) {
+                                        send_email(frm.doc.name, email_type);
+                                    }
+                                    updateStatus(frm);
+                                });
+                            },
+                            'Action Required',
+                            'Submit'
+                        );
+
+                        by_button = true;
                     });
+
                     btn.css({
-                        "background-color": status_color,
+                        "background-color": statusColor,
                         "color": "white",
-                        "border-color": status_color,
-                        "cursor": (status === "Pending" && (userData === button.designation_match || userData === "Administrator")) ? "pointer" : "not-allowed"
+                        "border-color": statusColor,
+                        "cursor": canEdit ? "pointer" : "not-allowed",
+                        "opacity": canEdit ? "1" : "0.6"
                     });
-                    if (!(status === "Pending" && (userData === button.designation_match || userData === "Administrator"))) {
+
+                    if (!canEdit) {
                         btn.off("click");
                     }
-                });
-            }
-            if (["Administrator", "Finance"].includes(userData)) {
+                }
+            });
+
+            if (["Administrator", "Finance", "Finance Head"].includes(userDesignation)) {
                 frm.add_custom_button("Compare Quotations", () => {
                     frappe.call({
                         method: "frappe.client.get_list",
@@ -147,7 +162,7 @@ function updateStatus(frm) {
                                 <th style="text-align:center; background:#a3a1a1; font-weight:bold; font-size:18px;">
                                     ${q.finance_company || "-"}
                                 </th>`).join("");
-                            
+
                             const tableRows = fieldsToDisplay.map(field => {
                                 const rowCells = quotations.map(q => {
                                     if (field.key === "action") {
@@ -167,13 +182,13 @@ function updateStatus(frm) {
                                                 </td>`;
                                     }
                                 }).join("");
-                            
+
                                 return `<tr>
                                     <th style="background:#a3a1a1; font-weight:bold; font-size:18px;">${field.label}</th>
                                     ${rowCells}
                                 </tr>`;
                             }).join("");
-                            
+
                             const html = `
                                 <div style="overflow-x:auto">
                                     <table class="table table-bordered table-sm" style="min-width:800px; background:#f7f7f7;">
@@ -197,44 +212,6 @@ function updateStatus(frm) {
 
                             dialog.show();
 
-                            // Define global action handlers
-                            // window.approveQuotation = function (approved_name, employee_details) {
-                            //     frappe.call({
-                            //         method: "frappe.client.set_value",
-                            //         args: {
-                            //             doctype: "Car Quotation",
-                            //             name: approved_name,
-                            //             fieldname: { status: "Approved" }
-                            //         },
-                            //         callback: function () {
-                            //             frappe.call({
-                            //                 method: "frappe.client.get_list",
-                            //                 args: {
-                            //                     doctype: "Car Quotation",
-                            //                     filters: {
-                            //                         employee_details: employee_details,
-                            //                         name: ["!=", approved_name]
-                            //                     },
-                            //                     fields: ["name"]
-                            //                 },
-                            //                 callback: function (res2) {
-                            //                     res2.message.forEach(other => {
-                            //                         frappe.call({
-                            //                             method: "frappe.client.set_value",
-                            //                             args: {
-                            //                                 doctype: "Car Quotation",
-                            //                                 name: other.name,
-                            //                                 fieldname: { status: "Rejected" }
-                            //                             }
-                            //                         });
-                            //                     });
-                            //                     frappe.msgprint("Comparison updated.");
-                            //                     dialog.hide();
-                            //                 }
-                            //             });
-                            //         }
-                            //     });
-                            // };
                             window.approveQuotation = function (approved_name, employee_details) {
                                 frappe.prompt([
                                     {
@@ -281,7 +258,7 @@ function updateStatus(frm) {
                                                     });
 
                                                     // 3. Send email using existing method
-                                                    send_email(frm.doc.name, "FinanceTeam To FinanceHead Payload",{quotation_id: approved_name });
+                                                    send_email(frm.doc.name, "FinanceTeam To FinanceHead Payload", { quotation_id: approved_name });
 
                                                     frappe.msgprint("Quotation approved, remarks saved, and email sent to Finance Head.");
                                                     dialog.hide();
@@ -293,29 +270,6 @@ function updateStatus(frm) {
                                 }, 'Remarks Required', 'Submit');
                             };
 
-
-                            // window.rejectQuotation = function (name) {
-                            //     frappe.prompt([
-                            //         {
-                            //             fieldname: 'remarks_input',
-                            //             label: 'Enter Finance Team Remarks',
-                            //             fieldtype: 'Data',
-                            //             reqd: 1
-                            //         }])
-                            //     frappe.call({
-                            //         method: "frappe.client.set_value",
-                            //         args: {
-                            //             doctype: "Car Quotation",
-                            //             name: name,
-                            //             fieldname: { status: "Rejected" }
-                            //         },
-                            //         callback: function () {
-                            //             send_email(frm.doc.name, "Reject FinanceTeam to Vendor")
-                            //             frappe.msgprint("Quotation rejected.");
-                            //             dialog.hide();
-                            //         }
-                            //     });
-                            // };
                             window.rejectQuotation = function (name) {
                                 frappe.prompt([
                                     {
@@ -432,7 +386,13 @@ function updateStatus(frm) {
 // }
 
 function updateQuotationSendRequest(frm) {
-    frm.add_custom_button('Quotations Company Select', () => {
+    const isApproved = frm.doc.purchase_team_status === "Approved" && frm.doc.purchase_head_status === "Approved";
+
+    const btn = frm.add_custom_button('Quotations Company Select', () => {
+        if (!isApproved) {
+            frappe.msgprint("Quotations can only be sent after both Purchase Team and Purchase Head have approved.");
+            return;
+        }
         // Step 1: Fetch existing quotations for this Purchase Team
         frappe.db.get_list('Car Quotation', {
             filters: {
@@ -450,12 +410,12 @@ function updateQuotationSendRequest(frm) {
                 let companies = [...new Set(response.map(item => item.name))];
 
                 let optionsHTML = '<div id="company-checkboxes">';
+                optionsHTML += `<label><input type="checkbox" name="company_select" value="ALL"> ALL</label><br>`;
                 companies.forEach(company => {
                     optionsHTML += `
                         <label><input type="checkbox" name="company_select" value="${company}"> ${company}</label><br>
                     `;
                 });
-                optionsHTML += `<label><input type="checkbox" name="company_select" value="ALL"> ALL</label><br>`;
                 optionsHTML += '</div>';
 
                 // Step 3: Show selection prompt
@@ -484,27 +444,26 @@ function updateQuotationSendRequest(frm) {
                                 }, delay);
                                 delay += 600;
                             } else {
-                                send_email(frm.doc.name, "FinanceHead To Quotation Company", {
-                                    email_send_to: company
-                                });
+                                send_email(frm.doc.name, "FinanceHead To Quotation Company", {email_send_to: company});
                             }
                         });
                     } else {
                         frappe.msgprint("Please select at least one company.");
                     }
-
                     // Reset checkboxes
                     document.querySelectorAll('#company-checkboxes input[type="checkbox"]').forEach(checkbox => {
                         checkbox.checked = false;
                     });
-
                 }, 'Remarks Required', 'Submit');
             });
         });
-    }).css({
-        "background-color": "darkgreen",
+    });
+    btn.css({
+        "background-color": isApproved ? "darkgreen" : "gray",
         "color": "white",
-        "border-color": "green"
+        "border-color": isApproved ? "green" : "gray",
+        "cursor": isApproved ? "pointer" : "not-allowed",
+        "opacity": isApproved ? "1" : "0.6"
     });
 }
 
@@ -746,8 +705,8 @@ frappe.ui.form.on("Purchase Team Form", {
                         if (frm.doc.purchase_team_status === "Approved") {
                             send_email(frm.doc.name, "PurchaseTeam To PurchaseHead")
                         }
-                        else {
-                            console.log("rejected")
+                        else if (frm.doc.purchase_team_status === "Rejected") {
+                            send_email(frm.doc.name, "Reject PurchaseTeam to HR")
                         }
                     });
                 },
