@@ -84,7 +84,6 @@ function updateStatus(frm) {
                             return;
                         }
 
-                        // Sequential approvals
                         if (stage.field === "hr_approval" && frm.doc.reporting_head_approval !== "Approved") {
                             frappe.msgprint("Reporting Head must approve first.");
                             return;
@@ -98,7 +97,6 @@ function updateStatus(frm) {
                             return;
                         }
 
-                        // Prompt for action
                         frappe.prompt([
                             {
                                 fieldname: 'action_choice',
@@ -145,11 +143,9 @@ function updateStatus(frm) {
                             'Action Required',
                             'Submit'
                         );
-
                         by_button = true;
                     });
 
-                    // Style the button
                     btn.css({
                         "background-color": color,
                         "color": "white",
@@ -158,7 +154,6 @@ function updateStatus(frm) {
                         "opacity": canEdit ? "1" : "0.6"
                     });
 
-                    // Prevent clicking if not editable
                     if (!canEdit) {
                         btn.off("click");
                     }
@@ -167,10 +162,6 @@ function updateStatus(frm) {
         }
     });
 }
-
-
-
-
 
 // let by_button = false;
 // function updateStatus(frm) {
@@ -346,7 +337,6 @@ function toggleFieldStatus(frm) {
                 });
             }
 
-            // Purchase-specific behavior (custom button)
             if (designation === "Purchase" || designation === "Purchase Head" || designation === "Administrator") {
                 frm.add_custom_button(__('Redirect to Purchase Form'), function () {
                     let currentUrl = window.location.href;

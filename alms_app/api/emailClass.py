@@ -144,6 +144,7 @@ class EmailServices:
                     We will keep you informed as your request progresses through each stage. 
                     If you have any questions, feel free to reach out to us.
                 </p>
+                <p>If you have any questions, feel free to reach out to us.<a href="mailto:meriltraveldesk@merillife.com">(meriltraveldesk@merillife.com)</a></p>
                 <p>Best regards,</p>
                 <p><strong>Meril</strong></p>
             </div>
@@ -227,10 +228,8 @@ class EmailServices:
             </tbody>
         </table>
         
-            <p>
-                <a href="{link}" class="button"> Login Here </a>
-            </p>
-                
+            <p><a href="{link}" class="button"> Login Here </a></p>
+            <p>If you have any questions, feel free to reach out to us.<a href="mailto:meriltraveldesk@merillife.com">(meriltraveldesk@merillife.com)</a></p>
             <p>Best regards,</p>
             <p>CRMS Team</p>
         </body>
@@ -323,7 +322,8 @@ class EmailServices:
         
             <p>
                 <a href={link} class="button"> Login Here </a>
-            </p>        
+            </p>
+            <p>If you have any questions, feel free to reach out to us.<a href="mailto:meriltraveldesk@merillife.com">(meriltraveldesk@merillife.com)</a></p>       
                 
             <p>Best regards,</p>
             <p>{regards}</p>
@@ -427,7 +427,8 @@ class EmailServices:
         
             <p>
                 <a href={link} class="button"> Login Here </a>
-            </p>        
+            </p>
+            <p>If you have any questions, feel free to reach out to us.<a href="mailto:meriltraveldesk@merillife.com">(meriltraveldesk@merillife.com)</a></p>      
                 
             <p>Best regards,</p>
             <p>{regards}</p>
@@ -505,7 +506,8 @@ class EmailServices:
         
             <p>
                 <a href={link} class="button"> Login Here </a>
-            </p>        
+            </p>
+            <p>If you have any questions, feel free to reach out to us.<a href="mailto:meriltraveldesk@merillife.com">(meriltraveldesk@merillife.com)</a></p>     
                 
             <p>Best regards,</p>
             <p>{regards}</p>
@@ -564,6 +566,7 @@ class EmailServices:
                     </a>
                 </p>
                 <p>You will make the best use of the opportunity offered to you and contribute substantially to the success of both yourself and the Organization.</p>
+                <p>If you have any questions, feel free to reach out to us.<a href="mailto:meriltraveldesk@merillife.com">(meriltraveldesk@merillife.com)</a></p>
                 <p>Wishing you all the best.</p>
                 <p>Sincerely,
                 <br>Team HR 
@@ -600,6 +603,8 @@ class EmailServices:
             <p>{content}</p>
               
             {f'<a href="{link}" class="button">Click Here To Approve</a>' if link else ''}
+
+            <p>If you have any questions, feel free to reach out to us.<a href="mailto:meriltraveldesk@merillife.com">(meriltraveldesk@merillife.com)</a></p>
             <p>Best regards,</p>
             <p>{regards}</p>
         </body>
@@ -637,7 +642,8 @@ class EmailServices:
         <body>
             <h2>{subject}</h2>
             <p>{content}</p>   
-            <p>Remarks: {remark_text}</p> 
+            <p>Remarks: {remark_text}</p>
+            <p>If you have any questions, feel free to reach out to us.<a href="mailto:meriltraveldesk@merillife.com">(meriltraveldesk@merillife.com)</a></p>
             <p>Best regards,</p>
             <p>CRMS Team</p>
         </body>
@@ -997,6 +1003,8 @@ class EmailServices:
         Dear Sir/Madam,
         <br><br>
         This is to notify the Purchase Team that the car rental form of {user.employee_name} submitted by you has been rejected by the Purchase Head for the following remarks:<br>
+        <br><br>
+        If you have any questions, feel free to reach out to us.(meriltraveldesk@merillife.com)
         """
         form = frappe.get_doc("Purchase Team Form",user.name)
         body = self.create_reject_email_body(form,subject,content,remarks_by)
