@@ -30,70 +30,14 @@ function send_email(frm, email_send_to) {
 }
 
 
-
-
-
 frappe.ui.form.on("Employee Master", {
     onload(frm) {
-
     },
-
-    // designation(frm) {
-    //     if (frm.doc.designation) {
-    //         console.log("Welcome to designation world")
-    //         frappe.call({
-    //             method: "alms_app.master.doctype.employee_master.employee_master.get_eligibility_from_designation",
-    //             args: {
-    //                 designation: frm.doc.designation
-    //             },
-    //             callback: function (r) {
-    //                 if (r.message && r.message.eligibility) {
-    //                     frm.set_value("eligibility", r.message.eligibility);
-    //                 }
-    //             }
-    //         });
-    //     }
-        // const eligibility = eligibilityMap[frm.doc.designation] || 0;
-
-        // if (eligibility > 0) {
-        //     frm.set_value("eligibility", eligibility);
-        // }
-    // },
 
     refresh: function (frm) {
         updateEmailButton(frm);
-        if (frm.doc.designation ) {
+        if (frm.doc.designation) {
 
-            // frappe.call({
-            //     method: "alms_app.master.doctype.employee_master.employee_master.get_eligibility_from_designation",
-            //     args: {
-            //         designation: frm.doc.designation
-            //     },
-            //     callback: function (r) {
-            //         if (r.message && r.message.eligibility) {
-
-            //             eligibility = r.message.eligibility;
-            //             frm.add_custom_button("ELIGBILITY", () =>{
-            //                 if(parseFloat(eligibility)>0)
-            //                 frappe.msgprint(`${parseFloat(eligibility).toLocaleString('en-IN')}`);
-            //             })
-                            
-            //                 .css({
-            //                     "background-color": "#daf0e1",
-            //                     "color": "#16794c",
-            //                     "border-color": "darkgreen",
-            //                     "cursor": "allowed",
-            //                     "font-weight": "semibold",
-            //                     "text-transform": "uppercase",
-            //                 })
-            //                 .html('<i class="fa fa-check"></i> Eligibility');
-                        
-            //         }
-
-            //     }
-
-            // });
-           
         }
     },
 
@@ -124,8 +68,17 @@ function updateEmailButton(frm) {
                 frappe.msgprint("Email address is not set for this employee.");
                 return;
             }
-            frm.set_value("status", "Sent");
 
+            const eligibility = parseFloat(frm.doc.eligibility);
+            if (!eligibility || eligibility < 100000) {
+                frappe.msgprint({
+                    title: "Ineligible",
+                    indicator: "orange",
+                    message: "Email cannot be sent. Eligibility is either not set or less than ₹1,00,000."
+                });
+                return;
+            }
+            frm.set_value("status", "Sent");
             send_email(frm, "To Employee")
             frm.save_or_update();
         })
