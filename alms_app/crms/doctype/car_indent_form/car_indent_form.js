@@ -380,8 +380,6 @@ function toggleFieldStatus(frm) {
     });
 }
 
-
-
 frappe.ui.form.on("Car Indent Form", {
     onload: function (frm) {
         frm.set_df_property('employee_code', 'read_only', 1);
@@ -492,7 +490,7 @@ frappe.ui.form.on("Car Indent Form", {
                             send_email(frm.doc.name, "HR To Travel Desk");
                         }
                         else if (frm.doc.hr_approval === "Rejected") {
-                            send_email(frm.doc.name, "Reject HRTeam to Employee");  // change here
+                            send_email(frm.doc.name, "Reject HRTeam to Employee");
                         }
                     });
                 },
@@ -549,7 +547,7 @@ frappe.ui.form.on("Car Indent Form", {
                             send_email(frm.doc.name, "Travel Desk To HRHead");
                         }
                         else if (frm.doc.travel_desk_approval === "Rejected") {
-                            send_email(frm.doc.name, "Reject TravelDesk to Employee"); //change here
+                            send_email(frm.doc.name, "Reject TravelDesk to Employee");
                         }
                     });
                 },
@@ -616,7 +614,7 @@ frappe.ui.form.on("Car Indent Form", {
                         else if (frm.doc.hr_head_approval === "Rejected") {
                             console.log("WE are rejecting- hr head")
                             frm.set_value("status", "Rejected");
-                            send_email(frm.doc.name, "Reject HRHead to Employee"); //change here
+                            send_email(frm.doc.name, "Reject HRHead to Employee");
 
                         }
                         frm.refresh_field("status");
@@ -651,3 +649,5 @@ frappe.ui.form.on("Car Indent Form", {
         }
     }
 });
+
+
