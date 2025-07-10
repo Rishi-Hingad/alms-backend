@@ -9,6 +9,11 @@ authors = [
     { name = "Rishi Hingad", email = "rishi.hingad@merillife.com"}
 ]
 description = "Car and Lease Manaagment System"
+name = "lms"
+authors = [
+    { name = "Shradha_Siddhi", email = "meril@gmail.com"}
+]
+description = "LMS"
 requires-python = ">=3.10"
 readme = "README.md"
 dynamic = ["version"]
