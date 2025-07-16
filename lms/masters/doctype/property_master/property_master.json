@@ -1,0 +1,72 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "format:{vendor_code}-{#####}",
+ "creation": "2025-07-12 15:30:19.463729",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "vendor_code",
+  "city",
+  "type_of_asset",
+  "area_sq_ft",
+  "address"
+ ],
+ "fields": [
+  {
+   "fieldname": "vendor_code",
+   "fieldtype": "Link",
+   "label": "Vendor Code",
+   "options": "Vendor Master"
+  },
+  {
+   "fieldname": "type_of_asset",
+   "fieldtype": "Select",
+   "label": "Type of Asset",
+   "options": "Property\nCar"
+  },
+  {
+   "fieldname": "area_sq_ft",
+   "fieldtype": "Data",
+   "label": "Area (sq. ft.)"
+  },
+  {
+   "fieldname": "address",
+   "fieldtype": "Text",
+   "label": "Address"
+  },
+  {
+   "fieldname": "city",
+   "fieldtype": "Link",
+   "label": "City ",
+   "options": "City Master"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2025-07-15 15:09:56.087039",
+ "modified_by": "Administrator",
+ "module": "Masters",
+ "name": "Property Master",
+ "naming_rule": "Expression",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}
