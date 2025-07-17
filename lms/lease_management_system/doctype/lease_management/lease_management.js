@@ -25,9 +25,33 @@ frappe.ui.form.on("Lease Management", {
             filters: {
             vendor_code: frm.doc.vendor_code
             }
-        };
+        }});
+        // frm.add_custom_button(__('My Custom Button'), function() {
+        //         // Define action for the button
+        //         frappe.msgprint(__('Button clicked!'));
+        //     });
+
+        // });
+        frm.add_custom_button(__('Generate Report'), function() {
+            frappe.call({
+                method: 'lms.lease_management_system.doctype.lease_management.lease_management.generate_report',
+                args: {
+                    docname: frm.doc.name
+                },
+                callback: function(r) {
+                    if (!r.exc) {
+                        frappe.msgprint(__(r.message));
+                    }else {
+                        frappe.msgprint(__('Failed to generate report.'));
+                    }
+                }
+            });
+                // frappe.msgprint(__('Button clicked!'));
         });
+        
     },
+   
+    
     // property_code: function(frm) {
     //     if (frm.doc.property_code) {
     //         // Fetch the 'city' field from 'Property Master' where 'name' matches the 'property_code'

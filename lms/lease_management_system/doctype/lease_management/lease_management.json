@@ -1,6 +1,7 @@
 {
  "actions": [],
  "allow_rename": 1,
+ "autoname": "format:Lease-{#####}",
  "creation": "2025-07-15 15:45:04.880573",
  "doctype": "DocType",
  "engine": "InnoDB",
@@ -8,7 +9,6 @@
   "company_code",
   "vendor_code",
   "property_code",
-  "city",
   "column_break_hwhu",
   "agreement_start_date",
   "agreement_end_date",
@@ -16,39 +16,45 @@
   "ind_as_remark",
   "security_deposit",
   "security_deposit_amount",
-  "monthy_rent",
+  "monthly_rent",
   "agreement",
-  "escalation_time",
-  "escalation_rate"
+  "section_break_ewvt",
+  "escalation"
  ],
  "fields": [
   {
    "fieldname": "company_code",
    "fieldtype": "Link",
    "label": "Company Code",
-   "options": "Company Master"
+   "options": "Company Master",
+   "reqd": 1
   },
   {
    "fieldname": "vendor_code",
    "fieldtype": "Link",
    "label": "Vendor Code",
-   "options": "Vendor Master"
+   "options": "Vendor Master",
+   "reqd": 1
   },
   {
    "fieldname": "property_code",
    "fieldtype": "Link",
+   "in_list_view": 1,
    "label": "Property Code",
-   "options": "Property Master"
+   "options": "Property Master",
+   "reqd": 1
   },
   {
    "fieldname": "agreement_start_date",
    "fieldtype": "Date",
-   "label": "Agreement Start Date"
+   "label": "Agreement Start Date",
+   "reqd": 1
   },
   {
    "fieldname": "agreement_end_date",
    "fieldtype": "Date",
-   "label": "Agreement End Date "
+   "label": "Agreement End Date ",
+   "reqd": 1
   },
   {
    "fieldname": "status",
@@ -74,45 +80,41 @@
    "label": "Security Deposit Amount"
   },
   {
-   "fieldname": "monthy_rent",
-   "fieldtype": "Data",
-   "label": "Monthy Rent"
-  },
-  {
    "fieldname": "agreement",
-   "fieldtype": "Select",
+   "fieldtype": "Attach",
    "label": "Agreement",
    "options": "Yes\nNo"
-  },
-  {
-   "fieldname": "escalation_time",
-   "fieldtype": "Data",
-   "label": "Escalation Time"
-  },
-  {
-   "fieldname": "escalation_rate",
-   "fieldtype": "Int",
-   "label": "Escalation Rate"
   },
   {
    "fieldname": "column_break_hwhu",
    "fieldtype": "Column Break"
   },
   {
-   "fieldname": "city",
+   "fieldname": "section_break_ewvt",
+   "fieldtype": "Section Break"
+  },
+  {
+   "columns": 2,
+   "fieldname": "escalation",
+   "fieldtype": "Table",
+   "label": "Escalation",
+   "options": "Escalation"
+  },
+  {
+   "fieldname": "monthly_rent",
    "fieldtype": "Data",
-   "is_virtual": 1,
-   "label": "City",
-   "read_only": 1
+   "label": "Monthly Rent",
+   "reqd": 1
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-07-15 16:55:48.824689",
+ "modified": "2025-07-17 12:25:28.354044",
  "modified_by": "Administrator",
  "module": "Lease Management System",
  "name": "Lease Management",
+ "naming_rule": "Expression",
  "owner": "Administrator",
  "permissions": [
   {
