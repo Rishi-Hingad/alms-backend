@@ -6,6 +6,42 @@
 
 // 	},
 // });
+frappe.ui.form.on('Escalation',{
+    escalation_type:function(frm,cdt,cdn){
+        let row=locals[cdt][cdn];
+        frappe.model.set_value(cdt, cdn, 'reqd_rate', 0);
+        frappe.model.set_value(cdt, cdn, 'reqd_start_date', 0);
+        frappe.model.set_value(cdt, cdn, 'reqd_end_date', 0);
+        frappe.model.set_value(cdt, cdn, 'reqd_monthly_rent', 0);
+        frappe.model.set_value(cdt, cdn, 'reqd_fixed_amount', 0);
+
+        if (row.escalation_type==="Per Annum"){
+            frappe.model.set_value(cdt,cdn,'reqd_rate',1);
+            frappe.meta.get_docfield('Escalation','rate',frm.doc.name).reqd=1;
+        }
+        if(row.escalation_type==="Based On Dates"){
+            frappe.model.set_value(cdt,cdn,'reqd_start_date',1);
+            frappe.model.set_value(cdt,cdn,'reqd_end_date',1);
+            frappe.model.set_value(cdt,cdn,'reqd_monthly_rent',1);
+            frappe.meta.get_docfield('Escalation','start_date',frm.doc.name).reqd=1;
+            frappe.meta.get_docfield('Escalation','end_date',frm.doc.name).reqd=1;
+            frappe.meta.get_docfield('Escalation','monthly_rent',frm.doc.name).reqd=1;
+        }
+        if (row.escalation_type==="Per Annum and Fixed Amount"){
+            frappe.model.set_value(cdt,cdn,'reqd_rate',1);
+            frappe.meta.get_docfield('Escalation','rate',frm.doc.name).reqd=1;
+            frappe.model.set_value(cdt,cdn,'reqd_fixed_amount',1);
+            frappe.meta.get_docfield('Escalation','fixed_amount',frm.doc.name).reqd=1;
+        }
+
+        frm.refresh_fields('escalation_type');
+        // frm.refresh_fields('rate');
+        // frm.refresh_fields('start_date');
+        // frm.refresh_fields('end_date');
+        // frm.refresh_fields('monthly_rent');
+        // frm.refresh_fields('fixed_amount');
+    }
+});
 frappe.ui.form.on("Lease Management", {
     // vendor_code: function(frm) {
     //     if (frm.doc.vendor_code) {
