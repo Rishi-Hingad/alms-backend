@@ -94,7 +94,7 @@
    "fieldtype": "Section Break"
   },
   {
-   "columns": 2,
+   "columns": 7,
    "fieldname": "escalation",
    "fieldtype": "Table",
    "label": "Escalation",
@@ -110,7 +110,7 @@
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-07-17 12:25:28.354044",
+ "modified": "2025-07-19 11:07:48.907012",
  "modified_by": "Administrator",
  "module": "Lease Management System",
  "name": "Lease Management",

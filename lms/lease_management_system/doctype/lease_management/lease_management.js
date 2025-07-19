@@ -15,6 +15,12 @@ frappe.ui.form.on('Escalation',{
         frappe.model.set_value(cdt, cdn, 'reqd_monthly_rent', 0);
         frappe.model.set_value(cdt, cdn, 'reqd_fixed_amount', 0);
 
+        frappe.meta.get_docfield('Escalation','rate',frm.doc.name).reqd=0;
+        frappe.meta.get_docfield('Escalation','start_date',frm.doc.name).reqd=0;
+        frappe.meta.get_docfield('Escalation','end_date',frm.doc.name).reqd=0;
+        frappe.meta.get_docfield('Escalation','monthly_rent',frm.doc.name).reqd=0;
+        frappe.meta.get_docfield('Escalation','fixed_amount',frm.doc.name).reqd=0;
+
         if (row.escalation_type==="Per Annum"){
             frappe.model.set_value(cdt,cdn,'reqd_rate',1);
             frappe.meta.get_docfield('Escalation','rate',frm.doc.name).reqd=1;
@@ -35,14 +41,11 @@ frappe.ui.form.on('Escalation',{
         }
 
         frm.refresh_fields('escalation_type');
-        // frm.refresh_fields('rate');
-        // frm.refresh_fields('start_date');
-        // frm.refresh_fields('end_date');
-        // frm.refresh_fields('monthly_rent');
-        // frm.refresh_fields('fixed_amount');
     }
 });
 frappe.ui.form.on("Lease Management", {
+
+
     // vendor_code: function(frm) {
     //     if (frm.doc.vendor_code) {
     //         // Method 1: Using add_fetch (RECOMMENDED)
@@ -56,6 +59,7 @@ frappe.ui.form.on("Lease Management", {
     //     }
     // }
     refresh: function (frm) {     
+        
         frm.set_query("property_code", function () {
         return {
             filters: {
@@ -68,24 +72,29 @@ frappe.ui.form.on("Lease Management", {
         //     });
 
         // });
-        frm.add_custom_button(__('Generate Report'), function() {
-            frappe.call({
-                method: 'lms.lease_management_system.doctype.lease_management.lease_management.generate_report',
-                args: {
-                    docname: frm.doc.name
-                },
-                callback: function(r) {
-                    if (!r.exc) {
-                        frappe.msgprint(__(r.message));
-                    }else {
-                        frappe.msgprint(__('Failed to generate report.'));
+
+        if(!frm.is_new()){
+            frm.add_custom_button(__('Generate Report'), function() {
+                frappe.call({
+                    method: 'lms.lease_management_system.doctype.lease_management.lease_management.generate_report',
+                    args: {
+                        docname: frm.doc.name
+                    },
+                    callback: function(r) {
+                        if (!r.exc) {
+                            frappe.msgprint(__(r.message));
+                        }else {
+                            frappe.msgprint(__('Failed to generate report.'));
+                        }
                     }
-                }
+                });
+                    // frappe.msgprint(__('Button clicked!'));
             });
-                // frappe.msgprint(__('Button clicked!'));
-        });
+        }
+        
         
     },
+
    
     
     // property_code: function(frm) {

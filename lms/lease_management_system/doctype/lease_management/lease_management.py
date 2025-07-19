@@ -10,7 +10,7 @@ import pandas as pd
 
 
 #function to generate monthwise data
-def generate_month_range(start_date,end_date,docname):
+def generate_lease_report(start_date,end_date,docname):
 	doc = frappe.get_doc("Lease Management",docname)
 	mlp=float(doc.monthly_rent)
 	mlp2=float(doc.monthly_rent)
@@ -64,9 +64,7 @@ def generate_month_range(start_date,end_date,docname):
 				# month_start=current_date.replace(day=1)
 				cnt+=1
 
-				if current_date in escl_dates:
-					mlp=mlp+(escl_rate*mlp/100)
-				total_mlp+=mlp
+				
 
 				month_start=current_date
 
@@ -77,13 +75,33 @@ def generate_month_range(start_date,end_date,docname):
 
 				date_difference = month_end - month_start
 				n = date_difference.days +1
-
-				if cnt==1:
-					pv=mlp
-					pv_arr.append(pv)
+				if n==15:
+					prev_mlp=mlp
+					mlp=mlp/2
+					if current_date in escl_dates:
+						mlp=mlp+(escl_rate*mlp/100)
+					total_mlp+=mlp
+					if cnt==1:
+						pv=mlp
+						pv_arr.append(pv)
+					else:
+						pv=mlp/((1+daily_rate)**ndays)
+						pv_arr.append(pv)
+					mlp=prev_mlp
 				else:
-					pv=mlp/((1+daily_rate)**ndays)
-					pv_arr.append(pv)
+					if current_date in escl_dates:
+						mlp=mlp+(escl_rate*mlp/100)
+					total_mlp+=mlp
+					if cnt==1:
+						pv=mlp
+						pv_arr.append(pv)
+					else:
+						pv=mlp/((1+daily_rate)**ndays)
+						pv_arr.append(pv)
+
+				# total_mlp+=mlp
+
+				
 				total_pv=total_pv+pv
 
 				ndays+=n
@@ -149,17 +167,33 @@ def generate_month_range(start_date,end_date,docname):
 				date_difference = month_end - month_start
 				n = date_difference.days +1
 
-				if current_date3 in escl_dates:
-					mlp2=mlp2+(escl_rate*mlp2/100)
-				interest_cost=((closing_liability-mlp2)*((1+daily_rate)**n-1))
-				total_interest_cost+=interest_cost
-				closing_liability=closing_liability+interest_cost-mlp2
+				if n==15:
+					prev_mlp2=mlp2
+					mlp2=mlp2/2
+					if current_date3 in escl_dates:
+						mlp2=mlp2+(escl_rate*mlp2/100)
+					interest_cost=((closing_liability-mlp2)*((1+daily_rate)**n-1))
+					total_interest_cost+=interest_cost
+					closing_liability=closing_liability+interest_cost-mlp2
+					depreciation=(n/total_days)*prev_closing_liability
+					wdv-=depreciation
 
-				depreciation=(n/total_days)*prev_closing_liability
-				wdv-=depreciation
+					data.append([month_end.date(), n,mlp2, round(depreciation, 3), round(wdv, 3), round(interest_cost, 3),
+								round(closing_liability, 3)])
+					mlp2=prev_mlp2
+					
+				else:
+					if current_date3 in escl_dates:
+						mlp2=mlp2+(escl_rate*mlp2/100)
+					interest_cost=((closing_liability-mlp2)*((1+daily_rate)**n-1))
+					total_interest_cost+=interest_cost
+					closing_liability=closing_liability+interest_cost-mlp2
 
-				data.append([month_end.date(), n,mlp2, round(depreciation, 10), round(wdv, 10), round(interest_cost, 10),
-                              round(closing_liability, 10)])
+					depreciation=(n/total_days)*prev_closing_liability
+					wdv-=depreciation
+
+					data.append([month_end.date(), n,mlp2, round(depreciation, 3), round(wdv, 3), round(interest_cost, 3),
+								round(closing_liability, 3)])
 				
 
 				month_ranges.append(f"End Date: {month_end.date()},Days={n}, Dprec= {depreciation}, WDV={wdv}, IC={interest_cost}, Closing Liability={closing_liability}, TIC={total_interest_cost}")
@@ -247,11 +281,11 @@ def generate_report(docname):
 
 	# depre=(n/total_days)*1877278.34360599
 
-	month_range_output = generate_month_range(date1, date2,docname)
+	output = generate_lease_report(date1, date2,docname)
 	
 
 	# return "Report Generated Successfully pv="+str(pv)+" total days="+str(total_days)+" Depre= "+str(depre)+" "+month_range_output+" "
-	return "\n"+month_range_output+" "
+	return "Report Generated Successfully \n"+output+" "
 
 
 

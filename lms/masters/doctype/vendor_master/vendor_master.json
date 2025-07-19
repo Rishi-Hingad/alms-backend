@@ -1,7 +1,7 @@
 {
  "actions": [],
  "allow_rename": 1,
- "autoname": "field:vendor_code",
+ "autoname": "format:{vendor_name}-{vendor_code}",
  "creation": "2025-07-15 12:26:21.296756",
  "doctype": "DocType",
  "engine": "InnoDB",
@@ -149,11 +149,11 @@
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-07-15 15:12:14.543882",
+ "modified": "2025-07-19 11:37:26.535304",
  "modified_by": "Administrator",
  "module": "Masters",
  "name": "Vendor Master",
- "naming_rule": "By fieldname",
+ "naming_rule": "Expression",
  "owner": "Administrator",
  "permissions": [
   {
