@@ -6,19 +6,13 @@
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
-  "vendor_code",
+  "vendor",
   "city",
   "type_of_asset",
   "area_sq_ft",
   "address"
  ],
  "fields": [
-  {
-   "fieldname": "vendor_code",
-   "fieldtype": "Link",
-   "label": "Vendor Code",
-   "options": "Vendor Master"
-  },
   {
    "fieldname": "type_of_asset",
    "fieldtype": "Select",
@@ -40,12 +34,18 @@
    "fieldtype": "Link",
    "label": "City ",
    "options": "City Master"
+  },
+  {
+   "fieldname": "vendor",
+   "fieldtype": "Link",
+   "label": "Vendor",
+   "options": "Vendor Master"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-07-15 15:09:56.087039",
+ "modified": "2025-07-21 15:18:16.476377",
  "modified_by": "Administrator",
  "module": "Masters",
  "name": "Property Master",
@@ -66,7 +66,9 @@
   }
  ],
  "row_format": "Dynamic",
+ "show_title_field_in_link": 1,
  "sort_field": "modified",
  "sort_order": "DESC",
- "states": []
+ "states": [],
+ "title_field": "address"
 }

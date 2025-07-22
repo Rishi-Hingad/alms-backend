@@ -25,7 +25,7 @@ frappe.ui.form.on('Escalation',{
             frappe.model.set_value(cdt,cdn,'reqd_rate',1);
             frappe.meta.get_docfield('Escalation','rate',frm.doc.name).reqd=1;
         }
-        if(row.escalation_type==="Based On Dates"){
+        else if(row.escalation_type==="Based On Dates"){
             frappe.model.set_value(cdt,cdn,'reqd_start_date',1);
             frappe.model.set_value(cdt,cdn,'reqd_end_date',1);
             frappe.model.set_value(cdt,cdn,'reqd_monthly_rent',1);
@@ -33,14 +33,20 @@ frappe.ui.form.on('Escalation',{
             frappe.meta.get_docfield('Escalation','end_date',frm.doc.name).reqd=1;
             frappe.meta.get_docfield('Escalation','monthly_rent',frm.doc.name).reqd=1;
         }
-        if (row.escalation_type==="Per Annum and Fixed Amount"){
+        else if (row.escalation_type==="Per Annum and Fixed Amount"){
             frappe.model.set_value(cdt,cdn,'reqd_rate',1);
             frappe.meta.get_docfield('Escalation','rate',frm.doc.name).reqd=1;
             frappe.model.set_value(cdt,cdn,'reqd_fixed_amount',1);
             frappe.meta.get_docfield('Escalation','fixed_amount',frm.doc.name).reqd=1;
         }
 
-        frm.refresh_fields('escalation_type');
+        frm.refresh_fields('escalation');
+        // frm.refresh_fields('escalation_type');
+        // frm.refresh_fields('rate');
+        // frm.refresh_fields('start_date');
+        // frm.refresh_fields('end_date');
+        // frm.refresh_fields('monthly_rent');
+        // frm.refresh_fields('fixed_amount');
     }
 });
 frappe.ui.form.on("Lease Management", {
@@ -58,31 +64,43 @@ frappe.ui.form.on("Lease Management", {
     //         frm.set_value('property_code', '');
     //     }
     // }
+    onload(frm) {
+        frm.report_counter = 0;
+    },
     refresh: function (frm) {     
         
-        frm.set_query("property_code", function () {
+        frm.set_query("property_description", function () {
         return {
             filters: {
-            vendor_code: frm.doc.vendor_code
+            vendor_code: frm.doc.vendor
             }
         }});
+
+        frappe.db.get_doc('Discounting Rate', 'disc-01')
+            .then(doc => {
+                frm.set_value('discounting_rate', doc.discounting_rate);
+            });
         // frm.add_custom_button(__('My Custom Button'), function() {
         //         // Define action for the button
         //         frappe.msgprint(__('Button clicked!'));
         //     });
 
         // });
-
+        
         if(!frm.is_new()){
             frm.add_custom_button(__('Generate Report'), function() {
+                frm.report_counter = (frm.report_counter || 0) + 1;
                 frappe.call({
                     method: 'lms.lease_management_system.doctype.lease_management.lease_management.generate_report',
                     args: {
-                        docname: frm.doc.name
+                        docname: frm.doc.name,
+                        cnt:frm.report_counter
                     },
                     callback: function(r) {
                         if (!r.exc) {
-                            frappe.msgprint(__(r.message));
+                            // frappe.msgprint(__(r.message));
+                            let file_url = r.message.file_url;
+                            window.open(file_url);
                         }else {
                             frappe.msgprint(__('Failed to generate report.'));
                         }

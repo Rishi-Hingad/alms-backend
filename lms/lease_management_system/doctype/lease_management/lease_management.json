@@ -6,14 +6,16 @@
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
-  "company_code",
-  "vendor_code",
-  "property_code",
+  "company",
+  "vendor",
+  "property_description",
+  "discounting_rate",
+  "calculation_rate_type",
   "column_break_hwhu",
   "agreement_start_date",
   "agreement_end_date",
   "status",
-  "ind_as_remark",
+  "lease_period",
   "security_deposit",
   "security_deposit_amount",
   "monthly_rent",
@@ -22,28 +24,6 @@
   "escalation"
  ],
  "fields": [
-  {
-   "fieldname": "company_code",
-   "fieldtype": "Link",
-   "label": "Company Code",
-   "options": "Company Master",
-   "reqd": 1
-  },
-  {
-   "fieldname": "vendor_code",
-   "fieldtype": "Link",
-   "label": "Vendor Code",
-   "options": "Vendor Master",
-   "reqd": 1
-  },
-  {
-   "fieldname": "property_code",
-   "fieldtype": "Link",
-   "in_list_view": 1,
-   "label": "Property Code",
-   "options": "Property Master",
-   "reqd": 1
-  },
   {
    "fieldname": "agreement_start_date",
    "fieldtype": "Date",
@@ -63,16 +43,10 @@
    "options": "Active\nAgreement Expired"
   },
   {
-   "fieldname": "ind_as_remark",
-   "fieldtype": "Select",
-   "label": "IND AS Remark",
-   "options": "Not Required\nIndAS working required"
-  },
-  {
    "fieldname": "security_deposit",
    "fieldtype": "Select",
    "label": "Security Deposit",
-   "options": "Paid\nNot Paid"
+   "options": "\nPaid\nNot Paid"
   },
   {
    "fieldname": "security_deposit_amount",
@@ -105,12 +79,55 @@
    "fieldtype": "Data",
    "label": "Monthly Rent",
    "reqd": 1
+  },
+  {
+   "fieldname": "lease_period",
+   "fieldtype": "Select",
+   "label": "Lease Period",
+   "options": "\nShort Term (Less Than 12 Months)\nLong Term (Greater Than 12 Months)",
+   "reqd": 1
+  },
+  {
+   "fieldname": "company",
+   "fieldtype": "Link",
+   "label": "Company",
+   "options": "Company Master",
+   "reqd": 1
+  },
+  {
+   "fieldname": "vendor",
+   "fieldtype": "Link",
+   "label": "Vendor",
+   "options": "Vendor Master",
+   "reqd": 1
+  },
+  {
+   "fieldname": "property_description",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Property Description",
+   "options": "Property Master",
+   "reqd": 1
+  },
+  {
+   "fieldname": "discounting_rate",
+   "fieldtype": "Data",
+   "is_virtual": 1,
+   "label": "Discounting Rate",
+   "read_only": 1
+  },
+  {
+   "default": "Daily Rate",
+   "fieldname": "calculation_rate_type",
+   "fieldtype": "Select",
+   "label": "Calculation Rate Type",
+   "options": "Daily Rate\nMonthly Rate"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-07-19 11:07:48.907012",
+ "modified": "2025-07-21 15:50:31.488679",
  "modified_by": "Administrator",
  "module": "Lease Management System",
  "name": "Lease Management",
