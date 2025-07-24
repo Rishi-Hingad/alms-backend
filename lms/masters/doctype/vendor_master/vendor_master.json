@@ -9,8 +9,8 @@
   "vendor_code",
   "vendor_name",
   "address",
-  "city",
   "pin_code",
+  "city",
   "purchase_organization",
   "purchase_organization_description",
   "minimum_order_value",
@@ -141,15 +141,15 @@
   },
   {
    "fieldname": "city",
-   "fieldtype": "Link",
+   "fieldtype": "Data",
    "label": "City ",
-   "options": "City Master"
+   "read_only": 1
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-07-19 11:37:26.535304",
+ "modified": "2025-07-23 10:28:50.160321",
  "modified_by": "Administrator",
  "module": "Masters",
  "name": "Vendor Master",

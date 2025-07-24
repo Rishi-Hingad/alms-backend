@@ -80,12 +80,6 @@ frappe.ui.form.on("Lease Management", {
             .then(doc => {
                 frm.set_value('discounting_rate', doc.discounting_rate);
             });
-        // frm.add_custom_button(__('My Custom Button'), function() {
-        //         // Define action for the button
-        //         frappe.msgprint(__('Button clicked!'));
-        //     });
-
-        // });
         
         if(!frm.is_new()){
             frm.add_custom_button(__('Generate Report'), function() {

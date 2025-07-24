@@ -9,6 +9,7 @@ from dateutil.relativedelta import relativedelta
 import pandas as pd
 import io
 from frappe.utils.file_manager import save_file
+from openpyxl.utils import get_column_letter
 
 
 #function to generate monthwise data
@@ -47,7 +48,7 @@ def generate_lease_report(start_date,end_date,docname,cnt_time):
 	total_pv=0
 	total_depre=0
 
-	columns=["Month", "Days","MLP","PV", "Depreciation", "WDV", "Interest Cost", "Closing Liability"]
+	columns=["Month Start Date","Month End Date", "Days in Month","Minimum Lease Payment (MLP)","Present Value of MLP", "Depreciation on Right to Use", "Written Down Value (WDV)", "Interest Cost", "Closing Liability"]
 	data=[]
 	pv_arr=[]
 
@@ -209,7 +210,7 @@ def generate_lease_report(start_date,end_date,docname,cnt_time):
 					depreciation=(n/total_days)*prev_closing_liability
 					wdv-=depreciation
 
-					data.append([month_end.date(), n,mlp2, round(depreciation, 3), round(wdv, 3), round(interest_cost, 3),round(closing_liability, 3)])
+					data.append([month_start.date(),month_end.date(), n,mlp2, round(depreciation, 3), round(wdv, 3), round(interest_cost, 3),round(closing_liability, 3)])
 					mlp2=prev_mlp2
 					
 				else:
@@ -222,7 +223,7 @@ def generate_lease_report(start_date,end_date,docname,cnt_time):
 					depreciation=(n/total_days)*prev_closing_liability
 					wdv-=depreciation
 
-					data.append([month_end.date(), n,mlp2, round(depreciation, 3), round(wdv, 3), round(interest_cost, 3),
+					data.append([month_start.date(),month_end.date(), n,mlp2, round(depreciation, 3), round(wdv, 3), round(interest_cost, 3),
 								round(closing_liability, 3)])
 				
 
@@ -388,7 +389,7 @@ def generate_lease_report(start_date,end_date,docname,cnt_time):
 					depreciation=(n/total_days)*prev_closing_liability
 					wdv-=depreciation
 
-					data.append([month_end.date(), n,mlp2, round(depreciation, 3), round(wdv, 3), round(interest_cost, 3),round(closing_liability, 3)])
+					data.append([month_start.date(),month_end.date(), n,mlp2, round(depreciation, 3), round(wdv, 3), round(interest_cost, 3),round(closing_liability, 3)])
 					mlp2=prev_mlp2
 					
 				else:
@@ -402,7 +403,7 @@ def generate_lease_report(start_date,end_date,docname,cnt_time):
 					depreciation=(n/total_days)*prev_closing_liability
 					wdv-=depreciation
 
-					data.append([month_end.date(), n,mlp2, round(depreciation, 3), round(wdv, 3), round(interest_cost, 3),
+					data.append([month_start.date(),month_end.date(), n,mlp2, round(depreciation, 3), round(wdv, 3), round(interest_cost, 3),
 								round(closing_liability, 3)])
 				
 
@@ -549,7 +550,7 @@ def generate_lease_report(start_date,end_date,docname,cnt_time):
 					depreciation=(n/total_days)*prev_closing_liability
 					wdv-=depreciation
 
-					data.append([month_end.date(), n,mlp2, round(depreciation, 3), round(wdv, 3), round(interest_cost, 3),round(closing_liability, 3)])
+					data.append([month_start.date(),month_end.date(), n,mlp2, round(depreciation, 3), round(wdv, 3), round(interest_cost, 3),round(closing_liability, 3)])
 					mlp2=prev_mlp2
 					
 				else:
@@ -562,7 +563,7 @@ def generate_lease_report(start_date,end_date,docname,cnt_time):
 					depreciation=(n/total_days)*prev_closing_liability
 					wdv-=depreciation
 
-					data.append([month_end.date(), n,mlp2, round(depreciation, 3), round(wdv, 3), round(interest_cost, 3),
+					data.append([month_start.date(),month_end.date(), n,mlp2, round(depreciation, 3), round(wdv, 3), round(interest_cost, 3),
 								round(closing_liability, 3)])
 				
 
@@ -581,27 +582,55 @@ def generate_lease_report(start_date,end_date,docname,cnt_time):
 		frappe.msgprint("No Data Calculated")
 
 	for i in range(len(data)):
-		data[i].insert(3,pv_arr[i])
+		data[i].insert(4,pv_arr[i])
 
-	data.append(['',total_days,total_mlp,total_pv,total_depre,'',total_interest_cost,''])
+	data.append(['','',total_days,round(total_mlp,3),round(total_pv,3),round(total_depre,3),'',round(total_interest_cost,3),''])
 	df = pd.DataFrame(data, columns=columns)
 
 	# excel_filename = f"/home/shradha/frappe-bench/sites/lms_localhost/public/files/lease_management_report_{docname}.xlsx"
 	# excel_filename = f"/home/iddhiatel/frappe-bench/sites/lease/public/files/lease_management_report_{docname}_{cnt_time}.xlsx"
 	# df.to_excel(excel_filename, index=False, engine='openpyxl')
 
-	output = io.BytesIO()
-	with pd.ExcelWriter(output, engine='openpyxl') as writer:
-		df.to_excel(writer, index=False)
+	# output = io.BytesIO()
+	# with pd.ExcelWriter(output, engine='openpyxl') as writer:
+	# 	df.to_excel(writer, index=False)
 		
+	# output.seek(0)
+	# # cnt_time = datetime.now().strftime("%Y%m%d%H%M%S")
+	# file_name=f"lease_management_report_{docname}_{cnt_time}.xlsx"
+	# folder="Home"
+	# file_doc = save_file(file_name, output.read(),dt="Lease Management",dn=docname, folder=folder, decode=False)
+	# return {
+    #     "file_url": file_doc.file_url
+    # }
+
+	output = io.BytesIO()
+
+	with pd.ExcelWriter(output, engine='openpyxl') as writer:
+		df.to_excel(writer, index=False, sheet_name='Sheet1')
+		# Get the openpyxl worksheet object
+		worksheet = writer.sheets['Sheet1']
+
+    	# Autofit column widths
+		for i, col in enumerate(df.columns):
+        	# Get the maximum length of the column (including header)
+			max_length = max(
+            	df[col].astype(str).map(len).max(),
+            	len(col)
+        	)
+			col_letter = get_column_letter(i + 1)
+        	# Set column width (add a little extra space)
+			worksheet.column_dimensions[col_letter].width = max_length + 2
+
 	output.seek(0)
-	# cnt_time = datetime.now().strftime("%Y%m%d%H%M%S")
-	file_name=f"lease_management_report_{docname}_{cnt_time}.xlsx"
-	folder="Home"
-	file_doc = save_file(file_name, output.read(),dt="Lease Management",dn=docname, folder=folder, decode=False)
+	file_name = f"lease_management_report_{docname}_{cnt_time}.xlsx"
+	folder = "Home"
+	
+	file_doc = save_file(file_name, output.read(), dt="Lease Management", dn=docname, folder=folder, decode=False)
+
 	return {
-        "file_url": file_doc.file_url
-    }
+    	"file_url": file_doc.file_url
+	}
 	# return excel_filename
 
 	# while current_date<=end_date:
