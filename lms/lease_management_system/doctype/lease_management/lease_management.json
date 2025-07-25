@@ -110,11 +110,12 @@
    "reqd": 1
   },
   {
+   "description": "(in %)",
    "fieldname": "discounting_rate",
    "fieldtype": "Data",
-   "is_virtual": 1,
    "label": "Discounting Rate",
-   "read_only": 1
+   "precision": "3",
+   "reqd": 1
   },
   {
    "default": "Daily Rate",
@@ -127,7 +128,7 @@
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-07-21 15:50:31.488679",
+ "modified": "2025-07-24 15:19:52.547285",
  "modified_by": "Administrator",
  "module": "Lease Management System",
  "name": "Lease Management",

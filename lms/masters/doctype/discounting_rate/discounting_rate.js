@@ -10,7 +10,7 @@
 frappe.ui.form.on('Discounting Rate', {
     discounting_rate: function(frm) {
         // Calculate new value
-        let value1 = (1+(frm.doc.discounting_rate/100))**(1/365)-1
+        let value1 = (1+(frm.doc.discounting_rate/100))**(1/365)-1;
         let value2 = (1 + (frm.doc.discounting_rate/100))**(1/12)-1;
 
         // Set value in field2

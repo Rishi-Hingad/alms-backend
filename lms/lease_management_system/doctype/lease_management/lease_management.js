@@ -51,7 +51,6 @@ frappe.ui.form.on('Escalation',{
 });
 frappe.ui.form.on("Lease Management", {
 
-
     // vendor_code: function(frm) {
     //     if (frm.doc.vendor_code) {
     //         // Method 1: Using add_fetch (RECOMMENDED)
@@ -64,10 +63,40 @@ frappe.ui.form.on("Lease Management", {
     //         frm.set_value('property_code', '');
     //     }
     // }
+    lease_period:function(frm){
+        if(frm.doc.lease_period!='' && frm.doc.lease_period=='Short Term (Less Than 12 Months)'){
+            frm.set_df_property('escalation', 'reqd', 0);
+        }
+        else if(frm.doc.lease_period!='' && frm.doc.lease_period=='Long Term (Greater Than 12 Months)'){
+            frm.set_df_property('escalation', 'reqd', 1);
+        }
+        else{
+            frm.set_df_property('escalation', 'reqd', 0);
+        }
+    },
     onload(frm) {
         frm.report_counter = 0;
     },
-    refresh: function (frm) {     
+    refresh: function (frm) { 
+        if(!(frm.doc.discounting_rate)&&frm.is_new()){
+            frappe.db.get_list('Discounting Rate', {
+                limit: 1,
+                order_by: 'creation asc', 
+                fields: ['name', 'discounting_rate'] 
+            }).then(records => {
+                if (records.length > 0) {
+                    const first_record = records[0];
+                    frm.set_value('discounting_rate', first_record.discounting_rate);
+                } else {
+                    frappe.msgprint('No records found.');
+                }
+            });
+
+            // frappe.db.get_doc('Discounting Rate', 'disc-01')
+            //     .then(doc => {
+            //         frm.set_value('discounting_rate', doc.discounting_rate);
+            //     });
+        }
         
         frm.set_query("property_description", function () {
         return {
@@ -75,11 +104,6 @@ frappe.ui.form.on("Lease Management", {
             vendor_code: frm.doc.vendor
             }
         }});
-
-        frappe.db.get_doc('Discounting Rate', 'disc-01')
-            .then(doc => {
-                frm.set_value('discounting_rate', doc.discounting_rate);
-            });
         
         if(!frm.is_new()){
             frm.add_custom_button(__('Generate Report'), function() {
@@ -93,6 +117,7 @@ frappe.ui.form.on("Lease Management", {
                     callback: function(r) {
                         if (!r.exc) {
                             // frappe.msgprint(__(r.message));
+                            // console.log(r.message)
                             let file_url = r.message.file_url;
                             window.open(file_url);
                         }else {
