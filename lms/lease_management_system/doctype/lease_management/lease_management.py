@@ -64,6 +64,7 @@ def generate_lease_report(start_date,end_date,docname,cnt_time):
 	calc_keys=[]
 	bd_start_date=""
 	bd_end_date=""
+	new_start_date=""
 	cnt_etype=0
 
 	for child in doc.escalation:
@@ -87,6 +88,9 @@ def generate_lease_report(start_date,end_date,docname,cnt_time):
 						new_date = new_date + timedelta(days=1)
 					else:
 						new_date = new_date + timedelta(days=1)
+
+				if new_date>bd_end_date:
+					new_start_date=new_date
 				dkey="Based On Dates"+'-'+str(monthly_rent_bdates)
 				calc_dict[dkey]={monthly_rent_bdates:escl_dates_bdates}
 				total_escl_dates_bdates+=escl_dates_bdates
@@ -107,17 +111,20 @@ def generate_lease_report(start_date,end_date,docname,cnt_time):
 			escl_rate_pannum=float(child.rate)
 			for i in range(diff_years):
 				if i==0 and cnt_etype==1:
-					new_date = start_date + relativedelta(years=1)
-					if new_date.date() not in date_list:
-						escl_dates_pannum.append(new_date.date())
+					if new_date>=new_start_date:
+						new_date=new_start_date
+					else:
+						new_date = start_date + relativedelta(years=1)
+					if new_date not in date_list:
+						escl_dates_pannum.append(new_date)
 						new_date=new_date + relativedelta(years=1)
 				else:
 					# new_date=new_date + relativedelta(years=1)
-					if new_date.date() in date_list:
+					if new_date in date_list:
 						new_date=new_date + relativedelta(years=1)
 						break
-					if new_date<end_date and new_date.date() not in date_list:
-						escl_dates_pannum.append(new_date.date())	
+					if new_date<end_date.date() and new_date not in date_list:
+						escl_dates_pannum.append(new_date)	
 						new_date=new_date + relativedelta(years=1)
 			dkey="Per Annum"+'-'+str(escl_rate_pannum)
 			calc_dict[dkey]={escl_rate_pannum:escl_dates_pannum}
@@ -1039,7 +1046,7 @@ def generate_lease_report(start_date,end_date,docname,cnt_time):
 	data.append(['','',total_days,round(total_mlp,3),round(total_pv,3),round(total_depre,3),'',round(total_interest_cost,3),''])
 	# data.append(['',total_mlp,total_pv])
 
-	# df=pd.DataFrame({'Based On Dates':edates_bd})
+	# df=pd.DataFrame({'Per Annum':edates_pannum})
 	df = pd.DataFrame(data, columns=columns)
 
 	# excel_filename = f"/home/shradha/frappe-bench/sites/lms_localhost/public/files/lease_management_report_{docname}.xlsx"
