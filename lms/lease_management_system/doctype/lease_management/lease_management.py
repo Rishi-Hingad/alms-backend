@@ -64,8 +64,8 @@ def generate_lease_report(start_date,end_date,docname,cnt_time):
 	calc_keys=[]
 	bd_start_date=""
 	bd_end_date=""
-	new_start_date=""
 	cnt_etype=0
+	new_start_date=[]
 
 	for child in doc.escalation:
 		escl_type=child.escalation_type
@@ -90,9 +90,10 @@ def generate_lease_report(start_date,end_date,docname,cnt_time):
 						new_date = new_date + timedelta(days=1)
 
 				if new_date>bd_end_date:
-					new_start_date=new_date
+					new_start_date.append(new_date)
 				dkey="Based On Dates"+'-'+str(monthly_rent_bdates)
 				calc_dict[dkey]={monthly_rent_bdates:escl_dates_bdates}
+				# calc_dict.setdefault(dkey, {}).setdefault(monthly_rent_bdates, []).extend(escl_dates_bdates)
 				total_escl_dates_bdates+=escl_dates_bdates
 				escl_dates_bdates=[]
 
@@ -111,10 +112,11 @@ def generate_lease_report(start_date,end_date,docname,cnt_time):
 			escl_rate_pannum=float(child.rate)
 			for i in range(diff_years):
 				if i==0 and cnt_etype==1:
-					if new_date>=new_start_date:
-						new_date=new_start_date
-					else:
-						new_date = start_date + relativedelta(years=1)
+					for j in range(len(new_start_date)):
+						if new_date>=new_start_date[j]:
+							new_date=new_start_date[j]
+						elif new_date<new_start_date[j]:
+							new_date = start_date + relativedelta(years=1)
 					if new_date not in date_list:
 						escl_dates_pannum.append(new_date)
 						new_date=new_date + relativedelta(years=1)
@@ -137,20 +139,27 @@ def generate_lease_report(start_date,end_date,docname,cnt_time):
 			# escl_dates_pafr=[]
 			for i in range(diff_years):
 				if i==0 and cnt_etype==1:
-					new_date = start_date + relativedelta(years=1)
+					for j in range(len(new_start_date)):
+						if new_date>=new_start_date[j]:
+							new_date=new_start_date[j]
+						elif new_date<new_start_date[j]:
+							new_date = start_date + relativedelta(years=1)
+						
 					if new_date not in date_list:
-						escl_dates_pafr.append(new_date.date())
+						escl_dates_pafr.append(new_date)
 						new_date=new_date + relativedelta(years=1)
 				else:
 					# new_date=new_date + relativedelta(years=1)
-					if new_date.date() in date_list:
+					if new_date in date_list:
 						new_date=new_date + relativedelta(years=1)
 						break
-					if new_date<end_date and new_date not in date_list:
-						escl_dates_pafr.append(new_date.date())
+					if new_date<end_date.date() and new_date not in date_list:
+						escl_dates_pafr.append(new_date)
 						new_date=new_date + relativedelta(years=1)	
-			dkey="Per Annum and Fixed Amount"+'-'+str(escl_rate_pannum)+'-'+str(fixed_amt_pafr)
-			calc_dict[dkey]={(escl_rate_pafr,fixed_amt_pafr):escl_dates_pannum}	
+			dkey="Per Annum and Fixed Amount"+'-'+str(escl_rate_pafr)+'-'+str(fixed_amt_pafr)
+			dsubkey=str(escl_rate_pafr)+'-'+str(fixed_amt_pafr)
+			calc_dict[dkey]={dsubkey:escl_dates_pafr}
+			# calc_dict.setdefault(dkey, {}).setdefault(dsubkey, []).extend(escl_dates_pafr)	
 			escl_dates_pafr=[]
 	# res=[]
 	for key in calc_dict:
@@ -163,6 +172,9 @@ def generate_lease_report(start_date,end_date,docname,cnt_time):
 	pafa_rate=0
 	famt=0
 	mrent=0
+	dict_ed_pannum={}
+	dict_ed_pafa={}
+	dict_ed_bdates={}
 
 	for i in range(len(calc_keys)):
 		temp_str=calc_keys[i]
@@ -174,18 +186,27 @@ def generate_lease_report(start_date,end_date,docname,cnt_time):
 			rate_val=next(iter(sub_dict))
 			pa_rate=float(rate_val)
 			edates_pannum+=sub_dict[rate_val]
+			dict_ed_pannum[rate_val]=sub_dict[rate_val]
 
 		elif calc_escl_type=="Based On Dates":
 			sub_dict=calc_dict[temp_str]
 			mrent_val=next(iter(sub_dict))
 			mrent=float(mrent_val)
 			edates_bd+=sub_dict[mrent_val]
+			dict_ed_bdates[mrent_val]=sub_dict[mrent_val]
+
 
 		elif calc_escl_type=="Per Annum and Fixed Amount":
 			sub_dict=calc_dict[temp_str]
+			# temp_val=next(iter(sub_dict))
+			# pafa_rate,famt=temp_val
 			temp_val=next(iter(sub_dict))
-			pafa_rate,famt=temp_val
+			temp=temp_val.split('-')
+			pafa_rate=temp[0]
+			famt=temp[1]
 			edates_pafa+=sub_dict[temp_val]
+			dict_ed_pafa[temp_val]=sub_dict[temp_val]
+			
 
 	# for i in range(len(calc_keys)):
 	# 	# temp_str=calc_keys[i]
@@ -221,10 +242,32 @@ def generate_lease_report(start_date,end_date,docname,cnt_time):
 			prev_mlp=mlp
 			mlp=mlp*n/total_days_of_month
 			if current_date.date() in edates_pannum:
+				for k in dict_ed_pannum.keys():
+					rate_pa=float(k)
+					escl=dict_ed_pannum[k]
+					if current_date.date() in escl:
+						pa_rate=rate_pa
+						break
 				mlp=mlp+(pa_rate*mlp/100)
 			elif current_date.date() in edates_bd:
+				for k in dict_ed_bdates.keys():
+					rpm=float(k)
+					escl=dict_ed_bdates[k]
+					if current_date.date() in escl:
+						mrent=rpm
+						break
 				mlp=mrent
 			elif current_date.date() in edates_pafa:
+				for k in dict_ed_pafa.keys():
+					temp_val=k
+					temp=temp_val.split('-')
+					rate_pa=temp[0]
+					f=temp[1]
+					escl=dict_ed_pafa[k]
+					if current_date.date() in escl:
+						pafa_rate=float(rate_pa)
+						famt=float(f)
+						break
 				mlp=mlp+(pafa_rate*mlp/100)+famt
 
 			total_mlp+=mlp
@@ -238,12 +281,35 @@ def generate_lease_report(start_date,end_date,docname,cnt_time):
 
 		else:
 			if current_date.date() in edates_pannum and len(edates_pannum)>0:
+				for k in dict_ed_pannum.keys():
+					rate_pa=float(k)
+					escl=dict_ed_pannum[k]
+					if current_date.date() in escl:
+						pa_rate=rate_pa
+						break
 				mlp=mlp+(pa_rate*mlp/100)
 				
 			elif current_date.date() in edates_bd and len(edates_bd)>0:
+				for k in dict_ed_bdates.keys():
+					rpm=float(k)
+					escl=dict_ed_bdates[k]
+					if current_date.date() in escl:
+						mrent=rpm
+						break
 				mlp=mrent
 
 			elif current_date.date() in edates_pafa and len(edates_pafa)>0:
+				for k in dict_ed_pafa.keys():
+					# rate_pa,f=k
+					temp_val=k
+					temp=temp_val.split('-')
+					rate_pa=temp[0]
+					f=temp[1]
+					escl=dict_ed_pafa[k]
+					if current_date.date() in escl:
+						pafa_rate=float(rate_pa)
+						famt=float(f)
+						break
 				mlp=mlp+(pafa_rate*mlp/100)+famt
 
 			total_mlp+=mlp
@@ -321,10 +387,33 @@ def generate_lease_report(start_date,end_date,docname,cnt_time):
 			prev_mlp2=mlp2
 			mlp2=mlp2*n/total_days_of_month
 			if current_date3.date() in edates_pannum:
+				for k in dict_ed_pannum.keys():
+					rate_pa=float(k)
+					escl=dict_ed_pannum[k]
+					if current_date3.date() in escl:
+						pa_rate=rate_pa
+						break
 				mlp2=mlp2+(pa_rate*mlp2/100)
 			elif current_date3.date() in edates_bd:
+				for k in dict_ed_bdates.keys():
+					rpm=float(k)
+					escl=dict_ed_bdates[k]
+					if current_date3.date() in escl:
+						mrent=rpm
+						break
 				mlp2=mrent
 			elif current_date3.date() in edates_pafa:
+				for k in dict_ed_pafa.keys():
+					# rate_pa,f=k
+					temp_val=k
+					temp=temp_val.split('-')
+					rate_pa=temp[0]
+					f=temp[1]
+					escl=dict_ed_pafa[k]
+					if current_date3.date() in escl:
+						pafa_rate=float(rate_pa)
+						famt=float(f)
+						break
 				mlp2=mlp2+(pafa_rate*mlp2/100)+famt
 
 			interest_cost=((closing_liability-mlp2)*((1+daily_rate)**n-1))
@@ -340,12 +429,35 @@ def generate_lease_report(start_date,end_date,docname,cnt_time):
 
 		else:
 			if current_date3.date() in edates_pannum and len(edates_pannum)>0:
+				for k in dict_ed_pannum.keys():
+					rate_pa=float(k)
+					escl=dict_ed_pannum[k]
+					if current_date3.date() in escl:
+						pa_rate=rate_pa
+						break
 				mlp2=mlp2+(pa_rate*mlp2/100)
 				
 			elif current_date3.date() in edates_bd and len(edates_bd)>0:
+				for k in dict_ed_bdates.keys():
+					rpm=float(k)
+					escl=dict_ed_bdates[k]
+					if current_date3.date() in escl:
+						mrent=rpm
+						break
 				mlp2=mrent
 
 			elif current_date3.date() in edates_pafa and len(edates_pafa)>0:
+				for k in dict_ed_pafa.keys():
+					# rate_pa,f=k
+					temp_val=k
+					temp=temp_val.split('-')
+					rate_pa=temp[0]
+					f=temp[1]
+					escl=dict_ed_pafa[k]
+					if current_date3.date() in escl:
+						pafa_rate=float(rate_pa)
+						famt=float(f)
+						break
 				mlp2=mlp2+(pafa_rate*mlp2/100)+famt
 
 			interest_cost=((closing_liability-mlp2)*((1+daily_rate)**n-1))
@@ -365,152 +477,7 @@ def generate_lease_report(start_date,end_date,docname,cnt_time):
 			current_date3=datetime(current_date3.year + 1, 1, 1)
 		else:
 			current_date3=datetime(current_date3.year, current_date3.month + 1, 1)
-			# Calculate Depreciation
-			# while current_date2<=end_date:
-			# 	month_start=current_date2
-
-			# 	_,last_day=monthrange(current_date2.year, current_date2.month)
-			# 	month_end=datetime(current_date2.year, current_date2.month, last_day)
-
-			# 	if end_date<month_end:
-			# 		month_end=end_date
-
-			# 	date_difference = month_end - month_start
-			# 	n = date_difference.days +1
-
-			# 	depreciation=(n/total_days)*prev_closing_liability
-			# 	total_depre+=depreciation
-			# 	# month_ranges.append(f"End Date: {month_end.date()},Days={n}, Dprec= {depreciation}")
-
-			# 	if month_end>end_date:
-			# 		month_end=end_date
-
-			# 	if current_date2.month==12:
-			# 		current_date2=datetime(current_date2.year + 1, 1, 1)
-			# 	else:
-			# 		current_date2=datetime(current_date2.year, current_date2.month + 1, 1)
 			
-			# prev_wdv=total_depre
-			# wdv=prev_wdv
-			# closing_liability=prev_closing_liability
-			# total_interest_cost=0
-
-			# # Calculate Depreciation, WDV, Interest Cost, Closing Liability Per Month
-			# while current_date3<=end_date:
-			# 	month_start=current_date3
-			# 	cnt2+=1
-
-			# 	_,last_day=monthrange(current_date3.year, current_date3.month)
-			# 	month_end=datetime(current_date3.year, current_date3.month, last_day)
-
-			# 	month_start2=current_date3.replace(day=1)
-			# 	_,last_day2=monthrange(current_date3.year, current_date3.month)
-			# 	month_end2=datetime(current_date3.year, current_date3.month, last_day2)
-			# 	date_difference2 = month_end2 - month_start2
-			# 	total_days_of_month = date_difference2.days +1
-
-			# 	if end_date<month_end:
-			# 		month_end=end_date
-
-			# 	date_difference = month_end - month_start
-			# 	n = date_difference.days +1
-
-			# 	if n<total_days_of_month:
-			# 		prev_mlp2=mlp2
-			# 		mlp2=mlp2*n/total_days_of_month
-			# 		# prev_mlp2=mlp2
-			# 		# mlp2=mlp2/2 
-			# 		if current_date3 in escl_dates:
-			# 			mlp2=mlp2+(escl_rate*mlp2/100)
-			# 		interest_cost=((closing_liability-mlp2)*((1+daily_rate)**n-1))
-			# 		total_interest_cost+=interest_cost
-			# 		closing_liability=closing_liability+interest_cost-mlp2
-			# 		depreciation=(n/total_days)*prev_closing_liability
-			# 		wdv-=depreciation
-
-			# 		data.append([month_start.date(),month_end.date(), n,mlp2, round(depreciation, 3), round(wdv, 3), round(interest_cost, 3),round(closing_liability, 3)])
-			# 		mlp2=prev_mlp2
-					
-			# 	else:
-			# 		if current_date3 in escl_dates:
-			# 			mlp2=mlp2+(escl_rate*mlp2/100)
-			# 		interest_cost=((closing_liability-mlp2)*((1+daily_rate)**n-1))
-			# 		total_interest_cost+=interest_cost
-			# 		closing_liability=closing_liability+interest_cost-mlp2
-
-			# 		depreciation=(n/total_days)*prev_closing_liability
-			# 		wdv-=depreciation
-
-			# 		data.append([month_start.date(),month_end.date(), n,mlp2, round(depreciation, 3), round(wdv, 3), round(interest_cost, 3),
-			# 					round(closing_liability, 3)])
-				
-
-			# 	month_ranges.append(f"End Date: {month_end.date()},Days={n}, Dprec= {depreciation}, WDV={wdv}, IC={interest_cost}, Closing Liability={closing_liability}, TIC={total_interest_cost}")
-
-			# 	if month_end>end_date:
-			# 		month_end=end_date
-
-			# 	if current_date3.month==12:
-			# 		current_date3=datetime(current_date3.year + 1, 1, 1)
-			# 	else:
-			# 		current_date3=datetime(current_date3.year, current_date3.month + 1, 1)
-
-		# elif calc_escl_type =="Based On Dates":
-		# 	sub_dict=calc_dict[calc_escl_type]
-
-
-		# elif calc_escl_type =="Per Annum and Fixed Amount":
-		# 	sub_dict=calc_dict[calc_escl_type]
-
-	
-
-		# for j in range(len(etype)):
-		# 	if etype[j]=="Based On Dates":
-		# 		monthly_rent_bdates=float(child.monthly_rent)
-		# 		escl_start_date_bdates=child.start_date
-		# 		escl_end_date_bdates=child.end_date
-		# 		escl_dates_bdates=[]
-		# 		new_date=current_date
-		# 		new_date=new_date.date()
-				
-		# 		while new_date<=escl_end_date_bdates:
-		# 			if new_date>=escl_start_date_bdates and new_date<=escl_end_date_bdates:
-		# 				escl_dates_bdates.append(" ")
-		# 				escl_dates_bdates.append(str(new_date))
-		# 				new_date = new_date + timedelta(days=1)
-		# 			else:
-		# 				new_date = new_date + timedelta(days=1)
-
-		# 	elif etype[j]=="Per Annum":
-		# 		escl_rate_pannum=float(child.rate)
-		# 		escl_dates_pannum=[]
-		# 		for i in range(diff_years):
-		# 			if i==0:
-		# 				new_date = start_date + relativedelta(years=1)
-		# 				escl_dates_pannum.append(" ")
-		# 				escl_dates_pannum.append(str(new_date.date()))
-		# 			else:
-		# 				new_date=new_date + relativedelta(years=1)
-		# 				if new_date<end_date:
-		# 					escl_dates_pannum.append(" ")
-		# 					escl_dates_pannum.append(str(new_date.date()))
-		
-		# 	elif etype[j]=="Per Annum and Fixed Amount":
-		# 		escl_rate_pafr=float(child.rate)
-		# 		fixed_amt_pafr=float(child.fixed_amount)
-		# 		escl_dates_pafr=[]
-		# 		for i in range(diff_years):
-		# 			if i==0:
-		# 				new_date = start_date + relativedelta(years=1)
-		# 				escl_dates_pafr.append(" ")
-		# 				escl_dates_pafr.append(str(new_date.date()))
-		# 			else:
-		# 				new_date=new_date + relativedelta(years=1)
-		# 				if new_date<end_date:
-		# 					escl_dates_pafr.append(" ")
-		# 					escl_dates_pafr.append(str(new_date.date()))
-
-
 
 		# Create Lease Report when Escalation Type is "Per Annum"
 	# 	if escl_type=="Per Annum":
@@ -1093,7 +1060,7 @@ def generate_lease_report(start_date,end_date,docname,cnt_time):
 	return {
     	"file_url": file_doc.file_url
 	}
-	# res=" "
+
 	# res="Based On dates "
 	# for i in range(len(escl_dates_bdates)):
 	# 	res+=escl_dates_bdates[i]
@@ -1103,7 +1070,6 @@ def generate_lease_report(start_date,end_date,docname,cnt_time):
 	# res+="per annum Fixed Rate "
 	# for i in range(len(escl_dates_pafr)):
 	# 	res+=escl_dates_pafr[i]
-	# return month_ranges
 
 	# while current_date<=end_date:
 	# 	# month_start=current_date.replace(day=1)
