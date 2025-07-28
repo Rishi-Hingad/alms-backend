@@ -11,6 +11,7 @@
   "property_description",
   "discounting_rate",
   "calculation_rate_type",
+  "previous_wdv",
   "column_break_hwhu",
   "agreement_start_date",
   "agreement_end_date",
@@ -76,8 +77,9 @@
   },
   {
    "fieldname": "monthly_rent",
-   "fieldtype": "Data",
+   "fieldtype": "Float",
    "label": "Monthly Rent",
+   "precision": "4",
    "reqd": 1
   },
   {
@@ -123,12 +125,19 @@
    "fieldtype": "Select",
    "label": "Calculation Rate Type",
    "options": "Daily Rate\nMonthly Rate"
+  },
+  {
+   "default": "0",
+   "fieldname": "previous_wdv",
+   "fieldtype": "Float",
+   "label": "Previous WDV",
+   "precision": "4"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-07-24 15:19:52.547285",
+ "modified": "2025-07-28 14:53:20.174374",
  "modified_by": "Administrator",
  "module": "Lease Management System",
  "name": "Lease Management",

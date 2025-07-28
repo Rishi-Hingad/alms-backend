@@ -7,62 +7,63 @@
 // 	},
 // });
 frappe.ui.form.on('Escalation',{
-    escalation_type:function(frm,cdt,cdn){
-        let row=locals[cdt][cdn];
-        frappe.model.set_value(cdt, cdn, 'reqd_rate', 0);
-        frappe.model.set_value(cdt, cdn, 'reqd_start_date', 0);
-        frappe.model.set_value(cdt, cdn, 'reqd_end_date', 0);
-        frappe.model.set_value(cdt, cdn, 'reqd_monthly_rent', 0);
-        frappe.model.set_value(cdt, cdn, 'reqd_fixed_amount', 0);
+    start_date: function(frm, cdt, cdn) {
+        validate_escalation_dates(frm, cdt, cdn);
+    },
+    end_date: function(frm, cdt, cdn) {
+        validate_escalation_dates(frm, cdt, cdn);
+    },
+    // escalation_type:function(frm,cdt,cdn){
+    //     let row=locals[cdt][cdn];
+    //     frappe.model.set_value(cdt, cdn, 'reqd_rate', 0);
+    //     frappe.model.set_value(cdt, cdn, 'reqd_start_date', 0);
+    //     frappe.model.set_value(cdt, cdn, 'reqd_end_date', 0);
+    //     frappe.model.set_value(cdt, cdn, 'reqd_monthly_rent', 0);
+    //     frappe.model.set_value(cdt, cdn, 'reqd_fixed_amount', 0);
 
-        frappe.meta.get_docfield('Escalation','rate',frm.doc.name).reqd=0;
-        frappe.meta.get_docfield('Escalation','start_date',frm.doc.name).reqd=0;
-        frappe.meta.get_docfield('Escalation','end_date',frm.doc.name).reqd=0;
-        frappe.meta.get_docfield('Escalation','monthly_rent',frm.doc.name).reqd=0;
-        frappe.meta.get_docfield('Escalation','fixed_amount',frm.doc.name).reqd=0;
+    //     // frappe.meta.get_docfield('Escalation','rate',frm.doc.name).reqd=0;
+    //     // frappe.meta.get_docfield('Escalation','start_date',frm.doc.name).reqd=0;
+    //     // frappe.meta.get_docfield('Escalation','end_date',frm.doc.name).reqd=0;
+    //     // frappe.meta.get_docfield('Escalation','monthly_rent',frm.doc.name).reqd=0;
+    //     // frappe.meta.get_docfield('Escalation','fixed_amount',frm.doc.name).reqd=0;
 
-        if (row.escalation_type==="Per Annum"){
-            frappe.model.set_value(cdt,cdn,'reqd_rate',1);
-            frappe.meta.get_docfield('Escalation','rate',frm.doc.name).reqd=1;
-        }
-        else if(row.escalation_type==="Based On Dates"){
-            frappe.model.set_value(cdt,cdn,'reqd_start_date',1);
-            frappe.model.set_value(cdt,cdn,'reqd_end_date',1);
-            frappe.model.set_value(cdt,cdn,'reqd_monthly_rent',1);
-            frappe.meta.get_docfield('Escalation','start_date',frm.doc.name).reqd=1;
-            frappe.meta.get_docfield('Escalation','end_date',frm.doc.name).reqd=1;
-            frappe.meta.get_docfield('Escalation','monthly_rent',frm.doc.name).reqd=1;
-        }
-        else if (row.escalation_type==="Per Annum and Fixed Amount"){
-            frappe.model.set_value(cdt,cdn,'reqd_rate',1);
-            frappe.meta.get_docfield('Escalation','rate',frm.doc.name).reqd=1;
-            frappe.model.set_value(cdt,cdn,'reqd_fixed_amount',1);
-            frappe.meta.get_docfield('Escalation','fixed_amount',frm.doc.name).reqd=1;
-        }
+    //     if (row.escalation_type==="Per Annum"){
+    //         frappe.model.set_value(cdt,cdn,'reqd_rate',1);
+    //         // frappe.meta.get_docfield('Escalation','rate',frm.doc.name).reqd=1;
+    //     }
+    //     else if(row.escalation_type==="Based On Dates"){
+    //         frappe.model.set_value(cdt,cdn,'reqd_start_date',1);
+    //         frappe.model.set_value(cdt,cdn,'reqd_end_date',1);
+    //         frappe.model.set_value(cdt,cdn,'reqd_monthly_rent',1);
+    //         // frappe.meta.get_docfield('Escalation','start_date',frm.doc.name).reqd=1;
+    //         // frappe.meta.get_docfield('Escalation','end_date',frm.doc.name).reqd=1;
+    //         // frappe.meta.get_docfield('Escalation','monthly_rent',frm.doc.name).reqd=1;
+    //     }
+    //     else if (row.escalation_type==="Per Annum and Fixed Amount"){
+    //         frappe.model.set_value(cdt,cdn,'reqd_rate',1);
 
-        frm.refresh_fields('escalation');
-        // frm.refresh_fields('escalation_type');
-        // frm.refresh_fields('rate');
-        // frm.refresh_fields('start_date');
-        // frm.refresh_fields('end_date');
-        // frm.refresh_fields('monthly_rent');
-        // frm.refresh_fields('fixed_amount');
-    }
+    //         // frappe.meta.get_docfield('Escalation','rate',frm.doc.name).reqd=1;
+    //         frappe.model.set_value(cdt,cdn,'reqd_fixed_amount',1);
+    //         // frappe.meta.get_docfield('Escalation','fixed_amount',frm.doc.name).reqd=1;
+    //     }
+
+    //     frm.refresh_fields('escalation');
+    //     // frm.refresh_fields('escalation_type');
+    //     // frm.refresh_fields('rate');
+    //     // frm.refresh_fields('start_date');
+    //     // frm.refresh_fields('end_date');
+    //     // frm.refresh_fields('monthly_rent');
+    //     // frm.refresh_fields('fixed_amount');
+    // }
 });
 frappe.ui.form.on("Lease Management", {
 
-    // vendor_code: function(frm) {
-    //     if (frm.doc.vendor_code) {
-    //         // Method 1: Using add_fetch (RECOMMENDED)
-    //         frm.add_fetch('vendor_code', 'property_code', 'property_code');
-            
-    //         // The above line automatically fetches 'property_id' field from 
-    //         // the Vendor document and sets it to 'property_id' field in current form
-    //     } else {
-    //         // Clear property_id when vendor_id is cleared
-    //         frm.set_value('property_code', '');
-    //     }
-    // }
+    agreement_start_date: function(frm) {
+        validate_dates_and_set_lease_period(frm);
+    },
+    agreement_end_date: function(frm) {
+        validate_dates_and_set_lease_period(frm);
+    },
     lease_period:function(frm){
         if(frm.doc.lease_period!='' && frm.doc.lease_period=='Short Term (Less Than 12 Months)'){
             frm.set_df_property('escalation', 'reqd', 0);
@@ -91,11 +92,6 @@ frappe.ui.form.on("Lease Management", {
                     frappe.msgprint('No records found.');
                 }
             });
-
-            // frappe.db.get_doc('Discounting Rate', 'disc-01')
-            //     .then(doc => {
-            //         frm.set_value('discounting_rate', doc.discounting_rate);
-            //     });
         }
         
         frm.set_query("property_description", function () {
@@ -131,41 +127,111 @@ frappe.ui.form.on("Lease Management", {
         
         
     },
+    validate: function(frm) {
+        if(frm.doc.lease_period === "Long Term (Greater Than 12 Months)") {
+            if(!frm.doc.escalation || frm.doc.escalation.length === 0) {
+                frappe.msgprint(__('Escalation table is mandatory for Long Term leases.'));
+                frappe.validated = false;  // prevent save
+            }
+        }
 
-   
-    
-    // property_code: function(frm) {
-    //     if (frm.doc.property_code) {
-    //         // Fetch the 'city' field from 'Property Master' where 'name' matches the 'property_code'
-    //         frappe.db.get_value("Property Master", {
-    //             "name": frm.doc.property_code  // Match 'name' field in Property Master with 'property_code'
-    //         }, "city", function(r) {
-    //             if (r && r.city) {
-    //                 // If 'city' exists, set it on the virtual 'city' field in Lease Management form
-    //                 frm.set_value("city", r.city);
-    //                 frm.refresh_field("city");
-    //             }
-    //         });
-    //     } else {
-    //         // If 'property_code' is cleared, reset the 'city' field in Lease Management
-    //         frm.set_value("city", "");
-    //         frm.refresh_field("city");
-    //     }
-    // }
+        let escalation = frm.doc.escalation || [];
+        if (escalation.length === 0) return;
 
-    // property_code:function(frm){
-    //     if(frm.doc.property_code){
-    //         frappe.db.get_value("Property Master",{
-    //             "name":frm.doc.property_code
-    //         },"id",function(r){
-    //             if(r && r.property_code){
-    //                 frm.set_value("city",r.city);
-    //                 frm.refresh_field("city");
-    //             }
-    //         });
-    //     }else{
-    //         frm.set_value("city","");
-    //         frm.refresh_field("city");
-    //     }
-    // }
+        let consecutivePerAnnum = 0;
+        let consecutivePerAnnumandFixed = 0;
+
+        for (let row of escalation) {
+        if (row.escalation_type === "Per Annum") {
+            consecutivePerAnnum += 1;
+            if (consecutivePerAnnum >= 2) {
+                frappe.throw("You cannot have 2 or more consecutive 'Per Annum' values in escalation type");
+            }
+        }
+        else if (row.escalation_type === "Per Annum and Fixed Amount") {
+            consecutivePerAnnumandFixed += 1;
+            if (consecutivePerAnnumandFixed >= 2) {
+                frappe.throw("You cannot have 2 or more consecutive 'Per Annum and Fixed Amount' values in escalation type");
+            }
+        }
+        else {
+            consecutivePerAnnum = 0;  // Reset 
+            consecutivePerAnnumandFixed = 0;  
+        }
+        }
+        
+        frm.doc.escalation.forEach(row => {
+            // if(row.escalation_type === 'Per Annum' && !row.rate) {
+            //     frappe.msgprint(`Rate is mandatory for Per Annum escalation at row ${row.idx}`);
+            //     frappe.validated = false;
+            //     return false;
+            // }
+            if(row.escalation_type === 'Based On Dates') {
+                if(!row.start_date || !row.end_date || !row.monthly_rent) {
+                    frappe.msgprint(`Start Date, End Date and Monthly Rent are mandatory for Based On Dates escalation at row ${row.idx}`);
+                    frappe.validated = false;
+                    return false;
+                }
+            }
+            // if(row.escalation_type === 'Per Annum and Fixed Amount' && (!row.rate || !row.fixed_amount)) {
+            //     frappe.msgprint(`Rate and Fixed Amount are mandatory for Per Annum and Fixed Amount escalation at row ${row.idx}`);
+            //     frappe.validated = false;
+            //     return false;
+            // }
+        });
+    }
 });
+
+function validate_dates_and_set_lease_period(frm){
+    const start_date = frm.doc.agreement_start_date;
+    const end_date = frm.doc.agreement_end_date;
+
+    if(start_date && end_date) {
+        if(end_date <= start_date) {
+            frappe.msgprint(__('Agreement End Date must be greater than Agreement Start Date.'));
+            frm.set_value('agreement_end_date', null);
+            return;
+        }
+
+        // Calculate difference in months between dates
+        const start = frappe.datetime.str_to_obj(start_date);
+        const end = frappe.datetime.str_to_obj(end_date);
+
+        let months_diff = (end.getFullYear() - start.getFullYear()) * 12;
+        months_diff -= start.getMonth();
+        months_diff += end.getMonth();
+
+        if(months_diff > 12) {
+            frm.set_value('lease_period', 'Long Term (Greater Than 12 Months)');
+        } else {
+            frm.set_value('lease_period', 'Short Term (Less Than 12 Months)');
+        }
+    }
+}
+
+function validate_escalation_dates(frm, cdt, cdn){
+    const row = frappe.get_doc(cdt, cdn);
+    const agreement_start = frm.doc.agreement_start_date;
+    const agreement_end = frm.doc.agreement_end_date;
+
+    if(!agreement_start || !agreement_end) {
+        frappe.msgprint(__('Please set Agreement Start Date and Agreement End Date first.'));
+        return;
+    }
+
+    if(row.start_date && row.end_date) {
+        // Check escalation start/end dates are inside agreement range
+        if(row.start_date < agreement_start || row.end_date > agreement_end) {
+            frappe.msgprint(__('Escalation Start and End Dates must be within Agreement Start and Agreement End Dates.'));
+            frappe.model.set_value(cdt, cdn, 'start_date', null);
+            frappe.model.set_value(cdt, cdn, 'end_date', null);
+            return;
+        }
+
+        // Check escalation end date is greater than start date
+        if(row.end_date <= row.start_date) {
+            frappe.msgprint(__('Escalation End Date must be greater than Escalation Start Date.'));
+            frappe.model.set_value(cdt, cdn, 'end_date', null);
+        }
+    }
+}
