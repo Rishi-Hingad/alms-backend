@@ -53,7 +53,7 @@ def generate_lease_report(start_date,end_date,docname,cnt_time):
 	columns=["Month Start Date","Month End Date", "Days in Month","Minimum Lease Payment (MLP)","Present Value of MLP", "Depreciation on Right to Use", "Written Down Value (WDV)", "Interest Cost", "Closing Liability"]
 	# columns=["Month End Date", "MLP","PV"]
 	data=[]
-	pv_arr=[]
+	pv_arr=['']
 	etype=[]
 	escl_dates_pafr=[]
 	escl_dates_bdates=[]
@@ -152,12 +152,16 @@ def generate_lease_report(start_date,end_date,docname,cnt_time):
 					if len(new_start_date)==0:
 						new_date = start_date + relativedelta(years=1)
 					if new_date not in date_list:
+						if isinstance(new_date, datetime):
+							new_date = new_date.date()
 						escl_dates_pannum.append(new_date)
 						new_date=new_date + relativedelta(years=1)
 				else:
 					if new_date in date_list:
 						new_date=new_date + relativedelta(years=1)
 						break
+					if isinstance(new_date, datetime):
+						new_date = new_date.date()
 					if new_date<end_date.date() and new_date not in date_list:
 						escl_dates_pannum.append(new_date)	
 						new_date=new_date + relativedelta(years=1)
@@ -181,12 +185,16 @@ def generate_lease_report(start_date,end_date,docname,cnt_time):
 						new_date = start_date + relativedelta(years=1)
 
 					if new_date not in date_list:
+						if isinstance(new_date, datetime):
+							new_date = new_date.date()
 						escl_dates_pafr.append(new_date)
 						new_date=new_date + relativedelta(years=1)
 				else:
 					if new_date in date_list:
 						new_date=new_date + relativedelta(years=1)
 						break
+					if isinstance(new_date, datetime):
+						new_date = new_date.date()
 					if new_date<end_date.date() and new_date not in date_list:
 						escl_dates_pafr.append(new_date)
 						new_date=new_date + relativedelta(years=1)	
@@ -445,8 +453,13 @@ def generate_lease_report(start_date,end_date,docname,cnt_time):
 		date_difference = month_end - month_start
 		n = date_difference.days +1
 
-		depreciation=(n/total_days)*prev_closing_liability
-		total_depre+=depreciation
+		if (doc.previous_wdv)!=0:
+			prev_closing_liability_wdv=float(doc.previous_wdv)
+			depreciation=(n/total_days)*prev_closing_liability_wdv
+			total_depre+=depreciation
+		else:
+			depreciation=(n/total_days)*prev_closing_liability
+			total_depre+=depreciation
 		
 		if month_end>end_date:
 			month_end=end_date
@@ -457,11 +470,13 @@ def generate_lease_report(start_date,end_date,docname,cnt_time):
 			current_date2=datetime(current_date2.year, current_date2.month + 1, 1)		
 	if (doc.previous_wdv)!=0:
 		prev_wdv=float(doc.previous_wdv)
+		# prev_closing_liability=float(doc.previous_wdv)
 	else:
 		prev_wdv=total_depre
 	wdv=prev_wdv
 	closing_liability=prev_closing_liability
 	total_interest_cost=0
+	data.insert(0,['','','','','',round(wdv,3),'',round(closing_liability,3)])
 
 	# calc depre,wdv
 	while current_date3<=end_date:
@@ -664,8 +679,13 @@ def generate_lease_report(start_date,end_date,docname,cnt_time):
 			total_interest_cost+=interest_cost
 			closing_liability=closing_liability+interest_cost-mlp2
 
-			depreciation=(n/total_days)*prev_closing_liability
-			wdv-=depreciation
+			if (doc.previous_wdv)!=0:
+				prev_closing_liability_wdv=float(doc.previous_wdv)
+				depreciation=(n/total_days)*prev_closing_liability_wdv
+				wdv-=depreciation
+			else:
+				depreciation=(n/total_days)*prev_closing_liability
+				wdv-=depreciation
 
 			data.append([month_start.date(),month_end.date(), n,mlp2, round(depreciation, 3), round(wdv, 3), round(interest_cost, 3),
 						round(closing_liability, 3)])
@@ -750,7 +770,7 @@ def generate_lease_report_month_based(start_date,end_date,docname,cnt_time):
 	total_pv=0
 	total_depre=0
 	data=[]
-	pv_arr=[]
+	pv_arr=['']
 	etype=[]
 	escl_dates_pafr=[]
 	escl_dates_bdates=[]
@@ -1044,9 +1064,14 @@ def generate_lease_report_month_based(start_date,end_date,docname,cnt_time):
 			n=cnt1
 			n_depre=date_difference.days +1
 
-		# depreciation=(n/total_days)*prev_closing_liability
-		depreciation=(n_depre/nmonths)*prev_closing_liability
-		total_depre+=depreciation
+		if (doc.previous_wdv)!=0:
+			prev_closing_liability_wdv=float(doc.previous_wdv)
+			depreciation=(n/total_days)*prev_closing_liability_wdv
+			total_depre+=depreciation
+		else:
+			# depreciation=(n/total_days)*prev_closing_liability
+			depreciation=(n_depre/nmonths)*prev_closing_liability
+			total_depre+=depreciation
 		
 		if month_end>end_date:
 			month_end=end_date
@@ -1062,6 +1087,7 @@ def generate_lease_report_month_based(start_date,end_date,docname,cnt_time):
 	wdv=prev_wdv
 	closing_liability=prev_closing_liability
 	total_interest_cost=0
+	data.insert(0,['','','','','','',round(wdv,3),'',round(closing_liability,3)])
 
 	# calc depre,wdv
 	while current_date3<=end_date:
@@ -1138,8 +1164,13 @@ def generate_lease_report_month_based(start_date,end_date,docname,cnt_time):
 			total_interest_cost+=interest_cost
 			closing_liability=closing_liability+interest_cost-mlp2
 
-			depreciation=(n_days_of_month/nmonths)*prev_closing_liability
-			wdv-=depreciation
+			if (doc.previous_wdv)!=0:
+				prev_closing_liability_wdv=float(doc.previous_wdv)
+				depreciation=(n/total_days)*prev_closing_liability_wdv
+				wdv-=depreciation
+			else:
+				depreciation=(n_days_of_month/nmonths)*prev_closing_liability
+				wdv-=depreciation
 
 			data.append([month_start.date(),month_end.date(), n,mlp2,n_days_of_month, round(depreciation, 3), round(wdv, 3), round(interest_cost, 3),
 						round(closing_liability, 3)])
@@ -1195,6 +1226,440 @@ def generate_lease_report_month_based(start_date,end_date,docname,cnt_time):
 	}
 
 
+def generate_lease_report_without_escalation(start_date,end_date,docname,cnt_time):
+	doc = frappe.get_doc("Lease Management",docname)
+	mlp=float(doc.monthly_rent)
+	mlp2=float(doc.monthly_rent)
+
+	# # Discounting Rate
+	disc_doc=(float(doc.discounting_rate)/100)
+
+	if doc.calculation_rate_type=="Daily Rate":
+		daily_rate=(1+(disc_doc))**(1/365)-1
+
+	arg_sd=start_date
+	arg_ed=end_date+ timedelta(days=1)
+	diff_years = relativedelta(arg_ed,arg_sd)
+	diff_years=int(str(diff_years.years))
+
+	current_date=start_date
+	current_date2=start_date
+	current_date3=start_date
+	cnt=0
+	cnt2=0
+	ndays=0
+	total_mlp=0
+	total_pv=0
+	total_depre=0
+
+	columns=["Month Start Date","Month End Date", "Days in Month","Minimum Lease Payment (MLP)","Present Value of MLP", "Depreciation on Right to Use", "Written Down Value (WDV)", "Interest Cost", "Closing Liability"]
+	data=[]
+	pv_arr=['']
+	
+	# Calculate Previous Closing Liability from Present Value and Total Days
+	while current_date<=end_date:
+		cnt+=1
+		month_start=current_date
+
+		_,last_day=monthrange(current_date.year, current_date.month)
+		month_end=datetime(current_date.year, current_date.month, last_day)
+
+		month_start2=current_date.replace(day=1)
+		_,last_day2=monthrange(current_date.year, current_date.month)
+		month_end2=datetime(current_date.year, current_date.month, last_day2)
+		date_difference2 = month_end2 - month_start2
+		total_days_of_month = date_difference2.days +1
+
+		if end_date<month_end:
+			month_end=end_date
+
+		date_difference = month_end - month_start
+		n = date_difference.days +1
+
+		if n<total_days_of_month:
+			prev_mlp=mlp
+			mlp=mlp*n/total_days_of_month
+			
+			total_mlp+=mlp
+			if cnt==1:
+				pv=mlp
+				pv_arr.append(pv)
+			else:
+				pv=mlp/((1+daily_rate)**ndays)
+				pv_arr.append(pv)
+			mlp=prev_mlp
+
+		else:
+
+			total_mlp+=mlp
+			if cnt==1:
+				pv=mlp
+				pv_arr.append(pv)
+			else:
+				pv=mlp/((1+daily_rate)**ndays)
+				pv_arr.append(pv)
+
+		total_pv=total_pv+pv
+		ndays+=n
+
+		if month_end>end_date:
+			month_end=end_date
+
+		if current_date.month==12:
+			current_date=datetime(current_date.year + 1, 1, 1)
+		else:
+			current_date=datetime(current_date.year, current_date.month + 1, 1)
+
+	prev_closing_liability=total_pv
+	total_days=ndays
+
+	# Calculate Depreciation
+	while current_date2<=end_date:
+		month_start=current_date2
+
+		_,last_day=monthrange(current_date2.year, current_date2.month)
+		month_end=datetime(current_date2.year, current_date2.month, last_day)
+
+		if end_date<month_end:
+			month_end=end_date
+
+		date_difference = month_end - month_start
+		n = date_difference.days +1
+
+		if (doc.previous_wdv)!=0:
+			prev_closing_liability_wdv=float(doc.previous_wdv)
+			depreciation=(n/total_days)*prev_closing_liability_wdv
+			total_depre+=depreciation
+		else:
+			depreciation=(n/total_days)*prev_closing_liability
+			total_depre+=depreciation
+		
+		if month_end>end_date:
+			month_end=end_date
+
+		if current_date2.month==12:
+			current_date2=datetime(current_date2.year + 1, 1, 1)
+		else:
+			current_date2=datetime(current_date2.year, current_date2.month + 1, 1)		
+	if (doc.previous_wdv)!=0:
+		prev_wdv=float(doc.previous_wdv)
+	else:
+		prev_wdv=total_depre
+	wdv=prev_wdv
+	closing_liability=prev_closing_liability
+	total_interest_cost=0
+	data.insert(0,['','','','','',round(wdv,3),'',round(closing_liability,3)])
+
+	# calc depre,wdv
+	while current_date3<=end_date:
+		cnt2+=1
+		month_start=current_date3
+
+		_,last_day=monthrange(current_date3.year, current_date3.month)
+		month_end=datetime(current_date3.year, current_date3.month, last_day)
+
+		month_start2=current_date3.replace(day=1)
+		_,last_day2=monthrange(current_date3.year, current_date3.month)
+		month_end2=datetime(current_date3.year, current_date3.month, last_day2)
+		date_difference2 = month_end2 - month_start2
+		total_days_of_month = date_difference2.days +1
+
+		if end_date<month_end:
+			month_end=end_date
+
+		date_difference = month_end - month_start
+		n = date_difference.days +1
+
+		if n<total_days_of_month:
+			prev_mlp2=mlp2
+			mlp2=mlp2*n/total_days_of_month
+
+			interest_cost=((closing_liability-mlp2)*((1+daily_rate)**n-1))
+			total_interest_cost+=interest_cost
+			closing_liability=closing_liability+interest_cost-mlp2
+
+			if (doc.previous_wdv)!=0:
+				prev_closing_liability_wdv=float(doc.previous_wdv)
+				depreciation=(n/total_days)*prev_closing_liability_wdv
+				wdv-=depreciation
+			else:
+				depreciation=(n/total_days)*prev_closing_liability
+				wdv-=depreciation
+
+			data.append([month_start.date(),month_end.date(), n,mlp2, round(depreciation, 3), round(wdv, 3), round(interest_cost, 3),
+						round(closing_liability, 3)])
+			mlp2=prev_mlp2
+
+		else:
+
+			interest_cost=((closing_liability-mlp2)*((1+daily_rate)**n-1))
+			total_interest_cost+=interest_cost
+			closing_liability=closing_liability+interest_cost-mlp2
+
+			depreciation=(n/total_days)*prev_closing_liability
+			wdv-=depreciation
+
+			data.append([month_start.date(),month_end.date(), n,mlp2, round(depreciation, 3), round(wdv, 3), round(interest_cost, 3),
+						round(closing_liability, 3)])
+
+		if month_end>end_date:
+			month_end=end_date
+
+		if current_date3.month==12:
+			current_date3=datetime(current_date3.year + 1, 1, 1)
+		else:
+			current_date3=datetime(current_date3.year, current_date3.month + 1, 1)
+			
+
+	# Store Calculated Data in Dataframe and Save it in Excel File 	
+	if not data:
+		frappe.msgprint("No Data Calculated")
+
+	for i in range(len(data)):
+		data[i].insert(4,pv_arr[i])
+
+	data.append(['','',total_days,round(total_mlp,3),round(total_pv,3),round(total_depre,3),'',round(total_interest_cost,3),''])
+	
+	df = pd.DataFrame(data, columns=columns)
+
+	output = io.BytesIO()
+
+	with pd.ExcelWriter(output, engine='openpyxl') as writer:
+		df.to_excel(writer, index=False, sheet_name='Sheet1')
+		# Get the openpyxl worksheet object
+		worksheet = writer.sheets['Sheet1']
+
+    	# Autofit column widths
+		for i, col in enumerate(df.columns):
+        	# Get the maximum length of the column (including header)
+			max_length = max(
+            	df[col].astype(str).map(len).max(),
+            	len(col)
+        	)
+			col_letter = get_column_letter(i + 1)
+        	# Set column width (add a little extra space)
+			worksheet.column_dimensions[col_letter].width = max_length + 2
+
+	output.seek(0)
+	file_name = f"lease_management_report_WE{docname}_{cnt_time}.xlsx"
+	folder = "Home"
+	
+	file_doc = save_file(file_name, output.read(), dt="Lease Management", dn=docname, folder=folder, decode=False)
+
+	return {
+    	"file_url": file_doc.file_url
+	}
+
+def generate_lease_report_month_based_without_escalation(start_date,end_date,docname,cnt_time):
+	doc = frappe.get_doc("Lease Management",docname)
+	mlp=float(doc.monthly_rent)
+	mlp2=float(doc.monthly_rent)
+	
+	# Discounting Rate
+	disc_doc=(float(doc.discounting_rate)/100)
+
+	if doc.calculation_rate_type=="Monthly Rate":
+		daily_rate=(1+(disc_doc))**(1/12)-1
+		columns=["Month Start Date","Month End Date", "Month","Minimum Lease Payment (MLP)","Present Value of MLP","Days in Month", "Depreciation on Right to Use", "Written Down Value (WDV)", "Interest Cost", "Closing Liability"]
+
+	arg_sd=start_date
+	arg_ed=end_date+ timedelta(days=1)
+	diff_years = relativedelta(arg_ed,arg_sd)
+	diff_years=int(str(diff_years.years))
+
+	current_date=start_date
+	current_date2=start_date
+	current_date3=start_date
+	cnt=0
+	cnt1=0
+	cnt2=0
+	ndays=0
+	nmonths=0
+	ndays_pv=0
+	total_mlp=0
+	total_pv=0
+	total_depre=0
+	data=[]
+	pv_arr=['']
+	
+	# Calculate Previous Closing Liability from Present Value and Total Days
+	while current_date<=end_date:
+		cnt+=1
+		month_start=current_date
+
+		_,last_day=monthrange(current_date.year, current_date.month)
+		month_end=datetime(current_date.year, current_date.month, last_day)
+
+		month_start2=current_date.replace(day=1)
+		_,last_day2=monthrange(current_date.year, current_date.month)
+		month_end2=datetime(current_date.year, current_date.month, last_day2)
+		date_difference2 = month_end2 - month_start2
+		total_days_of_month = date_difference2.days +1
+		
+		if end_date<month_end:
+			month_end=end_date
+
+		date_difference = month_end - month_start
+		if doc.calculation_rate_type=="Monthly Rate":
+			n=cnt
+			nmonths_val=date_difference.days +1
+
+		if doc.calculation_rate_type=="Monthly Rate":
+			total_mlp+=mlp
+			if cnt==1:
+				pv=mlp
+				pv_arr.append(pv)
+			else:
+				pv=mlp/((1+daily_rate)**ndays_pv)
+				pv_arr.append(pv)
+
+		total_pv=total_pv+pv
+		ndays+=n
+		nmonths+=nmonths_val
+		ndays_pv+=1
+
+		if month_end>end_date:
+			month_end=end_date
+
+		if current_date.month==12:
+			current_date=datetime(current_date.year + 1, 1, 1)
+		else:
+			current_date=datetime(current_date.year, current_date.month + 1, 1)
+
+	prev_closing_liability=total_pv
+	total_days=ndays
+
+	# Calculate Depreciation
+	while current_date2<=end_date:
+		cnt1+=1
+		month_start=current_date2
+
+		_,last_day=monthrange(current_date2.year, current_date2.month)
+		month_end=datetime(current_date2.year, current_date2.month, last_day)
+
+		if end_date<month_end:
+			month_end=end_date
+
+		date_difference = month_end - month_start
+		if doc.calculation_rate_type=="Monthly Rate":
+			n=cnt1
+			n_depre=date_difference.days +1
+
+		if (doc.previous_wdv)!=0:
+			prev_closing_liability_wdv=float(doc.previous_wdv)
+			depreciation=(n/total_days)*prev_closing_liability_wdv
+			total_depre+=depreciation
+		else:
+			# depreciation=(n/total_days)*prev_closing_liability
+			depreciation=(n_depre/nmonths)*prev_closing_liability
+			total_depre+=depreciation
+		
+		if month_end>end_date:
+			month_end=end_date
+
+		if current_date2.month==12:
+			current_date2=datetime(current_date2.year + 1, 1, 1)
+		else:
+			current_date2=datetime(current_date2.year, current_date2.month + 1, 1)		
+	if (doc.previous_wdv)!=0:
+		prev_wdv=float(doc.previous_wdv)
+	else:
+		prev_wdv=total_depre
+	wdv=prev_wdv
+	closing_liability=prev_closing_liability
+	total_interest_cost=0
+	data.insert(0,['','','','','','',round(wdv,3),'',round(closing_liability,3)])
+
+	# calc depre,wdv
+	while current_date3<=end_date:
+		cnt2+=1
+		month_start=current_date3
+
+		_,last_day=monthrange(current_date3.year, current_date3.month)
+		month_end=datetime(current_date3.year, current_date3.month, last_day)
+
+		month_start2=current_date.replace(day=1)
+		_,last_day2=monthrange(current_date3.year, current_date3.month)
+		month_end2=datetime(current_date3.year, current_date3.month, last_day2)
+		date_difference2 = month_end2 - month_start2
+		total_days_of_month = date_difference2.days +1
+
+		if end_date<month_end:
+			month_end=end_date
+
+		date_difference = month_end - month_start
+		if doc.calculation_rate_type=="Monthly Rate":
+			n=cnt2
+			n_days_of_month = date_difference.days +1
+
+		if doc.calculation_rate_type=="Monthly Rate":
+			
+			interest_cost=((closing_liability-mlp2)*daily_rate)
+			total_interest_cost+=interest_cost
+			closing_liability=closing_liability+interest_cost-mlp2
+
+			if (doc.previous_wdv)!=0:
+				prev_closing_liability_wdv=float(doc.previous_wdv)
+				depreciation=(n/total_days)*prev_closing_liability_wdv
+				wdv-=depreciation
+			else:
+				depreciation=(n_days_of_month/nmonths)*prev_closing_liability
+				wdv-=depreciation
+
+			data.append([month_start.date(),month_end.date(), n,mlp2,n_days_of_month, round(depreciation, 3), round(wdv, 3), round(interest_cost, 3),
+						round(closing_liability, 3)])
+
+		if month_end>end_date:
+			month_end=end_date
+
+		if current_date3.month==12:
+			current_date3=datetime(current_date3.year + 1, 1, 1)
+		else:
+			current_date3=datetime(current_date3.year, current_date3.month + 1, 1)
+			
+
+	# Store Calculated Data in Dataframe and Save it in Excel File 	
+	if not data:
+		frappe.msgprint("No Data Calculated")
+
+	for i in range(len(data)):
+		data[i].insert(4,pv_arr[i])
+
+	data.append(['','',total_days,round(total_mlp,3),round(total_pv,3),nmonths,round(total_depre,3),'',round(total_interest_cost,3),''])
+	
+	df = pd.DataFrame(data, columns=columns)
+
+	output = io.BytesIO()
+
+	with pd.ExcelWriter(output, engine='openpyxl') as writer:
+		df.to_excel(writer, index=False, sheet_name='Sheet1')
+		# Get the openpyxl worksheet object
+		worksheet = writer.sheets['Sheet1']
+
+
+    	# Autofit column widths
+		for i, col in enumerate(df.columns):
+        	# Get the maximum length of the column (including header)
+			max_length = max(
+            	df[col].astype(str).map(len).max(),
+            	len(col)
+        	)
+			col_letter = get_column_letter(i + 1)
+        	# Set column width (add a little extra space)
+			worksheet.column_dimensions[col_letter].width = max_length + 2
+		
+
+	output.seek(0)
+	file_name = f"lms_report_month_based_WE{docname}_{cnt_time}.xlsx"
+	folder = "Home"
+	
+	file_doc = save_file(file_name, output.read(), dt="Lease Management", dn=docname, folder=folder, decode=False)
+
+	return {
+    	"file_url": file_doc.file_url
+	}
+
+
 
 @frappe.whitelist()
 def generate_report(docname,cnt):
@@ -1205,9 +1670,15 @@ def generate_report(docname,cnt):
 	date1 = datetime.strptime(date_str1, date_format)
 	date2 = datetime.strptime(date_str2, date_format)
 	if doc.calculation_rate_type=="Monthly Rate":
-		output = generate_lease_report_month_based(date1, date2,docname,cnt)
+		if doc.lease_period=="Short Term (Less Than 12 Months)":
+			output = generate_lease_report_month_based_without_escalation(date1, date2,docname,cnt)
+		else:
+			output = generate_lease_report_month_based(date1, date2,docname,cnt)
 	elif doc.calculation_rate_type=="Daily Rate":
-		output = generate_lease_report(date1, date2,docname,cnt)
+		if doc.lease_period=="Short Term (Less Than 12 Months)":
+			output = generate_lease_report_without_escalation(date1, date2,docname,cnt)
+		else:
+			output = generate_lease_report(date1, date2,docname,cnt)
 	return output
 
 
