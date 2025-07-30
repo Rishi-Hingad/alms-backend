@@ -38,8 +38,8 @@ def generate_lease_report(start_date,end_date,docname,cnt_time):
 	diff_years = relativedelta(arg_ed,arg_sd)
 	diff_years=int(str(diff_years.years))
 
-	month_ranges=[]
-	deprec=[]
+	# month_ranges=[]
+	# deprec=[]
 	current_date=start_date
 	current_date2=start_date
 	current_date3=start_date
@@ -51,7 +51,7 @@ def generate_lease_report(start_date,end_date,docname,cnt_time):
 	total_depre=0
 
 	columns=["Month Start Date","Month End Date", "Days in Month","Minimum Lease Payment (MLP)","Present Value of MLP", "Depreciation on Right to Use", "Written Down Value (WDV)", "Interest Cost", "Closing Liability"]
-	# columns=["Month End Date", "MLP","PV"]
+	
 	data=[]
 	pv_arr=['']
 	etype=[]
@@ -76,15 +76,15 @@ def generate_lease_report(start_date,end_date,docname,cnt_time):
 		if escl_type:
 			etype.append(escl_type)
 			if "Based On Dates"==escl_type:
-				if len(child.monthly_rent)==0:
+				if len(child.monthly_rent)==0 or child.monthly_rent is None:
 					monthly_rent_bdates=0
 				else:
 					monthly_rent_bdates=float(child.monthly_rent)
-				if len(child.rate) == 0:
+				if len(child.rate) == 0 or child.rate is None:
 					rate_bdates=0
 				else:
 					rate_bdates=float(child.rate)
-				if len(child.fixed_amount) == 0:
+				if len(child.fixed_amount) == 0 or child.fixed_amount is None:
 					fixed_amt_bdates=0
 				else:
 					fixed_amt_bdates=float(child.fixed_amount)
@@ -127,15 +127,15 @@ def generate_lease_report(start_date,end_date,docname,cnt_time):
 		date_list=total_escl_dates_bdates
 
 	for child in doc.escalation:
-		if len(child.monthly_rent) == 0:
+		if len(child.monthly_rent) == 0 or child.monthly_rent is None:
 			monthly_rent=0
 		else:
 			monthly_rent=float(child.monthly_rent)
-		if len(child.rate) == 0:
+		if len(child.rate) == 0 or child.rate is None:
 			rate=0
 		else:
 			rate=float(child.rate)
-		if len(child.fixed_amount) == 0:
+		if len(child.fixed_amount) == 0 or child.fixed_amount is None:
 			fixed_amt=0
 		else:
 			fixed_amt=float(child.fixed_amount)
@@ -793,15 +793,15 @@ def generate_lease_report_month_based(start_date,end_date,docname,cnt_time):
 				# monthly_rent_bdates=float(child.monthly_rent)
 				# rate_bdates=float(child.rate)
 				# fixed_amt_bdates=float(child.fixed_amount)
-				if len(child.monthly_rent) == 0:
+				if len(child.monthly_rent) == 0 or child.monthly_rent is None:
 					monthly_rent_bdates=0
 				else:
 					monthly_rent_bdates=float(child.monthly_rent)
-				if len(child.rate) == 0:
+				if len(child.rate) == 0 or child.rate is None:
 					rate_bdates=0
 				else:
 					rate_bdates=float(child.rate)
-				if len(child.fixed_amount) == 0:
+				if len(child.fixed_amount) == 0 or child.fixed_amount is None:
 					fixed_amt_bdates=0
 				else:
 					fixed_amt_bdates=float(child.fixed_amount)
@@ -838,15 +838,15 @@ def generate_lease_report_month_based(start_date,end_date,docname,cnt_time):
 		# monthly_rent=float(child.monthly_rent)
 		# rate=float(child.rate)
 		# fixed_amt=float(child.fixed_amount)
-		if len(child.monthly_rent) == 0:
+		if len(child.monthly_rent) == 0 or child.monthly_rent is None:
 			monthly_rent=0
 		else:
 			monthly_rent=float(child.monthly_rent)
-		if len(child.rate) == 0:
+		if len(child.rate) == 0 or child.rate is None:
 			rate=0
 		else:
 			rate=float(child.rate)
-		if len(child.fixed_amount) == 0:
+		if len(child.fixed_amount) == 0 or child.fixed_amount is None:
 			fixed_amt=0
 		else:
 			fixed_amt=float(child.fixed_amount)
@@ -863,14 +863,18 @@ def generate_lease_report_month_based(start_date,end_date,docname,cnt_time):
 					if len(new_start_date)==0:
 						new_date = start_date + relativedelta(years=1)
 					if new_date not in date_list:
-						escl_dates_pannum.append(new_date.date())
+						if isinstance(new_date, datetime):
+							new_date = new_date.date()
+						escl_dates_pannum.append(new_date)
 						new_date=new_date + relativedelta(years=1)
 				else:
 					if new_date in date_list:
 						new_date=new_date + relativedelta(years=1)
 						break
-					if new_date.date()<end_date.date() and new_date not in date_list:
-						escl_dates_pannum.append(new_date.date())	
+					if isinstance(new_date, datetime):
+							new_date = new_date.date()
+					if new_date<end_date.date() and new_date not in date_list:
+						escl_dates_pannum.append(new_date)	
 						new_date=new_date + relativedelta(years=1)
 			dkey="Per Annum"+'-'+str(rate)
 			dsubkey=str(rate)+'-'+str(monthly_rent)+'-'+str(fixed_amt)
@@ -892,14 +896,18 @@ def generate_lease_report_month_based(start_date,end_date,docname,cnt_time):
 						new_date = start_date + relativedelta(years=1)
 
 					if new_date not in date_list:
-						escl_dates_pafr.append(new_date.date())
+						if isinstance(new_date, datetime):
+							new_date = new_date.date()
+						escl_dates_pafr.append(new_date)
 						new_date=new_date + relativedelta(years=1)
 				else:
 					if new_date in date_list:
 						new_date=new_date + relativedelta(years=1)
 						break
-					if new_date.date()<end_date.date() and new_date not in date_list:
-						escl_dates_pafr.append(new_date.date())
+					if isinstance(new_date, datetime):
+							new_date = new_date.date()
+					if new_date<end_date.date() and new_date not in date_list:
+						escl_dates_pafr.append(new_date)
 						new_date=new_date + relativedelta(years=1)	
 			dkey="Per Annum and Fixed Amount"+'-'+str(rate)+'-'+str(fixed_amt)
 			# dsubkey=str(escl_rate_pafr)+'-'+str(fixed_amt_pafr)
