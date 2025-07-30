@@ -76,15 +76,27 @@ def generate_lease_report(start_date,end_date,docname,cnt_time):
 		if escl_type:
 			etype.append(escl_type)
 			if "Based On Dates"==escl_type:
-				if len(child.monthly_rent)==0 or child.monthly_rent is None:
+				# if len(child.monthly_rent)==0 or child.monthly_rent is None:
+				# 	monthly_rent_bdates=0
+				# else:
+				# 	monthly_rent_bdates=float(child.monthly_rent)
+				# if len(child.rate) == 0 or child.rate is None:
+				# 	rate_bdates=0
+				# else:
+				# 	rate_bdates=float(child.rate)
+				# if len(child.fixed_amount) == 0 or child.fixed_amount is None:
+				# 	fixed_amt_bdates=0
+				# else:
+				# 	fixed_amt_bdates=float(child.fixed_amount)
+				if child.monthly_rent is None:
 					monthly_rent_bdates=0
 				else:
 					monthly_rent_bdates=float(child.monthly_rent)
-				if len(child.rate) == 0 or child.rate is None:
+				if child.rate is None:
 					rate_bdates=0
 				else:
 					rate_bdates=float(child.rate)
-				if len(child.fixed_amount) == 0 or child.fixed_amount is None:
+				if child.fixed_amount is None:
 					fixed_amt_bdates=0
 				else:
 					fixed_amt_bdates=float(child.fixed_amount)
@@ -127,15 +139,27 @@ def generate_lease_report(start_date,end_date,docname,cnt_time):
 		date_list=total_escl_dates_bdates
 
 	for child in doc.escalation:
-		if len(child.monthly_rent) == 0 or child.monthly_rent is None:
+		# if len(child.monthly_rent) == 0 or child.monthly_rent is None:
+		# 	monthly_rent=0
+		# else:
+		# 	monthly_rent=float(child.monthly_rent)
+		# if len(child.rate) == 0 or child.rate is None:
+		# 	rate=0
+		# else:
+		# 	rate=float(child.rate)
+		# if len(child.fixed_amount) == 0 or child.fixed_amount is None:
+		# 	fixed_amt=0
+		# else:
+		# 	fixed_amt=float(child.fixed_amount)
+		if child.monthly_rent is None:
 			monthly_rent=0
 		else:
 			monthly_rent=float(child.monthly_rent)
-		if len(child.rate) == 0 or child.rate is None:
+		if child.rate is None:
 			rate=0
 		else:
 			rate=float(child.rate)
-		if len(child.fixed_amount) == 0 or child.fixed_amount is None:
+		if child.fixed_amount is None:
 			fixed_amt=0
 		else:
 			fixed_amt=float(child.fixed_amount)
@@ -793,15 +817,27 @@ def generate_lease_report_month_based(start_date,end_date,docname,cnt_time):
 				# monthly_rent_bdates=float(child.monthly_rent)
 				# rate_bdates=float(child.rate)
 				# fixed_amt_bdates=float(child.fixed_amount)
-				if len(child.monthly_rent) == 0 or child.monthly_rent is None:
+				# if len(child.monthly_rent) == 0 or child.monthly_rent is None:
+				# 	monthly_rent_bdates=0
+				# else:
+				# 	monthly_rent_bdates=float(child.monthly_rent)
+				# if len(child.rate) == 0 or child.rate is None:
+				# 	rate_bdates=0
+				# else:
+				# 	rate_bdates=float(child.rate)
+				# if len(child.fixed_amount) == 0 or child.fixed_amount is None:
+				# 	fixed_amt_bdates=0
+				# else:
+				# 	fixed_amt_bdates=float(child.fixed_amount)
+				if child.monthly_rent is None:
 					monthly_rent_bdates=0
 				else:
 					monthly_rent_bdates=float(child.monthly_rent)
-				if len(child.rate) == 0 or child.rate is None:
+				if child.rate is None:
 					rate_bdates=0
 				else:
 					rate_bdates=float(child.rate)
-				if len(child.fixed_amount) == 0 or child.fixed_amount is None:
+				if child.fixed_amount is None:
 					fixed_amt_bdates=0
 				else:
 					fixed_amt_bdates=float(child.fixed_amount)
@@ -838,15 +874,27 @@ def generate_lease_report_month_based(start_date,end_date,docname,cnt_time):
 		# monthly_rent=float(child.monthly_rent)
 		# rate=float(child.rate)
 		# fixed_amt=float(child.fixed_amount)
-		if len(child.monthly_rent) == 0 or child.monthly_rent is None:
+		# if len(child.monthly_rent) == 0 or child.monthly_rent is None:
+		# 	monthly_rent=0
+		# else:
+		# 	monthly_rent=float(child.monthly_rent)
+		# if len(child.rate) == 0 or child.rate is None:
+		# 	rate=0
+		# else:
+		# 	rate=float(child.rate)
+		# if len(child.fixed_amount) == 0 or child.fixed_amount is None:
+		# 	fixed_amt=0
+		# else:
+		# 	fixed_amt=float(child.fixed_amount)
+		if child.monthly_rent is None:
 			monthly_rent=0
 		else:
 			monthly_rent=float(child.monthly_rent)
-		if len(child.rate) == 0 or child.rate is None:
+		if child.rate is None:
 			rate=0
 		else:
 			rate=float(child.rate)
-		if len(child.fixed_amount) == 0 or child.fixed_amount is None:
+		if child.fixed_amount is None:
 			fixed_amt=0
 		else:
 			fixed_amt=float(child.fixed_amount)
