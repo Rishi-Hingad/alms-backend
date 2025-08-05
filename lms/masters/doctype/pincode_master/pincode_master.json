@@ -26,7 +26,7 @@
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-07-15 12:21:12.764702",
+ "modified": "2025-08-05 12:18:15.201510",
  "modified_by": "Administrator",
  "module": "Masters",
  "name": "Pincode Master",
@@ -42,6 +42,18 @@
    "read": 1,
    "report": 1,
    "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Accounts",
    "share": 1,
    "write": 1
   }

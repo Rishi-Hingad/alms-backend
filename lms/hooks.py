@@ -63,7 +63,6 @@ app_license = "mit"
 # role_home_page = {
 # 	"Role": "home_page"
 # }
-
 # Generators
 # ----------
 

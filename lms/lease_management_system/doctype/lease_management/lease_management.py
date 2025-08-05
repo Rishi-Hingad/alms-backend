@@ -1737,11 +1737,13 @@ def generate_report(docname,cnt):
 			output = generate_lease_report(date1, date2,docname,cnt)
 	return output
 
-
+# def user_has_vendor_role(user):
+# 	roles=frappe.get_role(user)
+# 	return "Vendor" in roles
 
 
 class LeaseManagement(Document):
-	pass
+	# pass
 	def validate(self):
 		for row in self.escalation:
 			# if row.escalation_type=='Per Annum' and not row.rate:

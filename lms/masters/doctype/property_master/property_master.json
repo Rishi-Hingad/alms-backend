@@ -45,7 +45,7 @@
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-07-21 15:18:16.476377",
+ "modified": "2025-08-05 12:17:08.664631",
  "modified_by": "Administrator",
  "module": "Masters",
  "name": "Property Master",
@@ -61,6 +61,22 @@
    "read": 1,
    "report": 1,
    "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "read": 1,
+   "role": "Vendor"
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Accounts",
    "share": 1,
    "write": 1
   }

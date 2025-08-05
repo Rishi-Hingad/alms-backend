@@ -79,6 +79,10 @@ frappe.ui.form.on("Lease Management", {
         frm.report_counter = 0;
     },
     refresh: function (frm) { 
+        if(frappe.user.has_role("Vendor")){
+            frm.fields_dict.invoice_details.grid.df.read_only=0;
+            frm.fields_dict.invoice_details.grid.refresh();
+        }
         if(!(frm.doc.discounting_rate)&&frm.is_new()){
             frappe.db.get_list('Discounting Rate', {
                 limit: 1,
