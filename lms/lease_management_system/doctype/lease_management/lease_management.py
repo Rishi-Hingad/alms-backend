@@ -1228,8 +1228,7 @@ def generate_lease_report_month_based(start_date,end_date,docname,cnt_time):
 				depreciation=(n_days_of_month/nmonths)*prev_closing_liability
 				wdv-=depreciation
 
-			data.append([month_start.date(),month_end.date(), n,mlp2,n_days_of_month, round(depreciation, 3), round(wdv, 3), round(interest_cost, 3),
-						round(closing_liability, 3)])
+			data.append([month_start.date(),month_end.date(), n,mlp2,n_days_of_month, round(depreciation, 3), round(wdv, 3), round(interest_cost, 3),round(closing_liability, 3)])
 
 		if month_end>end_date:
 			month_end=end_date
@@ -1281,7 +1280,7 @@ def generate_lease_report_month_based(start_date,end_date,docname,cnt_time):
     	"file_url": file_doc.file_url
 	}
 
-
+# ===================================================================================
 def generate_lease_report_without_escalation(start_date,end_date,docname,cnt_time):
 	doc = frappe.get_doc("Lease Management",docname)
 	mlp=float(doc.monthly_rent)
@@ -1506,6 +1505,7 @@ def generate_lease_report_without_escalation(start_date,end_date,docname,cnt_tim
     	"file_url": file_doc.file_url
 	}
 
+# ===================================================================================
 def generate_lease_report_month_based_without_escalation(start_date,end_date,docname,cnt_time):
 	doc = frappe.get_doc("Lease Management",docname)
 	mlp=float(doc.monthly_rent)
@@ -1715,7 +1715,7 @@ def generate_lease_report_month_based_without_escalation(start_date,end_date,doc
     	"file_url": file_doc.file_url
 	}
 
-
+# ===================================================================================
 
 @frappe.whitelist()
 def generate_report(docname,cnt):
@@ -1758,4 +1758,35 @@ class LeaseManagement(Document):
 			# 	frappe.throw("Rate Field Required in Escalation")
 			# if row.escalation_type=='Per Annum and Fixed Amount' and not row.fixed_amount:
 			# 	frappe.throw("Fixed Amount Field Required in Escalation")
+
+	def before_insert(self):
+    	# On new record creation, populate invoice_details
+		if self.agreement_start_date and self.agreement_end_date:
+			self.populate_invoice_details()
+
+	# def before_save(self):
+	# 	# On updates, check if agreement dates changed
+	# 	old_doc = self.get_doc_before_save()
+	# 	if old_doc:
+	# 		if (old_doc.agreement_start_date != self.agreement_start_date) or (old_doc.agreement_end_date != self.agreement_end_date):
+	# 			# Clear existing rows first
+	# 			self.set("invoice_details", [])
+	# 			# Re-populate
+	# 			if self.agreement_start_date and self.agreement_end_date:
+	# 				self.populate_invoice_details()
+
+	def populate_invoice_details(self):
+		# Convert string dates to date objects
+		start_date = datetime.strptime(self.agreement_start_date, "%Y-%m-%d").date()
+		end_date = datetime.strptime(self.agreement_end_date, "%Y-%m-%d").date()
+		current_date = start_date
+
+		while current_date <= end_date:
+			self.append("invoice_details", {
+				"month": current_date.strftime("%B %Y"),
+				"invoice_date": current_date,
+				"invoice_attachment": ''  # initialize empty
+			})
+			current_date += relativedelta(months=1)
+
 	
