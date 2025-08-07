@@ -190,6 +190,33 @@ frappe.ui.form.on("Lease Management", {
     }
 });
 
+function validate_dates_and_set_lease_period(frm){
+    const start_date = frm.doc.agreement_start_date;
+    const end_date = frm.doc.agreement_end_date;
+
+    if(start_date && end_date) {
+        if(end_date <= start_date) {
+            frappe.msgprint(__('Agreement End Date must be greater than Agreement Start Date.'));
+            frm.set_value('agreement_end_date', null);
+            return;
+        }
+
+        // Calculate difference in months between dates
+        const start = frappe.datetime.str_to_obj(start_date);
+        const end = frappe.datetime.str_to_obj(end_date);
+
+        let months_diff = (end.getFullYear() - start.getFullYear()) * 12;
+        months_diff -= start.getMonth();
+        months_diff += end.getMonth();
+
+        if(months_diff > 12) {
+            frm.set_value('lease_period', 'Long Term (Greater Than 12 Months)');
+        } else {
+            frm.set_value('lease_period', 'Short Term (Less Than 12 Months)');
+        }
+    }
+}
+
 function validate_escalation_dates(frm, cdt, cdn){
     const row = frappe.get_doc(cdt, cdn);
     const agreement_start = frm.doc.agreement_start_date;
