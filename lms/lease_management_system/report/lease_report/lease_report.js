@@ -8,7 +8,15 @@ frappe.query_reports["Lease Report"] = {
 				"label": "Lease Agreement",
 				"fieldtype": "Link",
 				"options": "Lease Management",
-				"reqd": 1
+				"reqd": 1,
+				"get_query": function() {
+					return {
+						filters: {
+							"calculation_rate_type": "Daily Rate",
+							"lease_period":"Long Term (Greater Than 12 Months)"
+						}
+					};
+				}
 			}
 		]
 
