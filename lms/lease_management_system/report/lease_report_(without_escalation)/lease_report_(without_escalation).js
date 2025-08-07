@@ -1,7 +1,7 @@
 // Copyright (c) 2025, Shradha_Siddhi and contributors
 // For license information, please see license.txt
 
-frappe.query_reports["Lease Report (With Escalation)"] = {
+frappe.query_reports["Lease Report (Without Escalation)"] = {
 	"filters": [
 		{
 			"fieldname": "docname",
@@ -18,5 +18,6 @@ frappe.query_reports["Lease Report (With Escalation)"] = {
 				};
 			}
 		}
+
 	]
 };
