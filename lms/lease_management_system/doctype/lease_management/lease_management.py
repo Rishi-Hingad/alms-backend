@@ -3,7 +3,7 @@
 
 import frappe,pdb
 from frappe.model.document import Document
-from datetime import datetime,timedelta
+from datetime import datetime,timedelta,time
 from calendar import monthrange
 from dateutil.relativedelta import relativedelta
 import pandas as pd
@@ -326,6 +326,8 @@ def generate_lease_report(start_date,end_date,docname,cnt_time):
 						famt=float(temp[2])
 						if mrent!=0:
 							mlp=mrent
+						if mrent==0 and rate==0 and famt==0:
+							mlp=0
 						mlp=mlp+(rate*mlp/100)+famt
 						break
 				# mlp=mrent
@@ -418,6 +420,8 @@ def generate_lease_report(start_date,end_date,docname,cnt_time):
 						famt=float(temp[2])
 						if mrent!=0:
 							mlp=mrent
+						if mrent==0 and rate==0 and famt==0:
+							mlp=0
 						mlp=mlp+(rate*mlp/100)+famt
 						break
 				# mlp=mrent
@@ -582,6 +586,8 @@ def generate_lease_report(start_date,end_date,docname,cnt_time):
 						famt=float(temp[2])
 						if mrent!=0:
 							mlp2=mrent
+						if mrent==0 and rate==0 and famt==0:
+							mlp2=0
 						mlp2=mlp2+(rate*mlp2/100)+famt
 						break
 				# mlp=mrent
@@ -677,6 +683,8 @@ def generate_lease_report(start_date,end_date,docname,cnt_time):
 						famt=float(temp[2])
 						if mrent!=0:
 							mlp2=mrent
+						if mrent==0 and rate==0 and famt==0:
+							mlp2=0
 						mlp2=mlp2+(rate*mlp2/100)+famt
 						break
 				# mlp=mrent
@@ -1059,6 +1067,8 @@ def generate_lease_report_month_based(start_date,end_date,docname,cnt_time):
 						famt=float(temp[2])
 						if mrent!=0:
 							mlp=mrent
+						if mrent==0 and rate==0 and famt==0:
+							mlp=0
 						mlp=mlp+(rate*mlp/100)+famt
 						break
 				mlp=mrent
@@ -1196,6 +1206,8 @@ def generate_lease_report_month_based(start_date,end_date,docname,cnt_time):
 						famt=float(temp[2])
 						if mrent!=0:
 							mlp2=mrent
+						if mrent==0 and rate==0 and famt==0:
+							mlp2=0
 						mlp2=mlp2+(rate*mlp2/100)+famt
 						break
 				# mlp2=mrent
@@ -1725,22 +1737,65 @@ def generate_report(docname,cnt):
 	date_str2 = str(doc.agreement_end_date)
 	date1 = datetime.strptime(date_str1, date_format)
 	date2 = datetime.strptime(date_str2, date_format)
-	if doc.calculation_rate_type=="Monthly Rate":
-		if doc.lease_period=="Short Term (Less Than 12 Months)":
-			output = generate_lease_report_month_based_without_escalation(date1, date2,docname,cnt)
-		else:
-			output = generate_lease_report_month_based(date1, date2,docname,cnt)
-	elif doc.calculation_rate_type=="Daily Rate":
-		if doc.lease_period=="Short Term (Less Than 12 Months)":
-			output = generate_lease_report_without_escalation(date1, date2,docname,cnt)
-		else:
-			output = generate_lease_report(date1, date2,docname,cnt)
+	# if doc.calculation_rate_type=="Monthly Rate":
+	# 	if doc.lease_period=="Short Term (Less Than 12 Months)":
+	# 		output = generate_lease_report_month_based_without_escalation(date1, date2,docname,cnt)
+	# 	else:
+	# 		output = generate_lease_report_month_based(date1, date2,docname,cnt)
+	# elif doc.calculation_rate_type=="Daily Rate":
+	# 	if doc.lease_period=="Short Term (Less Than 12 Months)":
+	# 		output = generate_lease_report_without_escalation(date1, date2,docname,cnt)
+	# 	else:
+	# 		output = generate_lease_report(date1, date2,docname,cnt)
+
+	output=get_all_active_lease_rent_data()
 	return output
 
 # def user_has_vendor_role(user):
 # 	roles=frappe.get_role(user)
 # 	return "Vendor" in roles
+@frappe.whitelist()
+def get_all_active_lease_rent_data():
+	today=frappe.utils.nowdate()
+	if isinstance(today, str):
+		today = datetime.strptime(today, "%Y-%m-%d")
+	current_month = today.strftime("%Y-%m")
+	previous_month = (today - relativedelta(months=1)).strftime("%Y-%m")
+	next_month = (today + relativedelta(months=1)).strftime("%Y-%m")
+	leases=frappe.get_all("Lease Management",filters={"agreement_start_date": ("<=", today),"agreement_end_date": (">=", today)},fields=["name"])
+	monthly_totals = {
+		"Previous Month": 0.0,
+		"Current Month": 0.0,
+		"Next Month": 0.0
+	}
+	# res=[]
+	
+	for lease in leases:
+		lease_doc = frappe.get_doc("Lease Management", lease.name)
+		timeline_l = lease_doc.get_lease_rent_timeline()  
 
+		monthly_totals["Previous Month"] += timeline_l.get(previous_month, 0)
+		monthly_totals["Current Month"] += timeline_l.get(current_month, 0)
+		monthly_totals["Next Month"] += timeline_l.get(next_month, 0)
+
+		# res.append({lease.name:timeline_l})
+	return monthly_totals
+
+@frappe.whitelist()
+def get_lease_rent_dashboard_chart():
+    data = get_all_active_lease_rent_data()
+
+    return {
+        "labels": list(data.keys()),  # ["Previous Month", "Current Month", "Next Month"]
+        "datasets": [
+            {
+                "name": "Lease Rent",
+                "values": list(data.values())  # [1000.0, 1200.0, 1400.0]
+            }
+        ],
+        "type": "bar",       # chart type
+        "colors": ["#7cd6fd"]  # optional
+    }
 
 class LeaseManagement(Document):
 	# pass
@@ -1759,10 +1814,10 @@ class LeaseManagement(Document):
 			# if row.escalation_type=='Per Annum and Fixed Amount' and not row.fixed_amount:
 			# 	frappe.throw("Fixed Amount Field Required in Escalation")
 
-	def before_insert(self):
-    	# On new record creation, populate invoice_details
-		if self.agreement_start_date and self.agreement_end_date:
-			self.populate_invoice_details()
+	# def before_insert(self):
+    # 	# On new record creation, populate invoice_details
+	# 	if self.agreement_start_date and self.agreement_end_date:
+	# 		self.populate_invoice_details()
 
 	# def before_save(self):
 	# 	# On updates, check if agreement dates changed
@@ -1775,18 +1830,505 @@ class LeaseManagement(Document):
 	# 			if self.agreement_start_date and self.agreement_end_date:
 	# 				self.populate_invoice_details()
 
-	def populate_invoice_details(self):
-		# Convert string dates to date objects
-		start_date = datetime.strptime(self.agreement_start_date, "%Y-%m-%d").date()
-		end_date = datetime.strptime(self.agreement_end_date, "%Y-%m-%d").date()
-		current_date = start_date
+	# def populate_invoice_details(self):
+	# 	# Convert string dates to date objects
+	# 	start_date = datetime.strptime(self.agreement_start_date, "%Y-%m-%d").date()
+	# 	end_date = datetime.strptime(self.agreement_end_date, "%Y-%m-%d").date()
+	# 	current_date = start_date
 
-		while current_date <= end_date:
-			self.append("invoice_details", {
-				"month": current_date.strftime("%B %Y"),
-				"invoice_date": current_date,
-				"invoice_attachment": ''  # initialize empty
-			})
-			current_date += relativedelta(months=1)
+	# 	while current_date <= end_date:
+	# 		self.append("invoice_details", {
+	# 			"month": current_date.strftime("%B %Y"),
+	# 			"invoice_date": current_date,
+	# 			"invoice_attachment": ''  # initialize empty
+	# 		})
+	# 		current_date += relativedelta(months=1)
 
-	
+	def get_lease_rent_timeline(self):
+		doc = frappe.get_doc("Lease Management",self.name)
+		mlp=float(doc.monthly_rent)
+		start_date = doc.agreement_start_date
+		end_date = doc.agreement_end_date
+		if isinstance(doc.agreement_start_date, datetime):
+			start_date = doc.agreement_start_date
+		else:
+			start_date = datetime.combine(doc.agreement_start_date, datetime.min.time())
+
+		if isinstance(doc.agreement_end_date, datetime):
+			end_date = doc.agreement_end_date
+		else:
+			end_date = datetime.combine(doc.agreement_end_date, datetime.min.time())
+		# # Discounting Rate
+		# disc_doc=(float(doc.discounting_rate)/100)
+
+		# if doc.calculation_rate_type=="Daily Rate":
+		# 	daily_rate=(1+(disc_doc))**(1/365)-1
+		# elif doc.calculation_rate_type=="Monthly Rate":
+		# 	daily_rate=(1+(disc_doc))**(1/12)-1
+		arg_sd=start_date
+		arg_ed=end_date+ timedelta(days=1)
+		diff_years = relativedelta(arg_ed,arg_sd)
+		diff_years=int(str(diff_years.years))
+
+		# month_ranges=[]
+		# deprec=[]
+		timeline={}
+		current_date=start_date
+		cnt=0
+		etype=[]
+		escl_dates_pafr=[]
+		escl_dates_bdates=[]
+		total_escl_dates_bdates=[]
+		escl_dates_pannum=[]
+		date_list=[]
+		calc_dict={}
+		calc_keys=[]
+		esc_bd_end_date=None
+		bd_start_date=""
+		bd_end_date=""
+		cnt_etype=0
+		new_start_date=[]
+
+		for child in doc.escalation:
+			escl_type=child.escalation_type
+			if escl_type:
+				etype.append(escl_type)
+				if "Based On Dates"==escl_type:
+					if child.monthly_rent is None:
+						monthly_rent_bdates=0
+					else:
+						monthly_rent_bdates=float(child.monthly_rent)
+					if child.rate is None:
+						rate_bdates=0
+					else:
+						rate_bdates=float(child.rate)
+					if child.fixed_amount is None:
+						fixed_amt_bdates=0
+					else:
+						fixed_amt_bdates=float(child.fixed_amount)
+					bd_start_date=child.start_date
+					bd_end_date=child.end_date
+					# escl_dates_bdates=[]
+					new_date=current_date
+					new_date=new_date.date()
+					while new_date<=bd_end_date:
+						if new_date>=bd_start_date and new_date<=bd_end_date:
+							escl_dates_bdates.append(new_date)
+							new_date = new_date + timedelta(days=1)
+						else:
+							new_date = new_date + timedelta(days=1)
+
+					if new_date>bd_end_date:
+						new_start_date.append(new_date)
+					dkey="Based On Dates"+'-'+str(monthly_rent_bdates)
+					# dsubkey=str(monthly_rent_bdates)+'-'+str(rate_bdates)+'-'+str(fixed_amt_bdates)
+					dsubkey=str(rate_bdates)+'-'+str(monthly_rent_bdates)+'-'+str(fixed_amt_bdates)
+
+					calc_dict[dkey]={dsubkey:escl_dates_bdates}
+					# calc_dict.setdefault(dkey, {}).setdefault(monthly_rent_bdates, []).extend(escl_dates_bdates)
+					total_escl_dates_bdates+=escl_dates_bdates
+					if len(new_start_date)>0:
+						l=len(new_start_date)
+						for q in range(l):
+							if new_start_date[q] in total_escl_dates_bdates:
+								new_start_date.remove(new_start_date[q])
+								break
+					escl_dates_bdates=[]
+
+		for i in range(len(etype)):
+			if etype[i]=="Per Annum" or etype[i]=="Per Annum and Fixed Amount":
+				if etype[i-1]=="Based On Dates":
+					bd_date=doc.escalation[i-1]
+					d=bd_date.end_date
+					esc_bd_end_date=d+timedelta(days=1)
+					
+		if len(total_escl_dates_bdates)>0:
+			date_list=total_escl_dates_bdates
+
+		for child in doc.escalation:
+			if child.monthly_rent is None:
+				monthly_rent=0
+			else:
+				monthly_rent=float(child.monthly_rent)
+			if child.rate is None:
+				rate=0
+			else:
+				rate=float(child.rate)
+			if child.fixed_amount is None:
+				fixed_amt=0
+			else:
+				fixed_amt=float(child.fixed_amount)
+			if child.escalation_type=="Per Annum":
+				cnt_etype+=1
+				# escl_rate_pannum=float(child.rate)
+				for i in range(diff_years):
+					if i==0 and cnt_etype==1:
+						for j in range(len(new_start_date)):
+							if new_date>=new_start_date[j]:
+								new_date=new_start_date[j]
+							elif new_date<new_start_date[j]:
+								new_date = start_date + relativedelta(years=1)
+						if len(new_start_date)==0:
+							new_date = start_date + relativedelta(years=1)
+						if new_date not in date_list:
+							if isinstance(new_date, datetime):
+								new_date = new_date.date()
+							escl_dates_pannum.append(new_date)
+							new_date=new_date + relativedelta(years=1)
+					else:
+						if new_date in date_list:
+							new_date=new_date + relativedelta(years=1)
+							break
+						if isinstance(new_date, datetime):
+							new_date = new_date.date()
+						if new_date<end_date.date() and new_date not in date_list:
+							escl_dates_pannum.append(new_date)	
+							new_date=new_date + relativedelta(years=1)
+				dkey="Per Annum"+'-'+str(rate)
+				dsubkey=str(rate)+'-'+str(monthly_rent)+'-'+str(fixed_amt)
+				calc_dict[dkey]={dsubkey:escl_dates_pannum}
+				escl_dates_pannum=[]
+			
+			elif child.escalation_type=="Per Annum and Fixed Amount":
+				cnt_etype+=1
+				# escl_rate_pafr=float(child.rate)
+				# fixed_amt_pafr=float(child.fixed_amount)
+				for i in range(diff_years):
+					if i==0 and cnt_etype==1:
+						for j in range(len(new_start_date)):
+							if new_date>=new_start_date[j]:
+								new_date=new_start_date[j]
+							elif new_date<new_start_date[j]:
+								new_date = start_date + relativedelta(years=1)
+						if len(new_start_date)==0:
+							new_date = start_date + relativedelta(years=1)
+
+						if new_date not in date_list:
+							if isinstance(new_date, datetime):
+								new_date = new_date.date()
+							escl_dates_pafr.append(new_date)
+							new_date=new_date + relativedelta(years=1)
+					else:
+						if new_date in date_list:
+							new_date=new_date + relativedelta(years=1)
+							break
+						if isinstance(new_date, datetime):
+							new_date = new_date.date()
+						if new_date<end_date.date() and new_date not in date_list:
+							escl_dates_pafr.append(new_date)
+							new_date=new_date + relativedelta(years=1)	
+				dkey="Per Annum and Fixed Amount"+'-'+str(rate)+'-'+str(fixed_amt)
+				dsubkey=str(rate)+'-'+str(monthly_rent)+'-'+str(fixed_amt)
+				calc_dict[dkey]={dsubkey:escl_dates_pafr}	
+				escl_dates_pafr=[]
+
+		for key in calc_dict:
+			calc_keys.append(key)
+
+		edates_pannum=[]
+		edates_bd=[]
+		edates_pafa=[]
+		pa_rate=0
+		pafa_rate=0
+		famt=0
+		mrent=0
+		dict_ed_pannum={}
+		dict_ed_pafa={}
+		dict_ed_bdates={}
+
+		for i in range(len(calc_keys)):
+			temp_str=calc_keys[i]
+			temp=calc_keys[i].split('-')
+			calc_escl_type=temp[0]
+
+			if calc_escl_type=="Per Annum":
+				sub_dict=calc_dict[temp_str]
+				subkey=next(iter(sub_dict))
+				# rate_val=next(iter(sub_dict))
+				# pa_rate=float(rate_val)
+				edates_pannum+=sub_dict[subkey]
+				dict_ed_pannum[subkey]=sub_dict[subkey]
+
+			elif calc_escl_type=="Based On Dates":
+				sub_dict=calc_dict[temp_str]
+				subkey=next(iter(sub_dict))
+				# mrent_val=next(iter(sub_dict))
+				# mrent=float(mrent_val)
+				edates_bd+=sub_dict[subkey]
+				dict_ed_bdates[subkey]=sub_dict[subkey]
+
+
+			elif calc_escl_type=="Per Annum and Fixed Amount":
+				sub_dict=calc_dict[temp_str]
+				# temp_val=next(iter(sub_dict))
+				# pafa_rate,famt=temp_val
+				subkey=next(iter(sub_dict))
+				# temp=temp_val.split('-')
+				# pafa_rate=temp[0]
+				# famt=temp[1]
+				edates_pafa+=sub_dict[subkey]
+				dict_ed_pafa[subkey]=sub_dict[subkey]
+				
+
+		# Calculate Previous Closing Liability from Present Value and Total Days
+		while current_date<=end_date:
+			cnt+=1
+			month_start=current_date
+
+			_,last_day=monthrange(current_date.year, current_date.month)
+			month_end=datetime(current_date.year, current_date.month, last_day)
+
+			month_start2=current_date.replace(day=1)
+			_,last_day2=monthrange(current_date.year, current_date.month)
+			month_end2=datetime(current_date.year, current_date.month, last_day2)
+			date_difference2 = month_end2 - month_start2
+			total_days_of_month = date_difference2.days +1
+
+			if end_date<month_end:
+				month_end=end_date
+
+			date_difference = month_end - month_start
+			n = date_difference.days +1
+
+			if n<total_days_of_month:
+				prev_mlp=mlp
+				mlp=mlp*n/total_days_of_month
+				if current_date.date() in edates_pannum:
+					for k in dict_ed_pannum.keys():
+						temp_val=k
+						temp=temp_val.split('-')
+						escl=dict_ed_pannum[k]
+						if current_date.date() in escl:
+							# pa_rate=rate_pa
+							rate=float(temp[0])
+							mrent=float(temp[1])
+							famt=float(temp[2])
+							if mrent!=0:
+								mlp=mrent
+							mlp=mlp+(rate*mlp/100)+famt
+							break
+					# mlp=mlp+(pa_rate*mlp/100)
+				elif current_date.date() in edates_bd:
+					for k in dict_ed_bdates.keys():
+						# rpm=float(k)
+						temp_val=k
+						temp=temp_val.split('-')
+						escl=dict_ed_bdates[k]
+						if current_date.date() in escl:
+							# mrent=rpm
+							rate=float(temp[0])
+							mrent=float(temp[1])
+							famt=float(temp[2])
+							if mrent!=0:
+								mlp=mrent
+							if mrent==0 and rate==0 and famt==0:
+								mlp=0
+							mlp=mlp+(rate*mlp/100)+famt
+							
+							break
+					# mlp=mrent
+				elif current_date.date() in edates_pafa:
+					for k in dict_ed_pafa.keys():
+						temp_val=k
+						temp=temp_val.split('-')
+						# rate_pa=temp[0]
+						# f=temp[1]
+						escl=dict_ed_pafa[k]
+						if current_date.date() in escl:
+							# pafa_rate=float(rate_pa)
+							# famt=float(f)
+							rate=float(temp[0])
+							mrent=float(temp[1])
+							famt=float(temp[2])
+							if mrent!=0:
+								mlp=mrent
+							mlp=mlp+(rate*mlp/100)+famt
+							
+							break
+				timeline[current_date.date().strftime("%Y-%m")] = round(mlp, 3)
+				mlp=prev_mlp
+			else:
+				
+				if current_date.date() in edates_pannum:
+					for k in dict_ed_pannum.keys():
+						temp_val=k
+						temp=temp_val.split('-')
+						escl=dict_ed_pannum[k]
+						if current_date.date() in escl:
+							# pa_rate=rate_pa
+							rate=float(temp[0])
+							mrent=float(temp[1])
+							famt=float(temp[2])
+							if mrent!=0:
+								mlp=mrent
+							mlp=mlp+(rate*mlp/100)+famt
+							break
+					# mlp=mlp+(pa_rate*mlp/100)
+				elif current_date.date() in edates_bd:
+					for k in dict_ed_bdates.keys():
+						# rpm=float(k)
+						temp_val=k
+						temp=temp_val.split('-')
+						escl=dict_ed_bdates[k]
+						if current_date.date() in escl:
+							# mrent=rpm
+							rate=float(temp[0])
+							mrent=float(temp[1])
+							famt=float(temp[2])
+							if mrent!=0:
+								mlp=mrent
+							if mrent==0 and rate==0 and famt==0:
+								mlp=0
+							mlp=mlp+(rate*mlp/100)+famt
+							break
+					# mlp=mrent
+				elif current_date.date() in edates_pafa:
+					for k in dict_ed_pafa.keys():
+						temp_val=k
+						temp=temp_val.split('-')
+						# rate_pa=temp[0]
+						# f=temp[1]
+						escl=dict_ed_pafa[k]
+						if current_date.date() in escl:
+							# pafa_rate=float(rate_pa)
+							# famt=float(f)
+							rate=float(temp[0])
+							mrent=float(temp[1])
+							famt=float(temp[2])
+							if mrent!=0:
+								mlp=mrent
+							mlp=mlp+(rate*mlp/100)+famt
+							break
+				timeline[current_date.date().strftime("%Y-%m")] = round(mlp, 3)
+			if month_end>end_date:
+				month_end=end_date
+
+			if current_date.month==12:
+				current_date=datetime(current_date.year + 1, 1, 1)
+			else:
+				current_date=datetime(current_date.year, current_date.month + 1, 1)
+		return timeline
+
+	# def get_lease_rent_timeline(doc):
+	# 	# start_date = doc.agreement_start_date
+	# 	# end_date = doc.agreement_end_date
+	# 	if isinstance(doc.agreement_start_date, datetime):
+	# 		start_date = doc.agreement_start_date
+	# 	else:
+	# 		start_date = datetime.combine(doc.agreement_start_date, datetime.min.time())
+
+	# 	if isinstance(doc.agreement_end_date, datetime):
+	# 		end_date = doc.agreement_end_date
+	# 	else:
+	# 		end_date = datetime.combine(doc.agreement_end_date, datetime.min.time())
+	# 	mlp=float(doc.monthly_rent)
+	# 	arg_sd=start_date
+	# 	arg_ed=end_date+timedelta(days=1)
+	# 	diff_years=relativedelta(arg_ed,arg_sd)
+	# 	diff_years=int(str(diff_years.years))
+	# 	current_date=start_date
+	# 	cnt=0
+	# 	timeline={}
+	# 	etype=[]
+	# 	esc_bdates=['']
+	# 	esc_bd_end_date=None
+	# 	current_rent=mlp
+
+	# 	for child in doc.escalation:
+	# 		if child.escalation_type:
+	# 			etype.append(child.escalation_type)
+
+	# 	for i in range(len(etype)):
+	# 		if etype[i]=="Per Annum" or etype[i]=="Per Annum and Fixed Amount":
+	# 			if etype[i-1]=="Based On Dates":
+	# 				bd_date=doc.escalation[i-1]
+	# 				d=bd_date.end_date
+	# 				esc_bd_end_date=d+timedelta(days=1)
+
+	# 	for child in doc.escalation:
+	# 		escl_type=child.escalation_type
+
+	# 		if escl_type=="Based On Dates":
+	# 			# if isinstance(child.start_date, str) and isinstance(child.end_date, str):
+	# 			# 	esc_start = datetime.strptime(child.start_date, "%Y-%m-%d")
+	# 			# 	esc_end = datetime.strptime(child.start_date, "%Y-%m-%d")
+	# 			# else:
+	# 			# 	esc_start=child.start_date
+	# 			# 	esc_end=child.end_date
+	# 			if isinstance(child.start_date, datetime):
+	# 				esc_start = child.start_date
+	# 			else:
+	# 				esc_start = datetime.combine(child.start_date, datetime.min.time())
+	# 			if isinstance(child.end_date, datetime):
+	# 				esc_end = child.end_date
+	# 			else:
+	# 				esc_end = datetime.combine(child.end_date, datetime.min.time())
+	# 			loop_current_date=current_date
+
+	# 			end_date = end_date if isinstance(end_date, datetime) else datetime.combine(end_date, datetime.min.time())
+		
+	# 			while loop_current_date<=end_date:
+	# 				loop_current_date = loop_current_date if isinstance(loop_current_date, datetime) else datetime.combine(loop_current_date, datetime.min.time())
+	# 				if esc_start <= loop_current_date <= esc_end:
+	# 					if child.rate and not (child.fixed_amount):
+	# 						current_rent = mlp + (float(child.rate)*mlp/100)
+	# 					elif child.rate and child.fixed_amount:
+	# 						current_rent = mlp + (float(child.rate)*mlp/100) + float(child.fixed_amount)
+	# 					elif child.monthly_rent and not(child.rate) and not(child.fixed_amount):
+	# 						current_rent=float(child.monthly_rent)
+
+	# 					timeline[loop_current_date.strftime("%Y-%m")] = round(current_rent, 3)
+	# 					esc_bdates.append(loop_current_date)
+	# 				if loop_current_date.month==12:
+	# 					loop_current_date=datetime(loop_current_date.year + 1, 1, 1)
+	# 				else:
+	# 					loop_current_date=datetime(loop_current_date.year, loop_current_date.month + 1, 1)
+
+	# 		elif escl_type=="Per Annum":
+	# 			if esc_bd_end_date is not None:
+	# 				loop_current_date=esc_bd_end_date
+	# 			else:
+	# 				loop_current_date=current_date
+
+	# 			if isinstance(loop_current_date, str) and loop_current_date.strip():
+	# 				try:
+	# 					loop_current_date = datetime.strptime(loop_current_date, "%Y-%m-%d")
+	# 				except ValueError:
+	# 					frappe.throw(f"Invalid date format: {loop_current_date}")
+	# 			loop_current_date = loop_current_date if isinstance(loop_current_date, datetime) else datetime.combine(loop_current_date, datetime.min.time())
+	# 			while loop_current_date<=end_date:
+	# 				if loop_current_date not in esc_bdates:
+	# 					if child.rate and not (child.fixed_amount):
+	# 						current_rent = mlp + (float(child.rate)*mlp/100)
+	# 					elif child.rate and child.fixed_amount:
+	# 						current_rent = mlp + (float(child.rate)*mlp/100) + float(child.fixed_amount)
+	# 					elif child.monthly_rent and not(child.rate) and not(child.fixed_amount):
+	# 						current_rent=float(child.monthly_rent)
+	# 					timeline[loop_current_date.strftime("%Y-%m")] = round(current_rent, 3)
+
+	# 				loop_current_date=loop_current_date+relativedelta(years=1)
+			
+	# 		elif escl_type=="Per Annum and Fixed Amount":
+	# 			if esc_bd_end_date is not None:
+	# 				loop_current_date=esc_bd_end_date
+	# 			else:
+	# 				loop_current_date=current_date
+	# 			if isinstance(loop_current_date, str) and loop_current_date.strip():
+	# 				try:
+	# 					loop_current_date = datetime.strptime(loop_current_date, "%Y-%m-%d")
+	# 				except ValueError:
+	# 					frappe.throw(f"Invalid date format: {loop_current_date}")
+	# 			loop_current_date = loop_current_date if isinstance(loop_current_date, datetime) else datetime.combine(loop_current_date, datetime.min.time())
+	# 			while loop_current_date<=end_date:
+	# 				if loop_current_date not in esc_bdates:
+	# 					if child.rate and not (child.fixed_amount):
+	# 						current_rent = mlp + (float(child.rate)*mlp/100)
+	# 					elif child.rate and child.fixed_amount:
+	# 						current_rent = mlp + (float(child.rate)*mlp/100) + float(child.fixed_amount)
+	# 					elif child.monthly_rent and not(child.rate) and not(child.fixed_amount):
+	# 						current_rent=float(child.monthly_rent)
+	# 					timeline[loop_current_date.strftime("%Y-%m")] = round(current_rent, 3)
+
+	# 				loop_current_date=loop_current_date+relativedelta(years=1)
+
+	# 	return timeline

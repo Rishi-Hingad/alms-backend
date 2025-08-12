@@ -13,9 +13,10 @@
  "fields": [
   {
    "fieldname": "month",
-   "fieldtype": "Data",
+   "fieldtype": "Select",
    "in_list_view": 1,
-   "label": "Month"
+   "label": "Month",
+   "options": "\nJanuary\nFebruary\nMarch\nApril\nMay\nJune\nJuly\nAugust\nSeptember\nOctober\nNovember\nDecember"
   },
   {
    "fieldname": "invoice_date",
@@ -35,7 +36,7 @@
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2025-08-06 12:36:14.268789",
+ "modified": "2025-08-08 11:29:50.048699",
  "modified_by": "Administrator",
  "module": "Lease Management System",
  "name": "Invoice Documents",

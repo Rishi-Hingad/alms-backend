@@ -121,10 +121,10 @@ frappe.ui.form.on("Lease Management", {
                     },
                     callback: function(r) {
                         if (!r.exc) {
-                            // frappe.msgprint(__(r.message));
-                            // console.log(r.message)
-                            let file_url = r.message.file_url;
-                            window.open(file_url);
+                            frappe.msgprint(__(r.message));
+                            console.log(r.message)
+                            // let file_url = r.message.file_url;
+                            // window.open(file_url);
                         }else {
                             frappe.msgprint(__('Failed to generate report.'));
                         }
@@ -175,7 +175,7 @@ frappe.ui.form.on("Lease Management", {
             //     return false;
             // }
             if(row.escalation_type === 'Based On Dates') {
-                if(!row.start_date || !row.end_date || !row.monthly_rent) {
+                if(!row.start_date || !row.end_date) {
                     frappe.msgprint(`Start Date, End Date and Monthly Rent are mandatory for Based On Dates escalation at row ${row.idx}`);
                     frappe.validated = false;
                     return false;

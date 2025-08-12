@@ -305,6 +305,8 @@ def execute(filters=None):
 						famt=float(temp[2])
 						if mrent!=0:
 							mlp=mrent
+						if mrent==0 and rate==0 and famt==0:
+							mlp=0
 						mlp=mlp+(rate*mlp/100)+famt
 						break
 				# mlp=mrent
@@ -366,6 +368,8 @@ def execute(filters=None):
 						famt=float(temp[2])
 						if mrent!=0:
 							mlp=mrent
+						if mrent==0 and rate==0 and famt==0:
+							mlp=0
 						mlp=mlp+(rate*mlp/100)+famt
 						break
 				# mlp=mrent
@@ -506,6 +510,8 @@ def execute(filters=None):
 						famt=float(temp[2])
 						if mrent!=0:
 							mlp2=mrent
+						if mrent==0 and rate==0 and famt==0:
+							mlp2=0
 						mlp2=mlp2+(rate*mlp2/100)+famt
 						break
 				# mlp=mrent
@@ -580,6 +586,8 @@ def execute(filters=None):
 						famt=float(temp[2])
 						if mrent!=0:
 							mlp2=mrent
+						if mrent==0 and rate==0 and famt==0:
+							mlp2=0
 						mlp2=mlp2+(rate*mlp2/100)+famt
 						break
 				# mlp=mrent
