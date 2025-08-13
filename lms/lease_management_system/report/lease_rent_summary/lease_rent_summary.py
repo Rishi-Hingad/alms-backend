@@ -47,11 +47,11 @@ def execute(filters=None):
     data = []
     for month, total in monthly_totals.items():
         if month=="Previous Month":
-            month=previous_month
+            month=(today - relativedelta(months=1)).strftime("%B %Y")
         elif month=="Current Month":
-            month=current_month
+            month=today.strftime("%B %Y")
         elif month=="Next Month":
-            month=next_month
+            month=(today + relativedelta(months=1)).strftime("%B %Y")
         data.append({"month": month, "total_rent": total})
 
     return columns, data
