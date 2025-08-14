@@ -132,6 +132,29 @@ frappe.ui.form.on("Lease Management", {
                 });
                     // frappe.msgprint(__('Button clicked!'));
             });
+            frm.add_custom_button('Go to Report', function() {
+                let lname = frm.doc.name;
+                if (frm.doc.calculation_rate_type=="Daily Rate" && frm.doc.lease_period=="Long Term (Greater Than 12 Months)"){
+                    frappe.set_route('query-report', 'Lease Report', {
+                        'docname': lname
+                    });
+                } 
+                else if (frm.doc.calculation_rate_type=="Daily Rate" && frm.doc.lease_period=="Short Term (Less Than 12 Months)"){
+                    frappe.set_route('query-report', 'Lease Report (Without Escalation)', {
+                        'docname': lname
+                    });
+                }
+                else if (frm.doc.calculation_rate_type=="Monthly Rate" && frm.doc.lease_period=="Long Term (Greater Than 12 Months)"){
+                    frappe.set_route('query-report', 'Lease Report Monthly (With Escalation)', {
+                        'docname': lname
+                    });
+                } 
+                else if (frm.doc.calculation_rate_type=="Monthly Rate" && frm.doc.lease_period=="Short Term (Less Than 12 Months)"){
+                    frappe.set_route('query-report', 'Lease Report Monthly (Without Escalation)', {
+                        'docname': lname
+                    });
+                }
+            });
         }
         
     },
