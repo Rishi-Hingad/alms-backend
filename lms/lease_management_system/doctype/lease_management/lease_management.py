@@ -1936,6 +1936,9 @@ class LeaseManagement(Document):
 		bd_start_date=""
 		bd_end_date=""
 		cnt_etype=0
+		mrent=None
+		rate=None
+		famt=None
 		new_start_date=[]
 
 		for child in doc.escalation:
