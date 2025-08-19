@@ -64,17 +64,17 @@ frappe.ui.form.on("Lease Management", {
     agreement_end_date: function(frm) {
         validate_dates_and_set_lease_period(frm);
     },
-    lease_period:function(frm){
-        if(frm.doc.lease_period!='' && frm.doc.lease_period=='Short Term (Less Than 12 Months)'){
-            frm.set_df_property('escalation', 'reqd', 0);
-        }
-        else if(frm.doc.lease_period!='' && frm.doc.lease_period=='Long Term (Greater Than 12 Months)'){
-            frm.set_df_property('escalation', 'reqd', 1);
-        }
-        else{
-            frm.set_df_property('escalation', 'reqd', 0);
-        }
-    },
+    // lease_period:function(frm){
+    //     if(frm.doc.lease_period!='' && frm.doc.lease_period=='Short Term (Less Than 12 Months)'){
+    //         frm.set_df_property('escalation', 'reqd', 0);
+    //     }
+    //     else if(frm.doc.lease_period!='' && frm.doc.lease_period=='Long Term (Greater Than 12 Months)'){
+    //         frm.set_df_property('escalation', 'reqd', 1);
+    //     }
+    //     else{
+    //         frm.set_df_property('escalation', 'reqd', 0);
+    //     }
+    // },
     security_deposit:function(frm){
         if(frm.doc.security_deposit=='Paid'){
             frm.set_df_property('security_deposit_amount','reqd',1);
@@ -159,12 +159,12 @@ frappe.ui.form.on("Lease Management", {
         
     },
     validate: function(frm) {
-        if(frm.doc.lease_period === "Long Term (Greater Than 12 Months)") {
-            if(!frm.doc.escalation || frm.doc.escalation.length === 0) {
-                frappe.msgprint(__('Escalation table is mandatory for Long Term leases.'));
-                frappe.validated = false;  // prevent save
-            }
-        }
+        // if(frm.doc.lease_period === "Long Term (Greater Than 12 Months)") {
+        //     if(!frm.doc.escalation || frm.doc.escalation.length === 0) {
+        //         frappe.msgprint(__('Escalation table is mandatory for Long Term leases.'));
+        //         frappe.validated = false;  // prevent save
+        //     }
+        // }
 
         let escalation = frm.doc.escalation || [];
         if (escalation.length === 0) return;

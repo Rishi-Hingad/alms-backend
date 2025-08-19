@@ -253,9 +253,6 @@ def execute(filters=None):
 			edates_pafa+=sub_dict[subkey]
 			dict_ed_pafa[subkey]=sub_dict[subkey]
 	
-	
-				
-
 	# First loop – PV calculations
 	while current_date <= end_date:
 		cnt += 1
@@ -645,10 +642,9 @@ def execute(filters=None):
 	data.append({
 		"month_start_date": "",
 		"month_end_date": "",
-		"month_number": total_days,
+		"days_in_month": total_days,
 		"mlp": round(total_mlp, 3),
 		"pv": round(total_pv, 3),
-		"days_in_month": nmonths,
 		"depreciation": round(total_depre, 3),
 		"wdv": "",
 		"interest_cost": round(total_interest_cost, 3),

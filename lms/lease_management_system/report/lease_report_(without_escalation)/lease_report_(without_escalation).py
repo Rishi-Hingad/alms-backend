@@ -243,10 +243,9 @@ def execute(filters=None):
 	data.append({
 		"month_start_date": "",
 		"month_end_date": "",
-		"month_number": total_days,
+		"days_in_month": total_days,
 		"mlp": round(total_mlp, 3),
 		"pv": round(total_pv, 3),
-		"days_in_month": total_days,
 		"depreciation": round(total_depre, 3),
 		"wdv": "",
 		"interest_cost": round(total_interest_cost, 3),
