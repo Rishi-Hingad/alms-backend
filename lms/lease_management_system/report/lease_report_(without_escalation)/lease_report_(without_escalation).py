@@ -156,8 +156,8 @@ def execute(filters=None):
 		"days_in_month": "",
 		"mlp": "",
 		"pv": "",
-		"depreciation": round(wdv, 3),
-		"wdv": "",
+		"depreciation": "",
+		"wdv": round(wdv, 3),
 		"interest_cost": "",
 		"closing_liability": round(closing_liability, 3)
 	})

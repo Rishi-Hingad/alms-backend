@@ -202,6 +202,7 @@ def generate_lease_report(start_date,end_date,docname,cnt_time):
 	diff_annually=False
 	prev_mlp_escl=None
 	prev_mlp_escl2=None
+	res={}
 
 	if escalation:
 		for i in range(len(calc_keys)):
@@ -250,6 +251,10 @@ def generate_lease_report(start_date,end_date,docname,cnt_time):
 	
 	while current_date<=end_date:
 		cnt+=1
+		if diff_annually:
+			if cnt>1:
+				if current_date!=end_date:
+					current_date=current_date + timedelta(days=1)
 		month_start=current_date
 
 		_,last_day=monthrange(current_date.year, current_date.month)
@@ -264,31 +269,28 @@ def generate_lease_report(start_date,end_date,docname,cnt_time):
 		if diff_annually:
 
 			if current_date.month==12:
-				next_month=1
-				next_date=datetime(current_date.year+1, next_month,current_date.day)
+				prior_month=1
+				prior_date=datetime(current_date.year+1, prior_month,current_date.day)
 			else:
-				next_month=current_date.month+1
-				next_date=datetime(current_date.year, next_month,current_date.day)
-			next_day=current_date.day
-			next_month_end=datetime(next_date.year, next_date.month,next_day)
+				prior_month=current_date.month+1
+				prior_date=datetime(current_date.year, prior_month,current_date.day)
+			prior_day=current_date.day
+			prior_month_end=datetime(prior_date.year, prior_date.month,prior_day)
 
-			next_month_start=next_date.replace(day=1)
-			_,last_day_next=monthrange(next_date.year, next_date.month)
-			next_month_end2=datetime(next_date.year, next_date.month, last_day_next)
-			diff_next = next_month_end2 - next_month_start
-			total_days_of_next_month = diff_next.days +1
+			prior_month_start=prior_date.replace(day=1)
 
-			diff_next_month = next_month_end - next_month_start
-			n_next = diff_next_month.days
-
+			diff_prior_month = prior_month_end - prior_month_start
+			n_prior = diff_prior_month.days
+		
 		if end_date<month_end:
 			month_end=end_date
 
 		if diff_annually:
 			if month_end<month_end2 and month_end==end_date:
+				month_end=current_date
 				month_start=current_date.replace(day=1)
 			date_difference = month_end - month_start
-			n_prior = date_difference.days +1
+			n_next = date_difference.days +1
 
 			n= total_days_of_month
 		else:
@@ -297,9 +299,9 @@ def generate_lease_report(start_date,end_date,docname,cnt_time):
 
 		if current_date==start_date or month_end==end_date:
 			date_difference = month_end - month_start
-			date_difference = month_end - month_start
 			n = date_difference.days +1
 			n_prior=n
+
 
 		if n_prior<total_days_of_month or n<total_days_of_month:
 			prev_mlp=mlp
@@ -391,7 +393,7 @@ def generate_lease_report(start_date,end_date,docname,cnt_time):
 							if mrent==0 and rate==0 and famt==0:
 								mlp=0
 							mlp=mlp+(rate*mlp/100)+famt
-							mlp_2=mlp*n_next/total_days_of_next_month
+							mlp_2=mlp*n_next/total_days_of_month
 							mlp_new=mlp_1+mlp_2
 							prev_mlp_escl=mlp
 							break
@@ -411,7 +413,7 @@ def generate_lease_report(start_date,end_date,docname,cnt_time):
 							if mrent==0 and rate==0 and famt==0:
 								mlp=0
 							mlp=mlp+(rate*mlp/100)+famt
-							mlp_2=mlp*n_next/total_days_of_next_month
+							mlp_2=mlp*n_next/total_days_of_month
 							mlp_new=mlp_1+mlp_2
 							prev_mlp_escl=mlp
 							break
@@ -490,25 +492,27 @@ def generate_lease_report(start_date,end_date,docname,cnt_time):
 		total_pv=total_pv+pv
 		ndays+=n
 
-		if month_end>end_date:
-			month_end=end_date
+		# if month_end>end_date:
+		# 	month_end=end_date
 
 		if current_date.month==12:
 			if diff_annually:
-				current_date=datetime(current_date.year+1, 1,current_date.day)
+				current_date=datetime(current_date.year+1, 1,current_date.day) - relativedelta(days=1)
 			else:
 				current_date=datetime(current_date.year + 1, 1, 1)
 		else:
 			if diff_annually:
-				current_date=datetime(current_date.year, current_date.month + 1,current_date.day)
+				current_date=datetime(current_date.year, current_date.month + 1,current_date.day) - relativedelta(days=1)
 			else:
 				current_date=datetime(current_date.year, current_date.month + 1, 1)
 
 	prev_closing_liability=total_pv
 	total_days=ndays
+	cnt1=0
 
 	# Calculate Depreciation
 	while current_date2<=end_date:
+		cnt1+=1
 		month_start=current_date2
 
 		_,last_day=monthrange(current_date2.year, current_date2.month)
@@ -544,10 +548,14 @@ def generate_lease_report(start_date,end_date,docname,cnt_time):
 	total_interest_cost=0
 	data.insert(0,['','','','','',round(wdv,3),'',round(closing_liability,3)])
 
-	
 	# calc depre,wdv
 	while current_date3<=end_date:
+		
 		cnt2+=1
+		if diff_annually:
+			if cnt2>1:
+				if current_date3!=end_date:
+					current_date3=current_date3+timedelta(days=1)
 		month_start=current_date3
 		
 		_,last_day=monthrange(current_date3.year, current_date3.month)
@@ -562,22 +570,18 @@ def generate_lease_report(start_date,end_date,docname,cnt_time):
 		if diff_annually:
 
 			if current_date3.month==12:
-				next_month=1
-				next_date=datetime(current_date3.year+1, next_month,current_date3.day)
+				prior_month=1
+				prior_date=datetime(current_date3.year+1, prior_month,current_date3.day)
 			else:
-				next_month=current_date3.month+1
-				next_date=datetime(current_date3.year, next_month,current_date3.day)
-			next_day=current_date.day
-			next_month_end=datetime(next_date.year, next_date.month,next_day)
+				prior_month=current_date3.month+1
+				prior_date=datetime(current_date3.year, prior_month,current_date3.day)
+			prior_day=current_date3.day
+			prior_month_end=datetime(prior_date.year, prior_date.month,prior_day)
 
-			next_month_start=next_date.replace(day=1)
-			_,last_day_next=monthrange(next_date.year, next_date.month)
-			next_month_end2=datetime(next_date.year, next_date.month, last_day_next)
-			diff_next = next_month_end2 - next_month_start
-			total_days_of_next_month = diff_next.days +1
+			prior_month_start=prior_date.replace(day=1)
 
-			diff_next_month = next_month_end - next_month_start
-			n_next = diff_next_month.days
+			diff_prior_month = prior_month_end - prior_month_start
+			n_prior = diff_prior_month.days
 
 		if end_date<month_end:
 			month_end=end_date
@@ -586,7 +590,7 @@ def generate_lease_report(start_date,end_date,docname,cnt_time):
 			if month_end<month_end2 and month_end==end_date:
 				month_start=current_date3.replace(day=1)
 			date_difference = month_end - month_start
-			n_prior = date_difference.days +1
+			n_next = date_difference.days +1
 			if not current_date3==start_date:
 				month_start=current_date3.replace(day=1)
 			n= total_days_of_month
@@ -595,7 +599,6 @@ def generate_lease_report(start_date,end_date,docname,cnt_time):
 			n=date_difference.days +1
 
 		if current_date3==start_date or month_end==end_date:
-			date_difference = month_end - month_start
 			date_difference = month_end - month_start
 			n = date_difference.days +1
 			n_prior=n
@@ -689,7 +692,7 @@ def generate_lease_report(start_date,end_date,docname,cnt_time):
 								mlp2=mrent
 								mlp2=mlp2*n/total_days_of_month
 							mlp2=mlp2+(rate*mlp2/100)+famt
-							mlp2_2=mlp2*n_next/total_days_of_next_month
+							mlp2_2=mlp2*n_next/total_days_of_month
 							mlp_new=mlp2_1+mlp2_2
 							prev_mlp_escl2=mlp2
 							break
@@ -707,7 +710,7 @@ def generate_lease_report(start_date,end_date,docname,cnt_time):
 								mlp2=mrent
 								mlp2=mlp2*n/total_days_of_month
 							mlp2=mlp2+(rate*mlp2/100)+famt
-							mlp2_2=mlp2*n_next/total_days_of_next_month
+							mlp2_2=mlp2*n_next/total_days_of_month
 							mlp_new=mlp2_1+mlp2_2
 							prev_mlp_escl2=mlp2
 							break
@@ -724,7 +727,7 @@ def generate_lease_report(start_date,end_date,docname,cnt_time):
 				else:
 					depreciation=(n/total_days)*prev_closing_liability
 					wdv-=depreciation
-
+				res[str(current_date3)]=[month_start,month_end]
 				data.append([month_start.date(),month_end.date(), n,mlp2, round(depreciation, 3), round(wdv, 3), round(interest_cost, 3),
 							round(closing_liability, 3)])
 				if mrent==0 and rate==0 and famt==0:
@@ -789,7 +792,7 @@ def generate_lease_report(start_date,end_date,docname,cnt_time):
 			else:
 				depreciation=(n/total_days)*prev_closing_liability
 				wdv-=depreciation
-
+			
 			data.append([month_start.date(),month_end.date(), n,mlp2, round(depreciation, 3), round(wdv, 3), round(interest_cost, 3),
 						round(closing_liability, 3)])
 			if mrent==0 and rate==0 and famt==0 and escalation:
@@ -800,12 +803,14 @@ def generate_lease_report(start_date,end_date,docname,cnt_time):
 
 		if current_date3.month==12:
 			if diff_annually:
-				current_date3=datetime(current_date3.year+1, 1,current_date3.day)
+				# d=int(current_date3.day)-1
+				current_date3=datetime(current_date3.year+1, 1,current_date3.day) - timedelta(days=1)
 			else:
 				current_date3=datetime(current_date3.year + 1, 1, 1)
 		else:
 			if diff_annually:
-				current_date3=datetime(current_date3.year, current_date3.month + 1,current_date3.day)
+				# d=int(current_date3.day)-1
+				current_date3=datetime(current_date3.year, current_date3.month + 1,current_date3.day) - timedelta(days=1)
 			else:
 				current_date3=datetime(current_date3.year, current_date3.month + 1, 1)
 			
@@ -849,6 +854,7 @@ def generate_lease_report(start_date,end_date,docname,cnt_time):
 	return {
     	"file_url": file_doc.file_url
 	}
+	
 
 
 # ===================================================================================
@@ -1476,6 +1482,7 @@ class LeaseManagement(Document):
 		rate=None
 		famt=None
 		new_start_date=[]
+		escalation=True
 
 		for child in doc.escalation:
 			escl_type=child.escalation_type
@@ -1519,87 +1526,90 @@ class LeaseManagement(Document):
 								new_start_date.remove(new_start_date[q])
 								break
 					escl_dates_bdates=[]
+		else:
+			if not doc.escalation:
+				escalation=False
+		if escalation:
+			for i in range(len(etype)):
+				if etype[i]=="Per Annum" or etype[i]=="Per Annum and Fixed Amount":
+					if etype[i-1]=="Based On Dates":
+						bd_date=doc.escalation[i-1]
+						d=bd_date.end_date
+						esc_bd_end_date=d+timedelta(days=1)
+						
+			if len(total_escl_dates_bdates)>0:
+				date_list=total_escl_dates_bdates
 
-		for i in range(len(etype)):
-			if etype[i]=="Per Annum" or etype[i]=="Per Annum and Fixed Amount":
-				if etype[i-1]=="Based On Dates":
-					bd_date=doc.escalation[i-1]
-					d=bd_date.end_date
-					esc_bd_end_date=d+timedelta(days=1)
-					
-		if len(total_escl_dates_bdates)>0:
-			date_list=total_escl_dates_bdates
-
-		for child in doc.escalation:
-			if child.monthly_rent is None:
-				monthly_rent=0
-			else:
-				monthly_rent=float(child.monthly_rent)
-			if child.rate is None:
-				rate=0
-			else:
-				rate=float(child.rate)
-			if child.fixed_amount is None:
-				fixed_amt=0
-			else:
-				fixed_amt=float(child.fixed_amount)
-			if child.escalation_type=="Per Annum":
-				cnt_etype+=1
-				for i in range(diff_years):
-					if i==0 and cnt_etype==1:
-						if esc_bd_end_date is None:
-							new_date=start_date + relativedelta(years=1)
+			for child in doc.escalation:
+				if child.monthly_rent is None:
+					monthly_rent=0
+				else:
+					monthly_rent=float(child.monthly_rent)
+				if child.rate is None:
+					rate=0
+				else:
+					rate=float(child.rate)
+				if child.fixed_amount is None:
+					fixed_amt=0
+				else:
+					fixed_amt=float(child.fixed_amount)
+				if child.escalation_type=="Per Annum":
+					cnt_etype+=1
+					for i in range(diff_years):
+						if i==0 and cnt_etype==1:
+							if esc_bd_end_date is None:
+								new_date=start_date + relativedelta(years=1)
+							else:
+								new_date=esc_bd_end_date
+							if new_date not in date_list:
+								if isinstance(new_date, datetime):
+									new_date = new_date.date()
+								escl_dates_pannum.append(new_date)
+								new_date=new_date + relativedelta(years=1)
 						else:
-							new_date=esc_bd_end_date
-						if new_date not in date_list:
+							if new_date in date_list:
+								new_date=new_date + relativedelta(years=1)
+								break
 							if isinstance(new_date, datetime):
 								new_date = new_date.date()
-							escl_dates_pannum.append(new_date)
-							new_date=new_date + relativedelta(years=1)
-					else:
-						if new_date in date_list:
-							new_date=new_date + relativedelta(years=1)
-							break
-						if isinstance(new_date, datetime):
-							new_date = new_date.date()
-						if new_date<end_date.date() and new_date not in date_list:
-							escl_dates_pannum.append(new_date)	
-							new_date=new_date + relativedelta(years=1)
-				dkey="Per Annum"+'-'+str(rate)
-				dsubkey=str(rate)+'-'+str(monthly_rent)+'-'+str(fixed_amt)
-				calc_dict[dkey]={dsubkey:escl_dates_pannum}
-				escl_dates_pannum=[]
-			
-			elif child.escalation_type=="Per Annum and Fixed Amount":
-				cnt_etype+=1
-				for i in range(diff_years):
-					if i==0 and cnt_etype==1:
-						if esc_bd_end_date is None:
-							new_date=start_date + relativedelta(years=1)
-						else:
-							new_date=esc_bd_end_date
+							if new_date<end_date.date() and new_date not in date_list:
+								escl_dates_pannum.append(new_date)	
+								new_date=new_date + relativedelta(years=1)
+					dkey="Per Annum"+'-'+str(rate)
+					dsubkey=str(rate)+'-'+str(monthly_rent)+'-'+str(fixed_amt)
+					calc_dict[dkey]={dsubkey:escl_dates_pannum}
+					escl_dates_pannum=[]
+				
+				elif child.escalation_type=="Per Annum and Fixed Amount":
+					cnt_etype+=1
+					for i in range(diff_years):
+						if i==0 and cnt_etype==1:
+							if esc_bd_end_date is None:
+								new_date=start_date + relativedelta(years=1)
+							else:
+								new_date=esc_bd_end_date
 
-						if new_date not in date_list:
+							if new_date not in date_list:
+								if isinstance(new_date, datetime):
+									new_date = new_date.date()
+								escl_dates_pafr.append(new_date)
+								new_date=new_date + relativedelta(years=1)
+						else:
+							if new_date in date_list:
+								new_date=new_date + relativedelta(years=1)
+								break
 							if isinstance(new_date, datetime):
 								new_date = new_date.date()
-							escl_dates_pafr.append(new_date)
-							new_date=new_date + relativedelta(years=1)
-					else:
-						if new_date in date_list:
-							new_date=new_date + relativedelta(years=1)
-							break
-						if isinstance(new_date, datetime):
-							new_date = new_date.date()
-						if new_date<end_date.date() and new_date not in date_list:
-							escl_dates_pafr.append(new_date)
-							new_date=new_date + relativedelta(years=1)	
-				dkey="Per Annum and Fixed Amount"+'-'+str(rate)+'-'+str(fixed_amt)
-				dsubkey=str(rate)+'-'+str(monthly_rent)+'-'+str(fixed_amt)
-				calc_dict[dkey]={dsubkey:escl_dates_pafr}	
-				escl_dates_pafr=[]
+							if new_date<end_date.date() and new_date not in date_list:
+								escl_dates_pafr.append(new_date)
+								new_date=new_date + relativedelta(years=1)	
+					dkey="Per Annum and Fixed Amount"+'-'+str(rate)+'-'+str(fixed_amt)
+					dsubkey=str(rate)+'-'+str(monthly_rent)+'-'+str(fixed_amt)
+					calc_dict[dkey]={dsubkey:escl_dates_pafr}	
+					escl_dates_pafr=[]
 
-		for key in calc_dict:
-			calc_keys.append(key)
+			for key in calc_dict:
+				calc_keys.append(key)
 
 		edates_pannum=[]
 		edates_bd=[]
@@ -1610,32 +1620,34 @@ class LeaseManagement(Document):
 		dict_ed_pafa={}
 		dict_ed_bdates={}
 		diff_annually=False
+		prev_mlp_escl=None
 
-		for i in range(len(calc_keys)):
-			temp_str=calc_keys[i]
-			temp=calc_keys[i].split('-')
-			calc_escl_type=temp[0]
+		if escalation:
+			for i in range(len(calc_keys)):
+				temp_str=calc_keys[i]
+				temp=calc_keys[i].split('-')
+				calc_escl_type=temp[0]
 
-			if calc_escl_type=="Per Annum":
-				sub_dict=calc_dict[temp_str]
-				subkey=next(iter(sub_dict))
-				edates_pannum+=sub_dict[subkey]
-				dict_ed_pannum[subkey]=sub_dict[subkey]
+				if calc_escl_type=="Per Annum":
+					sub_dict=calc_dict[temp_str]
+					subkey=next(iter(sub_dict))
+					edates_pannum+=sub_dict[subkey]
+					dict_ed_pannum[subkey]=sub_dict[subkey]
 
-			elif calc_escl_type=="Based On Dates":
-				sub_dict=calc_dict[temp_str]
-				subkey=next(iter(sub_dict))
-				edates_bd+=sub_dict[subkey]
-				dict_ed_bdates[subkey]=sub_dict[subkey]
+				elif calc_escl_type=="Based On Dates":
+					sub_dict=calc_dict[temp_str]
+					subkey=next(iter(sub_dict))
+					edates_bd+=sub_dict[subkey]
+					dict_ed_bdates[subkey]=sub_dict[subkey]
 
 
-			elif calc_escl_type=="Per Annum and Fixed Amount":
-				sub_dict=calc_dict[temp_str]
-				# temp_val=next(iter(sub_dict))
-				subkey=next(iter(sub_dict))
-				edates_pafa+=sub_dict[subkey]
-				dict_ed_pafa[subkey]=sub_dict[subkey]
-				
+				elif calc_escl_type=="Per Annum and Fixed Amount":
+					sub_dict=calc_dict[temp_str]
+					# temp_val=next(iter(sub_dict))
+					subkey=next(iter(sub_dict))
+					edates_pafa+=sub_dict[subkey]
+					dict_ed_pafa[subkey]=sub_dict[subkey]
+					
 		if len(etype)==1 and etype[0]=="Per Annum":
 			month_start=current_date
 
@@ -1657,6 +1669,10 @@ class LeaseManagement(Document):
 		# Calculate Previous Closing Liability from Present Value and Total Days
 		while current_date<=end_date:
 			cnt+=1
+			if diff_annually:
+				if cnt>1:
+					if current_date!=end_date:
+						current_date=current_date + timedelta(days=1)
 			month_start=current_date
 
 			_,last_day=monthrange(current_date.year, current_date.month)
@@ -1668,32 +1684,43 @@ class LeaseManagement(Document):
 			date_difference2 = month_end2 - month_start2
 			total_days_of_month = date_difference2.days +1
 
-			if current_date.month==12:
-				next_month=1
-				next_date=datetime(current_date.year+1, next_month,current_date.day)
-			else:
-				next_month=current_date.month+1
-				next_date=datetime(current_date.year, next_month,current_date.day)
-			next_day=current_date.day
-			next_month_end=datetime(next_date.year, next_date.month,next_day)
+			if diff_annually:
 
-			next_month_start=next_date.replace(day=1)
-			_,last_day_next=monthrange(next_date.year, next_date.month)
-			next_month_end2=datetime(next_date.year, next_date.month, last_day_next)
-			diff_next = next_month_end2 - next_month_start
-			total_days_of_next_month = diff_next.days +1
+				if current_date.month==12:
+					prior_month=1
+					prior_date=datetime(current_date.year+1, prior_month,current_date.day)
+				else:
+					prior_month=current_date.month+1
+					prior_date=datetime(current_date.year, prior_month,current_date.day)
+				prior_day=current_date.day
+				prior_month_end=datetime(prior_date.year, prior_date.month,prior_day)
 
-			diff_next_month = next_month_end - next_month_start
-			n_next = diff_next_month.days
+				prior_month_start=prior_date.replace(day=1)
 
+				diff_prior_month = prior_month_end - prior_month_start
+				n_prior = diff_prior_month.days
 
 			if end_date<month_end:
 				month_end=end_date
 
-			date_difference = month_end - month_start
-			n = date_difference.days +1
+			if diff_annually:
+				if month_end<month_end2 and month_end==end_date:
+					month_end=current_date
+					month_start=current_date.replace(day=1)
+				date_difference = month_end - month_start
+				n_next = date_difference.days +1
 
-			if n<total_days_of_month:
+				n= total_days_of_month
+			else:
+				date_difference = month_end - month_start
+				n=date_difference.days +1
+
+			if current_date==start_date or month_end==end_date:
+				date_difference = month_end - month_start
+				n = date_difference.days +1
+				n_prior=n
+
+			if n_prior<total_days_of_month or n<total_days_of_month:
 				prev_mlp=mlp
 				if not diff_annually:
 					mlp=mlp*n/total_days_of_month
@@ -1746,8 +1773,10 @@ class LeaseManagement(Document):
 					if mrent==0 and rate==0 and famt==0:
 						mlp=prev_mlp
 				else:
-					mlp1=mlp*n/total_days_of_month
-					mlp2=0
+					mlp_1=mlp*n_prior/total_days_of_month
+					mlp_2=0
+					if current_date==start_date or month_end==end_date:
+						mlp=mlp_1
 					mlp_new=mlp
 					if current_date.date() in edates_pannum:
 						for k in dict_ed_pannum.keys():
@@ -1760,9 +1789,13 @@ class LeaseManagement(Document):
 								famt=float(temp[2])
 								if mrent!=0:
 									mlp=mrent
+									mlp=mlp*n/total_days_of_month
+								if mrent==0 and rate==0 and famt==0:
+									mlp=0
 								mlp=mlp+(rate*mlp/100)+famt
-								mlp2=mlp*n_next/total_days_of_next_month
-								mlp_new=mlp1+mlp2
+								mlp_2=mlp*n_next/total_days_of_month
+								mlp_new=mlp_1+mlp_2
+								prev_mlp_escl=mlp
 								break
 					elif current_date.date() in edates_pafa:
 						for k in dict_ed_pafa.keys():
@@ -1775,15 +1808,25 @@ class LeaseManagement(Document):
 								famt=float(temp[2])
 								if mrent!=0:
 									mlp=mrent
+									mlp=mlp*n/total_days_of_month
+								if mrent==0 and rate==0 and famt==0:
+									mlp=0
 								mlp=mlp+(rate*mlp/100)+famt
-								mlp2=mlp*n_next/total_days_of_next_month
-								mlp_new=mlp1+mlp2
+								mlp_2=mlp*n_next/total_days_of_month
+								mlp_new=mlp_1+mlp_2
+								prev_mlp_escl=mlp
 								
 								break
+					mlp=mlp_new
 					timeline[current_date.date().strftime("%Y-%m")] = round(mlp_new, 3)
 					# mlp=prev_mlp
-					if mrent==0 and rate==0 and famt==0:
+					if prev_mlp_escl==None:
+						mlp=prev_mlp
+					else:
+						mlp=prev_mlp_escl
+					if mrent==0 and rate==0 and famt==0 and escalation:
 						mlp=prev_mlp	
+
 			else:
 				prev_mlp=mlp
 				
@@ -1833,19 +1876,19 @@ class LeaseManagement(Document):
 							mlp=mlp+(rate*mlp/100)+famt
 							break
 				timeline[current_date.date().strftime("%Y-%m")] = round(mlp, 3)
-				if mrent==0 and rate==0 and famt==0:
+				if mrent==0 and rate==0 and famt==0 and escalation:
 					mlp=prev_mlp
 			if month_end>end_date:
 				month_end=end_date
 
 			if current_date.month==12:
 				if diff_annually:
-					current_date=datetime(current_date.year+1, 1,current_date.day)
+					current_date=datetime(current_date.year+1, 1,current_date.day)- relativedelta(days=1)
 				else:
 					current_date=datetime(current_date.year + 1, 1, 1)
 			else:
 				if diff_annually:
-					current_date=datetime(current_date.year, current_date.month + 1,current_date.day)
+					current_date=datetime(current_date.year, current_date.month + 1,current_date.day)- relativedelta(days=1)
 				else:
 					current_date=datetime(current_date.year, current_date.month + 1, 1)
 		return timeline
@@ -2068,6 +2111,10 @@ class LeaseManagement(Document):
 		# Calculate Previous Closing Liability from Present Value and Total Days
 		while current_date<=end_date:
 			cnt+=1
+			if diff_annually:
+				if cnt>1:
+					if current_date!=end_date:
+						current_date=current_date+timedelta(days=1)
 			month_start=current_date
 
 			_,last_day=monthrange(current_date.year, current_date.month)
@@ -2131,6 +2178,12 @@ class LeaseManagement(Document):
 							mlp=mlp+(rate*mlp/100)+famt
 							
 							break
+				if current_date==start_date:
+					month_start=current_date
+					if month_end>end_date:
+						month_end=end_date
+				else:
+					month_start=current_date.replace(day=1)
 				val=[month_start.date(),month_end.date()]
 				monthly_data[current_date.date().strftime("%Y-%m")] = val
 				mlp=prev_mlp
@@ -2189,12 +2242,12 @@ class LeaseManagement(Document):
 
 			if current_date.month==12:
 				if diff_annually:
-					current_date=datetime(current_date.year+1, 1,current_date.day)
+					current_date=datetime(current_date.year+1, 1,current_date.day)- relativedelta(days=1)
 				else:
 					current_date=datetime(current_date.year + 1, 1, 1)
 			else:
 				if diff_annually:
-					current_date=datetime(current_date.year, current_date.month + 1,current_date.day)
+					current_date=datetime(current_date.year, current_date.month + 1,current_date.day)- relativedelta(days=1)
 				else:
 					current_date=datetime(current_date.year, current_date.month + 1, 1)
 		return monthly_data

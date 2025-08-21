@@ -29,7 +29,6 @@ def execute(filters=None):
 	if not start_date or not end_date:
 		frappe.throw("Start Date or End Date not found in Lease Agreement.")
 
-	# 🔁 Convert to datetime if they are date objects
 	if isinstance(start_date, date) and not isinstance(start_date, datetime):
 		start_date = datetime.combine(start_date, datetime.min.time())
 	if isinstance(end_date, date) and not isinstance(end_date, datetime):
@@ -82,6 +81,12 @@ def execute(filters=None):
 	bd_end_date=""
 	cnt_etype=0
 	new_start_date=[]
+	esc_bd_end_date=None
+	escalation=True
+	diff_annually=False
+	prev_mlp_escl=None
+	prev_mlp_escl2=None
+
 
 	for child in doc.escalation:
 		escl_type=child.escalation_type
@@ -130,89 +135,98 @@ def execute(filters=None):
 							new_start_date.remove(new_start_date[q])
 							break
 				escl_dates_bdates=[]
+	else:
+		if not doc.escalation:
+			escalation=False
+	if escalation:
+		for i in range(len(etype)):
+					if etype[i]=="Per Annum" or etype[i]=="Per Annum and Fixed Amount":
+						if etype[i-1]=="Based On Dates":
+							bd_date=doc.escalation[i-1]
+							d=bd_date.end_date
+							esc_bd_end_date=d+timedelta(days=1)
+		if len(total_escl_dates_bdates)>0:
+				
+			date_list=total_escl_dates_bdates
 
-	if len(total_escl_dates_bdates)>0:
-			
-		date_list=total_escl_dates_bdates
-
-	for child in doc.escalation:
-		if child.monthly_rent is None:
-			monthly_rent=0
-		else:
-			monthly_rent=float(child.monthly_rent)
-		if child.rate is None:
-			rate=0
-		else:
-			rate=float(child.rate)
-		if child.fixed_amount is None:
-			fixed_amt=0
-		else:
-			fixed_amt=float(child.fixed_amount)
-		if child.escalation_type=="Per Annum":
-			cnt_etype+=1
-			
-			for i in range(diff_years):
-				if i==0 and cnt_etype==1:
-					for j in range(len(new_start_date)):
-						if new_date>=new_start_date[j]:
-							new_date=new_start_date[j]
-						elif new_date<new_start_date[j]:
+		for child in doc.escalation:
+			if child.monthly_rent is None:
+				monthly_rent=0
+			else:
+				monthly_rent=float(child.monthly_rent)
+			if child.rate is None:
+				rate=0
+			else:
+				rate=float(child.rate)
+			if child.fixed_amount is None:
+				fixed_amt=0
+			else:
+				fixed_amt=float(child.fixed_amount)
+			if child.escalation_type=="Per Annum":
+				cnt_etype+=1
+				
+				for i in range(diff_years):
+					if i==0 and cnt_etype==1:
+						for j in range(len(new_start_date)):
+							if new_date>=new_start_date[j]:
+								new_date=new_start_date[j]
+							elif new_date<new_start_date[j]:
+								new_date = start_date + relativedelta(years=1)
+						if len(new_start_date)==0:
 							new_date = start_date + relativedelta(years=1)
-					if len(new_start_date)==0:
-						new_date = start_date + relativedelta(years=1)
-					if new_date not in date_list:
+						if new_date not in date_list:
+							if isinstance(new_date, datetime):
+								new_date = new_date.date()
+							escl_dates_pannum.append(new_date)
+							new_date=new_date + relativedelta(years=1)
+					else:
+						if new_date in date_list:
+							new_date=new_date + relativedelta(years=1)
+							break
 						if isinstance(new_date, datetime):
 							new_date = new_date.date()
-						escl_dates_pannum.append(new_date)
-						new_date=new_date + relativedelta(years=1)
-				else:
-					if new_date in date_list:
-						new_date=new_date + relativedelta(years=1)
-						break
-					if isinstance(new_date, datetime):
-						new_date = new_date.date()
-					if new_date<end_date.date() and new_date not in date_list:
-						escl_dates_pannum.append(new_date)	
-						new_date=new_date + relativedelta(years=1)
-			dkey="Per Annum"+'-'+str(rate)
-			dsubkey=str(rate)+'-'+str(monthly_rent)+'-'+str(fixed_amt)
-			calc_dict[dkey]={dsubkey:escl_dates_pannum}
-			escl_dates_pannum=[]
-		
-		elif child.escalation_type=="Per Annum and Fixed Amount":
-			cnt_etype+=1
+						if new_date<end_date.date() and new_date not in date_list:
+							escl_dates_pannum.append(new_date)	
+							new_date=new_date + relativedelta(years=1)
+				dkey="Per Annum"+'-'+str(rate)
+				dsubkey=str(rate)+'-'+str(monthly_rent)+'-'+str(fixed_amt)
+				calc_dict[dkey]={dsubkey:escl_dates_pannum}
+				escl_dates_pannum=[]
 			
-			for i in range(diff_years):
-				if i==0 and cnt_etype==1:
-					for j in range(len(new_start_date)):
-						if new_date>=new_start_date[j]:
-							new_date=new_start_date[j]
-						elif new_date<new_start_date[j]:
+			elif child.escalation_type=="Per Annum and Fixed Amount":
+				cnt_etype+=1
+				
+				for i in range(diff_years):
+					if i==0 and cnt_etype==1:
+						for j in range(len(new_start_date)):
+							if new_date>=new_start_date[j]:
+								new_date=new_start_date[j]
+							elif new_date<new_start_date[j]:
+								new_date = start_date + relativedelta(years=1)
+						if len(new_start_date)==0:
 							new_date = start_date + relativedelta(years=1)
-					if len(new_start_date)==0:
-						new_date = start_date + relativedelta(years=1)
 
-					if new_date not in date_list:
+						if new_date not in date_list:
+							if isinstance(new_date, datetime):
+								new_date = new_date.date()
+							escl_dates_pafr.append(new_date)
+							new_date=new_date + relativedelta(years=1)
+					else:
+						if new_date in date_list:
+							new_date=new_date + relativedelta(years=1)
+							break
 						if isinstance(new_date, datetime):
 							new_date = new_date.date()
-						escl_dates_pafr.append(new_date)
-						new_date=new_date + relativedelta(years=1)
-				else:
-					if new_date in date_list:
-						new_date=new_date + relativedelta(years=1)
-						break
-					if isinstance(new_date, datetime):
-						new_date = new_date.date()
-					if new_date<end_date.date() and new_date not in date_list:
-						escl_dates_pafr.append(new_date)
-						new_date=new_date + relativedelta(years=1)	
-			dkey="Per Annum and Fixed Amount"+'-'+str(rate)+'-'+str(fixed_amt)
-			dsubkey=str(rate)+'-'+str(monthly_rent)+'-'+str(fixed_amt)
-			calc_dict[dkey]={dsubkey:escl_dates_pafr}	
-			escl_dates_pafr=[]
+						if new_date<end_date.date() and new_date not in date_list:
+							escl_dates_pafr.append(new_date)
+							new_date=new_date + relativedelta(years=1)	
+				dkey="Per Annum and Fixed Amount"+'-'+str(rate)+'-'+str(fixed_amt)
+				dsubkey=str(rate)+'-'+str(monthly_rent)+'-'+str(fixed_amt)
+				calc_dict[dkey]={dsubkey:escl_dates_pafr}	
+				escl_dates_pafr=[]
 
-	for key in calc_dict:
-		calc_keys.append(key)
+		for key in calc_dict:
+			calc_keys.append(key)
 
 	edates_pannum=[]
 	edates_bd=[]
@@ -221,41 +235,64 @@ def execute(filters=None):
 	pafa_rate=0
 	famt=0
 	mrent=0
+	rate=0
 	dict_ed_pannum={}
 	dict_ed_pafa={}
 	dict_ed_bdates={}
 
-	for i in range(len(calc_keys)):
-		temp_str=calc_keys[i]
-		temp=calc_keys[i].split('-')
-		calc_escl_type=temp[0]
+	if escalation:
+		for i in range(len(calc_keys)):
+			temp_str=calc_keys[i]
+			temp=calc_keys[i].split('-')
+			calc_escl_type=temp[0]
 
-		if calc_escl_type=="Per Annum":
-			sub_dict=calc_dict[temp_str]
-			subkey=next(iter(sub_dict))
+			if calc_escl_type=="Per Annum":
+				sub_dict=calc_dict[temp_str]
+				subkey=next(iter(sub_dict))
+				
+				edates_pannum+=sub_dict[subkey]
+				dict_ed_pannum[subkey]=sub_dict[subkey]
+
+			elif calc_escl_type=="Based On Dates":
+				sub_dict=calc_dict[temp_str]
+				subkey=next(iter(sub_dict))
+				
+				edates_bd+=sub_dict[subkey]
+				dict_ed_bdates[subkey]=sub_dict[subkey]
+
+
+			elif calc_escl_type=="Per Annum and Fixed Amount":
+				sub_dict=calc_dict[temp_str]
+				
+				subkey=next(iter(sub_dict))
 			
-			edates_pannum+=sub_dict[subkey]
-			dict_ed_pannum[subkey]=sub_dict[subkey]
+				edates_pafa+=sub_dict[subkey]
+				dict_ed_pafa[subkey]=sub_dict[subkey]
+	if len(etype)==1 and etype[0]=="Per Annum":
+		month_start=current_date
 
-		elif calc_escl_type=="Based On Dates":
-			sub_dict=calc_dict[temp_str]
-			subkey=next(iter(sub_dict))
-			
-			edates_bd+=sub_dict[subkey]
-			dict_ed_bdates[subkey]=sub_dict[subkey]
+		_,last_day=monthrange(current_date.year, current_date.month)
+		month_end=datetime(current_date.year, current_date.month, last_day)
 
+		month_start2=current_date.replace(day=1)
+		_,last_day2=monthrange(current_date.year, current_date.month)
+		month_end2=datetime(current_date.year, current_date.month, last_day2)
+		date_difference2 = month_end2 - month_start2
+		total_days_of_month = date_difference2.days +1
 
-		elif calc_escl_type=="Per Annum and Fixed Amount":
-			sub_dict=calc_dict[temp_str]
-			
-			subkey=next(iter(sub_dict))
-		
-			edates_pafa+=sub_dict[subkey]
-			dict_ed_pafa[subkey]=sub_dict[subkey]
-	
+		date_difference = month_end - month_start
+		n = date_difference.days +1
+
+		if n<total_days_of_month:
+			diff_annually=True
+
 	# First loop – PV calculations
 	while current_date <= end_date:
 		cnt += 1
+		if diff_annually:
+			if cnt>1:
+				if current_date!=end_date:
+					current_date=current_date + timedelta(days=1)
 		month_start = current_date
 		_, last_day = monthrange(current_date.year, current_date.month)
 		month_end = datetime(current_date.year, current_date.month, last_day)
@@ -265,76 +302,180 @@ def execute(filters=None):
 		date_difference2 = month_end2 - month_start2
 		total_days_of_month = date_difference2.days +1
 
+		if diff_annually:
+
+			if current_date.month==12:
+				prior_month=1
+				prior_date=datetime(current_date.year+1, prior_month,current_date.day)
+			else:
+				prior_month=current_date.month+1
+				prior_date=datetime(current_date.year, prior_month,current_date.day)
+			prior_day=current_date.day
+			prior_month_end=datetime(prior_date.year, prior_date.month,prior_day)
+
+			prior_month_start=prior_date.replace(day=1)
+			diff_prior_month = prior_month_end - prior_month_start
+			n_prior = diff_prior_month.days
+		
 		if end_date < month_end:
 			month_end = end_date
 
-		date_difference = month_end - month_start
-		n=date_difference.days+1
+		if diff_annually:
+			if month_end<month_end2 and month_end==end_date:
+				month_end=current_date
+				month_start=current_date.replace(day=1)
+			date_difference = month_end - month_start
+			n_next = date_difference.days +1
 
-		if n<total_days_of_month:
+			n= total_days_of_month
+		else:
+			date_difference = month_end - month_start
+			n=date_difference.days +1
+
+		if current_date==start_date or month_end==end_date:
+			date_difference = month_end - month_start
+			n = date_difference.days +1
+			n_prior=n
+
+		if n_prior<total_days_of_month or n<total_days_of_month:
 			prev_mlp=mlp
-			mlp=mlp*n/total_days_of_month
-			if current_date.date() in edates_pannum:
-				for k in dict_ed_pannum.keys():
-					temp_val=k
-					temp=temp_val.split('-')
-					escl=dict_ed_pannum[k]
-					if current_date.date() in escl:
-						# pa_rate=rate_pa
-						rate=float(temp[0])
-						mrent=float(temp[1])
-						famt=float(temp[2])
-						if mrent!=0:
-							mlp=mrent
-						mlp=mlp+(rate*mlp/100)+famt
-						break
-				# mlp=mlp+(pa_rate*mlp/100)
-			elif current_date.date() in edates_bd:
-				for k in dict_ed_bdates.keys():
-					# rpm=float(k)
-					temp_val=k
-					temp=temp_val.split('-')
-					escl=dict_ed_bdates[k]
-					if current_date.date() in escl:
-						# mrent=rpm
-						rate=float(temp[0])
-						mrent=float(temp[1])
-						famt=float(temp[2])
-						if mrent!=0:
-							mlp=mrent
-						if mrent==0 and rate==0 and famt==0:
-							mlp=0
-						mlp=mlp+(rate*mlp/100)+famt
-						break
-				# mlp=mrent
-			elif current_date.date() in edates_pafa:
-				for k in dict_ed_pafa.keys():
-					temp_val=k
-					temp=temp_val.split('-')
-					# rate_pa=temp[0]
-					# f=temp[1]
-					escl=dict_ed_pafa[k]
-					if current_date.date() in escl:
-						# pafa_rate=float(rate_pa)
-						# famt=float(f)
-						rate=float(temp[0])
-						mrent=float(temp[1])
-						famt=float(temp[2])
-						if mrent!=0:
-							mlp=mrent
-						mlp=mlp+(rate*mlp/100)+famt
-						break
-				# mlp=mlp+(pafa_rate*mlp/100)+famt
-			
-			total_mlp+=mlp
-			if cnt==1:
-				pv=mlp
-				pv_arr.append(pv)
+			if not diff_annually:
+				mlp=mlp*n/total_days_of_month
+				if current_date.date() in edates_pannum:
+					for k in dict_ed_pannum.keys():
+						temp_val=k
+						temp=temp_val.split('-')
+						escl=dict_ed_pannum[k]
+						if current_date.date() in escl:
+							# pa_rate=rate_pa
+							rate=float(temp[0])
+							mrent=float(temp[1])
+							famt=float(temp[2])
+							if mrent!=0:
+								mlp=mrent
+								mlp=mlp*n/total_days_of_month
+							if mrent==0 and rate==0 and famt==0:
+								mlp=0
+							mlp=mlp+(rate*mlp/100)+famt
+							prev_mlp_escl=mlp
+							break
+					# mlp=mlp+(pa_rate*mlp/100)
+				elif current_date.date() in edates_bd:
+					for k in dict_ed_bdates.keys():
+						# rpm=float(k)
+						temp_val=k
+						temp=temp_val.split('-')
+						escl=dict_ed_bdates[k]
+						if current_date.date() in escl:
+							# mrent=rpm
+							rate=float(temp[0])
+							mrent=float(temp[1])
+							famt=float(temp[2])
+							if mrent!=0:
+								mlp=mrent
+								mlp=mlp*n/total_days_of_month
+							if mrent==0 and rate==0 and famt==0:
+								mlp=0
+							mlp=mlp+(rate*mlp/100)+famt
+							prev_mlp_escl=mlp
+							break
+					# mlp=mrent
+				elif current_date.date() in edates_pafa:
+					for k in dict_ed_pafa.keys():
+						temp_val=k
+						temp=temp_val.split('-')
+						# rate_pa=temp[0]
+						# f=temp[1]
+						escl=dict_ed_pafa[k]
+						if current_date.date() in escl:
+							# pafa_rate=float(rate_pa)
+							# famt=float(f)
+							rate=float(temp[0])
+							mrent=float(temp[1])
+							famt=float(temp[2])
+							if mrent!=0:
+								mlp=mrent
+								mlp=mlp*n/total_days_of_month
+							if mrent==0 and rate==0 and famt==0:
+								mlp=0
+							mlp=mlp+(rate*mlp/100)+famt
+							prev_mlp_escl=mlp
+							break
+					# mlp=mlp+(pafa_rate*mlp/100)+famt
+				
+				total_mlp+=mlp
+				if cnt==1:
+					pv=mlp
+					pv_arr.append(pv)
+				else:
+					pv=mlp/((1+daily_rate)**ndays)
+					pv_arr.append(pv)
+				if prev_mlp_escl==None:
+					mlp=prev_mlp
+				else:
+					mlp=prev_mlp_escl
+				if mrent==0 and rate==0 and famt==0 and escalation:
+					mlp=prev_mlp
 			else:
-				pv=mlp/((1+daily_rate)**ndays)
-				pv_arr.append(pv)
-			mlp=prev_mlp
-
+				mlp_1=mlp*n_prior/total_days_of_month
+				mlp_2=0
+				if current_date==start_date or month_end==end_date:
+					mlp=mlp_1
+				mlp_new=mlp
+				if current_date.date() in edates_pannum and escalation:
+					for k in dict_ed_pannum.keys():
+						temp_val=k
+						temp=temp_val.split('-')
+						escl=dict_ed_pannum[k]
+						if current_date.date() in escl:
+							rate=float(temp[0])
+							mrent=float(temp[1])
+							famt=float(temp[2])
+							if mrent!=0:
+								mlp=mrent
+								mlp=mlp*n/total_days_of_month
+							if mrent==0 and rate==0 and famt==0:
+								mlp=0
+							mlp=mlp+(rate*mlp/100)+famt
+							mlp_2=mlp*n_next/total_days_of_month
+							mlp_new=mlp_1+mlp_2
+							prev_mlp_escl=mlp
+							break
+				
+				elif current_date.date() in edates_pafa and escalation:
+					for k in dict_ed_pafa.keys():
+						temp_val=k
+						temp=temp_val.split('-')
+						escl=dict_ed_pafa[k]
+						if current_date.date() in escl:
+							rate=float(temp[0])
+							mrent=float(temp[1])
+							famt=float(temp[2])
+							if mrent!=0:
+								mlp=mrent
+								mlp=mlp*n/total_days_of_month
+							if mrent==0 and rate==0 and famt==0:
+								mlp=0
+							mlp=mlp+(rate*mlp/100)+famt
+							mlp_2=mlp*n_next/total_days_of_month
+							mlp_new=mlp_1+mlp_2
+							prev_mlp_escl=mlp
+							break
+				
+				mlp=mlp_new
+				total_mlp+=mlp
+				if cnt==1:
+					pv=mlp
+					pv_arr.append(pv)
+				else:
+					pv=mlp/((1+daily_rate)**ndays)
+					pv_arr.append(pv)
+				if prev_mlp_escl==None:
+					mlp=prev_mlp
+				else:
+					mlp=prev_mlp_escl
+				if mrent==0 and rate==0 and famt==0 and escalation:
+					mlp=prev_mlp
 		else:
 			
 			if current_date.date() in edates_pannum:
@@ -403,9 +544,15 @@ def execute(filters=None):
 
 		# Move to next month
 		if current_date.month == 12:
-			current_date = datetime(current_date.year + 1, 1, 1)
+			if diff_annually:
+				current_date=datetime(current_date.year+1, 1,current_date.day) - relativedelta(days=1)
+			else:
+				current_date = datetime(current_date.year + 1, 1, 1)
 		else:
-			current_date = datetime(current_date.year, current_date.month + 1, 1)
+			if diff_annually:
+				current_date=datetime(current_date.year, current_date.month + 1,current_date.day) - relativedelta(days=1)
+			else:
+				current_date = datetime(current_date.year, current_date.month + 1, 1)
 
 	prev_closing_liability = total_pv
 	total_days = ndays
@@ -450,8 +597,8 @@ def execute(filters=None):
 		"days_in_month": "",
 		"mlp": "",
 		"pv": "",
-		"depreciation": round(wdv, 3),
-		"wdv": "",
+		"depreciation":"",
+		"wdv":  round(wdv, 3),
 		"interest_cost": "",
 		"closing_liability": round(closing_liability, 3)
 	})
@@ -461,9 +608,30 @@ def execute(filters=None):
 	cnt2 = 0
 	while current_date3 <= end_date:
 		cnt2 += 1
+		if diff_annually:
+			if cnt2>1:
+				if current_date3!=end_date:
+					current_date3=current_date3+timedelta(days=1)
 		month_start = current_date3
 		_, last_day = monthrange(current_date3.year, current_date3.month)
 		month_end = datetime(current_date3.year, current_date3.month, last_day)
+
+		if diff_annually:
+
+			if current_date3.month==12:
+				prior_month=1
+				prior_date=datetime(current_date3.year+1, prior_month,current_date3.day)
+			else:
+				prior_month=current_date3.month+1
+				prior_date=datetime(current_date3.year, prior_month,current_date3.day)
+			prior_day=current_date3.day
+			prior_month_end=datetime(prior_date.year, prior_date.month,prior_day)
+
+			prior_month_start=prior_date.replace(day=1)
+
+			diff_prior_month = prior_month_end - prior_month_start
+			n_prior = diff_prior_month.days
+
 		if end_date < month_end:
 			month_end = end_date
 		
@@ -473,86 +641,184 @@ def execute(filters=None):
 		date_difference2 = month_end2 - month_start2
 		total_days_of_month = date_difference2.days +1
 
-		date_difference = month_end - month_start
-		n = date_difference.days +1
+		if diff_annually:
+			if month_end<month_end2 and month_end==end_date:
+				month_start=current_date3.replace(day=1)
+			date_difference = month_end - month_start
+			n_next = date_difference.days +1
+			if not current_date3==start_date:
+				month_start=current_date3.replace(day=1)
+			n= total_days_of_month
+		else:
+			date_difference = month_end - month_start
+			n=date_difference.days +1
 
-		if n<total_days_of_month:
+		if current_date3==start_date or month_end==end_date:
+			date_difference = month_end - month_start
+			n = date_difference.days +1
+			n_prior=n
+
+
+		if n_prior<total_days_of_month or n<total_days_of_month:
 			prev_mlp2=mlp2
-			mlp2=mlp2*n/total_days_of_month
-			if current_date3.date() in edates_pannum:
-				for k in dict_ed_pannum.keys():
-					temp_val=k
-					temp=temp_val.split('-')
-					escl=dict_ed_pannum[k]
-					if current_date3.date() in escl:
-						# pa_rate=rate_pa
-						rate=float(temp[0])
-						mrent=float(temp[1])
-						famt=float(temp[2])
-						if mrent!=0:
-							mlp2=mrent
-						mlp2=mlp2+(rate*mlp2/100)+famt
-						break
-				# mlp=mlp+(pa_rate*mlp/100)
-			elif current_date3.date() in edates_bd:
-				for k in dict_ed_bdates.keys():
-					# rpm=float(k)
-					temp_val=k
-					temp=temp_val.split('-')
-					escl=dict_ed_bdates[k]
-					if current_date3.date() in escl:
-						# mrent=rpm
-						rate=float(temp[0])
-						mrent=float(temp[1])
-						famt=float(temp[2])
-						if mrent!=0:
-							mlp2=mrent
-						if mrent==0 and rate==0 and famt==0:
-							mlp2=0
-						mlp2=mlp2+(rate*mlp2/100)+famt
-						break
-				# mlp=mrent
-			elif current_date3.date() in edates_pafa:
-				for k in dict_ed_pafa.keys():
-					temp_val=k
-					temp=temp_val.split('-')
-					# rate_pa=temp[0]
-					# f=temp[1]
-					escl=dict_ed_pafa[k]
-					if current_date3.date() in escl:
-						# pafa_rate=float(rate_pa)
-						# famt=float(f)
-						rate=float(temp[0])
-						mrent=float(temp[1])
-						famt=float(temp[2])
-						if mrent!=0:
-							mlp2=mrent
-						mlp2=mlp2+(rate*mlp2/100)+famt
-						break
-				# mlp=mlp+(pafa_rate*mlp/100)+famt
-			
+			if not diff_annually:
+				mlp2=mlp2*n/total_days_of_month
+				if current_date3.date() in edates_pannum:
+					for k in dict_ed_pannum.keys():
+						temp_val=k
+						temp=temp_val.split('-')
+						escl=dict_ed_pannum[k]
+						if current_date3.date() in escl:
+							# pa_rate=rate_pa
+							rate=float(temp[0])
+							mrent=float(temp[1])
+							famt=float(temp[2])
+							if mrent!=0:
+								mlp2=mrent
+								mlp2=mlp2*n/total_days_of_month
+							mlp2=mlp2+(rate*mlp2/100)+famt
+							prev_mlp_escl2=mlp2
+							break
+					# mlp=mlp+(pa_rate*mlp/100)
+				elif current_date3.date() in edates_bd:
+					for k in dict_ed_bdates.keys():
+						# rpm=float(k)
+						temp_val=k
+						temp=temp_val.split('-')
+						escl=dict_ed_bdates[k]
+						if current_date3.date() in escl:
+							# mrent=rpm
+							rate=float(temp[0])
+							mrent=float(temp[1])
+							famt=float(temp[2])
+							if mrent!=0:
+								mlp2=mrent
+								mlp2=mlp2*n/total_days_of_month
+							if mrent==0 and rate==0 and famt==0:
+								mlp2=0
+							mlp2=mlp2+(rate*mlp2/100)+famt
+							prev_mlp_escl2=mlp2
+							break
+					# mlp=mrent
+				elif current_date3.date() in edates_pafa:
+					for k in dict_ed_pafa.keys():
+						temp_val=k
+						temp=temp_val.split('-')
+						# rate_pa=temp[0]
+						# f=temp[1]
+						escl=dict_ed_pafa[k]
+						if current_date3.date() in escl:
+							# pafa_rate=float(rate_pa)
+							# famt=float(f)
+							rate=float(temp[0])
+							mrent=float(temp[1])
+							famt=float(temp[2])
+							if mrent!=0:
+								mlp2=mrent
+								mlp2=mlp2+(rate*mlp2/100)+famt
+							mlp2=mlp2+(rate*mlp2/100)+famt
+							prev_mlp_escl2=mlp2
+							break
+					# mlp=mlp+(pafa_rate*mlp/100)+famt
+				
 
-			interest_cost=((closing_liability-mlp2)*((1+daily_rate)**n-1))
-			total_interest_cost+=interest_cost
-			closing_liability=closing_liability+interest_cost-mlp2
+				interest_cost=((closing_liability-mlp2)*((1+daily_rate)**n-1))
+				total_interest_cost+=interest_cost
+				closing_liability=closing_liability+interest_cost-mlp2
 
-			depreciation=(n/total_days)*prev_closing_liability
-			wdv-=depreciation
+				depreciation=(n/total_days)*prev_closing_liability
+				wdv-=depreciation
 
-			row = {
-				"month_start_date": month_start.date(),
-				"month_end_date": month_end.date(),
-				"days_in_month": n,
-				"mlp": mlp2,
-				"pv": pv_arr[cnt2] if cnt2 < len(pv_arr) else '',
-				"depreciation": round(depreciation, 3),
-				"wdv": round(wdv, 3),
-				"interest_cost": round(interest_cost, 3),
-				"closing_liability": round(closing_liability, 3)
-			}
-			data.append(row)
-			mlp2=prev_mlp2
+				row = {
+					"month_start_date": month_start.date(),
+					"month_end_date": month_end.date(),
+					"days_in_month": n,
+					"mlp": mlp2,
+					"pv": pv_arr[cnt2] if cnt2 < len(pv_arr) else '',
+					"depreciation": round(depreciation, 3),
+					"wdv": round(wdv, 3),
+					"interest_cost": round(interest_cost, 3),
+					"closing_liability": round(closing_liability, 3)
+				}
+				data.append(row)
+				if mrent==0 and rate==0 and famt==0:
+					mlp2=prev_mlp2
+				if prev_mlp_escl2==None:
+					mlp2=prev_mlp2
+				else:
+					mlp2=prev_mlp_escl2
+			else:
+				mlp2_1=mlp2*n_prior/total_days_of_month
+				mlp2_2=0
+				if current_date3==start_date or month_end==end_date:
+					mlp2=mlp2_1
+				mlp_new=mlp2
+				if current_date3.date() in edates_pannum and escalation:
+					for k in dict_ed_pannum.keys():
+						temp_val=k
+						temp=temp_val.split('-')
+						escl=dict_ed_pannum[k]
+						if current_date3.date() in escl:
+							rate=float(temp[0])
+							mrent=float(temp[1])
+							famt=float(temp[2])
+							if mrent!=0:
+								mlp2=mrent
+								mlp2=mlp2*n/total_days_of_month
+							mlp2=mlp2+(rate*mlp2/100)+famt
+							mlp2_2=mlp2*n_next/total_days_of_month
+							mlp_new=mlp2_1+mlp2_2
+							prev_mlp_escl2=mlp2
+							break
+				
+				elif current_date3.date() in edates_pafa and escalation:
+					for k in dict_ed_pafa.keys():
+						temp_val=k
+						temp=temp_val.split('-')
+						escl=dict_ed_pafa[k]
+						if current_date3.date() in escl:
+							rate=float(temp[0])
+							mrent=float(temp[1])
+							famt=float(temp[2])
+							if mrent!=0:
+								mlp2=mrent
+								mlp2=mlp2*n/total_days_of_month
+							mlp2=mlp2+(rate*mlp2/100)+famt
+							mlp2_2=mlp2*n_next/total_days_of_month
+							mlp_new=mlp2_1+mlp2_2
+							prev_mlp_escl2=mlp2
+							break
+				
+				mlp2=mlp_new
+				interest_cost=((closing_liability-mlp2)*((1+daily_rate)**n-1))
+				total_interest_cost+=interest_cost
+				closing_liability=closing_liability+interest_cost-mlp2
 
+				if (doc.previous_wdv)!=0:
+					prev_closing_liability_wdv=float(doc.previous_wdv)
+					depreciation=(n/total_days)*prev_closing_liability_wdv
+					wdv-=depreciation
+				else:
+					depreciation=(n/total_days)*prev_closing_liability
+					wdv-=depreciation
+				row = {
+					"month_start_date": month_start.date(),
+					"month_end_date": month_end.date(),
+					"days_in_month": n,
+					"mlp": mlp2,
+					"pv": pv_arr[cnt2] if cnt2 < len(pv_arr) else '',
+					"depreciation": round(depreciation, 3),
+					"wdv": round(wdv, 3),
+					"interest_cost": round(interest_cost, 3),
+					"closing_liability": round(closing_liability, 3)
+				}
+				data.append(row)
+				if mrent==0 and rate==0 and famt==0:
+					mlp2=prev_mlp2
+				if prev_mlp_escl2==None:
+					mlp2=prev_mlp2
+				else:
+					mlp2=prev_mlp_escl2
 		else:
 
 			if current_date3.date() in edates_pannum:
@@ -634,9 +900,15 @@ def execute(filters=None):
 
 		# Move to next month
 		if current_date3.month == 12:
-			current_date3 = datetime(current_date3.year + 1, 1, 1)
+			if diff_annually:
+				current_date3=datetime(current_date3.year+1, 1,current_date3.day) - timedelta(days=1)
+			else:
+				current_date3 = datetime(current_date3.year + 1, 1, 1)
 		else:
-			current_date3 = datetime(current_date3.year, current_date3.month + 1, 1)
+			if diff_annually:
+				current_date3=datetime(current_date3.year, current_date3.month + 1,current_date3.day) - timedelta(days=1)
+			else:
+				current_date3 = datetime(current_date3.year, current_date3.month + 1, 1)
 
 	# Add summary row
 	data.append({
