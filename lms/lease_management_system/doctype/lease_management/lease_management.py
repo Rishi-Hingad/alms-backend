@@ -230,7 +230,7 @@ def generate_lease_report(start_date,end_date,docname,cnt_time):
 				dict_ed_pafa[subkey]=sub_dict[subkey]
 			
 
-	if len(etype)==1 and etype[0]=="Per Annum":
+	if (len(etype)==1 and etype[0]=="Per Annum") or (len(etype)==1 and etype[0]=="Per Annum and Fixed Amount"):
 		month_start=current_date
 
 		_,last_day=monthrange(current_date.year, current_date.month)
