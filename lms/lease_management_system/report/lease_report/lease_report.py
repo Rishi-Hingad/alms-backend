@@ -725,9 +725,13 @@ def execute(filters=None):
 				interest_cost=((closing_liability-mlp2)*((1+daily_rate)**n-1))
 				total_interest_cost+=interest_cost
 				closing_liability=closing_liability+interest_cost-mlp2
-
-				depreciation=(n/total_days)*prev_closing_liability
-				wdv-=depreciation
+				if (doc.previous_wdv)!=0:
+					prev_closing_liability_wdv=float(doc.previous_wdv)
+					depreciation=(n/total_days)*prev_closing_liability_wdv
+					wdv-=depreciation
+				else:
+					depreciation=(n/total_days)*prev_closing_liability
+					wdv-=depreciation
 
 				row = {
 					"month_start_date": month_start.date(),
