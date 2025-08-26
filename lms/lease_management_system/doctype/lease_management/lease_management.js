@@ -7,6 +7,9 @@
 // 	},
 // });
 frappe.ui.form.on('Escalation',{
+    // escalation_type:function(frm,cdt,dcn){
+    //     auto_set_start_end_date_escalation(frm);
+    // },
     start_date: function(frm, cdt, cdn) {
         validate_escalation_dates(frm, cdt, cdn);
     },
@@ -173,22 +176,22 @@ frappe.ui.form.on("Lease Management", {
         let consecutivePerAnnumandFixed = 0;
 
         for (let row of escalation) {
-        if (row.escalation_type === "Per Annum") {
-            consecutivePerAnnum += 1;
-            if (consecutivePerAnnum >= 2) {
-                frappe.throw("You cannot have 2 or more consecutive 'Per Annum' values in escalation type");
+            if (row.escalation_type === "Per Annum") {
+                consecutivePerAnnum += 1;
+                if (consecutivePerAnnum >= 2) {
+                    frappe.throw("You cannot have 2 or more consecutive 'Per Annum' values in escalation type");
+                }
             }
-        }
-        else if (row.escalation_type === "Per Annum and Fixed Amount") {
-            consecutivePerAnnumandFixed += 1;
-            if (consecutivePerAnnumandFixed >= 2) {
-                frappe.throw("You cannot have 2 or more consecutive 'Per Annum and Fixed Amount' values in escalation type");
+            else if (row.escalation_type === "Per Annum and Fixed Amount") {
+                consecutivePerAnnumandFixed += 1;
+                if (consecutivePerAnnumandFixed >= 2) {
+                    frappe.throw("You cannot have 2 or more consecutive 'Per Annum and Fixed Amount' values in escalation type");
+                }
             }
-        }
-        else {
-            consecutivePerAnnum = 0;  // Reset 
-            consecutivePerAnnumandFixed = 0;  
-        }
+            else {
+                consecutivePerAnnum = 0;  // Reset 
+                consecutivePerAnnumandFixed = 0;  
+            }
         }
         
         frm.doc.escalation.forEach(row => {
@@ -237,6 +240,16 @@ function validate_dates_and_set_lease_period(frm){
         } else {
             frm.set_value('lease_period', 'Short Term (Less Than 12 Months)');
         }
+    }
+}
+
+function auto_set_start_end_date_escalation(frm,cdt,cdn){
+    const row = frappe.get_doc(cdt, cdn);
+    const agreement_start = frm.doc.agreement_start_date;
+    const agreement_end = frm.doc.agreement_end_date;
+    if(row.escalation_type=="Based On Dates"){
+        frappe.model.set_value(cdt, cdn, 'start_date', agreement_start);
+        frappe.model.set_value(cdt, cdn, 'end_date', agreement_end);
     }
 }
 
