@@ -216,6 +216,7 @@ function auto_set_start_end_date_escalation(frm,cdt,cdn){
     const agreement_start = frm.doc.agreement_start_date;
     const agreement_end = frm.doc.agreement_end_date;
     if(row.escalation_type == 'Based On Dates'){
+        //set start and end date to agreement start and end date
         frappe.model.set_value(cdt, cdn, 'start_date', agreement_start);
         frappe.model.set_value(cdt, cdn, 'end_date', agreement_end);
     }
