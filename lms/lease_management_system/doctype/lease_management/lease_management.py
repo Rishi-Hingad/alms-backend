@@ -2338,7 +2338,7 @@ def generate_report(docname,cnt):
 		# if doc.lease_period=="Short Term (Less Than 12 Months)":
 		# 	output = generate_lease_report_month_based_without_escalation(date1, date2,docname,cnt)
 		# else:
-		output = generate_lease_report_month_based_new(date1, date2,docname,cnt)
+		output = generate_lease_report_month_based(date1, date2,docname,cnt)
 	elif doc.calculation_rate_type=="Daily Rate":
 		# if doc.lease_period=="Short Term (Less Than 12 Months)":
 		# 	output = generate_lease_report_without_escalation(date1, date2,docname,cnt)
