@@ -7,58 +7,25 @@
 // 	},
 // });
 frappe.ui.form.on('Escalation',{
-    // escalation_type:function(frm,cdt,dcn){
-    //     auto_set_start_end_date_escalation(frm);
-    // },
+    escalation_type:function(frm,cdt,cdn){
+        auto_set_start_end_date_escalation(frm,cdt,cdn);
+    },
     start_date: function(frm, cdt, cdn) {
         validate_escalation_dates(frm, cdt, cdn);
     },
     end_date: function(frm, cdt, cdn) {
         validate_escalation_dates(frm, cdt, cdn);
-    },
-    // escalation_type:function(frm,cdt,cdn){
-    //     let row=locals[cdt][cdn];
-    //     frappe.model.set_value(cdt, cdn, 'reqd_rate', 0);
-    //     frappe.model.set_value(cdt, cdn, 'reqd_start_date', 0);
-    //     frappe.model.set_value(cdt, cdn, 'reqd_end_date', 0);
-    //     frappe.model.set_value(cdt, cdn, 'reqd_monthly_rent', 0);
-    //     frappe.model.set_value(cdt, cdn, 'reqd_fixed_amount', 0);
-
-    //     // frappe.meta.get_docfield('Escalation','rate',frm.doc.name).reqd=0;
-    //     // frappe.meta.get_docfield('Escalation','start_date',frm.doc.name).reqd=0;
-    //     // frappe.meta.get_docfield('Escalation','end_date',frm.doc.name).reqd=0;
-    //     // frappe.meta.get_docfield('Escalation','monthly_rent',frm.doc.name).reqd=0;
-    //     // frappe.meta.get_docfield('Escalation','fixed_amount',frm.doc.name).reqd=0;
-
-    //     if (row.escalation_type==="Per Annum"){
-    //         frappe.model.set_value(cdt,cdn,'reqd_rate',1);
-    //         // frappe.meta.get_docfield('Escalation','rate',frm.doc.name).reqd=1;
-    //     }
-    //     else if(row.escalation_type==="Based On Dates"){
-    //         frappe.model.set_value(cdt,cdn,'reqd_start_date',1);
-    //         frappe.model.set_value(cdt,cdn,'reqd_end_date',1);
-    //         frappe.model.set_value(cdt,cdn,'reqd_monthly_rent',1);
-    //         // frappe.meta.get_docfield('Escalation','start_date',frm.doc.name).reqd=1;
-    //         // frappe.meta.get_docfield('Escalation','end_date',frm.doc.name).reqd=1;
-    //         // frappe.meta.get_docfield('Escalation','monthly_rent',frm.doc.name).reqd=1;
-    //     }
-    //     else if (row.escalation_type==="Per Annum and Fixed Amount"){
-    //         frappe.model.set_value(cdt,cdn,'reqd_rate',1);
-
-    //         // frappe.meta.get_docfield('Escalation','rate',frm.doc.name).reqd=1;
-    //         frappe.model.set_value(cdt,cdn,'reqd_fixed_amount',1);
-    //         // frappe.meta.get_docfield('Escalation','fixed_amount',frm.doc.name).reqd=1;
-    //     }
-
-    //     frm.refresh_fields('escalation');
-    //     // frm.refresh_fields('escalation_type');
-    //     // frm.refresh_fields('rate');
-    //     // frm.refresh_fields('start_date');
-    //     // frm.refresh_fields('end_date');
-    //     // frm.refresh_fields('monthly_rent');
-    //     // frm.refresh_fields('fixed_amount');
-    // }
+    }
 });
+frappe.ui.form.on('Invoice Documents',{
+    from_date: function(frm, cdt, cdn) {
+        validate_from_to_dates(frm, cdt, cdn);
+    },
+    to_date: function(frm, cdt, cdn) {
+        validate_from_to_dates(frm, cdt, cdn);
+    }
+});
+
 frappe.ui.form.on("Lease Management", {
 
     agreement_start_date: function(frm) {
@@ -216,6 +183,7 @@ frappe.ui.form.on("Lease Management", {
     }
 });
 
+
 function validate_dates_and_set_lease_period(frm){
     const start_date = frm.doc.agreement_start_date;
     const end_date = frm.doc.agreement_end_date;
@@ -247,7 +215,7 @@ function auto_set_start_end_date_escalation(frm,cdt,cdn){
     const row = frappe.get_doc(cdt, cdn);
     const agreement_start = frm.doc.agreement_start_date;
     const agreement_end = frm.doc.agreement_end_date;
-    if(row.escalation_type=="Based On Dates"){
+    if(row.escalation_type == 'Based On Dates'){
         frappe.model.set_value(cdt, cdn, 'start_date', agreement_start);
         frappe.model.set_value(cdt, cdn, 'end_date', agreement_end);
     }
@@ -279,3 +247,29 @@ function validate_escalation_dates(frm, cdt, cdn){
         }
     }
 }
+
+function validate_from_to_dates(frm, cdt, cdn){
+    const row = frappe.get_doc(cdt, cdn);
+    const agreement_start = frm.doc.agreement_start_date;
+    const agreement_end = frm.doc.agreement_end_date;
+
+    if(!agreement_start || !agreement_end) {
+        frappe.msgprint(__('Please set Agreement Start Date and Agreement End Date first'));
+        return;
+    }
+
+    if(row.from_date && row.to_date) {
+        if(row.from_date < agreement_start || row.to_date > agreement_end) {
+            frappe.msgprint(__('Invoice From and To Dates must be within Agreement Start and Agreement End Dates'));
+            frappe.model.set_value(cdt, cdn, 'from_date', null);
+            frappe.model.set_value(cdt, cdn, 'to_date', null);
+            return;
+        }
+
+        if(row.to_date <= row.from_date) {
+            frappe.msgprint(__('Invoice To Date must be greater than Invoice From Date'));
+            frappe.model.set_value(cdt, cdn, 'to_date', null);
+        }
+    }
+}
+
