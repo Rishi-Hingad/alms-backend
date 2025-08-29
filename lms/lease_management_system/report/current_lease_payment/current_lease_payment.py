@@ -39,14 +39,23 @@ def execute(filters=None):
         timeline=lease_doc.get_lease_rent_timeline()
         mdata=lease_doc.get_lease_monthly_data()
         lease_data=mdata.get(current_month,0)
+        inv_attachment=lease_doc.get_invoice_attachments_with_dates()
         ms_date=lease_data[0]
         me_date=lease_data[1]
-        
         rent=timeline.get(current_month,0)
+        inv_dates=[]
+        for i in range(len(inv_attachment)):
+            record=inv_attachment[i]
+            inv_dates.append(record["uploaded_on"])
+
         for r in lease_doc.invoice_details:
-            inv_date=r.invoice_date
-            if inv_date.strftime("%Y-%m")==current_month:
-                lease_status="Paid on "+str(inv_date)
+            # inv_date=r.invoice_date
+            for i in range(len(inv_dates)):
+                if inv_dates[i].strftime("%Y-%m") and (r.to_date.strftime("%Y-%m")==current_month or r.from_date.strftime("%Y-%m")==current_month):
+                    lease_status="Paid on "+str(inv_dates[i])
+                    break
+            # if inv_date.strftime("%Y-%m")==current_month:
+            #     lease_status="Paid on "+str(inv_date)
             else:
                 if today.date()>me_date:
                     lease_status="Was Due on "+str(me_date)

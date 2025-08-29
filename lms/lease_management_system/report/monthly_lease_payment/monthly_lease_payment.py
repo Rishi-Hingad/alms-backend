@@ -42,27 +42,33 @@ def execute(filters=None):
         lease_doc=frappe.get_doc("Lease Management",lease.name)
         timeline=lease_doc.get_lease_rent_timeline()
         mdata=lease_doc.get_lease_monthly_data()
+        inv_attachment=lease_doc.get_invoice_attachments_with_dates()
         lease_data=mdata.get(month_year,0)
+        inv_dates=[]
+        for i in range(len(inv_attachment)):
+            record=inv_attachment[i]
+            inv_dates.append(record["uploaded_on"])
         if not lease_data and not isinstance(lease_data,list):
             continue
         else:
             ms_date=lease_data[0]
             me_date=lease_data[1]
             
-        
         rent=timeline.get(month_year,0)
         if len(lease_doc.invoice_details)>0:
             for r in lease_doc.invoice_details:
-                inv_date=r.invoice_date
-                if inv_date.strftime("%Y-%m")==month_year:
-                    lease_status="Paid on "+str(inv_date)
-                    break
-                else:
-                    # lease_status=""
-                    if today.date()>=me_date:
-                        lease_status="Due"
+                # inv_date=r.invoice_date
+                for i in range(len(inv_dates)):
+                    # if inv_dates[i].strftime("%Y-%m")==month_year:
+                    if inv_dates[i].strftime("%Y-%m") and (r.to_date.strftime("%Y-%m")==month_year or r.from_date.strftime("%Y-%m")==month_year):
+                        lease_status="Paid on "+str(inv_dates[i])
+                        break
                     else:
-                        lease_status="Pending"  
+                        # lease_status=""
+                        if today.date()>=me_date:
+                            lease_status="Due"
+                        else:
+                            lease_status="Pending"  
         else:
             if today.date()>=me_date:
                 lease_status="Due"

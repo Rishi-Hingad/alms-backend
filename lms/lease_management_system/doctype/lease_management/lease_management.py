@@ -2338,13 +2338,13 @@ def generate_report(docname,cnt):
 		# if doc.lease_period=="Short Term (Less Than 12 Months)":
 		# 	output = generate_lease_report_month_based_without_escalation(date1, date2,docname,cnt)
 		# else:
-		output = generate_lease_report_month_based(date1, date2,docname,cnt)
+		output = generate_lease_report_month_based_new(date1, date2,docname,cnt)
 	elif doc.calculation_rate_type=="Daily Rate":
 		# if doc.lease_period=="Short Term (Less Than 12 Months)":
 		# 	output = generate_lease_report_without_escalation(date1, date2,docname,cnt)
 		# else:
 		output = generate_lease_report_new(date1, date2,docname,cnt)
-	# output=get_all_active_lease_rent_data()
+	# output=get_invoice_attachments_with_dates(docname)
 
 	return output
 
@@ -2441,6 +2441,29 @@ class LeaseManagement(Document):
 	# 			"invoice_attachment": ''  # initialize empty
 	# 		})
 	# 		current_date += relativedelta(months=1)
+
+	def get_invoice_attachments_with_dates(self):
+		lease_doc=frappe.get_doc("Lease Management",self.name)
+		attachments_info=[]
+		for row in lease_doc.invoice_details:
+			file_doc=frappe.get_value(
+				"File",
+				filters={
+					"attached_to_doctype":"Lease Management",
+					"attached_to_name":lease_doc.name,
+					"attached_to_field":"invoice_attachment",
+				},
+				fieldname=["file_url","creation","file_name"]
+			)
+			if file_doc:
+				attachments_info.append({
+					"child_row_name":row.name,
+					"month":row.month,
+					"file_url":file_doc[0],
+					"file_name":file_doc[2],
+					"uploaded_on":file_doc[1]
+				})
+		return attachments_info
 
 	def get_lease_rent_timeline(self):
 		doc = frappe.get_doc("Lease Management",self.name)
