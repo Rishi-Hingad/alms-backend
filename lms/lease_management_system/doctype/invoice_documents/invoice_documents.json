@@ -10,7 +10,8 @@
   "from_date",
   "to_date",
   "amount",
-  "invoice_attachment"
+  "invoice_attachment",
+  "is_mismatch"
  ],
  "fields": [
   {
@@ -44,13 +45,19 @@
    "fieldtype": "Float",
    "in_list_view": 1,
    "label": "Amount"
+  },
+  {
+   "fieldname": "is_mismatch",
+   "fieldtype": "Data",
+   "hidden": 1,
+   "label": "is_mismatch"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2025-08-28 09:50:02.393229",
+ "modified": "2025-08-30 15:50:40.710620",
  "modified_by": "Administrator",
  "module": "Lease Management System",
  "name": "Invoice Documents",

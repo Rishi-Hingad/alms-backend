@@ -12,7 +12,7 @@ def execute(filters=None):
         {"label": "Lease", "fieldname": "lease", "fieldtype": "Data", "width": 150},
         {"label": "Month Start Date", "fieldname": "month_start_date", "fieldtype": "Date", "width": 150},
         {"label": "Month End Date", "fieldname": "month_end_date", "fieldtype": "Date", "width": 150},
-        {"label": "Total Rent", "fieldname": "total_rent", "fieldtype": "Currency", "width": 150},
+        {"label": "Total Rent", "fieldname": "total_rent", "fieldtype": "Currency", "width": 200},
         {"label": "Payment Status", "fieldname": "payement_status", "fieldtype": "Data", "width": 200}
     ]
 

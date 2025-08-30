@@ -6,6 +6,7 @@
 
 // 	},
 // });
+
 frappe.ui.form.on('Escalation',{
     escalation_type:function(frm,cdt,cdn){
         auto_set_start_end_date_escalation(frm,cdt,cdn);
@@ -23,7 +24,20 @@ frappe.ui.form.on('Invoice Documents',{
     },
     to_date: function(frm, cdt, cdn) {
         validate_from_to_dates(frm, cdt, cdn);
-    }
+    },
+    // refresh:function(frm,cdt,cdn){
+    //     let row=locals[cdt][cdn];
+    //     console.log(row.is_mismatch);
+    //     if (row.is_mismatch){
+    //         frappe.utils.show_alert({
+    //             message:`Mismatch found in Invoice Details for month ${row.month} and from date ${row.from_date}`,
+    //             indicator:'red'
+    //         });
+    //     }
+    // },
+    // invoice_details_add:function(frm){
+    //     frm.fields_dict['invoice_details'].grid.refresh();
+    // }
 });
 
 frappe.ui.form.on("Lease Management", {
@@ -50,10 +64,15 @@ frappe.ui.form.on("Lease Management", {
             frm.set_df_property('security_deposit_amount','reqd',1);
         }
     },
+    onload_post_render(frm){
+        highlight_mismatched_rows(frm);
+    },
     onload(frm) {
         frm.report_counter = 0;
     },
     refresh: function (frm) { 
+        highlight_mismatched_rows(frm);
+
         if(frappe.user.has_role("Vendor")){
             frm.fields_dict.invoice_details.grid.df.read_only=0;
             frm.fields_dict.invoice_details.grid.refresh();
@@ -215,11 +234,13 @@ function auto_set_start_end_date_escalation(frm,cdt,cdn){
     const row = frappe.get_doc(cdt, cdn);
     const agreement_start = frm.doc.agreement_start_date;
     const agreement_end = frm.doc.agreement_end_date;
-    if(row.escalation_type == 'Based On Dates'){
-        //set start and end date to agreement start and end date
-        frappe.model.set_value(cdt, cdn, 'start_date', agreement_start);
-        frappe.model.set_value(cdt, cdn, 'end_date', agreement_end);
-    }
+    frappe.model.set_value(cdt, cdn, 'start_date', agreement_start);
+    frappe.model.set_value(cdt, cdn, 'end_date', agreement_end);
+    // if(row.escalation_type == 'Based On Dates'){
+    //     //set start and end date to agreement start and end date
+    //     frappe.model.set_value(cdt, cdn, 'start_date', agreement_start);
+    //     frappe.model.set_value(cdt, cdn, 'end_date', agreement_end);
+    // }
 }
 
 function validate_escalation_dates(frm, cdt, cdn){
@@ -274,3 +295,19 @@ function validate_from_to_dates(frm, cdt, cdn){
     }
 }
 
+function highlight_mismatched_rows(frm){
+    const grid=frm.fields_dict['invoice_details'].grid;
+    grid.grid_rows.forEach(row => {
+        const row_data=row.doc;
+        if (row.wrapper  && row_data.is_mismatch==1){
+            row.wrapper.css({
+                'background-color':'#f59090ff'
+            });
+        }
+        else{
+            row.wrapper.css({
+                'background-color':''
+            });
+        }
+    });
+}

@@ -6,6 +6,7 @@ from frappe.model.document import Document
 from datetime import datetime,timedelta,time
 from calendar import monthrange
 from dateutil.relativedelta import relativedelta
+from frappe import db
 import pandas as pd
 import io
 from frappe.utils.file_manager import save_file
@@ -2398,6 +2399,7 @@ def get_lease_rent_dashboard_chart():
 class LeaseManagement(Document):
 	# pass
 	def validate(self):
+		self.validate_invoice_details()
 		for row in self.escalation:
 			# if row.escalation_type=='Per Annum' and not row.rate:
 			# 	frappe.throw("Rate Field Required in Escalation")
@@ -2412,10 +2414,11 @@ class LeaseManagement(Document):
 			# if row.escalation_type=='Per Annum and Fixed Amount' and not row.fixed_amount:
 			# 	frappe.throw("Fixed Amount Field Required in Escalation")
 
-	# def before_insert(self):
-    # 	# On new record creation, populate invoice_details
-	# 	if self.agreement_start_date and self.agreement_end_date:
-	# 		self.populate_invoice_details()
+	def before_insert(self):
+    	# On new record creation, populate invoice_details
+		if self.agreement_start_date and self.agreement_end_date:
+			# self.populate_invoice_details()
+			self.populate_escalation_record()
 
 	# def before_save(self):
 	# 	# On updates, check if agreement dates changed
@@ -2441,6 +2444,18 @@ class LeaseManagement(Document):
 	# 			"invoice_attachment": ''  # initialize empty
 	# 		})
 	# 		current_date += relativedelta(months=1)
+
+	def populate_escalation_record(self):
+		start_date = datetime.strptime(self.agreement_start_date, "%Y-%m-%d").date()
+		end_date = datetime.strptime(self.agreement_end_date, "%Y-%m-%d").date()
+		self.append("escalation",{
+			"escalation_type":"Per Annum",
+			"start_date":start_date,
+			"end_date":end_date,
+			"monthly_rent":0,
+			"rate":0,
+			"fixed_amount":0
+		})
 
 	def get_invoice_attachments_with_dates(self):
 		lease_doc=frappe.get_doc("Lease Management",self.name)
@@ -2575,6 +2590,7 @@ class LeaseManagement(Document):
 								prev_mlp_escl=mlp
 								break
 					timeline[current_date.date().strftime("%Y-%m")] = round(mlp, 3)
+					# timeline[current_date.date().strftime("%Y-%m")] = mlp
 					if prev_mlp_escl==None:
 						mlp=prev_mlp
 					else:
@@ -2628,6 +2644,7 @@ class LeaseManagement(Document):
 								break
 					mlp=mlp_new
 					timeline[current_date.date().strftime("%Y-%m")] = round(mlp_new, 3)
+					# timeline[current_date.date().strftime("%Y-%m")] = mlp_new
 					# mlp=prev_mlp
 					if prev_mlp_escl==None:
 						mlp=prev_mlp
@@ -2684,6 +2701,7 @@ class LeaseManagement(Document):
 							mlp=mlp+(rate*mlp/100)+famt
 							break
 				timeline[current_date.date().strftime("%Y-%m")] = round(mlp, 3)
+				# timeline[current_date.date().strftime("%Y-%m")] = mlp
 				if mrent==0 and rate==0 and famt==0 and escalation:
 					mlp=prev_mlp
 			if month_end>end_date:
@@ -2935,4 +2953,45 @@ class LeaseManagement(Document):
 			current_date=date_increment(current_date,diff_annually)
 		return monthly_data
 
-	
+	def validate_invoice_details(self):
+		rent_timeline=self.get_lease_rent_timeline()
+		for row in self.invoice_details:
+			from_date = datetime.strptime(row.from_date, "%Y-%m-%d")
+			inv_month=from_date.strftime("%Y-%m")
+			expected_rent=rent_timeline.get(inv_month)
+
+			if expected_rent is None:
+				row.is_mismatch=1
+				continue
+
+			actual_amount=float(row.amount)
+			if round(actual_amount,3) != round(expected_rent,3):
+				row.is_mismatch=1
+				# frappe.msgprint("row is_mismatch at row no. "+str(row.idx)+" "+str(round(expected_rent,3))+" /"+str(row.amount))
+			else:
+				row.is_mismatch=0
+			
+
+# def get_permission_query_conditions(user):
+# 	roles=frappe.get_roles(user)
+# 	if "Vendor" in roles:
+# 		user_email = db.get_value("User",user,"email")
+# 		vendor_id = db.get_value("Vendor Master",{"email_address":user_email},"name")
+# 		if vendor_id:
+# 			return """(`tabLease Management`.`Vendor` = '{vendor_id}')"""
+# 		else:
+# 			return "1=0"
+# 	if "System Manager" in roles:
+# 		return """(`tabLease Management`)"""
+# 	return None
+
+# def has_permission(doc, ptype, user):
+# 	roles=frappe.get_roles(user)
+# 	if "Vendor" in roles:
+# 		user_email = db.get_value("User",user,"email")
+# 		vendor_id = db.get_value("Vendor Master",{"email_address":user_email},"name")
+# 		if vendor_id and doc.vendor == vendor_id:
+# 			return True	
+# 	if "System Manager" in roles:
+# 		return True
+# 	return False	
