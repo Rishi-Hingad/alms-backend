@@ -2399,7 +2399,8 @@ def get_lease_rent_dashboard_chart():
 class LeaseManagement(Document):
 	# pass
 	def validate(self):
-		self.validate_invoice_details()
+		if self.invoice_details and len(self.invoice_details)>0:
+			self.validate_invoice_details()
 		for row in self.escalation:
 			# if row.escalation_type=='Per Annum' and not row.rate:
 			# 	frappe.throw("Rate Field Required in Escalation")
@@ -2418,7 +2419,8 @@ class LeaseManagement(Document):
     	# On new record creation, populate invoice_details
 		if self.agreement_start_date and self.agreement_end_date:
 			# self.populate_invoice_details()
-			self.populate_escalation_record()
+			if not self.escalation and len(self.escalation)==0:
+				self.populate_escalation_record()
 
 	# def before_save(self):
 	# 	# On updates, check if agreement dates changed
@@ -2448,6 +2450,8 @@ class LeaseManagement(Document):
 	def populate_escalation_record(self):
 		start_date = datetime.strptime(self.agreement_start_date, "%Y-%m-%d").date()
 		end_date = datetime.strptime(self.agreement_end_date, "%Y-%m-%d").date()
+		# self.escalation=[]
+		# if self.escalation and len(self.escalation)==0:
 		self.append("escalation",{
 			"escalation_type":"Per Annum",
 			"start_date":start_date,
@@ -2971,27 +2975,26 @@ class LeaseManagement(Document):
 			else:
 				row.is_mismatch=0
 			
+def get_permission_query_conditions(user):
+	if not user:
+		return ""
+	roles=frappe.get_roles(user)
+	if "System Manager" in roles or "Accounts" in roles:
+		return ""
+	if "Vendor" in roles:
+		vendor=frappe.db.get_value("Vendor Master",{"email_address":user},"name")
 
-# def get_permission_query_conditions(user):
-# 	roles=frappe.get_roles(user)
-# 	if "Vendor" in roles:
-# 		user_email = db.get_value("User",user,"email")
-# 		vendor_id = db.get_value("Vendor Master",{"email_address":user_email},"name")
-# 		if vendor_id:
-# 			return """(`tabLease Management`.`Vendor` = '{vendor_id}')"""
-# 		else:
-# 			return "1=0"
-# 	if "System Manager" in roles:
-# 		return """(`tabLease Management`)"""
-# 	return None
+		if not vendor:
+			return "1=0"
+		
+		return f"`tabLease Management`.`vendor`='{vendor}'"
+	return ""
 
-# def has_permission(doc, ptype, user):
-# 	roles=frappe.get_roles(user)
-# 	if "Vendor" in roles:
-# 		user_email = db.get_value("User",user,"email")
-# 		vendor_id = db.get_value("Vendor Master",{"email_address":user_email},"name")
-# 		if vendor_id and doc.vendor == vendor_id:
-# 			return True	
-# 	if "System Manager" in roles:
-# 		return True
-# 	return False	
+def has_permission(doc,user):
+	roles=frappe.get_roles(user)
+	if "System Manager" in roles or "Accounts" in roles:
+		return True
+	if "Vendor" in roles:
+		vendor=frappe.db.get_value("Vendor Master",{"email_address":user},"name")
+		return doc.vendor==vendor
+	return False	

@@ -9,7 +9,7 @@ from dateutil.relativedelta import relativedelta
 def execute(filters=None):
     columns = [
         {"label": "Month", "fieldname": "month", "fieldtype": "Data", "width": 150},
-        {"label": "Total Rent", "fieldname": "total_rent", "fieldtype": "Currency", "width": 150}
+        {"label": "Total Rent", "fieldname": "total_rent", "fieldtype": "Currency", "width": 150,"precision":4}
     ]
 
     today = frappe.utils.nowdate()

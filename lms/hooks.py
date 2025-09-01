@@ -124,13 +124,13 @@ app_license = "mit"
 # 	"Event": "frappe.desk.doctype.event.event.has_permission",
 # }
 
-# permission_query_conditions = {
-# 	"Lease Management": "lms.lease_management_system.doctype.lease_management.lease_management.get_permission_query_conditions",
-# }
+permission_query_conditions = {
+	"Lease Management": "lms.lease_management_system.doctype.lease_management.lease_management.get_permission_query_conditions",
+}
 
-# has_permission = {
-# 	"Lease Management": "lms.lease_management_system.doctype.lease_management.lease_management.has_permission",
-# }
+has_permission = {
+	"Lease Management": "lms.lease_management_system.doctype.lease_management.lease_management.has_permission",
+}
 
 # DocType Class
 # ---------------

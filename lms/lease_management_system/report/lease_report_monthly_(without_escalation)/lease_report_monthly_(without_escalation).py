@@ -40,7 +40,7 @@ def execute(filters=None):
 		{"label": "Month Start Date", "fieldname": "month_start_date", "fieldtype": "Date", "width": 120},
 		{"label": "Month End Date", "fieldname": "month_end_date", "fieldtype": "Date", "width": 120},
 		{"label": "Month", "fieldname": "month_number", "fieldtype": "Int", "width": 80},
-		{"label": "Minimum Lease Payment (MLP)", "fieldname": "mlp", "fieldtype": "Currency", "width": 180},
+		{"label": "Minimum Lease Payment (MLP)", "fieldname": "mlp", "fieldtype": "Currency", "width": 180,"precision":4},
 		{"label": "Present Value of MLP", "fieldname": "pv", "fieldtype": "Currency", "width": 180},
 		{"label": "Days in Month", "fieldname": "days_in_month", "fieldtype": "Int", "width": 120},
 		{"label": "Depreciation on Right to Use", "fieldname": "depreciation", "fieldtype": "Currency", "width": 200},
