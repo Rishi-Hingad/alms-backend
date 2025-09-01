@@ -68,11 +68,41 @@ frappe.ui.form.on("Lease Management", {
         if(frm.doc.invoice_details && frm.doc.invoice_details.length >0 && (frappe.user.has_role("Accounts") || frappe.user.has_role("System Manager"))){
             highlight_mismatched_rows(frm);
         }
+
+        // if (frappe.user.has_role("Vendor")){
+        //     frm.set_df_property('escalation','hidden',true);
+        // }
+        // else if(user==="Administrator" || frappe.user.has_role("System Manager")){
+        //     frm.set_df_property('escalation','hidden',false);
+        // }
+        // else if(frappe.user.has_role("Accounts")){
+        //     frm.set_df_property('escalation','hidden',false);
+        // }
+        // else{
+        //     frm.set_df_property('escalation','hidden',false);
+        // }
+
+        // frm.refresh_field('escalation');
     },
     onload(frm) {
         frm.report_counter = 0;
     },
     refresh: function (frm) { 
+        // if (frappe.user.has_role("Vendor")){
+        //     frm.set_df_property('escalation','hidden',true);
+        // }
+        // else if(user==="Administrator" || frappe.user.has_role("System Manager")){
+        //     frm.set_df_property('escalation','hidden',false);
+        // }
+        // else if(frappe.user.has_role("Accounts")){
+        //     frm.set_df_property('escalation','hidden',false);
+        // }
+        // else{
+        //     frm.set_df_property('escalation','hidden',false);
+        // }
+
+        // frm.refresh_field('escalation');
+
         if(frm.doc.invoice_details && frm.doc.invoice_details.length >0 && (frappe.user.has_role("Accounts") || frappe.user.has_role("System Manager"))){
             highlight_mismatched_rows(frm);
         }
@@ -104,28 +134,29 @@ frappe.ui.form.on("Lease Management", {
         }});
         
         if(!frm.is_new()){
-            frm.add_custom_button(__('Generate Report'), function() {
-                frm.report_counter = (frm.report_counter || 0) + 1;
-                frappe.call({
-                    method: 'lms.lease_management_system.doctype.lease_management.lease_management.generate_report',
-                    args: {
-                        docname: frm.doc.name,
-                        cnt:frm.report_counter
-                    },
-                    callback: function(r) {
-                        if (!r.exc) {
-                            // frappe.msgprint(__(r.message));
-                            // console.log(r.message)
-                            let file_url = r.message.file_url;
-                            window.open(file_url);
-                        }else {
-                            frappe.msgprint(__('Failed to generate report.'));
-                        }
-                    }
-                });
-                    // frappe.msgprint(__('Button clicked!'));
-            });
             if(frappe.user.has_role("Accounts") || frappe.user.has_role("System Manager")){
+                frm.add_custom_button(__('Generate Report'), function() {
+                    frm.report_counter = (frm.report_counter || 0) + 1;
+                    frappe.call({
+                        method: 'lms.lease_management_system.doctype.lease_management.lease_management.generate_report',
+                        args: {
+                            docname: frm.doc.name,
+                            cnt:frm.report_counter
+                        },
+                        callback: function(r) {
+                            if (!r.exc) {
+                                // frappe.msgprint(__(r.message));
+                                // console.log(r.message)
+                                let file_url = r.message.file_url;
+                                window.open(file_url);
+                            }else {
+                                frappe.msgprint(__('Failed to generate report.'));
+                            }
+                        }
+                    });
+                        // frappe.msgprint(__('Button clicked!'));
+                });
+
                 frm.add_custom_button('Go to Report', function() {
                     let lname = frm.doc.name;
                     if (frm.doc.calculation_rate_type=="Daily Rate" && frm.doc.lease_period=="Long Term (Greater Than 12 Months)"){

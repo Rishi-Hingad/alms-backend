@@ -126,10 +126,12 @@ app_license = "mit"
 
 permission_query_conditions = {
 	"Lease Management": "lms.lease_management_system.doctype.lease_management.lease_management.get_permission_query_conditions",
+	"Property Master": "lms.masters.doctype.property_master.property_master.get_permission_query_conditions"
 }
 
 has_permission = {
 	"Lease Management": "lms.lease_management_system.doctype.lease_management.lease_management.has_permission",
+    "Property Master": "lms.masters.doctype.property_master.property_master.has_permission"
 }
 
 # DocType Class

@@ -1,7 +1,7 @@
 {
  "actions": [],
  "allow_rename": 1,
- "autoname": "format:{vendor_code}-{#####}",
+ "autoname": "format:{vendor}-{#####}",
  "creation": "2025-07-12 15:30:19.463729",
  "doctype": "DocType",
  "engine": "InnoDB",
@@ -45,7 +45,7 @@
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-08-05 12:17:08.664631",
+ "modified": "2025-09-01 17:06:06.743208",
  "modified_by": "Administrator",
  "module": "Masters",
  "name": "Property Master",

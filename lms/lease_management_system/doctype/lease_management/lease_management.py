@@ -2986,8 +2986,9 @@ def get_permission_query_conditions(user):
 
 		if not vendor:
 			return "1=0"
-		
+		# doctype=frappe.local.meta.name
 		return f"`tabLease Management`.`vendor`='{vendor}'"
+		# return f"`tab{doctype}`.`vendor`='{vendor}'"
 	return ""
 
 def has_permission(doc,user):
