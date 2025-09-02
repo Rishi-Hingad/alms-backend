@@ -68,41 +68,11 @@ frappe.ui.form.on("Lease Management", {
         if(frm.doc.invoice_details && frm.doc.invoice_details.length >0 && (frappe.user.has_role("Accounts") || frappe.user.has_role("System Manager"))){
             highlight_mismatched_rows(frm);
         }
-
-        // if (frappe.user.has_role("Vendor")){
-        //     frm.set_df_property('escalation','hidden',true);
-        // }
-        // else if(user==="Administrator" || frappe.user.has_role("System Manager")){
-        //     frm.set_df_property('escalation','hidden',false);
-        // }
-        // else if(frappe.user.has_role("Accounts")){
-        //     frm.set_df_property('escalation','hidden',false);
-        // }
-        // else{
-        //     frm.set_df_property('escalation','hidden',false);
-        // }
-
-        // frm.refresh_field('escalation');
     },
     onload(frm) {
         frm.report_counter = 0;
     },
     refresh: function (frm) { 
-        // if (frappe.user.has_role("Vendor")){
-        //     frm.set_df_property('escalation','hidden',true);
-        // }
-        // else if(user==="Administrator" || frappe.user.has_role("System Manager")){
-        //     frm.set_df_property('escalation','hidden',false);
-        // }
-        // else if(frappe.user.has_role("Accounts")){
-        //     frm.set_df_property('escalation','hidden',false);
-        // }
-        // else{
-        //     frm.set_df_property('escalation','hidden',false);
-        // }
-
-        // frm.refresh_field('escalation');
-
         if(frm.doc.invoice_details && frm.doc.invoice_details.length >0 && (frappe.user.has_role("Accounts") || frappe.user.has_role("System Manager"))){
             highlight_mismatched_rows(frm);
         }

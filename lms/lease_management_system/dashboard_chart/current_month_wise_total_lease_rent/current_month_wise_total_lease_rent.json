@@ -8,17 +8,24 @@
  "doctype": "Dashboard Chart",
  "filters_json": "{}",
  "group_by_type": "Count",
- "idx": 0,
+ "idx": 2,
  "is_public": 0,
  "is_standard": 1,
- "modified": "2025-08-12 17:04:54.532286",
+ "modified": "2025-09-02 11:39:04.099456",
  "modified_by": "Administrator",
  "module": "Lease Management System",
  "name": "Current Month-wise Total Lease Rent",
  "number_of_groups": 0,
  "owner": "Administrator",
  "report_name": "Lease Rent Summary",
- "roles": [],
+ "roles": [
+  {
+   "role": "System Manager"
+  },
+  {
+   "role": "Accounts"
+  }
+ ],
  "time_interval": "Yearly",
  "timeseries": 0,
  "timespan": "Last Year",
