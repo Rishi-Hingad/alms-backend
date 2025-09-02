@@ -9,12 +9,15 @@
  "field_order": [
   "vehicle_details_section",
   "contract_number",
+  "vendor_company",
   "company_name",
   "employee_code_and_name",
   "reallotment_employee_code_and_name",
   "registration_city",
   "registration_number",
   "vehicle_description",
+  "car_allotment_letter",
+  "rc_book",
   "column_break_nxaj",
   "date_begin",
   "date_end",
@@ -111,11 +114,27 @@
    "fieldtype": "Link",
    "label": "Employee Code and Name",
    "options": "Employee Master"
+  },
+  {
+   "fieldname": "car_allotment_letter",
+   "fieldtype": "Attach",
+   "label": "Car Allotment Letter"
+  },
+  {
+   "fieldname": "rc_book",
+   "fieldtype": "Attach",
+   "label": "RC Book"
+  },
+  {
+   "fieldname": "vendor_company",
+   "fieldtype": "Select",
+   "label": "Vendor Company",
+   "options": "ALD\nEasyAssets\nCompany Owned Vehicle"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-05-29 16:49:22.317131",
+ "modified": "2025-09-02 11:53:55.769281",
  "modified_by": "Administrator",
  "module": "CRMS",
  "name": "Vehicle Details",
