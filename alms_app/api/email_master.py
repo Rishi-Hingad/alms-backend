@@ -40,4 +40,3 @@ class EmailMaster:
     accounts_team = accounts_user.get("full_name")
 
     
-    

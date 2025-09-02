@@ -26,7 +26,7 @@ def management(current_frappe_user):
 def daily_pending_indent_email_reminder():
     pending_docs = frappe.get_all("Car Indent Form", filters=[
         ["status", "!=", "Approved"]
-    ], fields=["name", "employee", "reporting_head_approval", "hr_approval", "travel_desk_approval", "hr_head_approval"])
+    ], fields=["name", "employee", "reporting_head_approval", "hr_approval", "hr_head_approval"])
 
     for doc in pending_docs:
         pending_stage = None
@@ -38,9 +38,9 @@ def daily_pending_indent_email_reminder():
         elif doc.hr_approval == "Pending":
             pending_stage = "hr_approval"
             email_to = get_email_by_designation("HR")
-        elif doc.travel_desk_approval == "Pending":
-            pending_stage = "travel_desk_approval"
-            email_to = get_email_by_designation("Travel Desk")
+        # elif doc.travel_desk_approval == "Pending":
+        #     pending_stage = "travel_desk_approval"
+        #     email_to = get_email_by_designation("Travel Desk")
         elif doc.hr_head_approval == "Pending":
             pending_stage = "hr_head_approval"
             email_to = get_email_by_designation("HR Head")

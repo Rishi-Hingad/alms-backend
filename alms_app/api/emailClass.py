@@ -695,10 +695,10 @@ class EmailServices:
         body = self.create_email_body(form,user,subject, content,updated_by,remarks_by,regards)
         self.send(subject=subject, body=body, recipient_email=recipient_email)
 
-    def for_hr_team_to_travel_desk(self, user):
+    def for_hr_team_to_hrhead(self, user):
         emailMaster = EmailMaster()
-        recipient_email = emailMaster.travel_desk_email
-        print(" for hr team to hr head------",recipient_email,"+++++++++++++++",emailMaster.travel_desk_email)
+        recipient_email = emailMaster.hr_head_email
+        print(" for hr team to hr head------",recipient_email,"+++++++++++++++",emailMaster.hr_head_email)
         subject = "Car Rental Form Approved by HR Team"
         regards = "HR Team"
         updated_by = emailMaster.hr_team
@@ -712,6 +712,24 @@ class EmailServices:
         """
         body = self.create_email_body(form,user,subject, content,updated_by,remarks_by,regards)
         self.send(subject=subject, body=body, recipient_email=recipient_email)
+
+    # def for_hr_team_to_travel_desk(self, user):
+    #     emailMaster = EmailMaster()
+    #     recipient_email = emailMaster.travel_desk_email
+    #     print(" for hr team to hr head------",recipient_email,"+++++++++++++++",emailMaster.travel_desk_email)
+    #     subject = "Car Rental Form Approved by HR Team"
+    #     regards = "HR Team"
+    #     updated_by = emailMaster.hr_team
+    #     form = frappe.get_doc("Car Indent Form",user.name)
+    #     remarks_by="hr_remarks"
+    #     content = f"""
+    #     Dear Sir/Madam,
+    #     <br><br>The HR team has reviewed and approved the car rental form submitted by {user.employee_name}.
+    #     <br>
+    #     {updated_by} have sent the form for the activity mentioned below:
+    #     """
+    #     body = self.create_email_body(form,user,subject, content,updated_by,remarks_by,regards)
+    #     self.send(subject=subject, body=body, recipient_email=recipient_email)
 
     def for_travel_desk_to_hr_head(self, user):
         emailMaster = EmailMaster()
