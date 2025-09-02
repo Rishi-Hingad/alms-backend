@@ -214,7 +214,6 @@ frappe.ui.form.on("Lease Management", {
 function validate_dates_and_set_lease_period(frm){
     const start_date = frm.doc.agreement_start_date;
     const end_date = frm.doc.agreement_end_date;
-
     if(start_date && end_date) {
         if(end_date <= start_date) {
             frappe.msgprint(__('Agreement End Date must be greater than Agreement Start Date.'));
@@ -235,6 +234,15 @@ function validate_dates_and_set_lease_period(frm){
         } else {
             frm.set_value('lease_period', 'Short Term (Less Than 12 Months)');
         }
+
+        if (end_date < frappe.datetime.get_today()){
+            frm.set_value('status', 'Agreement Expired');
+        }
+        else{
+            frm.set_value('status', 'Active');
+        }
+        
+
     }
 }
 
@@ -309,7 +317,8 @@ function highlight_mismatched_rows(frm){
         const row_data=row.doc;
         if (row.wrapper  && row_data.is_mismatch==1){
             row.wrapper.css({
-                'background-color':'#f59090ff'
+                // 'background-color':'#f59090ff'
+                'background-color':'#f8d7da'
             });
         }
         else{
