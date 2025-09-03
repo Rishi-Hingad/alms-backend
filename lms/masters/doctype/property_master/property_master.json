@@ -27,25 +27,29 @@
   {
    "fieldname": "address",
    "fieldtype": "Text",
-   "label": "Address"
+   "label": "Address",
+   "reqd": 1
   },
   {
    "fieldname": "city",
    "fieldtype": "Link",
    "label": "City ",
-   "options": "City Master"
+   "options": "City Master",
+   "reqd": 1
   },
   {
    "fieldname": "vendor",
    "fieldtype": "Link",
+   "in_list_view": 1,
    "label": "Vendor",
-   "options": "Vendor Master"
+   "options": "Vendor Master",
+   "reqd": 1
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-09-01 17:06:06.743208",
+ "modified": "2025-09-03 11:55:37.036156",
  "modified_by": "Administrator",
  "module": "Masters",
  "name": "Property Master",

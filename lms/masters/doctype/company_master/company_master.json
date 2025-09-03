@@ -13,19 +13,23 @@
   {
    "fieldname": "company_code",
    "fieldtype": "Data",
-   "label": "Company Code"
+   "in_list_view": 1,
+   "label": "Company Code",
+   "reqd": 1
   },
   {
    "fieldname": "company_name",
    "fieldtype": "Data",
+   "in_list_view": 1,
    "label": "Company Name",
+   "reqd": 1,
    "unique": 1
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-08-05 12:17:47.792971",
+ "modified": "2025-09-03 12:10:57.727657",
  "modified_by": "Administrator",
  "module": "Masters",
  "name": "Company Master",

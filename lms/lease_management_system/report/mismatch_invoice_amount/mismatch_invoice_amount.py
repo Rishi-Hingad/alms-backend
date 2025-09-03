@@ -28,6 +28,8 @@ def execute(filters=None):
 		rent_timeline=lease_doc.get_lease_rent_timeline()
 		if lease_doc.invoice_details and len(lease_doc.invoice_details)>0:
 			for child in lease_doc.invoice_details:
+				if child.is_mismatch is None:
+					continue
 				mismatch=child.is_mismatch
 				if int(mismatch) == 1:
 					from_date = child.from_date

@@ -12,14 +12,16 @@
   {
    "fieldname": "state",
    "fieldtype": "Data",
+   "in_list_view": 1,
    "label": "State ",
+   "reqd": 1,
    "unique": 1
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-08-05 12:18:30.351159",
+ "modified": "2025-09-03 12:10:08.677754",
  "modified_by": "Administrator",
  "module": "Masters",
  "name": "State Master",

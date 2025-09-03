@@ -4,13 +4,13 @@
    "card": "Total Vendor's"
   },
   {
-   "card": "Total Lease"
+   "card": "Total Lease Agreement"
   },
   {
-   "card": "Total Ongoing Lease"
+   "card": "Total Ongoing Lease Agreement"
   },
   {
-   "card": "Total Expired Lease"
+   "card": "Total Expired Lease Agreement"
   },
   {
    "card": "Current Lease  Payment Amount"
@@ -29,7 +29,7 @@
  "idx": 0,
  "is_default": 0,
  "is_standard": 1,
- "modified": "2025-08-13 12:57:36.962165",
+ "modified": "2025-09-03 10:54:50.425580",
  "modified_by": "Administrator",
  "module": "Lease Management System",
  "name": "Lease Overview",
