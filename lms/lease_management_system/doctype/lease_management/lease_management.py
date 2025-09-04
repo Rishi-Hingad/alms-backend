@@ -11,6 +11,7 @@ import pandas as pd
 import io
 from frappe.utils.file_manager import save_file
 from openpyxl.utils import get_column_letter
+from frappe.utils import nowdate
 
 def calculate_daily_rate(doc):
 	disc_doc=float(doc.discounting_rate)/100
@@ -1085,6 +1086,19 @@ def get_lease_rent_dashboard_chart():
         "type": "bar",       # chart type
         "colors": ["#7cd6fd"]  # optional
     }
+
+@frappe.whitelist()
+def bulk_update_agreement_status():
+	today = nowdate()
+
+	frappe.db.sql("""
+		UPDATE `tabLease Management`
+		SET status = 'Agreement Expired'
+		WHERE agreement_end_date < %s
+		AND status != 'Agreement Expired'
+	""", (today,))
+	frappe.db.commit()
+	return {"updated":True}
 
 class LeaseManagement(Document):
 	# pass

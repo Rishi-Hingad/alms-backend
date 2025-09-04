@@ -44,9 +44,11 @@ frappe.ui.form.on("Lease Management", {
 
     agreement_start_date: function(frm) {
         validate_dates_and_set_lease_period(frm);
+        // set_agreement_status(frm);
     },
     agreement_end_date: function(frm) {
         validate_dates_and_set_lease_period(frm);
+        // set_agreement_status(frm);
     },
     // lease_period:function(frm){
     //     if(frm.doc.lease_period!='' && frm.doc.lease_period=='Short Term (Less Than 12 Months)'){
@@ -71,8 +73,10 @@ frappe.ui.form.on("Lease Management", {
     },
     onload(frm) {
         frm.report_counter = 0;
+        // set_agreement_status(frm);
     },
     refresh: function (frm) { 
+        // set_agreement_status(frm);
         if(frm.doc.invoice_details && frm.doc.invoice_details.length >0 && (frappe.user.has_role("Accounts") || frappe.user.has_role("System Manager"))){
             highlight_mismatched_rows(frm);
         }
@@ -210,6 +214,32 @@ frappe.ui.form.on("Lease Management", {
     }
 });
 
+function set_agreement_status(frm){
+    const start_date = frm.doc.agreement_start_date;
+    const end_date = frm.doc.agreement_end_date;
+    if(start_date && end_date) {
+        if(end_date <= start_date) {
+            frappe.msgprint(__('Agreement End Date must be greater than Agreement Start Date.'));
+            frm.set_value('agreement_end_date', null);
+            return;
+        }
+
+        let new_status=null;
+        if (end_date < frappe.datetime.get_today()){
+            new_status='Agreement Expired';
+        }
+        else{
+            new_status='Active';
+        }
+        if (frm.doc.status !== new_status){
+            frm.set_value('status', new_status);
+            frm.save()
+                .then(() => {
+                    frm.reload_doc();
+                });
+        }
+    }
+}
 
 function validate_dates_and_set_lease_period(frm){
     const start_date = frm.doc.agreement_start_date;

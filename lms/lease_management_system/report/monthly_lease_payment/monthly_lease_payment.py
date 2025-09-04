@@ -62,13 +62,13 @@ def execute(filters=None):
                     # if inv_dates[i].strftime("%Y-%m")==month_year:
                     if inv_dates[i].strftime("%Y-%m") and (r.to_date.strftime("%Y-%m")==month_year or r.from_date.strftime("%Y-%m")==month_year):
                         lease_status="Paid on "+str(inv_dates[i])
-                        break
-                    # else:
+                        continue
+                    else:
                         # lease_status=""
-                        # if today.date()>=me_date:
-                        # lease_status="Due"
-                        # else:
-                        #     lease_status="Pending"  
+                        if today.date()>=me_date:
+                            lease_status="Due"
+                        else:
+                            lease_status="Pending"  
         else:
             if today.date()>=me_date:
                 lease_status="Due"
