@@ -44,13 +44,14 @@ $(document).ready(function() {
         frappe.call({
             method: "lms.lease_management_system.doctype.lease_management.lease_management.bulk_update_agreement_status",
             callback: function(r) {
-                console.log("Response:", r);
-                // if (r.message && r.message.updated) {
-                //     frappe.show_alert({
-                //         message: 'Lease Statuses Updated',
-                //         indicator: 'green'
-                //     });
-                // }
+                // console.log("Response:", r);
+                if (r.message && r.message.updated) {
+                    // frappe.show_alert({
+                    //     message: 'Lease Statuses Updated',
+                    //     indicator: 'green'
+                    // });
+                    frappe.ui.dashboard.render();
+                }
             },
             error: function(r) {
                 console.error("Error:", r);
