@@ -8,7 +8,7 @@ frappe.query_reports["Mismatch Invoice Amount"] = {
 	formatter: function(value, row, column, data, default_formatter) {
         value = default_formatter(value, row, column, data);
 
-        if (column.fieldname == "calculated_rent") {
+        if (column.fieldname == "taxable_amount") {
             return `<span style="background-color: #d4edda; color: #155724; padding: 4px; border-radius: 4px; display: inline-block;">${value}</span>`;
         }
 

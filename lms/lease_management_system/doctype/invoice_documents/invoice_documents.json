@@ -10,6 +10,8 @@
   "from_date",
   "to_date",
   "amount",
+  "with_tax",
+  "tax",
   "invoice_attachment",
   "is_mismatch"
  ],
@@ -55,13 +57,26 @@
    "fieldtype": "Data",
    "hidden": 1,
    "label": "is_mismatch"
+  },
+  {
+   "default": "0",
+   "fieldname": "with_tax",
+   "fieldtype": "Check",
+   "label": "With Tax"
+  },
+  {
+   "default": "0",
+   "description": "(%)",
+   "fieldname": "tax",
+   "fieldtype": "Percent",
+   "label": "Tax"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2025-09-03 11:56:04.438287",
+ "modified": "2025-09-05 15:48:56.012124",
  "modified_by": "Administrator",
  "module": "Lease Management System",
  "name": "Invoice Documents",

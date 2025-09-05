@@ -1100,6 +1100,19 @@ def bulk_update_agreement_status():
 	frappe.db.commit()
 	return {"updated":True, "count": updated_count}
 
+@frappe.whitelist()
+def has_expired_agreements():
+	today = nowdate()
+	count = frappe.db.count(
+		"Lease Management",
+        {
+            "status": ["!=", "Agreement Expired"],
+            "agreement_end_date": ["<", today]
+        }
+	)
+	
+	return {"needs_update": count > 0, "count": count}
+
 # @frappe.whitelist()
 # def daily_lease_status_update():
 #     try:
@@ -1724,11 +1737,19 @@ class LeaseManagement(Document):
 				continue
 
 			actual_amount=float(row.amount)
-			if round(actual_amount,3) != round(expected_rent,3):
-				row.is_mismatch=1
-				# frappe.msgprint("row is_mismatch at row no. "+str(row.idx)+" "+str(round(expected_rent,3))+" /"+str(row.amount))
-			else:
-				row.is_mismatch=0
+			tax=float(row.tax)
+			if int(row.with_tax)==1:
+				calc_amount=expected_rent+((tax*expected_rent)/100)
+				if round(calc_amount,3) != round(actual_amount,3):
+					row.is_mismatch=1
+				else:
+					row.is_mismatch=0
+			# else:
+			# 	if round(actual_amount,3) != round(expected_rent,3):
+			# 		row.is_mismatch=1
+			# 		# frappe.msgprint("row is_mismatch at row no. "+str(row.idx)+" "+str(round(expected_rent,3))+" /"+str(row.amount))
+			# 	else:
+			# 		row.is_mismatch=0
 			
 def get_permission_query_conditions(user):
 	if not user:

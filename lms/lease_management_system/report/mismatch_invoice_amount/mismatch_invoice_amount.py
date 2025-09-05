@@ -12,8 +12,9 @@ def execute(filters=None):
         {"label": "Month Start Date", "fieldname": "month_start_date", "fieldtype": "Date", "width": 150},
         {"label": "Month End Date", "fieldname": "month_end_date", "fieldtype": "Date", "width": 150},
         {"label": "Calculated Rent", "fieldname": "calculated_rent", "fieldtype": "Currency", "width": 200,"precision":4},
-		{"label": "Invoice From Date", "fieldname": "invoice_from_date", "fieldtype": "Date", "width": 150},
-        {"label": "Invoice To Date", "fieldname": "invoice_to_date", "fieldtype": "Date", "width": 150},
+        {"label": "Taxable Amount", "fieldname": "taxable_amount", "fieldtype": "Currency", "width": 200,"precision":4},
+		# {"label": "Invoice From Date", "fieldname": "invoice_from_date", "fieldtype": "Date", "width": 150},
+        # {"label": "Invoice To Date", "fieldname": "invoice_to_date", "fieldtype": "Date", "width": 150},
         {"label": "Invoice Amount", "fieldname": "invoice_amount", "fieldtype": "Currency", "width": 200,"precision":4}
     ]
 
@@ -35,6 +36,12 @@ def execute(filters=None):
 					from_date = child.from_date
 					inv_month=from_date.strftime("%Y-%m")
 					expected_rent=rent_timeline.get(inv_month)
+					actual_amount=float(child.amount)
+					tax=float(child.tax)
+					if int(child.with_tax)==1:
+						calc_amount=expected_rent+((tax*expected_rent)/100)
+					else:
+						calc_amount=expected_rent
 					monthly_data=lease_doc.get_lease_monthly_data()
 					month=monthly_data.get(from_date.strftime("%Y-%m"))
 					if not month:
@@ -46,8 +53,9 @@ def execute(filters=None):
 						"month_start_date": month[0],
 						"month_end_date": month[1],
 						"calculated_rent":expected_rent,
-						"invoice_from_date":child.from_date,
-						"invoice_to_date":child.to_date,
+						"taxable_amount":calc_amount,
+						# "invoice_from_date":child.from_date,
+						# "invoice_to_date":child.to_date,
 						"invoice_amount":child.amount
 					})
 

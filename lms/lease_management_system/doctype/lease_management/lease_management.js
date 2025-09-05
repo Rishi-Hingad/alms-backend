@@ -346,6 +346,10 @@ function highlight_mismatched_rows(frm){
     grid.grid_rows.forEach(row => {
         const row_data=row.doc;
         if (row.wrapper  && row_data.is_mismatch==1){
+            // console.log(row_data.from_date);
+            // console.log(row_data.to_date);
+            // console.log(row_data.tax);
+            // console.log(row_data.with_tax);
             row.wrapper.css({
                 // 'background-color':'#f59090ff'
                 'background-color':'#f8d7da'
