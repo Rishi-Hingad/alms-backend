@@ -41,8 +41,14 @@ app_license = "mit"
 
 # include js in page
 # page_js = {"page" : "public/js/file.js"}
-page_js={"account-dashboard":"public/js/account-dashboard.js"}
-app_include_js=["/assets/lms/js/account-dashboard.js"]
+# page_js={"account-dashboard":"public/js/account-dashboard.js"}
+# app_include_js=["/assets/lms/js/account-dashboard.js"]
+
+scheduler_events = {
+    "daily": [
+        "lms.lease_management_system.doctype.lease_management.lease_management.daily_lease_status_update"
+    ]
+}
 
 # include js in doctype views
 # doctype_js = {"doctype" : "public/js/doctype.js"}

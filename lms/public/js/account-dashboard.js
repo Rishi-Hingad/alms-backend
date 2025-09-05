@@ -44,13 +44,13 @@ $(document).ready(function() {
         frappe.call({
             method: "lms.lease_management_system.doctype.lease_management.lease_management.bulk_update_agreement_status",
             callback: function(r) {
-                // console.log("Response:", r);
+                console.log("Response:", r);
                 if (r.message && r.message.updated) {
                     // frappe.show_alert({
                     //     message: 'Lease Statuses Updated',
                     //     indicator: 'green'
                     // });
-                    frappe.ui.dashboard.render();
+                    refreshWorkspaceCards();
                 }
             },
             error: function(r) {
@@ -69,4 +69,12 @@ $(document).ready(function() {
         console.log("Hash changed, checking route");
         setTimeout(checkAndExecute, 500);
     });
+    function refreshWorkspaceCards() {  
+        $('.total-expired-lease-agreement').each(function() {
+            $(this).trigger('refresh');
+        });
+        $('.total-ongoing-lease-agreement').each(function() {
+            $(this).trigger('refresh');
+        });
+    }
 });

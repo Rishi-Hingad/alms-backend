@@ -11,7 +11,7 @@ import pandas as pd
 import io
 from frappe.utils.file_manager import save_file
 from openpyxl.utils import get_column_letter
-from frappe.utils import nowdate
+from frappe.utils import nowdate, now_datetime
 
 def calculate_daily_rate(doc):
 	disc_doc=float(doc.discounting_rate)/100
@@ -1091,14 +1091,83 @@ def get_lease_rent_dashboard_chart():
 def bulk_update_agreement_status():
 	today = nowdate()
 
-	frappe.db.sql("""
+	updated_count =frappe.db.sql("""
 		UPDATE `tabLease Management`
 		SET status = 'Agreement Expired'
 		WHERE agreement_end_date < %s
 		AND status != 'Agreement Expired'
 	""", (today,))
 	frappe.db.commit()
-	return {"updated":True}
+	return {"updated":True, "count": updated_count}
+
+@frappe.whitelist()
+def daily_lease_status_update():
+    """
+    Scheduled job function to update lease statuses daily
+    This function will be called automatically by Frappe scheduler
+    """
+    try:
+        today = nowdate()
+        
+        # Log start of job
+        frappe.logger().info("Starting daily lease status update job")
+        
+        # Get count before update
+        expired_leases = frappe.db.sql("""
+            SELECT COUNT(*) as count 
+            FROM `tabLease Management` 
+            WHERE agreement_end_date < %s 
+            AND status != 'Agreement Expired'
+        """, (today,), as_dict=True)
+        
+        count_to_update = expired_leases[0].count if expired_leases else 0
+        
+        if count_to_update > 0:
+            # Execute the bulk update
+            result = bulk_update_agreement_status()
+            
+            # Log success
+            message = f"Daily lease status update completed. Updated {count_to_update} lease(s) to 'Agreement Expired' status."
+            frappe.logger().info(message)
+            
+            # Optional: Create a log entry in database
+            create_update_log("daily_scheduled", count_to_update, "Success", message)
+            
+            return {"success": True, "updated_count": count_to_update, "message": message}
+        else:
+            message = "Daily lease status update completed. No leases found to update."
+            frappe.logger().info(message)
+            create_update_log("daily_scheduled", 0, "Success", message)
+            return {"success": True, "updated_count": 0, "message": message}
+            
+    except Exception as e:
+        error_message = f"Error in daily lease status update: {str(e)}"
+        frappe.logger().error(error_message)
+        
+        # Log error to database
+        create_update_log("daily_scheduled", 0, "Error", error_message)
+        
+        # Don't raise exception - let scheduler continue with other jobs
+        return {"success": False, "error": error_message}
+
+def create_update_log(update_type, count, status, message):
+    """Create a log entry for the update"""
+    try:
+        log_doc = frappe.get_doc({
+            "doctype": "Lease Update Log",
+            "update_type": update_type,
+            "updated_count": count,
+            "status": status,
+            "message": message,
+            "update_date": nowdate(),
+            "created_at": now_datetime()
+        })
+        log_doc.insert(ignore_permissions=True)
+        frappe.db.commit()
+    except Exception as e:
+        # Don't let logging errors break the main process
+        frappe.logger().error(f"Failed to create update log: {str(e)}")
+
 
 class LeaseManagement(Document):
 	# pass
