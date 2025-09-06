@@ -44,6 +44,7 @@ app_license = "mit"
 page_js={"account-dashboard":"public/js/account-dashboard.js"}
 app_include_js=["/assets/lms/js/account-dashboard.js"]
 
+
 # scheduler_events = {
 #     "daily": [
 #         "lms.lease_management_system.doctype.lease_management.lease_management.daily_lease_status_update"

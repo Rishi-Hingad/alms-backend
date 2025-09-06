@@ -70,6 +70,8 @@ $(document).ready(function(){
 
     // checkAndUpdate();
 })
+
+
 // $(document).ready(function() {
     
 //     function checkAndExecute() {

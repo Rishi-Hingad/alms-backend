@@ -1164,6 +1164,9 @@ def has_expired_agreements():
 # 	else:
 # 		frappe.logger().info(f"Skipping lease update for {user}, no required role")
 
+
+
+# ===================================================================================
 class LeaseManagement(Document):
 	# pass
 	def validate(self):
