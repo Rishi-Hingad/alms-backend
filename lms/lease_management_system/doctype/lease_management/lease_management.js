@@ -25,6 +25,49 @@ frappe.ui.form.on('Invoice Documents',{
     to_date: function(frm, cdt, cdn) {
         validate_from_to_dates(frm, cdt, cdn);
     },
+
+    // attachments: function(frm, cdt, cdn) {
+    // const row = locals[cdt][cdn];
+
+    // // Fetch existing attachment data if already added (optional enhancement)
+    // let existing_attachments = row._invoice_attachments || [];
+
+    // const dialog = new frappe.ui.Dialog({
+    //     title: 'Invoice Attachments',
+    //     size: 'large',
+    //     fields: [
+    //         {
+    //         fieldname: 'invoice_attachments',
+    //         label: 'Attachments',
+    //         fieldtype: 'Table',
+    //         cannot_add_rows: false,
+    //         options:'Invoice Attachments',
+    //         // in_place_edit: false,
+    //         fields: [
+    //             {
+    //             fieldname: 'attachment',
+    //             fieldtype: 'Attach',
+    //             label: 'Attachment',
+    //             reqd: 1
+    //             }
+    //         ],
+    //         data: existing_attachments
+    //         }
+    //     ],
+    //     primary_action_label: 'Save',
+    //     primary_action(values) {
+    //         // Save data temporarily in the row (in-memory only)
+    //         frappe.model.set_value(cdt, cdn, 'multiple_invoice_attachments', values.invoice_attachments);
+
+    //         // Optionally, show a message or count
+    //         frappe.msgprint(`${values.invoice_attachments.length} attachment(s) saved for this invoice.`);
+    //         dialog.hide();
+    //     }
+    //     });
+
+    //     dialog.show();
+    // }
+    
     // refresh:function(frm,cdt,cdn){
     //     let row=locals[cdt][cdn];
     //     console.log(row.is_mismatch);

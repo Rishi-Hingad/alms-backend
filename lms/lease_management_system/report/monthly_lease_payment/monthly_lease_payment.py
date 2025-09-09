@@ -21,7 +21,7 @@ def execute(filters=None):
         {"label": "Month Start Date", "fieldname": "month_start_date", "fieldtype": "Date", "width": 150},
         {"label": "Month End Date", "fieldname": "month_end_date", "fieldtype": "Date", "width": 150},
         {"label": "Total Rent", "fieldname": "total_rent", "fieldtype": "Currency", "width": 200,"precision":4},
-        {"label": "Payment Status", "fieldname": "payement_status", "fieldtype": "Data", "width": 200}
+        {"label": "Payment Status", "fieldname": "payment_status", "fieldtype": "Data", "width": 200}
     ]
 
     lease_status="Pending"
@@ -36,7 +36,7 @@ def execute(filters=None):
         order_by="name asc",
         fields=["name"]
     )
-    # month_year="2025-08"
+    # month_year="2025-03"
     for lease in leases:
         lease_status=""
         lease_doc=frappe.get_doc("Lease Management",lease.name)
@@ -56,26 +56,49 @@ def execute(filters=None):
             
         rent=timeline.get(month_year,0)
         if len(lease_doc.invoice_details)>0:
-            for r in lease_doc.invoice_details:
-                # inv_date=r.invoice_date
-                for i in range(len(inv_dates)):
-                    # if inv_dates[i].strftime("%Y-%m")==month_year:
-                    if inv_dates[i].strftime("%Y-%m") and (r.to_date.strftime("%Y-%m")==month_year or r.from_date.strftime("%Y-%m")==month_year):
-                        lease_status="Paid on "+str(inv_dates[i])
-                        continue
+            for child in lease_doc.invoice_details:
+                from_date = child.from_date
+                to_date = child.to_date
+                date_ranges=[]
+                current=from_date
+                while current<=to_date:
+                    start_date=current
+                    _,last_day=monthrange(current.year, current.month)
+                    end_date=datetime(current.year, current.month, last_day)
+
+                    if end_date.date()>to_date:
+                        end_date=to_date
+
+                    # date_ranges.append(start_date.strftime("%Y-%m-%d"))
+                    # date_ranges.append(end_date.strftime("%Y-%m-%d"))
+                    if ms_date.strftime("%Y-%m-%d") == start_date.strftime("%Y-%m-%d") or me_date.strftime("%Y-%m-%d") == end_date.strftime("%Y-%m-%d"):
+                        date_ranges.append([start_date.strftime("%Y-%m-%d"),end_date.strftime("%Y-%m-%d")])
+                    
+                    if current.month==12:
+                        current=current.replace(year=current.year+1,month=1,day=1)
                     else:
-                        # lease_status=""
-                        if today.date()>=me_date:
-                            lease_status="Due"
-                        else:
-                            lease_status="Pending"  
+                        current=current.replace(month=current.month+1,day=1)
+                
+                # frappe.msgprint(lease.name+"==="+str(date_ranges)+" len="+str(len(date_ranges)))
+                if len(date_ranges)>0:
+                    for i in range(len(date_ranges)):
+                        rsdate,redate=date_ranges[i]
+                        if ms_date.strftime("%Y-%m-%d") == rsdate or me_date.strftime("%Y-%m-%d") == redate:
+                            # frappe.msgprint("Yes"+" "+child.payment_status+" || "+str())+" || "+str(me_date.strftime("%Y-%m-%d"))+" ** "+str(date_ranges[i]))
+                            lease_status=child.payment_status
+                            break
+                 
         else:
             if today.date()>=me_date:
                 lease_status="Due"
             else:
                 lease_status="Pending"
-                
-        data.append({"lease":lease.name,"month_start_date": ms_date,"month_end_date": me_date,"total_rent": rent,"payement_status":lease_status})
-    
+
+        if rent is not None and lease_status=="":
+            lease_status="Due"
+           
+
+        data.append({"lease":lease.name,"month_start_date": ms_date,"month_end_date": me_date,"total_rent": rent,"payment_status":lease_status})
+        
     return columns,data
 

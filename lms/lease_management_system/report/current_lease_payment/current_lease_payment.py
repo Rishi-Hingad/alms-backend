@@ -51,9 +51,13 @@ def execute(filters=None):
         for r in lease_doc.invoice_details:
             # inv_date=r.invoice_date
             for i in range(len(inv_dates)):
-                if inv_dates[i].strftime("%Y-%m") and (r.to_date.strftime("%Y-%m")==current_month or r.from_date.strftime("%Y-%m")==current_month):
-                    lease_status="Paid on "+str(inv_dates[i])
+                if r.payment_status=="Paid":
+                    # lease_status="Paid on "+str(inv_dates[i])
+                    lease_status="Paid"
                     break
+                # if inv_dates[i].strftime("%Y-%m") and (r.to_date.strftime("%Y-%m")==current_month or r.from_date.strftime("%Y-%m")==current_month):
+                #     lease_status="Paid on "+str(inv_dates[i])
+                #     break
             # if inv_date.strftime("%Y-%m")==current_month:
             #     lease_status="Paid on "+str(inv_date)
             else:

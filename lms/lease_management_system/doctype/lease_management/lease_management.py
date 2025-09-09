@@ -1730,10 +1730,46 @@ class LeaseManagement(Document):
 
 	def validate_invoice_details(self):
 		rent_timeline=self.get_lease_rent_timeline()
+		monthly_data=self.get_lease_monthly_data()
 		for row in self.invoice_details:
 			from_date = datetime.strptime(row.from_date, "%Y-%m-%d")
-			inv_month=from_date.strftime("%Y-%m")
-			expected_rent=rent_timeline.get(inv_month)
+			to_date = datetime.strptime(row.to_date, "%Y-%m-%d")
+			date_ranges=[]
+			exp_rent=[]
+			current=from_date
+			while current<=to_date:
+				start_date=current
+				_,last_day=monthrange(current.year, current.month)
+				end_date=datetime(current.year, current.month, last_day)
+
+				if end_date>to_date:
+					end_date=to_date
+
+				date_ranges.append([start_date,end_date])
+
+				if current.month==12:
+					current=current.replace(year=current.year+1,month=1,day=1)
+				else:
+					current=current.replace(month=current.month+1,day=1)
+			
+			for i in range(len(date_ranges)):
+				dates=date_ranges[i]
+				start_date=dates[0]
+				end_date=dates[1]
+				inv_month=start_date.strftime("%Y-%m")
+				lease_data=monthly_data.get(inv_month,0)
+				ms_date=lease_data[0]
+				me_date=lease_data[1]
+				# frappe.msgprint(str(ms_date)+"-"+str(me_date)+" "+str(start_date.strftime("%Y-%m-%d"))+"\\"+str(end_date.strftime("%Y-%m-%d")))
+				# if start_date.strftime("%Y-%m-%d")==ms_date and end_date.strftime("%Y-%m-%d")==me_date:
+				exp_rent.append(rent_timeline.get(inv_month))
+				
+			expected_rent=0.0
+			for i in range(len(exp_rent)):
+				expected_rent+=exp_rent[i]
+			# frappe.msgprint(str(expected_rent))
+			# inv_month=from_date.strftime("%Y-%m")
+			# expected_rent=rent_timeline.get(inv_month)
 
 			if expected_rent is None:
 				row.is_mismatch=1
@@ -1747,12 +1783,13 @@ class LeaseManagement(Document):
 					row.is_mismatch=1
 				else:
 					row.is_mismatch=0
-			# else:
-			# 	if round(actual_amount,3) != round(expected_rent,3):
-			# 		row.is_mismatch=1
-			# 		# frappe.msgprint("row is_mismatch at row no. "+str(row.idx)+" "+str(round(expected_rent,3))+" /"+str(row.amount))
-			# 	else:
-			# 		row.is_mismatch=0
+
+			else:
+				if round(actual_amount,3) != round(expected_rent,3):
+					row.is_mismatch=1
+					# frappe.msgprint("row is_mismatch at row no. "+str(row.idx)+" "+str(round(expected_rent,3))+" /"+str(row.amount))
+				else:
+					row.is_mismatch=0
 			
 def get_permission_query_conditions(user):
 	if not user:

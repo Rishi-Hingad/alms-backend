@@ -13,7 +13,9 @@
   "with_tax",
   "tax",
   "invoice_attachment",
-  "is_mismatch"
+  "is_mismatch",
+  "attachments",
+  "payment_status"
  ],
  "fields": [
   {
@@ -70,13 +72,25 @@
    "fieldname": "tax",
    "fieldtype": "Percent",
    "label": "Tax"
+  },
+  {
+   "fieldname": "attachments",
+   "fieldtype": "Button",
+   "label": "Attachments"
+  },
+  {
+   "default": "Unpaid",
+   "fieldname": "payment_status",
+   "fieldtype": "Select",
+   "label": "Payment Status",
+   "options": "Unpaid\nPaid"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2025-09-05 15:48:56.012124",
+ "modified": "2025-09-08 14:51:34.568566",
  "modified_by": "Administrator",
  "module": "Lease Management System",
  "name": "Invoice Documents",
