@@ -13,7 +13,7 @@ def execute(filters=None):
         {"label": "Month Start Date", "fieldname": "month_start_date", "fieldtype": "Date", "width": 150},
         {"label": "Month End Date", "fieldname": "month_end_date", "fieldtype": "Date", "width": 150},
         {"label": "Total Rent", "fieldname": "total_rent", "fieldtype": "Currency", "width": 200,"precision":4},
-        {"label": "Payment Status", "fieldname": "payement_status", "fieldtype": "Data", "width": 200}
+        {"label": "Payment Status", "fieldname": "payment_status", "fieldtype": "Data", "width": 200}
     ]
 
     today = frappe.utils.nowdate()
@@ -63,7 +63,7 @@ def execute(filters=None):
             else:
                 if today.date()>me_date:
                     lease_status="Was Due on "+str(me_date)
-        data.append({"lease":lease.name,"month_start_date": ms_date,"month_end_date": me_date,"total_rent": rent,"payement_status":lease_status})
+        data.append({"lease":lease.name,"month_start_date": ms_date,"month_end_date": me_date,"total_rent": rent,"payment_status":lease_status})
         lease_status="Pending"
     
     return columns,data
