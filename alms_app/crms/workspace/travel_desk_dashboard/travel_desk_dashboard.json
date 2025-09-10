@@ -5,12 +5,16 @@
    "label": "Vehicle Status"
   }
  ],
- "content": "[{\"id\":\"_y5fr7PxFA\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Travel Desk Dashboard</span>\",\"col\":12}},{\"id\":\"00jco2QpwO\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Total No. of Vehicles\",\"col\":4}},{\"id\":\"YwyhFdhZeK\",\"type\":\"custom_block\",\"data\":{\"custom_block_name\":\"TDD Expiration Details\",\"col\":12}},{\"id\":\"YWPxUN0mdQ\",\"type\":\"quick_list\",\"data\":{\"quick_list_name\":\"Car Indent Form\",\"col\":6}},{\"id\":\"lzjbJx8Wv6\",\"type\":\"chart\",\"data\":{\"chart_name\":\"Vehicle Status\",\"col\":6}}]",
+ "content": "[{\"id\":\"_y5fr7PxFA\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Travel Desk Dashboard</span>\",\"col\":12}},{\"id\":\"00jco2QpwO\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Total No. of Vehicles\",\"col\":4}},{\"id\":\"1YN3s6li62\",\"type\":\"custom_block\",\"data\":{\"custom_block_name\":\"Vehicle Details View\",\"col\":12}},{\"id\":\"YWPxUN0mdQ\",\"type\":\"quick_list\",\"data\":{\"quick_list_name\":\"Car Indent Form\",\"col\":6}},{\"id\":\"lzjbJx8Wv6\",\"type\":\"chart\",\"data\":{\"chart_name\":\"Vehicle Status\",\"col\":6}},{\"id\":\"YwyhFdhZeK\",\"type\":\"custom_block\",\"data\":{\"custom_block_name\":\"TDD Expiration Details\",\"col\":12}}]",
  "creation": "2025-08-08 09:58:15.158253",
  "custom_blocks": [
   {
    "custom_block_name": "TDD Expiration Details",
    "label": "TDD Expiration Details"
+  },
+  {
+   "custom_block_name": "Vehicle Details View",
+   "label": "Vehicle Details View"
   }
  ],
  "docstatus": 0,
@@ -23,7 +27,7 @@
  "is_hidden": 0,
  "label": "Travel Desk Dashboard",
  "links": [],
- "modified": "2025-08-08 09:58:15.158253",
+ "modified": "2025-09-10 09:02:26.408961",
  "modified_by": "Administrator",
  "module": "CRMS",
  "name": "Travel Desk Dashboard",
