@@ -2,6 +2,7 @@
 # For license information, please see license.txt
 
 import frappe,pdb
+from frappe import _
 from frappe.model.document import Document
 from datetime import datetime,timedelta,time
 from calendar import monthrange
@@ -1165,7 +1166,54 @@ def has_expired_agreements():
 # 		frappe.logger().info(f"Skipping lease update for {user}, no required role")
 
 
+@frappe.whitelist()
+def delete_invoice_attachment(parent_doctype, parent_name, attachment_name, delete_file=False):
+    """
+    Deletes a child row Invoice Attachment (attachment_name) under parent_name.
+    If delete_file=True and we can map file_docname, also delete the File doc.
+    """
+    # simple guards
+    if not frappe.has_permission(parent_doctype, ptype='write', doc=parent_name):
+        frappe.throw(_("Not permitted"))
 
+    # delete the child row doc (Invoice Attachment)
+    try:
+        # grab file_docname before deleting
+        file_docname = frappe.db.get_value('Invoice Attachments', attachment_name, 'file_docname')
+        frappe.delete_doc('Invoice Attachments', attachment_name, force=True)
+        if delete_file and file_docname:
+            # ensure File exists and is safe to delete
+            try:
+                frappe.delete_doc('File', file_docname, force=True)
+            except Exception:
+                # swallow or log
+                frappe.log_error(f"Could not delete File {file_docname}")
+        return "ok"
+    except Exception as e:
+        frappe.log_error(frappe.get_traceback())
+        frappe.throw(_("Could not delete attachment: {0}").format(e))
+
+# @frappe.whitelist()
+# def get_invoice_attachments(filters: dict):
+#     # filters = frappe.parse_json(filters)
+#     return frappe.get_all(
+#         "Invoice Attachments",
+#         filters=filters,
+#         fields=["name", "file", "uploaded_by", "uploaded_on"]
+#     )
+@frappe.whitelist()
+def get_invoice_attachments(filters=None):
+    if not filters:
+        return []
+
+    # always parse, since frappe.call sends args as strings
+    filters = frappe.parse_json(filters)
+
+    return frappe.get_all(
+        "Invoice Attachments",
+        filters=filters,
+        fields=["name", "file", "uploaded_by", "uploaded_on"]
+    )
 # ===================================================================================
 class LeaseManagement(Document):
 	# pass
@@ -1185,6 +1233,17 @@ class LeaseManagement(Document):
 			# 	frappe.throw("Rate Field Required in Escalation")
 			# if row.escalation_type=='Per Annum and Fixed Amount' and not row.fixed_amount:
 			# 	frappe.throw("Fixed Amount Field Required in Escalation")
+		invoice_row_names = [r.custom_row_id for r in self.invoice_details]
+		for a in list(self.invoice_attachments):
+			if a.invoice_row not in invoice_row_names:
+				# remove it
+				frappe.db.delete('Invoice Attachments', a.name)
+
+		for idx, row in enumerate(self.invoice_details, start=1):
+			if row.from_date and row.to_date:
+				from_str = frappe.utils.formatdate(row.from_date, "dd-MM-yyyy")
+				to_str = frappe.utils.formatdate(row.to_date, "dd-MM-yyyy")
+				row.custom_row_id = f"row-{idx}-{from_str}-to-{to_str}"
 
 	def before_insert(self):
     	# On new record creation, populate invoice_details

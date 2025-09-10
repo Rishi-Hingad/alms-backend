@@ -9,13 +9,11 @@
   "attachment"
  ],
  "fields": [
-  {
-   "fieldname": "attachment",
-   "fieldtype": "Attach",
-   "in_list_view": 1,
-   "label": "Attachment",
-   "reqd": 1
-  }
+    { "fieldname": "file", "fieldtype": "Attach", "label": "File", "reqd": 1 },
+    { "fieldname": "file_docname", "fieldtype": "Data", "label": "File DocName", "hidden": 1 },
+    { "fieldname": "invoice_row", "fieldtype": "Data", "label": "Invoice Row Name", "read_only": 1 },
+    { "fieldname": "uploaded_by", "fieldtype": "Link", "options": "User", "label": "Uploaded By", "read_only": 1 },
+    { "fieldname": "uploaded_on", "fieldtype": "Datetime", "label": "Uploaded On", "read_only": 1 }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,

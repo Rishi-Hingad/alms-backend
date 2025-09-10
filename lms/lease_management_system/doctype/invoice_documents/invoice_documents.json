@@ -14,8 +14,9 @@
   "tax",
   "invoice_attachment",
   "is_mismatch",
-  "attachments",
-  "payment_status"
+  "payment_status",
+  "manage_attachments",
+  "custom_row_id"
  ],
  "fields": [
   {
@@ -74,23 +75,30 @@
    "label": "Tax"
   },
   {
-   "fieldname": "attachments",
-   "fieldtype": "Button",
-   "label": "Attachments"
-  },
-  {
    "default": "Unpaid",
    "fieldname": "payment_status",
    "fieldtype": "Select",
    "label": "Payment Status",
    "options": "Unpaid\nPaid"
+  },
+  {
+   "fieldname": "manage_attachments",
+   "fieldtype": "Button",
+   "label": "Attachments"
+  },
+  {
+   "fieldname": "custom_row_id",
+   "fieldtype": "Data",
+   "label": "Row Id",
+   "read_only": 1,
+   "unique": 1
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2025-09-08 14:51:34.568566",
+ "modified": "2025-09-10 16:01:33.765640",
  "modified_by": "Administrator",
  "module": "Lease Management System",
  "name": "Invoice Documents",

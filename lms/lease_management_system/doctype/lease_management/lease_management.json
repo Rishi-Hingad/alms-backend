@@ -23,7 +23,8 @@
   "agreement",
   "section_break_ewvt",
   "escalation",
-  "invoice_details"
+  "invoice_details",
+  "invoice_attachments"
  ],
  "fields": [
   {
@@ -154,12 +155,18 @@
    "fieldtype": "Table",
    "label": "Invoice Details",
    "options": "Invoice Documents"
+  },
+  {
+   "fieldname": "invoice_attachments",
+   "fieldtype": "Table",
+   "label": "Invoice Attachments",
+   "options": "Invoice Attachments"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-09-02 14:48:59.944562",
+ "modified": "2025-09-10 15:37:28.187907",
  "modified_by": "Administrator",
  "module": "Lease Management System",
  "name": "Lease Management",

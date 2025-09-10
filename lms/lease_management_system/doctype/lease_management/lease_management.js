@@ -26,6 +26,212 @@ frappe.ui.form.on('Invoice Documents',{
         validate_from_to_dates(frm, cdt, cdn);
     },
 
+     manage_attachments: function(frm, cdt, cdn) {
+        if (frm.is_new()) {
+        frappe.msgprint(__('Save the document before adding attachments.'));
+        return;
+        }
+
+        const row = locals[cdt][cdn];
+
+        // gather current attachments for this invoice-row
+        const att = (frm.doc.invoice_attachments || []).filter(a => a.invoice_row === row.custom_row_id);
+
+        // Dialog to show attachments and upload new ones
+        const dialog = new frappe.ui.Dialog({
+        // title: `Attachments for ${row.month || row.from_date || row.name}`,
+        title: `Attachments for ${row.from_date} to ${row.to_date}`,
+        fields: [
+            { fieldtype: 'HTML', fieldname: 'attachment_list' }
+        ],
+        primary_action_label: 'Upload file(s)',
+        primary_action: function() {
+            // Use built-in upload dialog (multiple files)
+        //     frappe.ui.get_upload_dialog({
+        //     multi: true,
+        //     // attach_to_doctype & docname can help Frappe link the uploaded File to parent,
+        //     // but if parent is saved we can attach to parent doctype/docname for convenience:
+        //     doctype: frm.doctype,
+        //     docname: frm.doc.name,
+        //     callback: (files) => {
+        //         // files is array of file objects returned by upload dialog
+        //         files.forEach(f => {
+        //         const new_child = frm.add_child('invoice_attachments');
+        //         new_child.file = f.file_url || f.file_name || f.url;
+        //         new_child.file_docname = f.name; // this is the File docname
+        //         new_child.invoice_row = row.name;
+        //         new_child.uploaded_by = frappe.session.user;
+        //         new_child.uploaded_on = frappe.datetime.now_datetime();
+        //         });
+        //         frm.refresh_field('invoice_attachments');
+        //         dialog.hide();
+        //     }
+        //     });
+        // }
+        // });
+            new frappe.ui.FileUploader({
+            allow_multiple: 1,
+            doctype: frm.doctype,
+            docname: frm.doc.name,
+            folder: 'Home/Attachments',
+            on_success: (file) => {
+                // file is a single File doc
+                const new_child = frm.add_child('invoice_attachments');
+                new_child.file = file.file_url;
+                new_child.file_docname = file.name;
+                new_child.invoice_row = row.custom_row_id;
+                new_child.uploaded_by = frappe.session.user;
+                new_child.uploaded_on = frappe.datetime.now_datetime();
+
+                frm.refresh_field('invoice_attachments');
+                dialog.hide();
+            },
+            onerror: (err) => {
+                frappe.msgprint(__('Upload failed: {0}', [err]));
+            }
+            });
+        }
+        });
+
+        dialog.show();
+
+        frappe.call({
+            method: "lms.lease_management_system.doctype.lease_management.lease_management.get_invoice_attachments",
+            args: {
+                filters: {
+                    parent: frm.doc.name,
+                    parenttype: frm.doctype,
+                    invoice_row: row.custom_row_id
+                }
+            },
+            callback: function(r) {
+                // console.log("Fetched attachments:", r.message);
+                const $wrapper = dialog.fields_dict.attachment_list.$wrapper.empty();
+                const attachments = r.message || [];
+
+                if (!attachments.length) {
+                    $wrapper.html('<div class="text-muted">No attachments yet</div>');
+                    return;
+                }
+
+                // const $list = $('<ul class="list-unstyled"></ul>');
+                // attachments.forEach(a => {
+                //     // const link = `<a href="${a.file}" target="_blank">${frappe.utils.get_basename(a.file)}</a>`;
+                //     // Use JS split instead of frappe.utils.get_basename
+                //     const filename = a.file.split('/').pop();
+                //     const link = `<a href="${a.file}" target="_blank">${filename}</a>`;
+                //     const meta = `<span class="text-muted small"> (by ${a.uploaded_by}, ${frappe.datetime.str_to_user(a.uploaded_on)})</span>`;
+                //     const remove_button = `<a class="text-muted" style="margin-left:10px;cursor:pointer;" data-name="${a.name}">Delete</a>`;
+                //     $list.append(`<li>${link} ${meta} ${remove_button}</li>`);
+                // });
+                // $wrapper.append($list);
+
+                // Create a table with bootstrap classes
+                const $table = $(`
+                    <table class="table table-bordered table-sm">
+                        <thead>
+                            <tr>
+                                <th>File</th>
+                                <th>Uploaded By</th>
+                                <th>Uploaded On</th>
+                                <th style="width: 80px;">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                `);
+
+                attachments.forEach(a => {
+                    const filename = a.file.split('/').pop();
+                    const row = `
+                        <tr>
+                            <td><a href="${a.file}" target="_blank">${filename}</a></td>
+                            <td>${a.uploaded_by}</td>
+                            <td>${frappe.datetime.str_to_user(a.uploaded_on)}</td>
+                            <td>
+                                <a class="text-danger" style="cursor:pointer;" data-name="${a.name}">
+                                    Delete
+                                </a>
+                            </td>
+                        </tr>
+                    `;
+                    $table.find("tbody").append(row);
+                });
+
+                $wrapper.append($table);
+
+                // Hook delete clicks
+                $wrapper.on('click', 'a[data-name]', function() {
+                    const name = $(this).attr('data-name');
+                    frappe.confirm(__('Delete this attachment?'), () => {
+                        frappe.call({
+                            method: 'lms.lease_management_system.doctype.lease_management.lease_management.delete_invoice_attachment',
+                            args: {
+                                parent_doctype: frm.doctype,
+                                parent_name: frm.doc.name,
+                                attachment_name: name,
+                                delete_file: false
+                            },
+                            callback: function(r) {
+                                if (r.message === 'ok') {
+                                    frm.reload_doc(); // reload whole doc so UI is in sync
+                                    dialog.hide();
+                                }
+                            }
+                        });
+                    });
+                });
+            }
+        });
+
+        // // Render existing attachments inside the dialog
+        // const $wrapper = dialog.fields_dict.attachment_list.$wrapper.empty();
+
+        // if (!att.length) {
+        // $wrapper.html('<div class="text-muted">No attachments yet</div>');
+        // return;
+        // }
+
+        // const $list = $('<ul class="list-unstyled"></ul>');
+        // att.forEach(a => {
+        // // show link + small delete action
+        // const link = `<a href="${a.file}" target="_blank">${frappe.utils.get_basename(a.file)}</a>`;
+        // const remove_button = `<a class="text-muted" style="margin-left:10px;cursor:pointer;" data-name="${a.custom_row_id}">Delete</a>`;
+        // $list.append(`<li>${link} ${remove_button}</li>`);
+        // });
+        // $wrapper.append($list);
+
+        // // hook delete clicks
+        // $wrapper.on('click', 'a[data-name]', function() {
+        // const name = $(this).attr('data-name');
+        // frappe.confirm(
+        //     __('Delete this attachment?'),
+        //     () => {
+        //     frappe.call({
+        //         method: 'lms.lease_management_system.doctype.lease_management.lease_management.delete_invoice_attachment',
+        //         args: {
+        //         parent_doctype: frm.doctype,
+        //         parent_name: frm.doc.name,
+        //         attachment_name: name,
+        //         delete_file: false
+        //         },
+        //         callback: function(r) {
+        //         if (r.message === 'ok') {
+        //             // remove local child row
+        //             frm.doc.invoice_attachments = (frm.doc.invoice_attachments || []).filter(x => x.name !== name);
+        //             frm.refresh_field('invoice_attachments');
+        //             dialog.hide();
+        //             frm.reload_doc(); // optional: refresh the document to get latest state from server
+        //         }
+        //         }
+        //     });
+        //     }
+        // );
+        // });
+    }
+
+
+
     // attachments: function(frm, cdt, cdn) {
     // const row = locals[cdt][cdn];
 
