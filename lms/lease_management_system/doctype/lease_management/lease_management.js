@@ -40,7 +40,9 @@ frappe.ui.form.on('Invoice Documents',{
         // Dialog to show attachments and upload new ones
         const dialog = new frappe.ui.Dialog({
         // title: `Attachments for ${row.month || row.from_date || row.name}`,
-        title: `Attachments for ${row.from_date} to ${row.to_date}`,
+        // title: `Attachments for ${row.from_date} to ${row.to_date}`,
+        title: `Attachments for ${frappe.datetime.str_to_user(row.from_date)} to ${frappe.datetime.str_to_user(row.to_date)}`,
+
         fields: [
             { fieldtype: 'HTML', fieldname: 'attachment_list' }
         ],
@@ -127,18 +129,35 @@ frappe.ui.form.on('Invoice Documents',{
                 // $wrapper.append($list);
 
                 // Create a table with bootstrap classes
+                // const $table = $(`
+                //     <div style="overflow-x:auto;">
+                //         <table class="table table-bordered table-sm">
+                //             <thead>
+                //                 <tr>
+                //                     <th>File</th>
+                //                     <th>Uploaded By</th>
+                //                     <th>Uploaded On</th>
+                //                     <th style="width: 80px;">Action</th>
+                //                 </tr>
+                //             </thead>
+                //             <tbody></tbody>
+                //         </table>
+                //     </div>
+                // `);
                 const $table = $(`
-                    <table class="table table-bordered table-sm">
-                        <thead>
-                            <tr>
-                                <th>File</th>
-                                <th>Uploaded By</th>
-                                <th>Uploaded On</th>
-                                <th style="width: 80px;">Action</th>
-                            </tr>
-                        </thead>
-                        <tbody></tbody>
-                    </table>
+                    <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
+                        <table class="table  table-hover table-bordered align-middle">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th style="min-width: 200px;">File</th>
+                                    <th style="min-width: 150px;">Uploaded By</th>
+                                    <th style="min-width: 160px;">Uploaded On</th>
+                                    <th style="width: 100px; text-align: center;">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
                 `);
 
                 attachments.forEach(a => {
@@ -148,13 +167,25 @@ frappe.ui.form.on('Invoice Documents',{
                             <td><a href="${a.file}" target="_blank">${filename}</a></td>
                             <td>${a.uploaded_by}</td>
                             <td>${frappe.datetime.str_to_user(a.uploaded_on)}</td>
-                            <td>
-                                <a class="text-danger" style="cursor:pointer;" data-name="${a.name}">
-                                    Delete
+                            <td class="text-center">
+                                <a class="text-danger" style="cursor:pointer;" data-name="${a.name}" title="Delete">
+                                    <i class="fa fa-trash"></i>
                                 </a>
                             </td>
                         </tr>
                     `;
+                    // const row = `
+                    //     <tr>
+                    //         <td><a href="${a.file}" target="_blank">${filename}</a></td>
+                    //         <td>${a.uploaded_by}</td>
+                    //         <td>${frappe.datetime.str_to_user(a.uploaded_on)}</td>
+                    //         <td class="text-center">
+                    //             <a class="text-danger fw-bold" style="cursor:pointer;" data-name="${a.name}">
+                    //                 Delete
+                    //             </a>
+                    //         </td>
+                    //     </tr>
+                    // `;
                     $table.find("tbody").append(row);
                 });
 

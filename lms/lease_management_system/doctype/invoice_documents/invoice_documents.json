@@ -13,9 +13,9 @@
   "with_tax",
   "tax",
   "invoice_attachment",
+  "manage_attachments",
   "is_mismatch",
   "payment_status",
-  "manage_attachments",
   "custom_row_id"
  ],
  "fields": [
@@ -98,7 +98,7 @@
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2025-09-10 16:01:33.765640",
+ "modified": "2025-09-11 09:53:18.283653",
  "modified_by": "Administrator",
  "module": "Lease Management System",
  "name": "Invoice Documents",
