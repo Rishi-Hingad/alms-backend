@@ -12,7 +12,6 @@
   "amount",
   "with_tax",
   "tax",
-  "invoice_attachment",
   "manage_attachments",
   "is_mismatch",
   "payment_status",
@@ -25,14 +24,6 @@
    "in_list_view": 1,
    "label": "Month",
    "options": "\nJanuary\nFebruary\nMarch\nApril\nMay\nJune\nJuly\nAugust\nSeptember\nOctober\nNovember\nDecember"
-  },
-  {
-   "allow_on_submit": 1,
-   "fieldname": "invoice_attachment",
-   "fieldtype": "Attach",
-   "in_list_view": 1,
-   "label": "Invoice Attachment",
-   "reqd": 1
   },
   {
    "fieldname": "from_date",
@@ -99,7 +90,7 @@
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2025-09-13 11:36:44.960065",
+ "modified": "2025-09-15 12:06:03.397371",
  "modified_by": "Administrator",
  "module": "Lease Management System",
  "name": "Invoice Documents",

@@ -42,12 +42,12 @@ def execute(filters=None):
         lease_doc=frappe.get_doc("Lease Management",lease.name)
         timeline=lease_doc.get_lease_rent_timeline()
         mdata=lease_doc.get_lease_monthly_data()
-        inv_attachment=lease_doc.get_invoice_attachments_with_dates()
+        # inv_attachment=lease_doc.get_invoice_attachments_with_dates()
         lease_data=mdata.get(month_year,0)
-        inv_dates=[]
-        for i in range(len(inv_attachment)):
-            record=inv_attachment[i]
-            inv_dates.append(record["uploaded_on"])
+        # inv_dates=[]
+        # for i in range(len(inv_attachment)):
+        #     record=inv_attachment[i]
+        #     inv_dates.append(record["uploaded_on"])
         if not lease_data and not isinstance(lease_data,list):
             continue
         else:

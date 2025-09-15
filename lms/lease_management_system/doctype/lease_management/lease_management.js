@@ -19,11 +19,23 @@ frappe.ui.form.on('Escalation',{
     }
 });
 frappe.ui.form.on('Invoice Documents',{
+    // invoice_details_on_form_rendered: function(frm, grid_row) {
+    //     // Make sure the button stays visible and blue
+    //     setTimeout(() => {
+    //         grid_row.wrapper
+    //             .find('button[data-fieldname="attachments"]')
+    //             .removeClass('btn-default')
+    //             .addClass('btn-primary')
+    //             .css('display', 'inline-block');  // ensure it's visible
+    //     }, 10);
+    // },
     from_date: function(frm, cdt, cdn) {
         validate_from_to_dates(frm, cdt, cdn);
+        update_custom_row_id(frm, cdt, cdn);
     },
     to_date: function(frm, cdt, cdn) {
         validate_from_to_dates(frm, cdt, cdn);
+        update_custom_row_id(frm, cdt, cdn);
     },
     manage_attachments: function(frm, cdt, cdn) {
         if (frm.is_new()) {
@@ -465,6 +477,21 @@ frappe.ui.form.on("Lease Management", {
         //         frappe.validated = false;  // prevent save
         //     }
         // }
+        const invoice_rows = frm.doc.invoice_details || [];
+        const attachments = frm.doc.invoice_attachments || [];
+
+        for (let i = 0; i < invoice_rows.length; i++) {
+            const row = invoice_rows[i];
+
+            // Match based on custom_row_id (mapped via your button logic)
+            const matching_attachments = attachments.filter(att => att.invoice_row === row.custom_row_id);
+
+            if (matching_attachments.length === 0) {
+                frappe.throw(
+                    `Please add at least one attachment for the invoice row ${i + 1} (${frappe.datetime.str_to_user(row.from_date)} - ${frappe.datetime.str_to_user(row.to_date)}).`
+                );
+            }
+        }
 
         let escalation = frm.doc.escalation || [];
         if (escalation.length === 0) return;
@@ -586,6 +613,23 @@ function auto_set_start_end_date_escalation(frm,cdt,cdn){
     //     frappe.model.set_value(cdt, cdn, 'start_date', agreement_start);
     //     frappe.model.set_value(cdt, cdn, 'end_date', agreement_end);
     // }
+}
+
+function update_custom_row_id(frm, cdt, cdn) {
+    let row = locals[cdt][cdn];
+
+    if (row.from_date && row.to_date) {
+        let from_date = frappe.datetime.str_to_user(row.from_date);  // dd-mm-yyyy
+        let to_date = frappe.datetime.str_to_user(row.to_date);
+
+        // Generate a temporary unique ID using timestamp or random if self.name is not available yet
+        let parent_name = frm.doc.name || frm.doc.__unsaved || "TEMP";
+
+        let idx = row.idx || 0;
+
+        row.custom_row_id = `${parent_name}-row-${idx}-${from_date}-to-${to_date}`;
+        frm.refresh_field("invoice_details");
+    }
 }
 
 function validate_escalation_dates(frm, cdt, cdn){
@@ -883,12 +927,12 @@ window.open_invoice_dialog = function () {
                 fieldtype: 'Float',
                 reqd: 1
             },
-            {
-                label: 'Invoice Attachment',
-                fieldname: 'invoice_attachment',
-                fieldtype: 'Attach',
-                reqd: 1
-            },
+            // {
+            //     label: 'Invoice Attachment',
+            //     fieldname: 'invoice_attachment',
+            //     fieldtype: 'Attach',
+            //     reqd: 1
+            // },
             {
                 label: "Attachments",
                 fieldname: "manage_attachments",
@@ -916,11 +960,18 @@ window.open_invoice_dialog = function () {
         primary_action(values) {
             if (!lease_id) return;
 
+            // ✅ Check if at least one attachment is added
+            if (extra_attachments.length === 0) {
+                frappe.msgprint(__('Please upload at least one attachment before adding invoice.'));
+                return;
+            }
+
             // ✅ Date validation
             const from_date = frappe.datetime.str_to_obj(values.from_date);
             const to_date = frappe.datetime.str_to_obj(values.to_date);
             const start_date = frappe.datetime.str_to_obj(agreement_start);
             const end_date = frappe.datetime.str_to_obj(agreement_end);
+            // const custom_row_id = `${lease_id}-row-${idx}-${from_date}-to-${to_date}`;
 
             if (from_date < start_date || to_date > end_date || from_date > to_date) {
                 frappe.msgprint(__('From and To Dates must be within Agreement Start and End Date'));
@@ -950,14 +1001,14 @@ window.open_invoice_dialog = function () {
                         const from_formatted = formatDate(values.from_date);
                         const to_formatted = formatDate(values.to_date);
 
-                        const custom_row_id = `row-${idx}-${from_formatted}-to-${to_formatted}`;
+                        const custom_row_id = `${lease_id}-row-${idx}-${from_formatted}-to-${to_formatted}`;
 
                         const row = {
                             month: values.month,
                             from_date: values.from_date,
                             to_date: values.to_date,
                             amount: values.amount,
-                            invoice_attachment: values.invoice_attachment,
+                            // invoice_attachment: values.invoice_attachment,
                             with_tax: values.with_tax ? 1 : 0,
                             tax: values.tax || 0,
                             // payment_status: values.payment_status,
@@ -1011,8 +1062,7 @@ window.open_invoice_dialog = function () {
     function toggle_invoice_fields(visible) {
         const fields_to_toggle = [
             'start_date', 'end_date', 'invoice_html',
-            'month', 'from_date', 'to_date', 'amount',
-            'invoice_attachment', 'manage_attachments',
+            'month', 'from_date', 'to_date', 'amount', 'manage_attachments',
             'with_tax', 'tax'
         ];
 
@@ -1028,34 +1078,63 @@ window.open_invoice_dialog = function () {
     d.show();
     toggle_invoice_fields(false);
 
+    // d.fields_dict.manage_attachments.input.onclick = () => {
+    //     const upload_dialog = new frappe.ui.Dialog({
+    //         title: "Upload Additional Attachments",
+    //         fields: [
+    //             {
+    //                 label: "File(s)",
+    //                 fieldname: "files",
+    //                 fieldtype: "Attach",
+    //                 reqd: 1,
+    //                 multiple: 1
+    //             }
+    //         ],
+    //         primary_action_label: "Attach",
+    //         primary_action(values) {
+    //             if (values.files) {
+    //                 extra_attachments.push({
+    //                     file_url: values.files,
+    //                     name: frappe.utils.get_random(10) // fake name to differentiate
+    //                 });
+    //                 frappe.msgprint("Attachment added.");
+    //                 upload_dialog.hide();
+    //             }
+    //         }
+    //     });
+
+    //     upload_dialog.show();
+    // };
+
+    // Modified loader to store start/end dates in outer variables
+    
     d.fields_dict.manage_attachments.input.onclick = () => {
         const upload_dialog = new frappe.ui.Dialog({
             title: "Upload Additional Attachments",
-            fields: [
-                {
-                    label: "File(s)",
-                    fieldname: "files",
-                    fieldtype: "Attach",
-                    reqd: 1
-                }
-            ],
-            primary_action_label: "Attach",
-            primary_action(values) {
-                if (values.files) {
-                    extra_attachments.push({
-                        file_url: values.files,
-                        name: frappe.utils.get_random(10) // fake name to differentiate
-                    });
-                    frappe.msgprint("Attachment added.");
-                    upload_dialog.hide();
-                }
-            }
+            fields: []
         });
 
         upload_dialog.show();
-    };
 
-    // Modified loader to store start/end dates in outer variables
+        new frappe.ui.FileUploader({
+            allow_multiple: 1,
+            doctype: 'Lease Management', // or your doctype
+            docname: lease_id,            // the current document name
+            folder: 'Home/Attachments',   // optional folder
+            on_success: (file) => {
+                extra_attachments.push({
+                    file_url: file.file_url,
+                    name: frappe.utils.get_random(10)
+                });
+                frappe.msgprint("Attachment added: " + file.file_name);
+                upload_dialog.hide();
+            },
+            onerror: (err) => {
+                frappe.msgprint(__('Upload failed: {0}', [err]));
+            }
+        });
+    };
+    
     function load_lease_info(lease_id, dialog) {
         frappe.call({
             method: "frappe.client.get",

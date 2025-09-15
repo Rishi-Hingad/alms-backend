@@ -39,30 +39,42 @@ def execute(filters=None):
         timeline=lease_doc.get_lease_rent_timeline()
         mdata=lease_doc.get_lease_monthly_data()
         lease_data=mdata.get(current_month,0)
-        inv_attachment=lease_doc.get_invoice_attachments_with_dates()
+        # inv_attachment=lease_doc.get_invoice_attachments_with_dates()
         ms_date=lease_data[0]
         me_date=lease_data[1]
         rent=timeline.get(current_month,0)
-        inv_dates=[]
-        for i in range(len(inv_attachment)):
-            record=inv_attachment[i]
-            inv_dates.append(record["uploaded_on"])
+        # inv_dates=[]
+        # for i in range(len(inv_attachment)):
+        #     record=inv_attachment[i]
+        #     inv_dates.append(record["uploaded_on"])
 
-        for r in lease_doc.invoice_details:
-            # inv_date=r.invoice_date
-            for i in range(len(inv_dates)):
+        if len(lease_doc.invoice_details)>0:
+            for r in lease_doc.invoice_details:
                 if r.payment_status=="Paid":
-                    # lease_status="Paid on "+str(inv_dates[i])
                     lease_status="Paid"
                     break
-                # if inv_dates[i].strftime("%Y-%m") and (r.to_date.strftime("%Y-%m")==current_month or r.from_date.strftime("%Y-%m")==current_month):
-                #     lease_status="Paid on "+str(inv_dates[i])
-                #     break
-            # if inv_date.strftime("%Y-%m")==current_month:
-            #     lease_status="Paid on "+str(inv_date)
             else:
                 if today.date()>me_date:
                     lease_status="Was Due on "+str(me_date)
+        else:
+            if today.date()>me_date:
+                    lease_status="Was Due on "+str(me_date)
+
+        # for r in lease_doc.invoice_details:
+        #     # inv_date=r.invoice_date
+        #     for i in range(len(inv_dates)):
+        #         if r.payment_status=="Paid":
+        #             # lease_status="Paid on "+str(inv_dates[i])
+        #             lease_status="Paid"
+        #             break
+        #         # if inv_dates[i].strftime("%Y-%m") and (r.to_date.strftime("%Y-%m")==current_month or r.from_date.strftime("%Y-%m")==current_month):
+        #         #     lease_status="Paid on "+str(inv_dates[i])
+        #         #     break
+        #     # if inv_date.strftime("%Y-%m")==current_month:
+        #     #     lease_status="Paid on "+str(inv_date)
+        #     else:
+        #         if today.date()>me_date:
+        #             lease_status="Was Due on "+str(me_date)
         data.append({"lease":lease.name,"month_start_date": ms_date,"month_end_date": me_date,"total_rent": rent,"payment_status":lease_status})
         lease_status="Pending"
     

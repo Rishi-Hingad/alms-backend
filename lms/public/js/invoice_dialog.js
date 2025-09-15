@@ -4,6 +4,7 @@ window.open_invoice_dialog = function () {
     let agreement_end = null;
 
     let extra_attachments = [];
+    let invoice_added = false;
 
     const d = new frappe.ui.Dialog({
         title: 'Add Invoice for Lease',
@@ -74,12 +75,6 @@ window.open_invoice_dialog = function () {
                 reqd: 1
             },
             {
-                label: 'Invoice Attachment',
-                fieldname: 'invoice_attachment',
-                fieldtype: 'Attach',
-                reqd: 1
-            },
-            {
                 label: "Attachments",
                 fieldname: "manage_attachments",
                 fieldtype: "Button",
@@ -93,18 +88,17 @@ window.open_invoice_dialog = function () {
                 label: 'Tax (%)',
                 fieldname: 'tax',
                 fieldtype: 'Percent'
-            },
-            // {
-            //     label: 'Payment Status',
-            //     fieldname: 'payment_status',
-            //     fieldtype: 'Select',
-            //     options: 'Unpaid\nPaid',
-            //     default: 'Unpaid'
-            // }
+            }
         ],
         primary_action_label: 'Add Invoice',
         primary_action(values) {
             if (!lease_id) return;
+
+            // ✅ Check if at least one attachment is added
+            if (extra_attachments.length === 0) {
+                frappe.msgprint(__('Please upload at least one attachment before adding invoice.'));
+                return;
+            }
 
             // ✅ Date validation
             const from_date = frappe.datetime.str_to_obj(values.from_date);
@@ -140,17 +134,15 @@ window.open_invoice_dialog = function () {
                         const from_formatted = formatDate(values.from_date);
                         const to_formatted = formatDate(values.to_date);
 
-                        const custom_row_id = `row-${idx}-${from_formatted}-to-${to_formatted}`;
+                        const custom_row_id = `${lease_id}-row-${idx}-${from_formatted}-to-${to_formatted}`;
 
                         const row = {
                             month: values.month,
                             from_date: values.from_date,
                             to_date: values.to_date,
                             amount: values.amount,
-                            invoice_attachment: values.invoice_attachment,
                             with_tax: values.with_tax ? 1 : 0,
                             tax: values.tax || 0,
-                            // payment_status: values.payment_status,
                             custom_row_id: custom_row_id
                         };
 
@@ -188,7 +180,11 @@ window.open_invoice_dialog = function () {
                             callback: function(save_r) {
                                 if (!save_r.exc) {
                                     frappe.msgprint("Invoice added successfully.");
+                                    invoice_added = true;
                                     d.hide();
+                                    // setTimeout(() => {
+                                    //     frappe.set_route("app", "vendor-dashboard");
+                                    // }, 1000);
                                 }
                             }
                         });
@@ -201,8 +197,7 @@ window.open_invoice_dialog = function () {
     function toggle_invoice_fields(visible) {
         const fields_to_toggle = [
             'start_date', 'end_date', 'invoice_html',
-            'month', 'from_date', 'to_date', 'amount',
-            'invoice_attachment', 'manage_attachments',
+            'month', 'from_date', 'to_date', 'amount', 'manage_attachments',
             'with_tax', 'tax'
         ];
 
@@ -218,34 +213,82 @@ window.open_invoice_dialog = function () {
     d.show();
     toggle_invoice_fields(false);
 
+    // $(d.$wrapper).on('hide.bs.modal', function () {
+    //     if (!invoice_added) {
+    //         frappe.msgprint("No invoice added.");
+    //     }
+
+    //     frappe.set_route("app", "vendor-dashboard"); // replace with correct workspace
+    // });
+
+    $(d.$wrapper).on('hide.bs.modal', function () {
+        console.log("Dialog closed");
+
+        if (!invoice_added) {
+            frappe.msgprint("No invoice added.");
+        }
+
+        setTimeout(() => {
+            frappe.set_route("vendor-dashboard");
+        }, 700);
+    });
+
+    // d.fields_dict.manage_attachments.input.onclick = () => {
+    //     const upload_dialog = new frappe.ui.Dialog({
+    //         title: "Upload Additional Attachments",
+    //         fields: [
+    //             {
+    //                 label: "File(s)",
+    //                 fieldname: "files",
+    //                 fieldtype: "Attach",
+    //                 reqd: 1
+    //             }
+    //         ],
+    //         primary_action_label: "Attach",
+    //         primary_action(values) {
+    //             if (values.files) {
+    //                 extra_attachments.push({
+    //                     file_url: values.files,
+    //                     name: frappe.utils.get_random(10) // fake name to differentiate
+    //                 });
+    //                 frappe.msgprint("Attachment added.");
+    //                 upload_dialog.hide();
+    //             }
+    //         }
+    //     });
+
+    //     upload_dialog.show();
+    // };
+
+    // Modified loader to store start/end dates in outer variables
+    
     d.fields_dict.manage_attachments.input.onclick = () => {
         const upload_dialog = new frappe.ui.Dialog({
             title: "Upload Additional Attachments",
-            fields: [
-                {
-                    label: "File(s)",
-                    fieldname: "files",
-                    fieldtype: "Attach",
-                    reqd: 1
-                }
-            ],
-            primary_action_label: "Attach",
-            primary_action(values) {
-                if (values.files) {
-                    extra_attachments.push({
-                        file_url: values.files,
-                        name: frappe.utils.get_random(10) // fake name to differentiate
-                    });
-                    frappe.msgprint("Attachment added.");
-                    upload_dialog.hide();
-                }
-            }
+            fields: []
         });
 
         upload_dialog.show();
-    };
 
-    // Modified loader to store start/end dates in outer variables
+        new frappe.ui.FileUploader({
+            allow_multiple: 1,
+            doctype: 'Lease Management', // or your doctype
+            docname: lease_id,            // the current document name
+            folder: 'Home/Attachments',   // optional folder
+            on_success: (file) => {
+                extra_attachments.push({
+                    file_url: file.file_url,
+                    name: frappe.utils.get_random(10)
+                });
+                frappe.msgprint("Attachment added: " + file.file_name);
+                upload_dialog.hide();
+            },
+            onerror: (err) => {
+                frappe.msgprint(__('Upload failed: {0}', [err]));
+            }
+        });
+    };
+    
     function load_lease_info(lease_id, dialog) {
         frappe.call({
             method: "frappe.client.get",

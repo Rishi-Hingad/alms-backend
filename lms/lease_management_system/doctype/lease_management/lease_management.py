@@ -1243,7 +1243,7 @@ class LeaseManagement(Document):
 			if row.from_date and row.to_date:
 				from_str = frappe.utils.formatdate(row.from_date, "dd-MM-yyyy")
 				to_str = frappe.utils.formatdate(row.to_date, "dd-MM-yyyy")
-				row.custom_row_id = f"row-{idx}-{from_str}-to-{to_str}"
+				row.custom_row_id = f"{self.name}-row-{idx}-{from_str}-to-{to_str}"
 
 	def before_insert(self):
     	# On new record creation, populate invoice_details
@@ -1291,28 +1291,28 @@ class LeaseManagement(Document):
 			"fixed_amount":0
 		})
 
-	def get_invoice_attachments_with_dates(self):
-		lease_doc=frappe.get_doc("Lease Management",self.name)
-		attachments_info=[]
-		for row in lease_doc.invoice_details:
-			file_doc=frappe.get_value(
-				"File",
-				filters={
-					"attached_to_doctype":"Lease Management",
-					"attached_to_name":lease_doc.name,
-					"attached_to_field":"invoice_attachment",
-				},
-				fieldname=["file_url","creation","file_name"]
-			)
-			if file_doc:
-				attachments_info.append({
-					"child_row_name":row.name,
-					"month":row.month,
-					"file_url":file_doc[0],
-					"file_name":file_doc[2],
-					"uploaded_on":file_doc[1]
-				})
-		return attachments_info
+	# def get_invoice_attachments_with_dates(self):
+	# 	lease_doc=frappe.get_doc("Lease Management",self.name)
+	# 	attachments_info=[]
+	# 	for row in lease_doc.invoice_details:
+	# 		file_doc=frappe.get_value(
+	# 			"File",
+	# 			filters={
+	# 				"attached_to_doctype":"Lease Management",
+	# 				"attached_to_name":lease_doc.name,
+	# 				"attached_to_field":"invoice_attachment",
+	# 			},
+	# 			fieldname=["file_url","creation","file_name"]
+	# 		)
+	# 		if file_doc:
+	# 			attachments_info.append({
+	# 				"child_row_name":row.name,
+	# 				"month":row.month,
+	# 				"file_url":file_doc[0],
+	# 				"file_name":file_doc[2],
+	# 				"uploaded_on":file_doc[1]
+	# 			})
+	# 	return attachments_info
 
 	def get_lease_rent_timeline(self):
 		doc = frappe.get_doc("Lease Management",self.name)
