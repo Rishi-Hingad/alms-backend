@@ -65,6 +65,16 @@ def get_escalation_dates(doc,current_date,start_date,end_date,diff_years):
 	dict_ed_pafa={}
 	dict_ed_bdates={}
 	diff_annually=False
+	per_annum_rows = [child for child in doc.escalation if child.escalation_type == "Per Annum"]
+	if len(per_annum_rows) == 1:
+		row = per_annum_rows[0]
+		rate_val = float(row.rate) if row.rate is not None else 0
+		rent_val = float(row.monthly_rent) if row.monthly_rent is not None else 0
+		fixed_amt_val = float(row.fixed_amount) if row.fixed_amount is not None else 0
+
+		if rate_val == 0 and rent_val == 0 and fixed_amt_val == 0:
+			escalation = False
+			return escalation, [], [], [], {}, {}, {}, None, False, 0, 0, 0
 
 	for child in doc.escalation:
 		escl_type=child.escalation_type
@@ -316,9 +326,23 @@ def generate_lease_report_new(start_date,end_date,docname,cnt_time):
 	prev_mlp_escl=None
 	prev_mlp_escl2=None
 	ndays = total_mlp = total_pv = total_depre = cnt = cnt1 = cnt2 = 0
+	# skip_escalation_dates = False
+	# if len(doc.escalation)==1:
+	# 	row=doc.escalation[0]
+	# 	if(row.escalation_type=="Per Annum") and row.monthly_rent==0 and row.rate==0 and row.fixed_amount==0:
+	# 		skip_escalation_dates=True
+
 	columns=["Month Start Date","Month End Date", "Days in Month","Minimum Lease Payment (MLP)","Present Value of MLP", "Depreciation on Right to Use", "Written Down Value (WDV)", "Interest Cost", "Closing Liability"]
 	diff_years=get_diff_years(start_date,end_date)
+	# if not skip_escalation_dates:
 	escalation,edates_pannum,edates_bd,edates_pafa,dict_ed_pannum,dict_ed_bdates,dict_ed_pafa,esc_bd_end_date,diff_annually,rate,mrent,famt=get_escalation_dates(doc,current_date,start_date,end_date,diff_years)
+	# else:
+	# 	escalation=False
+	# 	edates_pannum,edates_bd,edates_pafa=[],[],[]
+	# 	dict_ed_pannum,dict_ed_bdates,dict_ed_pafa={},{},{}
+	# 	esc_bd_end_date=None
+	# 	diff_annually=False
+		# rate,mrent,famt=0,0,0
 
 	while current_date<=end_date:
 		cnt+=1
@@ -2343,12 +2367,12 @@ def generate_report(docname,cnt):
 		# if doc.lease_period=="Short Term (Less Than 12 Months)":
 		# 	output = generate_lease_report_month_based_without_escalation(date1, date2,docname,cnt)
 		# else:
-		output = generate_lease_report_month_based(date1, date2,docname,cnt)
+		output = generate_lease_report_month_based_new(date1, date2,docname,cnt)
 	elif doc.calculation_rate_type=="Daily Rate":
 		# if doc.lease_period=="Short Term (Less Than 12 Months)":
 		# 	output = generate_lease_report_without_escalation(date1, date2,docname,cnt)
 		# else:
-		output = generate_lease_report(date1, date2,docname,cnt)
+		output = generate_lease_report_new(date1, date2,docname,cnt)
 	# output=get_invoice_attachments_with_dates(docname)
 
 	return output
@@ -2647,6 +2671,7 @@ class LeaseManagement(Document):
 		current_date=start_date
 		cnt=0
 		prev_mlp_escl=None
+		
 		escalation,edates_pannum,edates_bd,edates_pafa,dict_ed_pannum,dict_ed_bdates,dict_ed_pafa,esc_bd_end_date,diff_annually,rate,mrent,famt=get_escalation_dates(doc,current_date,start_date,end_date,diff_years)
 
 		# Calculate Previous Closing Liability from Present Value and Total Days
