@@ -3,22 +3,29 @@
  "chart_type": "Report",
  "creation": "2025-08-12 17:04:54.446129",
  "currency": "INR",
- "custom_options": "{\"x_field\": \"month\", \"chart_type\": \"Bar\", \"y_axis_fields\": [{\"idx\": 1, \"__islocal\": true, \"y_field\": \"total_rent\", \"name\": \"row 1\"}], \"y_fields\": [\"total_rent\"], \"colors\": [null]}",
+ "custom_options": "",
  "docstatus": 0,
  "doctype": "Dashboard Chart",
  "filters_json": "{}",
  "group_by_type": "Count",
- "idx": 0,
+ "idx": 2,
  "is_public": 0,
  "is_standard": 1,
- "modified": "2025-08-12 17:04:54.532286",
+ "modified": "2025-09-06 15:24:12.781615",
  "modified_by": "Administrator",
  "module": "Lease Management System",
  "name": "Current Month-wise Total Lease Rent",
  "number_of_groups": 0,
  "owner": "Administrator",
  "report_name": "Lease Rent Summary",
- "roles": [],
+ "roles": [
+  {
+   "role": "System Manager"
+  },
+  {
+   "role": "Accounts"
+  }
+ ],
  "time_interval": "Yearly",
  "timeseries": 0,
  "timespan": "Last Year",

@@ -23,7 +23,8 @@
   "agreement",
   "section_break_ewvt",
   "escalation",
-  "invoice_details"
+  "invoice_details",
+  "invoice_attachments"
  ],
  "fields": [
   {
@@ -44,7 +45,7 @@
    "fieldname": "status",
    "fieldtype": "Select",
    "label": "Status",
-   "options": "Active\nAgreement Expired",
+   "options": "\nActive\nAgreement Expired",
    "permlevel": 1
   },
   {
@@ -81,7 +82,7 @@
    "fieldtype": "Table",
    "label": "Escalation",
    "options": "Escalation",
-   "permlevel": 1
+   "permlevel": 2
   },
   {
    "fieldname": "monthly_rent",
@@ -154,12 +155,19 @@
    "fieldtype": "Table",
    "label": "Invoice Details",
    "options": "Invoice Documents"
+  },
+  {
+   "fieldname": "invoice_attachments",
+   "fieldtype": "Table",
+   "hidden": 1,
+   "label": "Invoice Attachments",
+   "options": "Invoice Attachments"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-09-01 11:39:59.760105",
+ "modified": "2025-09-15 12:06:24.749279",
  "modified_by": "Administrator",
  "module": "Lease Management System",
  "name": "Lease Management",
@@ -216,6 +224,30 @@
    "delete": 1,
    "email": 1,
    "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Accounts",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "permlevel": 2,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "permlevel": 2,
    "print": 1,
    "read": 1,
    "report": 1,

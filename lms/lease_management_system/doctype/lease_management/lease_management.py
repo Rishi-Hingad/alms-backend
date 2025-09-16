@@ -2,6 +2,7 @@
 # For license information, please see license.txt
 
 import frappe,pdb
+from frappe import _
 from frappe.model.document import Document
 from datetime import datetime,timedelta,time
 from calendar import monthrange
@@ -11,6 +12,7 @@ import pandas as pd
 import io
 from frappe.utils.file_manager import save_file
 from openpyxl.utils import get_column_letter
+from frappe.utils import nowdate, now_datetime
 
 def calculate_daily_rate(doc):
 	disc_doc=float(doc.discounting_rate)/100
@@ -1014,6 +1016,9 @@ def generate_lease_report_month_based_new(start_date,end_date,docname,cnt_time):
 	frappe.msgprint("No Data Calculated")
 	return {"file_url":None}
 	
+
+# ===================================================================================
+
 #function to generate lease agreement report
 def generate_lease_report(start_date,end_date,docname,cnt_time):
 	doc = frappe.get_doc("Lease Management",docname)
@@ -2325,8 +2330,7 @@ def generate_lease_report_month_based(start_date,end_date,docname,cnt_time):
     	"file_url": file_doc.file_url
 	}
 
-# ===================================================================================
-
+#====================================================================================
 @frappe.whitelist()
 def generate_report(docname,cnt):
 	doc = frappe.get_doc("Lease Management",docname)
@@ -2339,12 +2343,12 @@ def generate_report(docname,cnt):
 		# if doc.lease_period=="Short Term (Less Than 12 Months)":
 		# 	output = generate_lease_report_month_based_without_escalation(date1, date2,docname,cnt)
 		# else:
-		output = generate_lease_report_month_based_new(date1, date2,docname,cnt)
+		output = generate_lease_report_month_based(date1, date2,docname,cnt)
 	elif doc.calculation_rate_type=="Daily Rate":
 		# if doc.lease_period=="Short Term (Less Than 12 Months)":
 		# 	output = generate_lease_report_without_escalation(date1, date2,docname,cnt)
 		# else:
-		output = generate_lease_report_new(date1, date2,docname,cnt)
+		output = generate_lease_report(date1, date2,docname,cnt)
 	# output=get_invoice_attachments_with_dates(docname)
 
 	return output
@@ -2396,6 +2400,133 @@ def get_lease_rent_dashboard_chart():
         "colors": ["#7cd6fd"]  # optional
     }
 
+@frappe.whitelist()
+def bulk_update_agreement_status():
+	today = nowdate()
+
+	updated_count =frappe.db.sql("""
+		UPDATE `tabLease Management`
+		SET status = 'Agreement Expired'
+		WHERE agreement_end_date < %s
+		AND status != 'Agreement Expired'
+	""", (today,))
+	frappe.db.commit()
+	return {"updated":True, "count": updated_count}
+
+@frappe.whitelist()
+def has_expired_agreements():
+	today = nowdate()
+	count = frappe.db.count(
+		"Lease Management",
+        {
+            "status": ["!=", "Agreement Expired"],
+            "agreement_end_date": ["<", today]
+        }
+	)
+	
+	return {"needs_update": count > 0, "count": count}
+
+# @frappe.whitelist()
+# def daily_lease_status_update():
+#     try:
+#         today = nowdate()
+        
+#         # Log start of job
+#         frappe.logger().info("Starting daily lease status update job on user login")
+        
+#         # Get count before update
+#         expired_leases = frappe.db.sql("""
+#             SELECT COUNT(*) as count 
+#             FROM `tabLease Management` 
+#             WHERE agreement_end_date < %s 
+#             AND status != 'Agreement Expired'
+#         """, (today,), as_dict=True)
+        
+#         count_to_update = expired_leases[0].count if expired_leases else 0
+        
+#         if count_to_update > 0:
+#             # Execute the bulk update
+#             result = bulk_update_agreement_status()
+            
+#             # Log success
+#             message = f"Updated {count_to_update} lease(s) to 'Agreement Expired' status."
+#             frappe.logger().info(message)
+            
+            
+#             return {"success": True, "updated_count": count_to_update, "message": message}
+#         else:
+#             message = "No leases found to update."
+#             frappe.logger().info(message)
+#             return {"success": True, "updated_count": 0, "message": message}
+            
+#     except Exception as e:
+#         error_message = f"Error in daily lease status update: {str(e)}"
+#         frappe.logger().error(error_message)
+        
+#         # Don't raise exception - let scheduler continue with other jobs
+#         return {"success": False, "error": error_message}
+	
+# def run_daily_update_on_login(login_manager):
+# 	frappe.logger().info("✅ on_login hook fired from run_daily_update_on_login")
+# 	user = frappe.session.user
+# 	roles = frappe.get_roles(user)
+
+# 	if "Accounts" in roles or "System Manager" in roles:
+# 		frappe.logger().info(f"Lease update triggered on login by {user}")
+# 		daily_lease_status_update()
+# 	else:
+# 		frappe.logger().info(f"Skipping lease update for {user}, no required role")
+
+
+@frappe.whitelist()
+def delete_invoice_attachment(parent_doctype, parent_name, attachment_name, delete_file=False):
+    """
+    Deletes a child row Invoice Attachment (attachment_name) under parent_name.
+    If delete_file=True and we can map file_docname, also delete the File doc.
+    """
+    # simple guards
+    if not frappe.has_permission(parent_doctype, ptype='write', doc=parent_name):
+        frappe.throw(_("Not permitted"))
+
+    # delete the child row doc (Invoice Attachment)
+    try:
+        # grab file_docname before deleting
+        file_docname = frappe.db.get_value('Invoice Attachments', attachment_name, 'file_docname')
+        frappe.delete_doc('Invoice Attachments', attachment_name, force=True)
+        if delete_file and file_docname:
+            # ensure File exists and is safe to delete
+            try:
+                frappe.delete_doc('File', file_docname, force=True)
+            except Exception:
+                # swallow or log
+                frappe.log_error(f"Could not delete File {file_docname}")
+        return "ok"
+    except Exception as e:
+        frappe.log_error(frappe.get_traceback())
+        frappe.throw(_("Could not delete attachment: {0}").format(e))
+
+# @frappe.whitelist()
+# def get_invoice_attachments(filters: dict):
+#     # filters = frappe.parse_json(filters)
+#     return frappe.get_all(
+#         "Invoice Attachments",
+#         filters=filters,
+#         fields=["name", "file", "uploaded_by", "uploaded_on"]
+#     )
+@frappe.whitelist()
+def get_invoice_attachments(filters=None):
+    if not filters:
+        return []
+
+    # always parse, since frappe.call sends args as strings
+    filters = frappe.parse_json(filters)
+
+    return frappe.get_all(
+        "Invoice Attachments",
+        filters=filters,
+        fields=["name", "file", "uploaded_by", "uploaded_on"]
+    )
+# ===================================================================================
 class LeaseManagement(Document):
 	# pass
 	def validate(self):
@@ -2414,6 +2545,17 @@ class LeaseManagement(Document):
 			# 	frappe.throw("Rate Field Required in Escalation")
 			# if row.escalation_type=='Per Annum and Fixed Amount' and not row.fixed_amount:
 			# 	frappe.throw("Fixed Amount Field Required in Escalation")
+		invoice_row_names = [r.custom_row_id for r in self.invoice_details]
+		for a in list(self.invoice_attachments):
+			if a.invoice_row not in invoice_row_names:
+				# remove it
+				frappe.db.delete('Invoice Attachments', a.name)
+
+		for idx, row in enumerate(self.invoice_details, start=1):
+			if row.from_date and row.to_date:
+				from_str = frappe.utils.formatdate(row.from_date, "dd-MM-yyyy")
+				to_str = frappe.utils.formatdate(row.to_date, "dd-MM-yyyy")
+				row.custom_row_id = f"{self.name}-row-{idx}-{from_str}-to-{to_str}"
 
 	def before_insert(self):
     	# On new record creation, populate invoice_details
@@ -2461,28 +2603,28 @@ class LeaseManagement(Document):
 			"fixed_amount":0
 		})
 
-	def get_invoice_attachments_with_dates(self):
-		lease_doc=frappe.get_doc("Lease Management",self.name)
-		attachments_info=[]
-		for row in lease_doc.invoice_details:
-			file_doc=frappe.get_value(
-				"File",
-				filters={
-					"attached_to_doctype":"Lease Management",
-					"attached_to_name":lease_doc.name,
-					"attached_to_field":"invoice_attachment",
-				},
-				fieldname=["file_url","creation","file_name"]
-			)
-			if file_doc:
-				attachments_info.append({
-					"child_row_name":row.name,
-					"month":row.month,
-					"file_url":file_doc[0],
-					"file_name":file_doc[2],
-					"uploaded_on":file_doc[1]
-				})
-		return attachments_info
+	# def get_invoice_attachments_with_dates(self):
+	# 	lease_doc=frappe.get_doc("Lease Management",self.name)
+	# 	attachments_info=[]
+	# 	for row in lease_doc.invoice_details:
+	# 		file_doc=frappe.get_value(
+	# 			"File",
+	# 			filters={
+	# 				"attached_to_doctype":"Lease Management",
+	# 				"attached_to_name":lease_doc.name,
+	# 				"attached_to_field":"invoice_attachment",
+	# 			},
+	# 			fieldname=["file_url","creation","file_name"]
+	# 		)
+	# 		if file_doc:
+	# 			attachments_info.append({
+	# 				"child_row_name":row.name,
+	# 				"month":row.month,
+	# 				"file_url":file_doc[0],
+	# 				"file_name":file_doc[2],
+	# 				"uploaded_on":file_doc[1]
+	# 			})
+	# 	return attachments_info
 
 	def get_lease_rent_timeline(self):
 		doc = frappe.get_doc("Lease Management",self.name)
@@ -2959,21 +3101,66 @@ class LeaseManagement(Document):
 
 	def validate_invoice_details(self):
 		rent_timeline=self.get_lease_rent_timeline()
+		monthly_data=self.get_lease_monthly_data()
 		for row in self.invoice_details:
 			from_date = datetime.strptime(row.from_date, "%Y-%m-%d")
-			inv_month=from_date.strftime("%Y-%m")
-			expected_rent=rent_timeline.get(inv_month)
+			to_date = datetime.strptime(row.to_date, "%Y-%m-%d")
+			date_ranges=[]
+			exp_rent=[]
+			current=from_date
+			while current<=to_date:
+				start_date=current
+				_,last_day=monthrange(current.year, current.month)
+				end_date=datetime(current.year, current.month, last_day)
+
+				if end_date>to_date:
+					end_date=to_date
+
+				date_ranges.append([start_date,end_date])
+
+				if current.month==12:
+					current=current.replace(year=current.year+1,month=1,day=1)
+				else:
+					current=current.replace(month=current.month+1,day=1)
+			
+			for i in range(len(date_ranges)):
+				dates=date_ranges[i]
+				start_date=dates[0]
+				end_date=dates[1]
+				inv_month=start_date.strftime("%Y-%m")
+				lease_data=monthly_data.get(inv_month,0)
+				ms_date=lease_data[0]
+				me_date=lease_data[1]
+				# frappe.msgprint(str(ms_date)+"-"+str(me_date)+" "+str(start_date.strftime("%Y-%m-%d"))+"\\"+str(end_date.strftime("%Y-%m-%d")))
+				# if start_date.strftime("%Y-%m-%d")==ms_date and end_date.strftime("%Y-%m-%d")==me_date:
+				exp_rent.append(rent_timeline.get(inv_month))
+				
+			expected_rent=0.0
+			for i in range(len(exp_rent)):
+				expected_rent+=exp_rent[i]
+			# frappe.msgprint(str(expected_rent))
+			# inv_month=from_date.strftime("%Y-%m")
+			# expected_rent=rent_timeline.get(inv_month)
 
 			if expected_rent is None:
 				row.is_mismatch=1
 				continue
 
 			actual_amount=float(row.amount)
-			if round(actual_amount,3) != round(expected_rent,3):
-				row.is_mismatch=1
-				# frappe.msgprint("row is_mismatch at row no. "+str(row.idx)+" "+str(round(expected_rent,3))+" /"+str(row.amount))
+			tax=float(row.tax)
+			if int(row.with_tax)==1:
+				calc_amount=expected_rent+((tax*expected_rent)/100)
+				if round(calc_amount,3) != round(actual_amount,3):
+					row.is_mismatch=1
+				else:
+					row.is_mismatch=0
+
 			else:
-				row.is_mismatch=0
+				if round(actual_amount,3) != round(expected_rent,3):
+					row.is_mismatch=1
+					# frappe.msgprint("row is_mismatch at row no. "+str(row.idx)+" "+str(round(expected_rent,3))+" /"+str(row.amount))
+				else:
+					row.is_mismatch=0
 			
 def get_permission_query_conditions(user):
 	if not user:
@@ -2986,8 +3173,9 @@ def get_permission_query_conditions(user):
 
 		if not vendor:
 			return "1=0"
-		
+		# doctype=frappe.local.meta.name
 		return f"`tabLease Management`.`vendor`='{vendor}'"
+		# return f"`tab{doctype}`.`vendor`='{vendor}'"
 	return ""
 
 def has_permission(doc,user):

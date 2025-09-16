@@ -28,6 +28,7 @@ app_license = "mit"
 # app_include_css = "/assets/lms/css/lms.css"
 # app_include_js = "/assets/lms/js/lms.js"
 
+
 # include js, css files in header of web template
 # web_include_css = "/assets/lms/css/lms.css"
 # web_include_js = "/assets/lms/js/lms.js"
@@ -41,6 +42,22 @@ app_license = "mit"
 
 # include js in page
 # page_js = {"page" : "public/js/file.js"}
+page_js={"account-dashboard":"public/js/account-dashboard.js"}
+app_include_js=["/assets/lms/js/account-dashboard.js"]
+app_include_js=["/assets/lms/js/invoice_dialog.js"]
+
+
+# scheduler_events = {
+#     "daily": [
+#         "lms.lease_management_system.doctype.lease_management.lease_management.daily_lease_status_update"
+#     ]
+# }
+
+# doc_events = {
+#     "User": {
+#         "on_login": "lms.lease_management_system.doctype.lease_management.lease_management.run_daily_update_on_login"
+#     }
+# }
 
 # include js in doctype views
 # doctype_js = {"doctype" : "public/js/doctype.js"}
@@ -126,10 +143,12 @@ app_license = "mit"
 
 permission_query_conditions = {
 	"Lease Management": "lms.lease_management_system.doctype.lease_management.lease_management.get_permission_query_conditions",
+	"Property Master": "lms.masters.doctype.property_master.property_master.get_permission_query_conditions"
 }
 
 has_permission = {
 	"Lease Management": "lms.lease_management_system.doctype.lease_management.lease_management.has_permission",
+    "Property Master": "lms.masters.doctype.property_master.property_master.has_permission"
 }
 
 # DocType Class

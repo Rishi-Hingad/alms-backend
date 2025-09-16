@@ -1,7 +1,7 @@
 {
  "actions": [],
  "allow_rename": 1,
- "autoname": "format:{vendor_code}-{#####}",
+ "autoname": "format:{vendor}-{#####}",
  "creation": "2025-07-12 15:30:19.463729",
  "doctype": "DocType",
  "engine": "InnoDB",
@@ -27,25 +27,29 @@
   {
    "fieldname": "address",
    "fieldtype": "Text",
-   "label": "Address"
+   "label": "Address",
+   "reqd": 1
   },
   {
    "fieldname": "city",
    "fieldtype": "Link",
    "label": "City ",
-   "options": "City Master"
+   "options": "City Master",
+   "reqd": 1
   },
   {
    "fieldname": "vendor",
    "fieldtype": "Link",
+   "in_list_view": 1,
    "label": "Vendor",
-   "options": "Vendor Master"
+   "options": "Vendor Master",
+   "reqd": 1
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-08-05 12:17:08.664631",
+ "modified": "2025-09-03 11:55:37.036156",
  "modified_by": "Administrator",
  "module": "Masters",
  "name": "Property Master",
