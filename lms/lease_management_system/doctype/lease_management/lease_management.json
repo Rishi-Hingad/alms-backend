@@ -1,120 +1,224 @@
 {
  "actions": [],
  "allow_rename": 1,
+ "autoname": "format:Lease-{#####}",
  "creation": "2025-07-15 15:45:04.880573",
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
-  "company_code",
-  "vendor_code",
-  "property_code",
-  "city",
+  "company",
+  "vendor",
+  "property_description",
+  "discounting_rate",
+  "calculation_rate_type",
+  "previous_wdv",
   "column_break_hwhu",
   "agreement_start_date",
   "agreement_end_date",
   "status",
-  "ind_as_remark",
+  "lease_period",
   "security_deposit",
   "security_deposit_amount",
-  "monthy_rent",
+  "monthly_rent",
   "agreement",
-  "escalation_time",
-  "escalation_rate"
+  "section_break_ewvt",
+  "escalation",
+  "invoice_details",
+  "invoice_attachments"
  ],
  "fields": [
   {
-   "fieldname": "company_code",
-   "fieldtype": "Link",
-   "label": "Company Code",
-   "options": "Company Master"
-  },
-  {
-   "fieldname": "vendor_code",
-   "fieldtype": "Link",
-   "label": "Vendor Code",
-   "options": "Vendor Master"
-  },
-  {
-   "fieldname": "property_code",
-   "fieldtype": "Link",
-   "label": "Property Code",
-   "options": "Property Master"
-  },
-  {
    "fieldname": "agreement_start_date",
    "fieldtype": "Date",
-   "label": "Agreement Start Date"
+   "label": "Agreement Start Date",
+   "permlevel": 1,
+   "reqd": 1
   },
   {
    "fieldname": "agreement_end_date",
    "fieldtype": "Date",
-   "label": "Agreement End Date "
+   "label": "Agreement End Date ",
+   "permlevel": 1,
+   "reqd": 1
   },
   {
    "fieldname": "status",
    "fieldtype": "Select",
    "label": "Status",
-   "options": "Active\nAgreement Expired"
-  },
-  {
-   "fieldname": "ind_as_remark",
-   "fieldtype": "Select",
-   "label": "IND AS Remark",
-   "options": "Not Required\nIndAS working required"
+   "options": "\nActive\nAgreement Expired",
+   "permlevel": 1
   },
   {
    "fieldname": "security_deposit",
    "fieldtype": "Select",
    "label": "Security Deposit",
-   "options": "Paid\nNot Paid"
+   "options": "\nPaid\nNot Paid",
+   "permlevel": 1
   },
   {
    "fieldname": "security_deposit_amount",
    "fieldtype": "Data",
-   "label": "Security Deposit Amount"
-  },
-  {
-   "fieldname": "monthy_rent",
-   "fieldtype": "Data",
-   "label": "Monthy Rent"
+   "label": "Security Deposit Amount",
+   "permlevel": 1
   },
   {
    "fieldname": "agreement",
-   "fieldtype": "Select",
+   "fieldtype": "Attach",
    "label": "Agreement",
-   "options": "Yes\nNo"
-  },
-  {
-   "fieldname": "escalation_time",
-   "fieldtype": "Data",
-   "label": "Escalation Time"
-  },
-  {
-   "fieldname": "escalation_rate",
-   "fieldtype": "Int",
-   "label": "Escalation Rate"
+   "options": "Yes\nNo",
+   "permlevel": 1
   },
   {
    "fieldname": "column_break_hwhu",
    "fieldtype": "Column Break"
   },
   {
-   "fieldname": "city",
+   "fieldname": "section_break_ewvt",
+   "fieldtype": "Section Break"
+  },
+  {
+   "columns": 7,
+   "fieldname": "escalation",
+   "fieldtype": "Table",
+   "label": "Escalation",
+   "options": "Escalation",
+   "permlevel": 2
+  },
+  {
+   "fieldname": "monthly_rent",
+   "fieldtype": "Float",
+   "label": "Monthly Rent",
+   "permlevel": 1,
+   "precision": "4",
+   "reqd": 1
+  },
+  {
+   "fieldname": "lease_period",
+   "fieldtype": "Select",
+   "label": "Lease Period",
+   "options": "\nShort Term (Less Than 12 Months)\nLong Term (Greater Than 12 Months)",
+   "permlevel": 1,
+   "reqd": 1
+  },
+  {
+   "fieldname": "company",
+   "fieldtype": "Link",
+   "label": "Company",
+   "options": "Company Master",
+   "permlevel": 1,
+   "reqd": 1
+  },
+  {
+   "fieldname": "vendor",
+   "fieldtype": "Link",
+   "label": "Vendor",
+   "options": "Vendor Master",
+   "permlevel": 1,
+   "reqd": 1
+  },
+  {
+   "fieldname": "property_description",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Property Description",
+   "options": "Property Master",
+   "permlevel": 1,
+   "reqd": 1
+  },
+  {
+   "description": "(in %)",
+   "fieldname": "discounting_rate",
    "fieldtype": "Data",
-   "is_virtual": 1,
-   "label": "City",
-   "read_only": 1
+   "label": "Discounting Rate",
+   "permlevel": 1,
+   "precision": "3",
+   "reqd": 1
+  },
+  {
+   "default": "Daily Rate",
+   "fieldname": "calculation_rate_type",
+   "fieldtype": "Select",
+   "label": "Calculation Rate Type",
+   "options": "Daily Rate\nMonthly Rate",
+   "permlevel": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "previous_wdv",
+   "fieldtype": "Float",
+   "label": "Previous WDV",
+   "permlevel": 1,
+   "precision": "4"
+  },
+  {
+   "fieldname": "invoice_details",
+   "fieldtype": "Table",
+   "label": "Invoice Details",
+   "options": "Invoice Documents"
+  },
+  {
+   "fieldname": "invoice_attachments",
+   "fieldtype": "Table",
+   "hidden": 1,
+   "label": "Invoice Attachments",
+   "options": "Invoice Attachments"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-07-15 16:55:48.824689",
+ "modified": "2025-09-15 12:06:24.749279",
  "modified_by": "Administrator",
  "module": "Lease Management System",
  "name": "Lease Management",
+ "naming_rule": "Expression",
  "owner": "Administrator",
  "permissions": [
+  {
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "permlevel": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "permlevel": 1,
+   "read": 1,
+   "role": "Vendor"
+  },
+  {
+   "read": 1,
+   "role": "Vendor",
+   "write": 1
+  },
+  {
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "permlevel": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Accounts",
+   "share": 1,
+   "write": 1
+  },
   {
    "create": 1,
    "delete": 1,
@@ -123,7 +227,31 @@
    "print": 1,
    "read": 1,
    "report": 1,
+   "role": "Accounts",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "permlevel": 2,
+   "print": 1,
+   "read": 1,
+   "report": 1,
    "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "permlevel": 2,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Accounts",
    "share": 1,
    "write": 1
   }

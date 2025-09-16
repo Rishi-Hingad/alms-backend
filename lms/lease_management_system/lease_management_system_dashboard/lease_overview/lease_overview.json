@@ -1,0 +1,37 @@
+{
+ "cards": [
+  {
+   "card": "Total Vendor's"
+  },
+  {
+   "card": "Total Lease Agreement"
+  },
+  {
+   "card": "Total Ongoing Lease Agreement"
+  },
+  {
+   "card": "Total Expired Lease Agreement"
+  },
+  {
+   "card": "Current Lease  Payment Amount"
+  }
+ ],
+ "charts": [
+  {
+   "chart": "Current Month-wise Total Lease Rent",
+   "width": "Half"
+  }
+ ],
+ "creation": "2025-08-08 12:36:42.479665",
+ "dashboard_name": "Lease Overview",
+ "docstatus": 0,
+ "doctype": "Dashboard",
+ "idx": 0,
+ "is_default": 0,
+ "is_standard": 1,
+ "modified": "2025-09-03 10:54:50.425580",
+ "modified_by": "Administrator",
+ "module": "Lease Management System",
+ "name": "Lease Overview",
+ "owner": "Administrator"
+}

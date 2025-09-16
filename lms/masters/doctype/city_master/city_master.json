@@ -13,20 +13,23 @@
   {
    "fieldname": "city",
    "fieldtype": "Data",
+   "in_list_view": 1,
    "label": "City",
+   "reqd": 1,
    "unique": 1
   },
   {
    "fieldname": "state",
    "fieldtype": "Link",
    "label": "State",
-   "options": "State Master"
+   "options": "State Master",
+   "reqd": 1
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-07-15 15:15:57.751431",
+ "modified": "2025-09-03 12:09:59.000818",
  "modified_by": "Administrator",
  "module": "Masters",
  "name": "City Master",
@@ -42,6 +45,18 @@
    "read": 1,
    "report": 1,
    "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Accounts",
    "share": 1,
    "write": 1
   }

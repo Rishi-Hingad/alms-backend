@@ -1,0 +1,103 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2025-08-04 14:13:07.320085",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "month",
+  "from_date",
+  "to_date",
+  "amount",
+  "with_tax",
+  "tax",
+  "manage_attachments",
+  "is_mismatch",
+  "payment_status",
+  "custom_row_id"
+ ],
+ "fields": [
+  {
+   "fieldname": "month",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Month",
+   "options": "\nJanuary\nFebruary\nMarch\nApril\nMay\nJune\nJuly\nAugust\nSeptember\nOctober\nNovember\nDecember"
+  },
+  {
+   "fieldname": "from_date",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "label": "From Date",
+   "reqd": 1
+  },
+  {
+   "fieldname": "to_date",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "label": "To Date",
+   "reqd": 1
+  },
+  {
+   "fieldname": "amount",
+   "fieldtype": "Float",
+   "in_list_view": 1,
+   "label": "Amount",
+   "reqd": 1
+  },
+  {
+   "fieldname": "is_mismatch",
+   "fieldtype": "Data",
+   "hidden": 1,
+   "label": "is_mismatch"
+  },
+  {
+   "default": "0",
+   "fieldname": "with_tax",
+   "fieldtype": "Check",
+   "label": "With Tax"
+  },
+  {
+   "default": "0",
+   "description": "(%)",
+   "fieldname": "tax",
+   "fieldtype": "Percent",
+   "label": "Tax"
+  },
+  {
+   "default": "Unpaid",
+   "fieldname": "payment_status",
+   "fieldtype": "Select",
+   "label": "Payment Status",
+   "options": "Unpaid\nPaid"
+  },
+  {
+   "fieldname": "manage_attachments",
+   "fieldtype": "Button",
+   "label": "Attachments"
+  },
+  {
+   "fieldname": "custom_row_id",
+   "fieldtype": "Data",
+   "hidden": 1,
+   "label": "Row Id",
+   "read_only": 1,
+   "unique": 1
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2025-09-15 12:06:03.397371",
+ "modified_by": "Administrator",
+ "module": "Lease Management System",
+ "name": "Invoice Documents",
+ "owner": "Administrator",
+ "permissions": [],
+ "row_format": "Dynamic",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

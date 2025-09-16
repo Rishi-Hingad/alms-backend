@@ -1,24 +1,18 @@
 {
  "actions": [],
  "allow_rename": 1,
- "autoname": "format:{vendor_code}-{#####}",
+ "autoname": "format:{vendor}-{#####}",
  "creation": "2025-07-12 15:30:19.463729",
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
-  "vendor_code",
+  "vendor",
   "city",
   "type_of_asset",
   "area_sq_ft",
   "address"
  ],
  "fields": [
-  {
-   "fieldname": "vendor_code",
-   "fieldtype": "Link",
-   "label": "Vendor Code",
-   "options": "Vendor Master"
-  },
   {
    "fieldname": "type_of_asset",
    "fieldtype": "Select",
@@ -33,19 +27,29 @@
   {
    "fieldname": "address",
    "fieldtype": "Text",
-   "label": "Address"
+   "label": "Address",
+   "reqd": 1
   },
   {
    "fieldname": "city",
    "fieldtype": "Link",
    "label": "City ",
-   "options": "City Master"
+   "options": "City Master",
+   "reqd": 1
+  },
+  {
+   "fieldname": "vendor",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Vendor",
+   "options": "Vendor Master",
+   "reqd": 1
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-07-15 15:09:56.087039",
+ "modified": "2025-09-03 11:55:37.036156",
  "modified_by": "Administrator",
  "module": "Masters",
  "name": "Property Master",
@@ -63,10 +67,28 @@
    "role": "System Manager",
    "share": 1,
    "write": 1
+  },
+  {
+   "read": 1,
+   "role": "Vendor"
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Accounts",
+   "share": 1,
+   "write": 1
   }
  ],
  "row_format": "Dynamic",
+ "show_title_field_in_link": 1,
  "sort_field": "modified",
  "sort_order": "DESC",
- "states": []
+ "states": [],
+ "title_field": "address"
 }
