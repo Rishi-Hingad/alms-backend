@@ -95,7 +95,11 @@ def execute(filters=None):
                 lease_status="Pending"
 
         if rent is not None and lease_status=="":
-            lease_status="Due"
+            # lease_status="Due"
+            if today.date()>=me_date:
+                lease_status="Due"
+            else:
+                lease_status="Pending"
            
 
         data.append({"lease":lease.name,"month_start_date": ms_date,"month_end_date": me_date,"total_rent": rent,"payment_status":lease_status})
