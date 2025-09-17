@@ -12,6 +12,7 @@
   "full_name",
   "email_id",
   "role",
+  "module",
   "create_user"
  ],
  "fields": [
@@ -52,11 +53,17 @@
    "fieldname": "last_name",
    "fieldtype": "Data",
    "label": "Last Name"
+  },
+  {
+   "fieldname": "module",
+   "fieldtype": "Link",
+   "label": "Module",
+   "options": "Module Profile"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-07-02 10:15:00.633399",
+ "modified": "2025-09-17 10:54:21.033329",
  "modified_by": "Administrator",
  "module": "CRMS",
  "name": "Management Team",

@@ -518,7 +518,7 @@ class EmailServices:
 
 
     def create_email_body_for_emp(self,user):
-        form_url = f"{frappe.utils.get_url()}/car-indent-form-employee/new?employee_code={user.name}"
+        form_url = f"{frappe.utils.get_url()}/car-request?employee_code={user.name}"
         body = f"""
         <html>
             <head>
