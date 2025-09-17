@@ -4,6 +4,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <meta name="cache-control" content="no-cache">
     <title>Reporting Head Approval</title>
     <style>
         * {
@@ -273,45 +277,45 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>Reporting Head Approval [{{id}}]</h1>
+            <h1>Reporting Head Approval [<span id="page-title-id">{{id}}</span>]</h1>
         </div>
 
         <table>
             <tr>
                 <th>Company Name</th>
-                <td>{{company_name}}</td>
+                <td id="company-name">{{company_name}}</td>
             </tr>
             <tr>
                 <th>Employee Name</th>
-                <td>{{employee_name}}</td>
+                <td id="employee-name">{{employee_name}}</td>
             </tr>
             <tr>
                 <th>Employee Email</th>
-                <td>{{employee_email}}</td>
+                <td id="employee-email">{{employee_email}}</td>
             </tr>
             <tr>
                 <th>Designation</th>
-                <td>{{designation}}</td>
+                <td id="designation">{{designation}}</td>
             </tr>
             <tr>
                 <th>Reporting Head Name</th>
-                <td>{{reporting_head_name}}</td>
+                <td id="reporting-head">{{reporting_head_name}}</td>
             </tr>
             <tr>
                 <th>Eligibility</th>
-                <td>₹{{eligibility}}</td>
+                <td id="eligibility">₹{{eligibility}}</td>
             </tr>
             <tr>
                 <th>Vehicle Make and Model</th>
-                <td>{{vehicle_make_model}}</td>
+                <td id="vehicle-model">{{vehicle_make_model}}</td>
             </tr>
             <tr>
                 <th>Net Ex Showroom Amount</th>
-                <td>₹{{net_ex_showroom_price}}</td>
+                <td id="ex-showroom">₹{{net_ex_showroom_price}}</td>
             </tr>
             <tr>
                 <th>Finance Amount</th>
-                <td>₹{{finance_amount}}</td>
+                <td id="finance-amount">₹{{finance_amount}}</td>
             </tr>
             <tr>
                 <th>Approval Status</th>
@@ -352,21 +356,21 @@
         </div>
     </div>
 
-    <!-- Pass server data to JavaScript safely -->
-    <script type="text/javascript">
-        // Server data - this will be populated by the template engine
-        window.serverData = {
-            isApproved: "{{is_approved}}" === "True",
-            approvalStatus: "{{approval_status}}",
-            requestId: "{{id}}",
-            approvalRemarks: "{{approval_remarks}}",
-            approvedBy: "{{approved_by}}",
-            approvalDate: "{{approval_date}}"
-        };
-    </script>
+    <!-- Hidden data elements to pass server data -->
+    <div id="server-data" style="display: none;">
+        <span id="data-id">{{id}}</span>
+        <span id="data-is-approved">{{is_approved}}</span>
+        <span id="data-approval-status">{{approval_status}}</span>
+        <span id="data-approval-remarks">{{approval_remarks}}</span>
+        <span id="data-approved-by">{{approved_by}}</span>
+        <span id="data-approval-date">{{approval_date}}</span>
+        <span id="data-timestamp">{{current_timestamp}}</span>
+        <span id="data-page-id">{{page_id}}</span>
+    </div>
 
     <script type="text/javascript">
         document.addEventListener('DOMContentLoaded', function() {
+            // Get DOM elements
             const approveBtn = document.getElementById('approveBtn');
             const remarksInput = document.getElementById('remarks');
             const indentFormInput = document.getElementById('indent_form');
@@ -379,41 +383,75 @@
             const alreadyApprovedNotice = document.getElementById('already-approved-notice');
             const approvalDetailsEl = document.getElementById('approval-details');
 
-            // Initialize page based on server data
-            initializePage();
+            // Get server data from hidden elements
+            function getServerData() {
+                const serverDataEl = document.getElementById('server-data');
+                if (!serverDataEl) {
+                    console.error('Server data element not found');
+                    return null;
+                }
 
-            function initializePage() {
-                if (!window.serverData) {
-                    console.warn('Server data not available');
+                return {
+                    id: document.getElementById('data-id')?.textContent || '',
+                    isApproved: document.getElementById('data-is-approved')?.textContent === 'True',
+                    approvalStatus: document.getElementById('data-approval-status')?.textContent || 'Pending',
+                    approvalRemarks: document.getElementById('data-approval-remarks')?.textContent || '',
+                    approvedBy: document.getElementById('data-approved-by')?.textContent || '',
+                    approvalDate: document.getElementById('data-approval-date')?.textContent || '',
+                    timestamp: document.getElementById('data-timestamp')?.textContent || '',
+                    pageId: document.getElementById('data-page-id')?.textContent || ''
+                };
+            }
+
+            // Initialize page
+            const serverData = getServerData();
+            console.log('Server data loaded:', serverData);
+
+            if (!serverData || !serverData.id) {
+                console.error('Server data not available for this page');
+                showError('Page data not loaded correctly. Please refresh the page.');
+                return;
+            }
+
+            // Initialize page with server data
+            initializePage(serverData);
+
+            function initializePage(data) {
+                console.log('Initializing page with data:', data);
+
+                // Verify data consistency
+                const currentId = indentFormInput ? indentFormInput.value : '';
+                if (currentId && currentId !== data.id) {
+                    console.error('Data mismatch detected! Current ID:', currentId, 'Server ID:', data.id);
+                    showError('Data inconsistency detected. Refreshing page...');
+                    setTimeout(() => window.location.reload(), 2000);
                     return;
                 }
 
-                const { isApproved, approvalStatus, approvalRemarks, approvedBy, approvalDate } = window.serverData;
-
                 // Update approval status display
                 if (approvalStatusEl) {
-                    approvalStatusEl.textContent = approvalStatus || 'Pending';
-                    approvalStatusEl.className = 'approval-status ' + (approvalStatus || 'pending').toLowerCase();
+                    approvalStatusEl.textContent = data.approvalStatus || 'Pending';
+                    approvalStatusEl.className = 'approval-status ' + (data.approvalStatus || 'pending').toLowerCase();
                 }
 
                 // Show status details if available
-                if (statusDetailsEl && (approvedBy || approvalDate)) {
+                if (statusDetailsEl && (data.approvedBy || data.approvalDate)) {
                     let details = '';
-                    if (approvedBy) details += `By: ${approvedBy}`;
-                    if (approvalDate) details += (details ? '<br>' : '') + `On: ${approvalDate}`;
-                    statusDetailsEl.innerHTML = details;
+                    if (data.approvedBy) details += 'By: ' + data.approvedBy;
+                    if (data.approvalDate) details += (details ? ', ' : '') + 'On: ' + data.approvalDate;
+                    statusDetailsEl.textContent = details;
                 }
 
                 // Handle already approved state
-                if (isApproved) {
+                if (data.isApproved) {
                     disableForm();
                     if (alreadyApprovedNotice && approvalDetailsEl) {
                         alreadyApprovedNotice.style.display = 'block';
-                        let approvalText = `Status: ${approvalStatus}`;
-                        if (approvalRemarks) {
-                            approvalText += `<br>Remarks: ${approvalRemarks}`;
+                        let approvalText = 'Status: ' + data.approvalStatus;
+                        if (data.approvalRemarks) {
+                            approvalText += ', Remarks: ' + data.approvalRemarks;
                         }
-                        approvalDetailsEl.innerHTML = approvalText;
+                        approvalDetailsEl.textContent = approvalText;
                     }
                 }
 
@@ -434,12 +472,12 @@
                 }
             }
 
-            function showError(message, element = errorMessage) {
-                if (element) {
-                    element.textContent = message;
-                    element.style.display = 'block';
+            function showError(message) {
+                if (errorMessage) {
+                    errorMessage.textContent = message;
+                    errorMessage.style.display = 'block';
                     setTimeout(() => {
-                        element.style.display = 'none';
+                        errorMessage.style.display = 'none';
                     }, 8000);
                 }
             }
@@ -474,7 +512,7 @@
                 if (errorMessage) errorMessage.style.display = 'none';
 
                 // Don't validate if already approved
-                if (window.serverData && window.serverData.isApproved) {
+                if (serverData && serverData.isApproved) {
                     return false;
                 }
 
@@ -510,7 +548,7 @@
 
             async function callApprovalAPI(indentFormValue, remarksValue) {
                 try {
-                    const apiUrl = `${window.location.origin}/api/method/alms_app.api.emailsService.approve_car_indent_by_reporting`;
+                    const apiUrl = window.location.origin + '/api/method/alms_app.api.emailsService.approve_car_indent_by_reporting';
                     
                     const response = await fetch(apiUrl, {
                         method: 'POST',
@@ -528,7 +566,9 @@
 
                     if (response.ok) {
                         // Redirect back to same page with success status
-                        const successUrl = `${window.location.pathname}?id=${encodeURIComponent(indentFormValue)}&status=success&message=${encodeURIComponent('Request approved successfully!')}`;
+                        const successUrl = window.location.pathname + '?id=' + encodeURIComponent(indentFormValue) + 
+                                         '&status=success&message=' + encodeURIComponent('Request approved successfully!') + 
+                                         '&_t=' + Date.now();
                         window.location.href = successUrl;
                     } else {
                         throw new Error(result.message || 'API call failed');
@@ -542,7 +582,10 @@
 
             function callApprovalAPIFallback(indentFormValue, remarksValue) {
                 // Fallback method using GET request with URL parameters
-                const apiUrl = `${window.location.origin}/api/method/alms_app.api.emailsService.approve_car_indent_by_reporting?indent_form=${encodeURIComponent(indentFormValue)}&remarks=${encodeURIComponent(remarksValue)}`;
+                const apiUrl = window.location.origin + '/api/method/alms_app.api.emailsService.approve_car_indent_by_reporting' +
+                             '?indent_form=' + encodeURIComponent(indentFormValue) + 
+                             '&remarks=' + encodeURIComponent(remarksValue) +
+                             '&_t=' + Date.now();
                 window.location.href = apiUrl;
             }
 
@@ -574,7 +617,7 @@
             // Clear error messages when user types
             if (remarksInput) {
                 remarksInput.addEventListener('input', function() {
-                    if (!(window.serverData && window.serverData.isApproved)) {
+                    if (!(serverData && serverData.isApproved)) {
                         if (remarksError) remarksError.style.display = 'none';
                         if (errorMessage) errorMessage.style.display = 'none';
                     }
@@ -583,14 +626,14 @@
                 // Handle Ctrl+Enter shortcut
                 remarksInput.addEventListener('keydown', function(event) {
                     if (event.key === 'Enter' && event.ctrlKey) {
-                        if (!(window.serverData && window.serverData.isApproved) && approveBtn) {
+                        if (!(serverData && serverData.isApproved) && approveBtn) {
                             approveBtn.click();
                         }
                     }
                 });
             }
 
-            // Auto-refresh functionality (optional)
+            // Auto-refresh functionality
             let lastActivity = Date.now();
             
             function updateLastActivity() {
@@ -602,20 +645,42 @@
                 document.addEventListener(eventType, updateLastActivity, true);
             });
 
-            // Optional: Check for page updates every 5 minutes
+            // Check for page updates every 5 minutes
             setInterval(() => {
                 const idleTime = Date.now() - lastActivity;
-                const isApproved = window.serverData && window.serverData.isApproved;
+                const isApproved = serverData && serverData.isApproved;
                 
-                // If idle for more than 5 minutes and not already approved
                 if (idleTime > 300000 && !isApproved) {
                     const refresh = confirm('Page has been idle for a while. Would you like to refresh to check for updates?');
                     if (refresh) {
-                        window.location.reload();
+                        const currentUrl = new URL(window.location.href);
+                        currentUrl.searchParams.set('_t', Date.now());
+                        window.location.href = currentUrl.toString();
                     }
-                    updateLastActivity(); // Reset idle timer
+                    updateLastActivity();
                 }
-            }, 300000); // Check every 5 minutes
+            }, 300000);
+
+            // Handle tab visibility changes
+            document.addEventListener('visibilitychange', function() {
+                if (!document.hidden && serverData) {
+                    const currentId = indentFormInput ? indentFormInput.value : '';
+                    
+                    if (currentId && currentId !== serverData.id) {
+                        console.log('Data inconsistency detected on tab focus, refreshing...');
+                        const currentUrl = new URL(window.location.href);
+                        currentUrl.searchParams.set('_t', Date.now());
+                        window.location.href = currentUrl.toString();
+                    }
+                }
+            });
+
+            // Force page reload if loaded from cache
+            window.addEventListener('pageshow', function(event) {
+                if (event.persisted) {
+                    window.location.reload();
+                }
+            });
         });
     </script>
 </body>
