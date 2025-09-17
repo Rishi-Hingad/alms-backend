@@ -16,6 +16,7 @@
         body {
             background-color: #f5f5f5;
             padding: 20px;
+            line-height: 1.6;
         }
 
         .container {
@@ -39,11 +40,13 @@
         .header h1 {
             font-size: 24px;
             color: #333;
+            font-weight: 600;
         }
 
         .not-saved {
             color: #ff6b6b;
             font-size: 14px;
+            font-style: italic;
         }
 
         table {
@@ -60,48 +63,77 @@
 
         th,
         td {
-            padding: 10px;
+            padding: 12px 10px;
             text-align: left;
+            vertical-align: top;
         }
 
         th {
-            background-color: #f2f2f2;
+            background-color: #f8f9fa;
+            font-weight: 600;
+            color: #495057;
+        }
+
+        td {
+            background-color: #fff;
+        }
+
+        .form-section {
+            margin-top: 20px;
         }
 
         .form-section h2 {
             font-size: 20px;
             color: #444;
             margin-bottom: 20px;
+            font-weight: 600;
         }
 
         .form-group {
-            margin-bottom: 15px;
+            margin-bottom: 20px;
         }
 
         .form-group label {
             display: block;
-            margin-bottom: 5px;
-            color: #666;
+            margin-bottom: 8px;
+            color: #495057;
             font-size: 14px;
+            font-weight: 500;
         }
 
         .form-group label::after {
             content: "*";
-            color: #ff6b6b;
+            color: #dc3545;
             margin-left: 4px;
         }
 
-        .form-group input {
+        .form-group input,
+        .form-group textarea {
             width: 100%;
-            padding: 8px 12px;
-            border: 1px solid #ddd;
+            padding: 10px 12px;
+            border: 1px solid #ced4da;
             border-radius: 4px;
             font-size: 14px;
+            transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
         }
 
-        .form-group input:focus {
+        .form-group textarea {
+            min-height: 100px;
+            resize: vertical;
+            font-family: Arial, sans-serif;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
             outline: none;
             border-color: #007bff;
+            box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+        }
+
+        .form-group input:disabled,
+        .form-group textarea:disabled {
+            background-color: #e9ecef;
+            opacity: 1;
         }
 
         .submit-section {
@@ -110,17 +142,130 @@
         }
 
         .submit-btn {
-            padding: 10px 20px;
+            padding: 12px 30px;
             background-color: #28a745;
             color: white;
             border: none;
             border-radius: 4px;
             cursor: pointer;
             font-size: 16px;
+            font-weight: 500;
+            text-decoration: none;
+            display: inline-block;
+            transition: background-color 0.3s ease;
+            min-width: 150px;
         }
 
-        .submit-btn:hover {
+        .submit-btn:hover:not(:disabled) {
             background-color: #218838;
+            transform: translateY(-1px);
+        }
+
+        .submit-btn:disabled {
+            background-color: #6c757d;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .loading {
+            display: none;
+            margin-left: 15px;
+            color: #6c757d;
+            font-style: italic;
+        }
+
+        .error-message {
+            color: #dc3545;
+            font-size: 14px;
+            margin-top: 8px;
+            display: none;
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+            border-radius: 4px;
+            padding: 8px 12px;
+        }
+
+        .success-message {
+            color: #155724;
+            font-size: 14px;
+            margin-top: 8px;
+            display: none;
+            background-color: #d4edda;
+            border: 1px solid #c3e6cb;
+            border-radius: 4px;
+            padding: 8px 12px;
+        }
+
+        .approval-status {
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .approval-status.approved {
+            color: #28a745;
+        }
+
+        .approval-status.rejected {
+            color: #dc3545;
+        }
+
+        .approval-status.pending {
+            color: #ffc107;
+        }
+
+        .status-details {
+            font-size: 12px;
+            color: #6c757d;
+            margin-top: 4px;
+        }
+
+        .already-approved-notice {
+            background-color: #d4edda;
+            border: 1px solid #c3e6cb;
+            border-radius: 4px;
+            padding: 15px;
+            margin-bottom: 20px;
+            color: #155724;
+        }
+
+        .already-approved-notice strong {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+
+            .container {
+                padding: 20px;
+            }
+
+            .header {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .header h1 {
+                font-size: 20px;
+                margin-bottom: 10px;
+            }
+
+            table {
+                font-size: 14px;
+            }
+
+            th,
+            td {
+                padding: 8px 6px;
+            }
+
+            .submit-btn {
+                width: 100%;
+                max-width: 300px;
+            }
         }
     </style>
 </head>
@@ -168,85 +313,311 @@
                 <th>Finance Amount</th>
                 <td>₹{{finance_amount}}</td>
             </tr>
+            <tr>
+                <th>Approval Status</th>
+                <td>
+                    <span class="approval-status" id="approval-status">{{approval_status}}</span>
+                    <div class="status-details" id="status-details"></div>
+                </td>
+            </tr>
         </table>
 
-        <form id="quotationForm">
-            <!-- <div class="form-section">
-                <h2>Car Quotation</h2>
+        <div class="form-section">
+            <h2>Car Quotation Approval</h2>
 
-                <div class="form-group">
-                    <label for="indent_form">Request Id</label>
-                    <input type="text" id="indent_form" name="indent_form" value="{{id}}" readonly>
-                </div>
-                
-                <div class="form-group">
-                    <label for="remarks">Approval Remarks</label>
-                    <input type="text" id="remarks" name="remarks">
-                </div>
-                
-                <div class="submit-section">
-                    <a href="#" id="approveBtn" class="submit-btn">Approve</a>
-                </div>
-                
-                <script>
-                document.getElementById("approveBtn").addEventListener("click", function(event) {
+            <div id="already-approved-notice" class="already-approved-notice" style="display: none;">
+                <strong>This request has already been processed.</strong>
+                <span id="approval-details"></span>
+            </div>
+
+            <div class="form-group">
+                <label for="indent_form">Request Id</label>
+                <input type="text" id="indent_form" name="indent_form" value="{{id}}" readonly>
+            </div>
+
+            <div class="form-group">
+                <label for="remarks">Approval Remarks</label>
+                <textarea id="remarks" name="remarks" placeholder="Enter your approval remarks here..."></textarea>
+                <div class="error-message" id="remarks-error">Please enter approval remarks</div>
+            </div>
+
+            <div class="submit-section">
+                <button type="button" id="approveBtn" class="submit-btn">
+                    Approve Request
+                </button>
+                <span class="loading" id="loadingSpinner">Processing...</span>
+                <div class="success-message" id="success-message">Request approved successfully!</div>
+                <div class="error-message" id="error-message">An error occurred. Please try again.</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pass server data to JavaScript safely -->
+    <script type="text/javascript">
+        // Server data - this will be populated by the template engine
+        window.serverData = {
+            isApproved: "{{is_approved}}" === "True",
+            approvalStatus: "{{approval_status}}",
+            requestId: "{{id}}",
+            approvalRemarks: "{{approval_remarks}}",
+            approvedBy: "{{approved_by}}",
+            approvalDate: "{{approval_date}}"
+        };
+    </script>
+
+    <script type="text/javascript">
+        document.addEventListener('DOMContentLoaded', function() {
+            const approveBtn = document.getElementById('approveBtn');
+            const remarksInput = document.getElementById('remarks');
+            const indentFormInput = document.getElementById('indent_form');
+            const loadingSpinner = document.getElementById('loadingSpinner');
+            const successMessage = document.getElementById('success-message');
+            const errorMessage = document.getElementById('error-message');
+            const remarksError = document.getElementById('remarks-error');
+            const approvalStatusEl = document.getElementById('approval-status');
+            const statusDetailsEl = document.getElementById('status-details');
+            const alreadyApprovedNotice = document.getElementById('already-approved-notice');
+            const approvalDetailsEl = document.getElementById('approval-details');
+
+            // Initialize page based on server data
+            initializePage();
+
+            function initializePage() {
+                if (!window.serverData) {
+                    console.warn('Server data not available');
+                    return;
+                }
+
+                const { isApproved, approvalStatus, approvalRemarks, approvedBy, approvalDate } = window.serverData;
+
+                // Update approval status display
+                if (approvalStatusEl) {
+                    approvalStatusEl.textContent = approvalStatus || 'Pending';
+                    approvalStatusEl.className = 'approval-status ' + (approvalStatus || 'pending').toLowerCase();
+                }
+
+                // Show status details if available
+                if (statusDetailsEl && (approvedBy || approvalDate)) {
+                    let details = '';
+                    if (approvedBy) details += `By: ${approvedBy}`;
+                    if (approvalDate) details += (details ? '<br>' : '') + `On: ${approvalDate}`;
+                    statusDetailsEl.innerHTML = details;
+                }
+
+                // Handle already approved state
+                if (isApproved) {
+                    disableForm();
+                    if (alreadyApprovedNotice && approvalDetailsEl) {
+                        alreadyApprovedNotice.style.display = 'block';
+                        let approvalText = `Status: ${approvalStatus}`;
+                        if (approvalRemarks) {
+                            approvalText += `<br>Remarks: ${approvalRemarks}`;
+                        }
+                        approvalDetailsEl.innerHTML = approvalText;
+                    }
+                }
+
+                // Check URL parameters for status updates
+                checkUrlStatus();
+            }
+
+            function checkUrlStatus() {
+                const urlParams = new URLSearchParams(window.location.search);
+                const status = urlParams.get('status');
+                const message = urlParams.get('message');
+
+                if (status === 'success') {
+                    showSuccess(message || 'Request approved successfully!');
+                    disableForm();
+                } else if (status === 'error') {
+                    showError(message || 'An error occurred during approval.');
+                }
+            }
+
+            function showError(message, element = errorMessage) {
+                if (element) {
+                    element.textContent = message;
+                    element.style.display = 'block';
+                    setTimeout(() => {
+                        element.style.display = 'none';
+                    }, 8000);
+                }
+            }
+
+            function showSuccess(message) {
+                if (successMessage) {
+                    successMessage.textContent = message;
+                    successMessage.style.display = 'block';
+                    setTimeout(() => {
+                        successMessage.style.display = 'none';
+                    }, 10000);
+                }
+            }
+
+            function disableForm() {
+                if (approveBtn) {
+                    approveBtn.disabled = true;
+                    approveBtn.style.backgroundColor = '#6c757d';
+                    approveBtn.style.cursor = 'not-allowed';
+                    approveBtn.textContent = 'Already Processed';
+                }
+                if (remarksInput) {
+                    remarksInput.disabled = true;
+                }
+            }
+
+            function validateForm() {
+                let isValid = true;
+
+                // Hide all error messages first
+                if (remarksError) remarksError.style.display = 'none';
+                if (errorMessage) errorMessage.style.display = 'none';
+
+                // Don't validate if already approved
+                if (window.serverData && window.serverData.isApproved) {
+                    return false;
+                }
+
+                // Validate remarks
+                if (!remarksInput || !remarksInput.value.trim()) {
+                    if (remarksError) {
+                        remarksError.style.display = 'block';
+                    }
+                    if (remarksInput) {
+                        remarksInput.focus();
+                    }
+                    isValid = false;
+                }
+
+                // Validate indent form ID
+                if (!indentFormInput || !indentFormInput.value.trim()) {
+                    showError('Invalid request ID!');
+                    isValid = false;
+                }
+
+                return isValid;
+            }
+
+            function setLoadingState(loading) {
+                if (approveBtn) {
+                    approveBtn.disabled = loading;
+                    approveBtn.textContent = loading ? 'Processing...' : 'Approve Request';
+                }
+                if (loadingSpinner) {
+                    loadingSpinner.style.display = loading ? 'inline' : 'none';
+                }
+            }
+
+            async function callApprovalAPI(indentFormValue, remarksValue) {
+                try {
+                    const apiUrl = `${window.location.origin}/api/method/alms_app.api.emailsService.approve_car_indent_by_reporting`;
+                    
+                    const response = await fetch(apiUrl, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            indent_form: indentFormValue,
+                            remarks: remarksValue
+                        })
+                    });
+
+                    const result = await response.json();
+
+                    if (response.ok) {
+                        // Redirect back to same page with success status
+                        const successUrl = `${window.location.pathname}?id=${encodeURIComponent(indentFormValue)}&status=success&message=${encodeURIComponent('Request approved successfully!')}`;
+                        window.location.href = successUrl;
+                    } else {
+                        throw new Error(result.message || 'API call failed');
+                    }
+                } catch (error) {
+                    console.error('API Error:', error);
+                    setLoadingState(false);
+                    showError(error.message || 'An error occurred during approval');
+                }
+            }
+
+            function callApprovalAPIFallback(indentFormValue, remarksValue) {
+                // Fallback method using GET request with URL parameters
+                const apiUrl = `${window.location.origin}/api/method/alms_app.api.emailsService.approve_car_indent_by_reporting?indent_form=${encodeURIComponent(indentFormValue)}&remarks=${encodeURIComponent(remarksValue)}`;
+                window.location.href = apiUrl;
+            }
+
+            // Event Listeners
+            if (approveBtn) {
+                approveBtn.addEventListener('click', function(event) {
                     event.preventDefault();
 
-                    let indentFormValue = document.getElementById("indent_form").value;
-                    let remarksValue = document.getElementById("remarks").value;
-                
-                    let apiUrl = `${window.location.origin}/api/method/alms_app.api.emailsService.approve_car_indent_by_reporting?indent_form=${encodeURIComponent(indentFormValue)}&remarks=${encodeURIComponent(remarksValue)}`;
-                    console.log("Api Url",apiUrl)
-                    console.log(window.location.origin,"+")
-                    window.location.href = apiUrl;
+                    // Validate form
+                    if (!validateForm()) {
+                        return;
+                    }
+
+                    const indentFormValue = indentFormInput ? indentFormInput.value.trim() : '';
+                    const remarksValue = remarksInput ? remarksInput.value.trim() : '';
+
+                    // Set loading state
+                    setLoadingState(true);
+
+                    // Try modern fetch API first, fallback to redirect method
+                    if (window.fetch) {
+                        callApprovalAPI(indentFormValue, remarksValue);
+                    } else {
+                        callApprovalAPIFallback(indentFormValue, remarksValue);
+                    }
                 });
-                </script>
-                
-            </div> -->
-            <div class="form-section">
-                <h2>Car Quotation</h2>
+            }
 
-                <div class="form-group">
-                    <label for="indent_form">Request Id</label>
-                    <input type="text" id="indent_form" name="indent_form" readonly>
-                </div>
+            // Clear error messages when user types
+            if (remarksInput) {
+                remarksInput.addEventListener('input', function() {
+                    if (!(window.serverData && window.serverData.isApproved)) {
+                        if (remarksError) remarksError.style.display = 'none';
+                        if (errorMessage) errorMessage.style.display = 'none';
+                    }
+                });
 
-                <div class="form-group">
-                    <label for="remarks">Approval Remarks</label>
-                    <input type="text" id="remarks" name="remarks">
-                </div>
-
-                <div class="submit-section">
-                    <a href="#" id="approveBtn" class="submit-btn">Approve</a>
-                </div>
-
-                <script>
-                    const params = new URLSearchParams(window.location.search);
-                    const idFromUrl = params.get("id") || "";
-
-                    document.getElementById("indent_form").value = idFromUrl;
-
-                    document.getElementById("approveBtn").addEventListener("click", function (event) {
-                        event.preventDefault();
-
-                        const indentFormValue = document.getElementById("indent_form").value;
-                        const remarksValue = document.getElementById("remarks").value;
-
-                        if (!indentFormValue) {
-                            alert("Invalid request ID!");
-                            return;
+                // Handle Ctrl+Enter shortcut
+                remarksInput.addEventListener('keydown', function(event) {
+                    if (event.key === 'Enter' && event.ctrlKey) {
+                        if (!(window.serverData && window.serverData.isApproved) && approveBtn) {
+                            approveBtn.click();
                         }
+                    }
+                });
+            }
 
-                        // Call API dynamically
-                        const apiUrl = `${window.location.origin}/api/method/alms_app.api.emailsService.approve_car_indent_by_reporting?indent_form=${encodeURIComponent(indentFormValue)}&remarks=${encodeURIComponent(remarksValue)}`;
-                        console.log("API URL:", apiUrl);
+            // Auto-refresh functionality (optional)
+            let lastActivity = Date.now();
+            
+            function updateLastActivity() {
+                lastActivity = Date.now();
+            }
 
-                        window.location.href = apiUrl;
-                    });
-                </script>
-            </div>
-        </form>
-    </div>
+            // Track user activity
+            ['click', 'keypress', 'scroll', 'mousemove'].forEach(eventType => {
+                document.addEventListener(eventType, updateLastActivity, true);
+            });
+
+            // Optional: Check for page updates every 5 minutes
+            setInterval(() => {
+                const idleTime = Date.now() - lastActivity;
+                const isApproved = window.serverData && window.serverData.isApproved;
+                
+                // If idle for more than 5 minutes and not already approved
+                if (idleTime > 300000 && !isApproved) {
+                    const refresh = confirm('Page has been idle for a while. Would you like to refresh to check for updates?');
+                    if (refresh) {
+                        window.location.reload();
+                    }
+                    updateLastActivity(); // Reset idle timer
+                }
+            }, 300000); // Check every 5 minutes
+        });
+    </script>
 </body>
 
 </html>
