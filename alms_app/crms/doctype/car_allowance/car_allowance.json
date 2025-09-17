@@ -7,8 +7,9 @@
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
-  "employee_details_section",
+  "form_type_section",
   "form_type",
+  "employee_details_section",
   "employee_reporting",
   "department",
   "contact_number",
@@ -30,7 +31,7 @@
    "fieldname": "form_type",
    "fieldtype": "Select",
    "label": "Form Type",
-   "options": "Car\nAllowance"
+   "options": "Allowance"
   },
   {
    "fetch_from": "employee_code.reporting_head",
@@ -90,12 +91,16 @@
    "fieldname": "eligibility",
    "fieldtype": "Currency",
    "label": "Eligibility (Ex-Showroom Price)"
+  },
+  {
+   "fieldname": "form_type_section",
+   "fieldtype": "Section Break",
+   "label": "Form Type"
   }
  ],
- "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-06-06 16:11:44.458129",
+ "modified": "2025-09-17 17:17:23.765155",
  "modified_by": "Administrator",
  "module": "CRMS",
  "name": "Car Allowance",
@@ -115,7 +120,6 @@
    "write": 1
   }
  ],
- "row_format": "Dynamic",
  "sort_field": "modified",
  "sort_order": "DESC",
  "states": []

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -23,7 +24,7 @@
             background: white;
             padding: 30px;
             border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
 
         .header {
@@ -51,11 +52,14 @@
             margin-bottom: 20px;
         }
 
-        table, th, td {
+        table,
+        th,
+        td {
             border: 1px solid #ddd;
         }
 
-        th, td {
+        th,
+        td {
             padding: 10px;
             text-align: left;
         }
@@ -120,6 +124,7 @@
         }
     </style>
 </head>
+
 <body>
     <div class="container">
         <div class="header">
@@ -166,7 +171,7 @@
         </table>
 
         <form id="quotationForm">
-            <div class="form-section">
+            <!-- <div class="form-section">
                 <h2>Car Quotation</h2>
 
                 <div class="form-group">
@@ -197,36 +202,51 @@
                 });
                 </script>
                 
+            </div> -->
+            <div class="form-section">
+                <h2>Car Quotation</h2>
+
+                <div class="form-group">
+                    <label for="indent_form">Request Id</label>
+                    <input type="text" id="indent_form" name="indent_form" readonly>
+                </div>
+
+                <div class="form-group">
+                    <label for="remarks">Approval Remarks</label>
+                    <input type="text" id="remarks" name="remarks">
+                </div>
+
+                <div class="submit-section">
+                    <a href="#" id="approveBtn" class="submit-btn">Approve</a>
+                </div>
+
+                <script>
+                    const params = new URLSearchParams(window.location.search);
+                    const idFromUrl = params.get("id") || "";
+
+                    document.getElementById("indent_form").value = idFromUrl;
+
+                    document.getElementById("approveBtn").addEventListener("click", function (event) {
+                        event.preventDefault();
+
+                        const indentFormValue = document.getElementById("indent_form").value;
+                        const remarksValue = document.getElementById("remarks").value;
+
+                        if (!indentFormValue) {
+                            alert("Invalid request ID!");
+                            return;
+                        }
+
+                        // Call API dynamically
+                        const apiUrl = `${window.location.origin}/api/method/alms_app.api.emailsService.approve_car_indent_by_reporting?indent_form=${encodeURIComponent(indentFormValue)}&remarks=${encodeURIComponent(remarksValue)}`;
+                        console.log("API URL:", apiUrl);
+
+                        window.location.href = apiUrl;
+                    });
+                </script>
             </div>
         </form>
     </div>
-<!-- 
-    <script>
-        document.getElementById('quotationForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            // Collect form data
-            const formData = {
-                remakrs: document.getElementById('remarks').value,
-                indent_form: document.getElementById('indent_form').value,
-            };
-
-            // Simulate API call
-            alert('Quotation approved successfully!');
-            
-            fetch('http://127.0.0.1:8001/api/method/alms_app.api.emailsService.approve_car_indent_by_reporting', {
-                    method: "POST",
-                    headers: {
-                        "X-Frappe-CSRF-Token": frappe.csrf_token,
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify({ indent_form: "IND-00123" })
-                })
-                .then(response => response.json())
-                .then(data => console.log(data))
-                .catch(error => console.error("Error:", error));
-                
-        });
-    </script> -->
 </body>
+
 </html>

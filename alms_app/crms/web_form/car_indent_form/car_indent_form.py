@@ -71,32 +71,3 @@ def send_email_to_reporting_head(employee_code):
     except Exception as e:
         frappe.log_error(f"Error in send_email_to_reporting_head: {str(e)}")
         return {"status": "failed", "message": str(e)}
-    
-@frappe.whitelist(allow_guest=True)
-def send_allowance_email(employee_code):
-    try:
-        employee = frappe.get_doc("Employee Master", employee_code)
-        email_to = employee.email_id
-        cc_employee = frappe.get_doc("Employee Master", employee.reporting_head)
-        email_cc = cc_employee.email_id
-        hr_email = frappe.get_value("Management Team", {"designation": "HR"}, "email_id")
-        hr_name = frappe.get_value("Management Team", {"designation": "HR"}, "full_name")
-
-        if not hr_email:
-            frappe.throw("HR email not found in Management Team.")
-
-        subject = "Car Allowance Request Submitted"
-        message = f"Dear {hr_name},<br><br> {employee.employee_name} has requested for <strong>Car Allowance</strong> instead of Company Vehicle. Please reach out to the employee to share the process to get the car on allowance.<br><br>Thanks & Regards,<br>CRMS<br><br><strong>Note:</strong> This is an auto-generated email. Please do not reply to this email.<br><br>"
-        # print("------------[EMAIL MESSAGE]------------------:",email_to,email_cc,hr_email)
-        frappe.sendmail(
-            recipients=hr_email,
-            subject=subject,
-            message=message,
-            bcc="rishi.hingad@merillife.com",
-            cc=email_cc
-        )
-        return {"status": "success", "message": f"Email sent successfully to {email_to}."}
-
-    except Exception as e:
-        frappe.log_error(f"Error in send_allowance_email: {str(e)}")
-        return {"status": "failed", "message": str(e)}

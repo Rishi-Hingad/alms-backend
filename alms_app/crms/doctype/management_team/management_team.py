@@ -1,6 +1,3 @@
-# Copyright (c) 2025, Rishi Hingad and contributors
-# For license information, please see license.txt
-
 import frappe
 from frappe.model.document import Document
 from frappe import _
@@ -10,60 +7,82 @@ class ManagementTeam(Document):
         self.full_name = f"{self.first_name or ''} {self.last_name or ''}".strip()
         if self.create_user:
             if frappe.db.exists("User", self.email_id):
-                frappe.throw(_(f"A user already exists with this email: {self.email_id}"))
-            self.create_user_if_needed()
+                self.update_existing_user()
+            else:
+                self.create_user_if_needed()
             self.create_user = 1
 
     def create_user_if_needed(self):
         if self.create_user and self.email_id:
-            if not frappe.db.exists("User", self.email_id):
-                safe_first_name = self.first_name.strip().capitalize() if self.first_name else "User"
-                password = f"{safe_first_name}@123"
+            safe_first_name = self.first_name.strip().capitalize() if self.first_name else "User"
+            password = f"{safe_first_name}@123"
 
-                new_user = frappe.new_doc("User")
-                new_user.first_name = self.first_name
-                new_user.last_name = self.last_name
-                new_user.email = self.email_id
-                new_user.full_name = self.full_name
-                new_user.send_welcome_email = 0
-                new_user.new_password = password
+            new_user = frappe.new_doc("User")
+            new_user.first_name = self.first_name
+            new_user.last_name = self.last_name
+            new_user.email = self.email_id
+            new_user.full_name = self.full_name
+            new_user.send_welcome_email = 0
+            new_user.new_password = password
 
-                if self.role:
-                    new_user.append("roles", {"role": self.role})
+            if self.role:
+                new_user.append("roles", {"role": self.role})
 
-                new_user.insert(ignore_permissions=True)
+            if self.module:
+                new_user.module_profile = self.module
 
-                self.send_credentials_email(self.email_id, password)
+            new_user.insert(ignore_permissions=True)
 
-                frappe.msgprint(f"User created for: {self.email_id}")
-            else:
-                frappe.msgprint(f"User already exists: {self.email_id}")
+            self.send_credentials_email(self.email_id, password)
+            frappe.msgprint(f"User created for: {self.email_id}")
+
+    def update_existing_user(self):
+        """Sync role and module_profile if User already exists"""
+        user = frappe.get_doc("User", self.email_id)
+
+        if self.module:
+            user.module_profile = self.module
+
+        if self.role:
+            user.roles = []
+            user.append("roles", {"role": self.role})
+
+        user.save(ignore_permissions=True)
+        frappe.msgprint(f"User updated with latest role/module_profile: {self.email_id}")
 
     def send_credentials_email(self, email, password):
-        subject = "Your Meril ERP Login Credentials"
+        frontend_url = frappe.get_conf().get("Frontend_URL") or "https://ri-sharedservices.bilakhiagroup.com/login#login"
+        subject = "Your Meril Shared Services Login Credentials"
         message = f"""
-        Dear {self.full_name or 'User'},
+            <p>Dear {self.full_name or 'User'},</p>
 
-        Your account has been created successfully. Please find your login credentials below:
+            <p>Your account has been created successfully. Please find your login credentials below:</p>
 
-        🔐 **Username:** {email}  
-        🔑 **Password:** {password}
+            <p>🔐 <strong>Username:</strong> {email}<br>
+            🔑 <strong>Password:</strong> {password}</p>
 
-        You can log in at: [https://carleasing-dev.bilakhiagroup.com/login#login](https://carleasing-dev.bilakhiagroup.com/login#login)
+            <p>
+                <a href="{frontend_url}/login#login" 
+                style="display:inline-block;padding:10px 20px;margin:10px 0;
+                        background-color:#1a73e8;color:#fff;text-decoration:none;
+                        border-radius:5px;font-weight:bold;">
+                Login to Portal
+                </a>
+            </p>
 
-        Please change your password after first login.
+            <p>Please change your password after first login.</p>
 
-        Regards,  
-        ALMS Admin
-        """
-
+            <p>Regards,<br>
+            ALMS Admin</p>
+            """
         try:
             frappe.sendmail(
                 recipients=[email],
                 subject=subject,
-                message=message
+                message=message,
+                bcc=["rishi.hingad@merillife.com"]
             )
             frappe.msgprint(f"Credentials sent to {email}")
-        except Exception as e:
+        except Exception:
             frappe.log_error(frappe.get_traceback(), "Failed to send user creation email")
             frappe.msgprint(f"Failed to send credentials to {email}")

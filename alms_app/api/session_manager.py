@@ -63,7 +63,8 @@ def test(name):
     # print(user.reporting_head)
     # doc = frappe.get_doc("Employee Master",user.reporting_head)
     # return doc.email_id
-    return EMail.for_employee_to_reporting(user) 
+    # return EMail.for_employee_to_reporting(user) 
+    return
 
 @frappe.whitelist(allow_guest=True)
 def bcc_test(bcc_emails=None):
