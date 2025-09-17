@@ -228,6 +228,15 @@ def execute(filters=None):
 		for key in calc_dict:
 			calc_keys.append(key)
 
+	per_annum_rows = [child for child in doc.escalation if child.escalation_type == "Per Annum"]
+	if len(per_annum_rows) == 1:
+		row = per_annum_rows[0]
+		rate_val = float(row.rate) if row.rate is not None else 0
+		rent_val = float(row.monthly_rent) if row.monthly_rent is not None else 0
+		fixed_amt_val = float(row.fixed_amount) if row.fixed_amount is not None else 0
+
+		if rate_val == 0 and rent_val == 0 and fixed_amt_val == 0:
+			escalation = False
 	edates_pannum=[]
 	edates_bd=[]
 	edates_pafa=[]

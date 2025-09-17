@@ -1,6 +1,6 @@
 {
  "charts": [],
- "content": "[{\"id\":\"6S5LZGHPMU\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h3\\\">Vendor Dashboard</span>\",\"col\":12}},{\"id\":\"1KC4VDyU6V\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"HJUu3DK4Ae\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Total Lease Agreement's\",\"col\":4}},{\"id\":\"r3HGZ3oSse\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Total Ongoing Lease Agreement\",\"col\":4}},{\"id\":\"Bk-UW-_cH4\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Total Expired Lease Agreement\",\"col\":4}},{\"id\":\"3aCIEAU9jt\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"SQsgFs96Tg\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Add Invoice Details\",\"col\":3}},{\"id\":\"mkqcIsgfn4\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"IYRquODbAb\",\"type\":\"quick_list\",\"data\":{\"quick_list_name\":\"Lease Agreement's\",\"col\":4}},{\"id\":\"ZqZI-uHG1F\",\"type\":\"quick_list\",\"data\":{\"quick_list_name\":\"Ongoing Lease Agreement's\",\"col\":4}},{\"id\":\"aAJvAcwPj6\",\"type\":\"quick_list\",\"data\":{\"quick_list_name\":\"Expired Lease Agreement's\",\"col\":4}},{\"id\":\"Zk9ot3C1N7\",\"type\":\"spacer\",\"data\":{\"col\":12}}]",
+ "content": "[{\"id\":\"6S5LZGHPMU\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h3\\\">Vendor Dashboard</span>\",\"col\":12}},{\"id\":\"1KC4VDyU6V\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"d4mEkSQCM8\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Total Lease Agreement's\",\"col\":4}},{\"id\":\"r3HGZ3oSse\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Total Ongoing Lease Agreement\",\"col\":4}},{\"id\":\"Bk-UW-_cH4\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Total Expired Lease Agreement\",\"col\":4}},{\"id\":\"3aCIEAU9jt\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"SQsgFs96Tg\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Add Invoice Details\",\"col\":3}},{\"id\":\"mkqcIsgfn4\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"IYRquODbAb\",\"type\":\"quick_list\",\"data\":{\"quick_list_name\":\"Lease Agreement's\",\"col\":4}},{\"id\":\"ZqZI-uHG1F\",\"type\":\"quick_list\",\"data\":{\"quick_list_name\":\"Ongoing Lease Agreement's\",\"col\":4}},{\"id\":\"aAJvAcwPj6\",\"type\":\"quick_list\",\"data\":{\"quick_list_name\":\"Expired Lease Agreement's\",\"col\":4}},{\"id\":\"Zk9ot3C1N7\",\"type\":\"spacer\",\"data\":{\"col\":12}}]",
  "creation": "2025-09-05 16:44:24.569426",
  "custom_blocks": [],
  "docstatus": 0,
@@ -12,14 +12,14 @@
  "is_hidden": 0,
  "label": "Vendor Dashboard",
  "links": [],
- "modified": "2025-09-15 16:21:15.240285",
+ "modified": "2025-09-17 11:26:26.811054",
  "modified_by": "Administrator",
  "module": "Lease Management System",
  "name": "Vendor Dashboard",
  "number_cards": [
   {
    "label": "Total Lease Agreement's",
-   "number_card_name": "Total Lease"
+   "number_card_name": "Total Lease Agreement"
   },
   {
    "label": "Total Ongoing Lease Agreement",

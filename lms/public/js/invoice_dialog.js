@@ -15,6 +15,13 @@ window.open_invoice_dialog = function () {
                 fieldtype: 'Link',
                 options: 'Lease Management',
                 reqd: 1,
+                get_query: function () {
+                    return {
+                        filters: {
+                            status:'Active'
+                        }
+                    };
+                },
                 change: function () {
                     lease_id = d.get_value('lease_id');
                     if (lease_id) {
@@ -26,7 +33,7 @@ window.open_invoice_dialog = function () {
                     }
                 }
             },
-            { fieldtype: 'Section Break' },
+            { fieldtype: 'Section Break'},
             {
                 label: 'Agreement Start Date',
                 fieldname: 'start_date',
@@ -42,13 +49,13 @@ window.open_invoice_dialog = function () {
                 fieldtype: 'Date',
                 read_only: 1
             },
-            { fieldtype: 'Section Break' },
+            { fieldtype: 'Section Break'},
             {
                 label: 'Previous Invoices',
                 fieldname: 'invoice_html',
                 fieldtype: 'HTML'
             },
-            { fieldtype: 'Section Break' },
+            { fieldtype: 'Section Break'},
             {
                 label: 'Month',
                 fieldname: 'month',
@@ -198,7 +205,7 @@ window.open_invoice_dialog = function () {
         const fields_to_toggle = [
             'start_date', 'end_date', 'invoice_html',
             'month', 'from_date', 'to_date', 'amount', 'manage_attachments',
-            'with_tax', 'tax'
+            'with_tax', 'tax',
         ];
 
         fields_to_toggle.forEach(fieldname => {
