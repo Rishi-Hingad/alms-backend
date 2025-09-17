@@ -7,6 +7,7 @@ import smtplib,ssl
 from email.message import EmailMessage
 import frappe
 from alms_app.api.email_master import EmailMaster
+from urllib.parse import quote
 emailMaster = EmailMaster()
 
 
@@ -663,6 +664,20 @@ class EmailServices:
         self.send(subject=subject, body=body, recipient_email=recipient_email) 
  
     def for_employee_to_reporting(self, user):
+        employee = frappe.get_doc("Employee Master", user.name)
+
+        # Fetch the latest submitted Car Indent Form for this employee
+        car_indent_form = frappe.get_all(
+            "Car Indent Form",
+            filters={"employee_code": employee.name},
+            fields=["name"],
+            order_by="creation desc",
+            limit=1
+        )
+        if not car_indent_form:
+            frappe.throw(f"No Car Indent Form found for {employee.employee_name}")
+
+        car_indent_form_name = car_indent_form[0].name
         doc = frappe.get_doc("Employee Master",user.reporting_head)
         print("------------[EMPLOYEE TO REPORTING]------------------:",doc)
         reporting_head_name = doc.employee_name
@@ -675,7 +690,7 @@ class EmailServices:
         We are pleased to inform you that {user.employee_name} has submitted the car rental form for your review.
         <br><br>Kindly check and take necessary action at your earliest convenience.<br><br>
         """
-        link = f"{frappe.utils.get_url()}/reportnig_head_approval?id={user.name}"
+        link = f"{frappe.utils.get_url()}/reportnig_head_approval?id={quote(car_indent_form_name)}"
         body = self.create_reporting_email(subject, content, regards,link)
         self.send(subject=subject, body=body, recipient_email=recipient_email)
         # self.send(subject=subject, body=body, recipient_email=recipient_email,bcc_emails=bcc_emails)

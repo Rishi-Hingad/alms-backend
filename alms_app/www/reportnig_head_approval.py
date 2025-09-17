@@ -29,11 +29,26 @@ def get_context(context):
     if not id:
         frappe.throw("Missing Car Indent Form ID in URL")
 
-    form_data = frappe.get_doc("Car Indent Form", id)
+    try:
+        form_data = frappe.get_doc("Car Indent Form", id)
+    except frappe.DoesNotExistError:
+        employee_name = id
+        emp = frappe.get_doc("Employee Master", employee_name)
+        forms = frappe.get_all(
+            "Car Indent Form",
+            filters={"employee_code": emp.name},
+            fields=["name"],
+            order_by="creation desc",
+            limit=1
+        )
+        if not forms:
+            frappe.throw(f"No Car Indent Form found for {emp.employee_name}")
+        form_data = frappe.get_doc("Car Indent Form", forms[0].name)
+
     user = frappe.get_doc("Employee Master", form_data.employee_code)
 
     context.update({
-        "id": id,
+        "id": form_data.name,
         "employee_name": user.employee_name,
         "employee_email": form_data.email_id,
         "reporting_head_name": form_data.employee_reporting,
@@ -43,10 +58,11 @@ def get_context(context):
         "company_name": user.company,
         "designation": user.designation,
         "eligibility": user.eligibility,
-        "link": f"{frappe.utils.get_url()}/api/method/alms_app.api.emailsService.approve_car_indent_by_reporting?indent_form={user.name}"
+        "link": f"{frappe.utils.get_url()}/api/method/alms_app.api.emailsService.approve_car_indent_by_reporting?indent_form={form_data.name}"
     })
 
-    # Prevent caching (optional, but safer)
+    # Prevent caching
     frappe.local.flags.ignore_cache = True
 
     return context
+
