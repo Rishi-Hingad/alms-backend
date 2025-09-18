@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -68,11 +69,14 @@
             margin-bottom: 20px;
         }
 
-        table, th, td {
+        table,
+        th,
+        td {
             border: 1px solid #ddd;
         }
 
-        th, td {
+        th,
+        td {
             padding: 12px 10px;
             text-align: left;
             vertical-align: top;
@@ -117,7 +121,8 @@
             margin-left: 4px;
         }
 
-        .form-group input, .form-group textarea {
+        .form-group input,
+        .form-group textarea {
             width: 100%;
             padding: 10px 12px;
             border: 1px solid #ced4da;
@@ -132,13 +137,15 @@
             font-family: Arial, sans-serif;
         }
 
-        .form-group input:focus, .form-group textarea:focus {
+        .form-group input:focus,
+        .form-group textarea:focus {
             outline: none;
             border-color: #007bff;
             box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
         }
 
-        .form-group input:disabled, .form-group textarea:disabled {
+        .form-group input:disabled,
+        .form-group textarea:disabled {
             background-color: #e9ecef;
             opacity: 1;
         }
@@ -280,7 +287,8 @@
                 font-size: 14px;
             }
 
-            th, td {
+            th,
+            td {
                 padding: 8px 6px;
             }
 
@@ -291,10 +299,11 @@
         }
     </style>
 </head>
+
 <body>
     <div class="container">
         <div class="header">
-            <h1>Reporting Head Approval
+            <h1>Reporting Head Approval for <span id="page-title-id"></span>
                 <button class="refresh-btn" id="refreshBtn" title="Refresh Data">🔄</button>
             </h1>
         </div>
@@ -367,10 +376,10 @@
                     <span id="approval-details"></span>
                 </div>
 
-                <!-- <div class="form-group">
+                <div class="form-group">
                     <label for="indent_form">Request Id</label>
-                    <input type="text" id="indent_form" name="indent_form" value="{{ id }}" readonly>
-                </div> -->
+                    <input type="text" id="indent_form" name="indent_form" readonly>
+                </div>
 
                 <div class="form-group">
                     <label for="remarks">Approval Remarks</label>
@@ -390,15 +399,15 @@
                     <div class="error-message" id="error-message">An error occurred. Please try again.</div>
                 </div>
                 <script>
-                document.getElementById("approveBtn").addEventListener("click", function(event) {
-                    event.preventDefault();
-                    let indentFormValue = document.getElementById("indent_form").value;
-                    let remarksValue = document.getElementById("remarks").value;
-                    let apiUrl = `${window.location.origin}/api/method/alms_app.api.emailsService.approve_car_indent_by_reporting?indent_form=${encodeURIComponent(indentFormValue)}&remarks=${encodeURIComponent(remarksValue)}`;
-                    console.log("Api Url",apiUrl)
-                    console.log(window.location.origin,"+")
-                    window.location.href = apiUrl;
-                });
+                    document.getElementById("approveBtn").addEventListener("click", function (event) {
+                        event.preventDefault();
+                        let indentFormValue = document.getElementById("indent_form").value;
+                        let remarksValue = document.getElementById("remarks").value;
+                        let apiUrl = `${window.location.origin}/api/method/alms_app.api.emailsService.approve_car_indent_by_reporting?indent_form=${encodeURIComponent(indentFormValue)}&remarks=${encodeURIComponent(remarksValue)}`;
+                        console.log("Api Url", apiUrl)
+                        console.log(window.location.origin, "+")
+                        window.location.href = apiUrl;
+                    });
                 </script>
             </div>
         </div>
@@ -410,7 +419,7 @@
             BASE_URL: (() => {
                 const protocol = window.location.protocol;
                 const host = window.location.host;
-                
+
                 // Handle different environments
                 if (host.includes('localhost') || host.includes('127.0.0.1')) {
                     // Development environment
@@ -428,7 +437,7 @@
         };
     </script>
     <script type="text/javascript">
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             // Configuration - Using global site config
             const search = new URLSearchParams(window.location.search)
             const CONFIG = {
@@ -438,13 +447,17 @@
                 retryDelay: 3000
             };
 
+            document.getElementById("indent_form").value = CONFIG.requestId;
+            document.getElementById("page-title-id").textContent = CONFIG.requestId;
+
+
             // Debug logging
-            console.log('Page Config:', CONFIG);
-            console.log('Site URL:', CONFIG.apiBaseUrl);
-            console.log('Available globals:', {
-                frappe: typeof frappe !== 'undefined',
-                frappeReady: typeof frappe !== 'undefined' && frappe.ready
-            });
+            // console.log('Page Config:', CONFIG);
+            // console.log('Site URL:', CONFIG.apiBaseUrl);
+            // console.log('Available globals:', {
+            //     frappe: typeof frappe !== 'undefined',
+            //     frappeReady: typeof frappe !== 'undefined' && frappe.ready
+            // });
 
             // Global state
             let currentData = null;
@@ -474,7 +487,7 @@
             init();
 
             function init() {
-                console.log('Initializing page for request:', CONFIG.requestId);
+                // console.log('Initializing page for request:', CONFIG.requestId);
                 loadData();
                 setupEventListeners();
                 checkUrlStatus();
@@ -498,14 +511,14 @@
 
                 if (elements.remarksInput) {
                     elements.remarksInput.addEventListener('input', clearFormErrors);
-                    elements.remarksInput.addEventListener('keydown', function(event) {
+                    elements.remarksInput.addEventListener('keydown', function (event) {
                         if (event.key === 'Enter' && event.ctrlKey && !isApproved) {
                             handleApproval();
                         }
                     });
                 }
 
-                document.addEventListener('visibilitychange', function() {
+                document.addEventListener('visibilitychange', function () {
                     if (!document.hidden) {
                         loadData();
                     }
@@ -513,16 +526,16 @@
             }
 
             async function loadData() {
-                console.log('🔄 Starting loadData...');
+                // console.log('🔄 Starting loadData...');
                 showLoading();
                 hideError();
 
                 try {
                     // Try both GET and POST methods
                     const apiUrl = `${CONFIG.apiBaseUrl}/api/method/alms_app.www.reportnig_head_approval.get_car_indent_data`;
-                    
-                    console.log('📡 Fetching data from:', apiUrl);
-                    console.log('📝 Request ID:', CONFIG.requestId);
+
+                    // console.log('📡 Fetching data from:', apiUrl);
+                    // console.log('📝 Request ID:', CONFIG.requestId);
 
                     // First try POST method
                     let response = await fetch(apiUrl, {
@@ -539,10 +552,10 @@
 
                     // If POST fails, try GET method
                     if (!response.ok) {
-                        console.log('❌ POST failed, trying GET method...');
+                        // console.log('❌ POST failed, trying GET method...');
                         const getUrl = `${apiUrl}?indent_form_id=${encodeURIComponent(CONFIG.requestId)}`;
-                        console.log('📡 GET URL:', getUrl);
-                        
+                        // console.log('📡 GET URL:', getUrl);
+
                         response = await fetch(getUrl, {
                             method: 'GET',
                             headers: {
@@ -552,23 +565,23 @@
                         });
                     }
 
-                    console.log('📊 Response status:', response.status, response.statusText);
+                    // console.log('📊 Response status:', response.status, response.statusText);
 
                     if (!response.ok) {
                         const errorText = await response.text();
-                        console.error('❌ Response error:', errorText);
+                        // console.error('❌ Response error:', errorText);
                         throw new Error(`HTTP ${response.status}: ${response.statusText}\n${errorText}`);
                     }
 
                     const result = await response.json();
-                    console.log('✅ Full API Response:', result);
-                    console.log('🔍 Response structure:', {
-                        hasMessage: !!result.message,
-                        hasSuccess: !!result.success,
-                        messageType: typeof result.message,
-                        successType: typeof result.success,
-                        keys: Object.keys(result)
-                    });
+                    // console.log('✅ Full API Response:', result);
+                    // console.log('🔍 Response structure:', {
+                    //     hasMessage: !!result.message,
+                    //     hasSuccess: !!result.success,
+                    //     messageType: typeof result.message,
+                    //     successType: typeof result.success,
+                    //     keys: Object.keys(result)
+                    // });
 
                     // Handle different response formats
                     let data = null;
@@ -578,42 +591,42 @@
                         // Frappe wrapped response: { message: { success: true, data: {...} } }
                         data = result.message.data;
                         success = result.message.success;
-                        console.log('📋 Using message.data format');
+                        // console.log('📋 Using message.data format');
                     } else if (result.success) {
                         // Direct response: { success: true, data: {...} }
                         data = result.data;
                         success = result.success;
-                        console.log('📋 Using direct format');
+                        // console.log('📋 Using direct format');
                     } else if (result.message && typeof result.message === 'string') {
                         // String message response
-                        console.log('📋 String message response:', result.message);
+                        // console.log('📋 String message response:', result.message);
                         throw new Error(result.message);
                     } else {
-                        console.log('❓ Unknown response format');
+                        // console.log('❓ Unknown response format');
                         throw new Error('Unknown response format: ' + JSON.stringify(result));
                     }
 
                     if (success && data) {
-                        console.log('✅ Processing successful data:', data);
+                        // console.log('✅ Processing successful data:', data);
                         currentData = data;
                         updateUI(data);
                         hideLoading();
                         showMainContent();
                     } else {
-                        console.error('❌ API returned unsuccessful response');
+                        // console.error('❌ API returned unsuccessful response');
                         throw new Error('API returned unsuccessful response or no data');
                     }
 
                 } catch (error) {
-                    console.error('💥 Error in loadData:', error);
-                    console.error('💥 Error stack:', error.stack);
+                    // console.error('💥 Error in loadData:', error);
+                    // console.error('💥 Error stack:', error.stack);
                     showError(`Failed to load data: ${error.message}`);
                     hideLoading();
                 }
             }
 
             function updateUI(data) {
-                console.log('Updating UI with data:', data);
+                // console.log('Updating UI with data:', data);
 
                 const updates = {
                     'company-name': data.company_name,
@@ -712,7 +725,7 @@
                 try {
                     // Make sure this matches your actual app name and API method
                     const apiUrl = `${CONFIG.apiBaseUrl}/api/method/alms_app.api.emailsService.approve_car_indent_by_reporting`;
-                    
+
                     const response = await fetch(apiUrl, {
                         method: 'POST',
                         headers: {
@@ -726,7 +739,7 @@
                     });
 
                     const result = await response.json();
-                    console.log('Approval API Response:', result);
+                    // console.log('Approval API Response:', result);
 
                     // Handle Frappe API response format
                     if (response.ok && (result.message || result.success)) {
@@ -739,7 +752,7 @@
                     }
 
                 } catch (error) {
-                    console.error('Approval error:', error);
+                    // console.error('Approval error:', error);
                     showFormError(error.message || 'An error occurred during approval');
                 } finally {
                     setLoadingState(false);
@@ -748,17 +761,17 @@
 
             // async function handleRejection() {
             //     if (isApproved) return;
-            
+
             //     if (!validateForm()) return;
-            
+
             //     const indentFormValue = elements.indentFormInput ? elements.indentFormInput.value.trim() : '';
             //     const remarksValue = elements.remarksInput ? elements.remarksInput.value.trim() : '';
-            
+
             //     setLoadingState(true);
-            
+
             //     try {
             //         const apiUrl = `${CONFIG.apiBaseUrl}/api/method/alms_app.api.emailsService.reject_car_indent_by_reporting`;
-                    
+
             //         const response = await fetch(apiUrl, {
             //             method: 'POST',
             //             headers: {
@@ -770,9 +783,9 @@
             //                 remarks: remarksValue
             //             })
             //         });
-            
+
             //         const result = await response.json();
-            
+
             //         if (response.ok && (result.message || result.success)) {
             //             showFormSuccess('Request rejected successfully!');
             //             // Refresh data after 2 seconds
@@ -782,7 +795,7 @@
             //         } else {
             //             throw new Error(result.message || 'Rejection failed');
             //         }
-            
+
             //     } catch (error) {
             //         console.error('Rejection error:', error);
             //         showFormError(error.message || 'An error occurred during rejection');
@@ -853,13 +866,13 @@
                 if (elements.loadingIndicator) {
                     elements.loadingIndicator.style.display = 'block';
                 }
-                
+
                 // Update debug info in loading display
                 const debugRequestId = document.getElementById('debug-request-id');
                 if (debugRequestId) {
                     debugRequestId.textContent = CONFIG.requestId;
                 }
-                
+
                 const debugApiPreview = document.getElementById('debug-api-preview');
                 if (debugApiPreview) {
                     debugApiPreview.textContent = `${CONFIG.apiBaseUrl}/api/method/alms_app.www.reportnig_head_approval.get_car_indent_data?indent_form_id=${CONFIG.requestId}`;
@@ -873,17 +886,17 @@
             }
 
             function showError(message) {
-                console.error('🚨 Showing error:', message);
+                // console.error('🚨 Showing error:', message);
                 if (elements.errorMessage) {
                     elements.errorMessage.textContent = message;
                 }
-                
+
                 // Show debug info
                 const debugUrl = document.getElementById('debug-api-url');
                 if (debugUrl) {
                     debugUrl.textContent = `${CONFIG.apiBaseUrl}/api/method/alms_app.www.reportnig_head_approval.get_car_indent_data`;
                 }
-                
+
                 if (elements.errorDisplay) {
                     elements.errorDisplay.style.display = 'block';
                 }
@@ -942,7 +955,7 @@
                 }
             });
 
-            document.addEventListener('visibilitychange', function() {
+            document.addEventListener('visibilitychange', function () {
                 if (document.hidden) {
                     if (refreshTimer) {
                         clearInterval(refreshTimer);
@@ -958,4 +971,5 @@
         });
     </script>
 </body>
+
 </html>
