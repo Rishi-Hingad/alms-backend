@@ -430,8 +430,9 @@
     <script type="text/javascript">
         document.addEventListener('DOMContentLoaded', function() {
             // Configuration - Using global site config
+            const search = new URLSearchParams(window.location.search)
             const CONFIG = {
-                requestId: window.SITE_CONFIG.REQUEST_ID,
+                requestId: search.get("id"),
                 apiBaseUrl: window.SITE_CONFIG.BASE_URL,
                 refreshInterval: 30000,
                 retryDelay: 3000
@@ -880,7 +881,7 @@
                 // Show debug info
                 const debugUrl = document.getElementById('debug-api-url');
                 if (debugUrl) {
-                    debugUrl.textContent = `${CONFIG.apiBaseUrl}/api/method/alms_app.api.reporting_head_approval1.get_car_indent_data`;
+                    debugUrl.textContent = `${CONFIG.apiBaseUrl}/api/method/alms_app.www.reportnig_head_approval.get_car_indent_data`;
                 }
                 
                 if (elements.errorDisplay) {
