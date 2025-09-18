@@ -186,11 +186,6 @@ frappe.ui.form.on("Lease Management", {
             frm.add_custom_button(__('Add Invoice Entry'), function() {
                 open_invoice_dialog();
             });
-
-            frm.add_custom_button(__('Go to Invoice Details'), function() {
-            // Scroll to the field
-            frm.scroll_to_field('invoice_details');
-        });
         }
 
         if(frm.doc.invoice_details && frm.doc.invoice_details.length >0 && (frappe.user.has_role("Accounts") || frappe.user.has_role("System Manager"))){
@@ -268,7 +263,12 @@ frappe.ui.form.on("Lease Management", {
                     }
                 });
             }
-            
+            if(frappe.user.has_role('Vendor')||frappe.user.has_role('Accounts')){
+            frm.add_custom_button(__('Go to Invoice Details'), function() {
+                // Scroll to the field
+                frm.scroll_to_field('invoice_details');
+            });
+        }
         }
         
     },
