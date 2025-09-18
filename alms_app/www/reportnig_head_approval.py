@@ -105,7 +105,7 @@ from frappe import _
 
 def get_context(context):
     """
-    Minimal context - just provide the ID, let JavaScript handle the site URL
+    Enhanced context with aggressive cache prevention for production
     """
     try:
         # Get the 'id' parameter from the URL query string
@@ -114,16 +114,42 @@ def get_context(context):
         # Provide default values to prevent template errors
         context.id = record_id or "NO_ID_PROVIDED"
         
+        # Add cache busting
+        current_time = now()
+        context.cache_buster = get_datetime().strftime('%Y%m%d_%H%M%S_%f')
+        context.timestamp = current_time
+        
         # Optional: Add other useful context data
         context.is_logged_in = frappe.session.user != "Guest"
         context.current_user = frappe.session.user
+        context.unique_key = f"{record_id}_{context.cache_buster}"
         
         # If no ID provided, we'll still render the page but show an error
         if not record_id:
-            frappe.msgprint("❌ ID parameter is missing in the URL. Please provide a valid Car Indent Form ID.")
+            frappe.msgprint("ID parameter is missing in the URL. Please provide a valid Car Indent Form ID.")
         
-        # Prevent caching
+        # CRITICAL: Prevent all forms of caching in production
         frappe.local.flags.ignore_cache = True
+        frappe.local.flags.ignore_website_cache = True
+        
+        # Set aggressive anti-cache headers for the web page
+        if hasattr(frappe.local, 'response'):
+            if not hasattr(frappe.local.response, 'headers'):
+                frappe.local.response.headers = {}
+            
+            frappe.local.response.headers.update({
+                'Cache-Control': 'no-cache, no-store, must-revalidate, private, max-age=0',
+                'Pragma': 'no-cache',
+                'Expires': '0',
+                'Last-Modified': current_time,
+                'ETag': f'"{context.unique_key}"',
+                'Vary': 'Accept-Encoding, User-Agent',
+                'X-Cache-Buster': context.cache_buster
+            })
+        
+        # Clear any website cache for this route
+        if hasattr(frappe, 'website') and hasattr(frappe.website, 'clear_cache'):
+            frappe.website.clear_cache('reporting-head-approval')
         
         return context
         
@@ -132,6 +158,7 @@ def get_context(context):
         # Don't throw error, just provide minimal context
         context.id = "ERROR"
         context.error_message = str(e)
+        context.cache_buster = now()
         return context
 
 
