@@ -1,0 +1,960 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>Reporting Head Approval</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background-color: #f5f5f5;
+            padding: 20px;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 15px;
+        }
+
+        .header h1 {
+            font-size: 24px;
+            color: #333;
+            font-weight: 600;
+        }
+
+        .loading-indicator {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+            font-style: italic;
+        }
+
+        .error-display {
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+            border-radius: 4px;
+            padding: 15px;
+            color: #721c24;
+            margin: 20px 0;
+            display: none;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+
+        th, td {
+            padding: 12px 10px;
+            text-align: left;
+            vertical-align: top;
+        }
+
+        th {
+            background-color: #f8f9fa;
+            font-weight: 600;
+            color: #495057;
+        }
+
+        td {
+            background-color: #fff;
+        }
+
+        .form-section {
+            margin-top: 20px;
+        }
+
+        .form-section h2 {
+            font-size: 20px;
+            color: #444;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #495057;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .form-group label::after {
+            content: "*";
+            color: #dc3545;
+            margin-left: 4px;
+        }
+
+        .form-group input, .form-group textarea {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            font-size: 14px;
+            transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+        }
+
+        .form-group textarea {
+            min-height: 100px;
+            resize: vertical;
+            font-family: Arial, sans-serif;
+        }
+
+        .form-group input:focus, .form-group textarea:focus {
+            outline: none;
+            border-color: #007bff;
+            box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+        }
+
+        .form-group input:disabled, .form-group textarea:disabled {
+            background-color: #e9ecef;
+            opacity: 1;
+        }
+
+        .submit-section {
+            margin-top: 30px;
+            text-align: center;
+        }
+
+        .submit-btn {
+            padding: 12px 30px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 500;
+            text-decoration: none;
+            display: inline-block;
+            transition: background-color 0.3s ease;
+            min-width: 150px;
+        }
+
+        .submit-btn:hover:not(:disabled) {
+            background-color: #218838;
+            transform: translateY(-1px);
+        }
+
+        .submit-btn:disabled {
+            background-color: #6c757d;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .loading {
+            display: none;
+            margin-left: 15px;
+            color: #6c757d;
+            font-style: italic;
+        }
+
+        .error-message {
+            color: #dc3545;
+            font-size: 14px;
+            margin-top: 8px;
+            display: none;
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+            border-radius: 4px;
+            padding: 8px 12px;
+        }
+
+        .success-message {
+            color: #155724;
+            font-size: 14px;
+            margin-top: 8px;
+            display: none;
+            background-color: #d4edda;
+            border: 1px solid #c3e6cb;
+            border-radius: 4px;
+            padding: 8px 12px;
+        }
+
+        .approval-status {
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .approval-status.approved {
+            color: #28a745;
+        }
+
+        .approval-status.rejected {
+            color: #dc3545;
+        }
+
+        .approval-status.pending {
+            color: #ffc107;
+        }
+
+        .status-details {
+            font-size: 12px;
+            color: #6c757d;
+            margin-top: 4px;
+        }
+
+        .already-approved-notice {
+            background-color: #d4edda;
+            border: 1px solid #c3e6cb;
+            border-radius: 4px;
+            padding: 15px;
+            margin-bottom: 20px;
+            color: #155724;
+            display: none;
+        }
+
+        .already-approved-notice strong {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .refresh-btn {
+            background-color: #17a2b8;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-left: 10px;
+        }
+
+        .refresh-btn:hover {
+            background-color: #138496;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+
+            .container {
+                padding: 20px;
+            }
+
+            .header {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .header h1 {
+                font-size: 20px;
+                margin-bottom: 10px;
+            }
+
+            table {
+                font-size: 14px;
+            }
+
+            th, td {
+                padding: 8px 6px;
+            }
+
+            .submit-btn {
+                width: 100%;
+                max-width: 300px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Reporting Head Approval [<span id="page-title-id">{{ id }}</span>] 
+                <button class="refresh-btn" id="refreshBtn" title="Refresh Data">🔄</button>
+            </h1>
+        </div>
+
+        <div class="loading-indicator" id="loadingIndicator">
+            Loading data...<br>
+            <small>Debug Info:</small><br>
+            <small>ID from template: <span id="debug-template-id">{{ id }}</span></small><br>
+            <small>Request ID: <span id="debug-request-id"></span></small><br>
+            <small>API URL will be: <span id="debug-api-preview"></span></small>
+        </div>
+
+        <div class="error-display" id="errorDisplay">
+            <strong>Error:</strong> <span id="errorMessage"></span>
+            <br><small>API URL: <span id="debug-api-url"></span></small>
+        </div>
+
+        <div id="mainContent" style="display: none;">
+            <table>
+                <tr>
+                    <th>Company Name</th>
+                    <td id="company-name">-</td>
+                </tr>
+                <tr>
+                    <th>Employee Name</th>
+                    <td id="employee-name">-</td>
+                </tr>
+                <tr>
+                    <th>Employee Email</th>
+                    <td id="employee-email">-</td>
+                </tr>
+                <tr>
+                    <th>Designation</th>
+                    <td id="designation">-</td>
+                </tr>
+                <tr>
+                    <th>Reporting Head Name</th>
+                    <td id="reporting-head">-</td>
+                </tr>
+                <tr>
+                    <th>Eligibility</th>
+                    <td id="eligibility">-</td>
+                </tr>
+                <tr>
+                    <th>Vehicle Make and Model</th>
+                    <td id="vehicle-model">-</td>
+                </tr>
+                <tr>
+                    <th>Net Ex Showroom Amount</th>
+                    <td id="ex-showroom">-</td>
+                </tr>
+                <tr>
+                    <th>Finance Amount</th>
+                    <td id="finance-amount">-</td>
+                </tr>
+                <tr>
+                    <th>Approval Status</th>
+                    <td>
+                        <span class="approval-status" id="approval-status">-</span>
+                        <div class="status-details" id="status-details"></div>
+                    </td>
+                </tr>
+            </table>
+
+            <div class="form-section">
+                <h2>Car Quotation Approval</h2>
+
+                <div id="already-approved-notice" class="already-approved-notice">
+                    <strong>This request has already been processed.</strong>
+                    <span id="approval-details"></span>
+                </div>
+
+                <div class="form-group">
+                    <label for="indent_form">Request Id</label>
+                    <input type="text" id="indent_form" name="indent_form" value="{{ id }}" readonly>
+                </div>
+
+                <div class="form-group">
+                    <label for="remarks">Approval Remarks</label>
+                    <textarea id="remarks" name="remarks" placeholder="Enter your approval remarks here..."></textarea>
+                    <div class="error-message" id="remarks-error">Please enter approval remarks</div>
+                </div>
+
+                <div class="submit-section">
+                    <button type="button" id="approveBtn" class="submit-btn">
+                        Approve Request
+                    </button>
+                    <!-- <button type="button" id="rejectBtn" class="submit-btn reject-btn">
+                        Reject Request
+                    </button> -->
+                    <span class="loading" id="loadingSpinner">Processing...</span>
+                    <div class="success-message" id="success-message">Request processed successfully!</div>
+                    <div class="error-message" id="error-message">An error occurred. Please try again.</div>
+                </div>
+                <script>
+                document.getElementById("approveBtn").addEventListener("click", function(event) {
+                    event.preventDefault();
+                    let indentFormValue = document.getElementById("indent_form").value;
+                    let remarksValue = document.getElementById("remarks").value;
+                    let apiUrl = `${window.location.origin}/api/method/alms_app.api.emailsService.approve_car_indent_by_reporting?indent_form=${encodeURIComponent(indentFormValue)}&remarks=${encodeURIComponent(remarksValue)}`;
+                    console.log("Api Url",apiUrl)
+                    console.log(window.location.origin,"+")
+                    window.location.href = apiUrl;
+                });
+                </script>
+            </div>
+        </div>
+    </div>
+
+    <script type="text/javascript">
+        // Set global site configuration with environment detection
+        window.SITE_CONFIG = {
+            BASE_URL: (() => {
+                const protocol = window.location.protocol;
+                const host = window.location.host;
+                
+                // Handle different environments
+                if (host.includes('localhost') || host.includes('127.0.0.1')) {
+                    // Development environment
+                    return `${protocol}//${host}`;
+                } else if (host.includes('staging')) {
+                    // Staging environment
+                    return `${protocol}//${host}`;
+                } else {
+                    // Production environment
+                    return `${protocol}//${host}`;
+                }
+            })(),
+            REQUEST_ID: "{{ id }}",
+            ENVIRONMENT: window.location.host.includes('localhost') ? 'dev' : 'prod'
+        };
+    </script>
+    <script type="text/javascript">
+        document.addEventListener('DOMContentLoaded', function() {
+            // Configuration - Using global site config
+            const CONFIG = {
+                requestId: window.SITE_CONFIG.REQUEST_ID,
+                apiBaseUrl: window.SITE_CONFIG.BASE_URL,
+                refreshInterval: 30000,
+                retryDelay: 3000
+            };
+
+            // Debug logging
+            console.log('Page Config:', CONFIG);
+            console.log('Site URL:', CONFIG.apiBaseUrl);
+            console.log('Available globals:', {
+                frappe: typeof frappe !== 'undefined',
+                frappeReady: typeof frappe !== 'undefined' && frappe.ready
+            });
+
+            // Global state
+            let currentData = null;
+            let isApproved = false;
+            let refreshTimer = null;
+
+            // DOM Elements
+            const elements = {
+                loadingIndicator: document.getElementById('loadingIndicator'),
+                errorDisplay: document.getElementById('errorDisplay'),
+                errorMessage: document.getElementById('errorMessage'),
+                mainContent: document.getElementById('mainContent'),
+                refreshBtn: document.getElementById('refreshBtn'),
+                approveBtn: document.getElementById('approveBtn'),
+                rejectBtn: document.getElementById('rejectBtn'),
+                remarksInput: document.getElementById('remarks'),
+                indentFormInput: document.getElementById('indent_form'),
+                loadingSpinner: document.getElementById('loadingSpinner'),
+                successMessage: document.getElementById('success-message'),
+                formErrorMessage: document.getElementById('error-message'),
+                remarksError: document.getElementById('remarks-error'),
+                alreadyApprovedNotice: document.getElementById('already-approved-notice'),
+                approvalDetails: document.getElementById('approval-details')
+            };
+
+            // Initialize page
+            init();
+
+            function init() {
+                console.log('Initializing page for request:', CONFIG.requestId);
+                loadData();
+                setupEventListeners();
+                checkUrlStatus();
+                startAutoRefresh();
+            }
+
+            function setupEventListeners() {
+                if (elements.refreshBtn) {
+                    elements.refreshBtn.addEventListener('click', () => {
+                        loadData();
+                    });
+                }
+
+                if (elements.approveBtn) {
+                    elements.approveBtn.addEventListener('click', handleApproval);
+                }
+
+                if (elements.rejectBtn) {
+                    elements.rejectBtn.addEventListener('click', handleRejection);
+                }
+
+                if (elements.remarksInput) {
+                    elements.remarksInput.addEventListener('input', clearFormErrors);
+                    elements.remarksInput.addEventListener('keydown', function(event) {
+                        if (event.key === 'Enter' && event.ctrlKey && !isApproved) {
+                            handleApproval();
+                        }
+                    });
+                }
+
+                document.addEventListener('visibilitychange', function() {
+                    if (!document.hidden) {
+                        loadData();
+                    }
+                });
+            }
+
+            async function loadData() {
+                console.log('🔄 Starting loadData...');
+                showLoading();
+                hideError();
+
+                try {
+                    // Try both GET and POST methods
+                    const apiUrl = `${CONFIG.apiBaseUrl}/api/method/alms_app.www.reporting_head_approval.get_car_indent_data`;
+                    
+                    console.log('📡 Fetching data from:', apiUrl);
+                    console.log('📝 Request ID:', CONFIG.requestId);
+
+                    // First try POST method
+                    let response = await fetch(apiUrl, {
+                        method: 'POST',
+                        headers: {
+                            'Accept': 'application/json',
+                            'Content-Type': 'application/json',
+                            'Cache-Control': 'no-cache'
+                        },
+                        body: JSON.stringify({
+                            indent_form_id: CONFIG.requestId
+                        })
+                    });
+
+                    // If POST fails, try GET method
+                    if (!response.ok) {
+                        console.log('❌ POST failed, trying GET method...');
+                        const getUrl = `${apiUrl}?indent_form_id=${encodeURIComponent(CONFIG.requestId)}`;
+                        console.log('📡 GET URL:', getUrl);
+                        
+                        response = await fetch(getUrl, {
+                            method: 'GET',
+                            headers: {
+                                'Accept': 'application/json',
+                                'Cache-Control': 'no-cache'
+                            }
+                        });
+                    }
+
+                    console.log('📊 Response status:', response.status, response.statusText);
+
+                    if (!response.ok) {
+                        const errorText = await response.text();
+                        console.error('❌ Response error:', errorText);
+                        throw new Error(`HTTP ${response.status}: ${response.statusText}\n${errorText}`);
+                    }
+
+                    const result = await response.json();
+                    console.log('✅ Full API Response:', result);
+                    console.log('🔍 Response structure:', {
+                        hasMessage: !!result.message,
+                        hasSuccess: !!result.success,
+                        messageType: typeof result.message,
+                        successType: typeof result.success,
+                        keys: Object.keys(result)
+                    });
+
+                    // Handle different response formats
+                    let data = null;
+                    let success = false;
+
+                    if (result.message && typeof result.message === 'object' && result.message.success) {
+                        // Frappe wrapped response: { message: { success: true, data: {...} } }
+                        data = result.message.data;
+                        success = result.message.success;
+                        console.log('📋 Using message.data format');
+                    } else if (result.success) {
+                        // Direct response: { success: true, data: {...} }
+                        data = result.data;
+                        success = result.success;
+                        console.log('📋 Using direct format');
+                    } else if (result.message && typeof result.message === 'string') {
+                        // String message response
+                        console.log('📋 String message response:', result.message);
+                        throw new Error(result.message);
+                    } else {
+                        console.log('❓ Unknown response format');
+                        throw new Error('Unknown response format: ' + JSON.stringify(result));
+                    }
+
+                    if (success && data) {
+                        console.log('✅ Processing successful data:', data);
+                        currentData = data;
+                        updateUI(data);
+                        hideLoading();
+                        showMainContent();
+                    } else {
+                        console.error('❌ API returned unsuccessful response');
+                        throw new Error('API returned unsuccessful response or no data');
+                    }
+
+                } catch (error) {
+                    console.error('💥 Error in loadData:', error);
+                    console.error('💥 Error stack:', error.stack);
+                    showError(`Failed to load data: ${error.message}`);
+                    hideLoading();
+                }
+            }
+
+            function updateUI(data) {
+                console.log('Updating UI with data:', data);
+
+                const updates = {
+                    'company-name': data.company_name,
+                    'employee-name': data.employee_name,
+                    'employee-email': data.employee_email,
+                    'designation': data.designation,
+                    'reporting-head': data.reporting_head_name,
+                    'eligibility': data.eligibility ? `₹${data.eligibility}` : '-',
+                    'vehicle-model': data.vehicle_make_model,
+                    'ex-showroom': data.net_ex_showroom_price ? `₹${data.net_ex_showroom_price}` : '-',
+                    'finance-amount': data.finance_amount ? `₹${data.finance_amount}` : '-',
+                    'approval-status': data.approval_status || 'Pending'
+                };
+
+                Object.entries(updates).forEach(([id, value]) => {
+                    const element = document.getElementById(id);
+                    if (element) {
+                        element.textContent = value || '-';
+                    }
+                });
+
+                const statusEl = document.getElementById('approval-status');
+                if (statusEl) {
+                    statusEl.className = `approval-status ${(data.approval_status || 'pending').toLowerCase()}`;
+                }
+
+                const statusDetailsEl = document.getElementById('status-details');
+                if (statusDetailsEl && (data.approved_by || data.approval_date)) {
+                    let details = '';
+                    if (data.approved_by) details += `By: ${data.approved_by}`;
+                    if (data.approval_date) details += (details ? ', ' : '') + `On: ${data.approval_date}`;
+                    statusDetailsEl.textContent = details;
+                } else if (statusDetailsEl) {
+                    statusDetailsEl.textContent = '';
+                }
+
+                isApproved = data.is_approved;
+                if (isApproved) {
+                    disableForm();
+                    showApprovalNotice(data);
+                } else {
+                    enableForm();
+                    hideApprovalNotice();
+                }
+            }
+
+            function showApprovalNotice(data) {
+                if (elements.alreadyApprovedNotice && elements.approvalDetails) {
+                    let approvalText = `Status: ${data.approval_status}`;
+                    if (data.approval_remarks) {
+                        approvalText += `, Remarks: ${data.approval_remarks}`;
+                    }
+                    elements.approvalDetails.textContent = approvalText;
+                    elements.alreadyApprovedNotice.style.display = 'block';
+                }
+            }
+
+            function hideApprovalNotice() {
+                if (elements.alreadyApprovedNotice) {
+                    elements.alreadyApprovedNotice.style.display = 'none';
+                }
+            }
+
+            function disableForm() {
+                if (elements.approveBtn) {
+                    elements.approveBtn.disabled = true;
+                    elements.approveBtn.style.backgroundColor = '#6c757d';
+                    elements.approveBtn.textContent = 'Already Processed';
+                }
+                if (elements.remarksInput) {
+                    elements.remarksInput.disabled = true;
+                }
+            }
+
+            function enableForm() {
+                if (elements.approveBtn) {
+                    elements.approveBtn.disabled = false;
+                    elements.approveBtn.style.backgroundColor = '#28a745';
+                    elements.approveBtn.textContent = 'Approve Request';
+                }
+                if (elements.remarksInput) {
+                    elements.remarksInput.disabled = false;
+                }
+            }
+
+            async function handleApproval() {
+                if (isApproved) return;
+
+                if (!validateForm()) return;
+
+                const indentFormValue = elements.indentFormInput ? elements.indentFormInput.value.trim() : '';
+                const remarksValue = elements.remarksInput ? elements.remarksInput.value.trim() : '';
+
+                setLoadingState(true);
+
+                try {
+                    // Make sure this matches your actual app name and API method
+                    const apiUrl = `${CONFIG.apiBaseUrl}/api/method/alms_app.api.emailsService.approve_car_indent_by_reporting`;
+                    
+                    const response = await fetch(apiUrl, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            indent_form: indentFormValue,
+                            remarks: remarksValue
+                        })
+                    });
+
+                    const result = await response.json();
+                    console.log('Approval API Response:', result);
+
+                    // Handle Frappe API response format
+                    if (response.ok && (result.message || result.success)) {
+                        showFormSuccess('Request approved successfully!');
+                        setTimeout(() => {
+                            loadData();
+                        }, 2000);
+                    } else {
+                        throw new Error(result.message || result.exc || 'Approval failed');
+                    }
+
+                } catch (error) {
+                    console.error('Approval error:', error);
+                    showFormError(error.message || 'An error occurred during approval');
+                } finally {
+                    setLoadingState(false);
+                }
+            }
+
+            // async function handleRejection() {
+            //     if (isApproved) return;
+            
+            //     if (!validateForm()) return;
+            
+            //     const indentFormValue = elements.indentFormInput ? elements.indentFormInput.value.trim() : '';
+            //     const remarksValue = elements.remarksInput ? elements.remarksInput.value.trim() : '';
+            
+            //     setLoadingState(true);
+            
+            //     try {
+            //         const apiUrl = `${CONFIG.apiBaseUrl}/api/method/alms_app.api.emailsService.reject_car_indent_by_reporting`;
+                    
+            //         const response = await fetch(apiUrl, {
+            //             method: 'POST',
+            //             headers: {
+            //                 'Content-Type': 'application/json',
+            //                 'Accept': 'application/json'
+            //             },
+            //             body: JSON.stringify({
+            //                 indent_form: indentFormValue,
+            //                 remarks: remarksValue
+            //             })
+            //         });
+            
+            //         const result = await response.json();
+            
+            //         if (response.ok && (result.message || result.success)) {
+            //             showFormSuccess('Request rejected successfully!');
+            //             // Refresh data after 2 seconds
+            //             setTimeout(() => {
+            //                 loadData();
+            //             }, 2000);
+            //         } else {
+            //             throw new Error(result.message || 'Rejection failed');
+            //         }
+            
+            //     } catch (error) {
+            //         console.error('Rejection error:', error);
+            //         showFormError(error.message || 'An error occurred during rejection');
+            //     } finally {
+            //         setLoadingState(false);
+            //     }
+            // }
+
+            function validateForm() {
+                clearFormErrors();
+
+                if (isApproved) return false;
+
+                if (!elements.remarksInput || !elements.remarksInput.value.trim()) {
+                    if (elements.remarksError) {
+                        elements.remarksError.style.display = 'block';
+                    }
+                    if (elements.remarksInput) {
+                        elements.remarksInput.focus();
+                    }
+                    return false;
+                }
+
+                if (!elements.indentFormInput || !elements.indentFormInput.value.trim()) {
+                    showFormError('Invalid request ID!');
+                    return false;
+                }
+
+                return true;
+            }
+
+            function clearFormErrors() {
+                if (elements.remarksError) elements.remarksError.style.display = 'none';
+                if (elements.formErrorMessage) elements.formErrorMessage.style.display = 'none';
+            }
+
+            function setLoadingState(loading) {
+                if (elements.approveBtn) {
+                    elements.approveBtn.disabled = loading;
+                    elements.approveBtn.textContent = loading ? 'Processing...' : 'Approve Request';
+                }
+                if (elements.loadingSpinner) {
+                    elements.loadingSpinner.style.display = loading ? 'inline' : 'none';
+                }
+            }
+
+            function showFormSuccess(message) {
+                if (elements.successMessage) {
+                    elements.successMessage.textContent = message;
+                    elements.successMessage.style.display = 'block';
+                    setTimeout(() => {
+                        elements.successMessage.style.display = 'none';
+                    }, 5000);
+                }
+            }
+
+            function showFormError(message) {
+                if (elements.formErrorMessage) {
+                    elements.formErrorMessage.textContent = message;
+                    elements.formErrorMessage.style.display = 'block';
+                    setTimeout(() => {
+                        elements.formErrorMessage.style.display = 'none';
+                    }, 5000);
+                }
+            }
+
+            function showLoading() {
+                if (elements.loadingIndicator) {
+                    elements.loadingIndicator.style.display = 'block';
+                }
+                
+                // Update debug info in loading display
+                const debugRequestId = document.getElementById('debug-request-id');
+                if (debugRequestId) {
+                    debugRequestId.textContent = CONFIG.requestId;
+                }
+                
+                const debugApiPreview = document.getElementById('debug-api-preview');
+                if (debugApiPreview) {
+                    debugApiPreview.textContent = `${CONFIG.apiBaseUrl}/api/method/alms_app.api.reporting_head_approval.get_car_indent_data?indent_form_id=${CONFIG.requestId}`;
+                }
+            }
+
+            function hideLoading() {
+                if (elements.loadingIndicator) {
+                    elements.loadingIndicator.style.display = 'none';
+                }
+            }
+
+            function showError(message) {
+                console.error('🚨 Showing error:', message);
+                if (elements.errorMessage) {
+                    elements.errorMessage.textContent = message;
+                }
+                
+                // Show debug info
+                const debugUrl = document.getElementById('debug-api-url');
+                if (debugUrl) {
+                    debugUrl.textContent = `${CONFIG.apiBaseUrl}/api/method/alms_app.api.reporting_head_approval1.get_car_indent_data`;
+                }
+                
+                if (elements.errorDisplay) {
+                    elements.errorDisplay.style.display = 'block';
+                }
+                hideMainContent();
+            }
+
+            function hideError() {
+                if (elements.errorDisplay) {
+                    elements.errorDisplay.style.display = 'none';
+                }
+            }
+
+            function showMainContent() {
+                if (elements.mainContent) {
+                    elements.mainContent.style.display = 'block';
+                }
+            }
+
+            function hideMainContent() {
+                if (elements.mainContent) {
+                    elements.mainContent.style.display = 'none';
+                }
+            }
+
+            function checkUrlStatus() {
+                const urlParams = new URLSearchParams(window.location.search);
+                const status = urlParams.get('status');
+                const message = urlParams.get('message');
+
+                if (status === 'success') {
+                    showFormSuccess(message || 'Request approved successfully!');
+                } else if (status === 'error') {
+                    showFormError(message || 'An error occurred during approval.');
+                }
+
+                if (status) {
+                    const newUrl = window.location.pathname + '?id=' + encodeURIComponent(CONFIG.requestId);
+                    window.history.replaceState({}, '', newUrl);
+                }
+            }
+
+            function startAutoRefresh() {
+                if (isApproved) return;
+
+                refreshTimer = setInterval(() => {
+                    if (!document.hidden && !isApproved) {
+                        console.log('Auto-refreshing data...');
+                        loadData();
+                    }
+                }, CONFIG.refreshInterval);
+            }
+
+            window.addEventListener('beforeunload', () => {
+                if (refreshTimer) {
+                    clearInterval(refreshTimer);
+                }
+            });
+
+            document.addEventListener('visibilitychange', function() {
+                if (document.hidden) {
+                    if (refreshTimer) {
+                        clearInterval(refreshTimer);
+                        refreshTimer = null;
+                    }
+                } else {
+                    loadData();
+                    if (!isApproved) {
+                        startAutoRefresh();
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>
