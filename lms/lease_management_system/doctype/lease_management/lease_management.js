@@ -214,7 +214,7 @@ frappe.ui.form.on("Lease Management", {
         frm.set_query("property_description", function () {
         return {
             filters: {
-            vendor_code: frm.doc.vendor
+            vendor: frm.doc.vendor
             }
         }});
         
@@ -273,6 +273,38 @@ frappe.ui.form.on("Lease Management", {
         
     },
     validate: function(frm) {
+        if (!frm.doc.property_description) return;
+
+        frappe.call({
+            method: "frappe.client.get_list",
+            args: {
+                doctype: "Lease Management",
+                filters: {
+                    property_description: frm.doc.property_description,
+                    status: "Active"
+                },
+                fields: ["name", "agreement_start_date", "agreement_end_date"]
+            },
+            callback: function(response) {
+                const leases = response.message || [];
+
+                const today = frappe.datetime.get_today();
+
+                const overlapping_lease = leases.find(lease => {
+                    return (
+                        lease.agreement_start_date <= today &&
+                        lease.agreement_end_date >= today &&
+                        lease.name !== frm.doc.name  // exclude current doc when editing
+                    );
+                });
+
+                if (overlapping_lease) {
+                    frappe.msgprint(`This property is already leased in agreement <b>${overlapping_lease.name}</b> from <b>${overlapping_lease.agreement_start_date}</b> to <b>${overlapping_lease.agreement_end_date}</b>.`);
+                    frappe.validated = false;
+                }
+            }
+        });
+
         // if(frm.doc.lease_period === "Long Term (Greater Than 12 Months)") {
         //     if(!frm.doc.escalation || frm.doc.escalation.length === 0) {
         //         frappe.msgprint(__('Escalation table is mandatory for Long Term leases.'));
