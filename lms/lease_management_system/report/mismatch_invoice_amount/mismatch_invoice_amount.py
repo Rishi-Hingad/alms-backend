@@ -9,7 +9,7 @@ from calendar import monthrange
 def execute(filters=None):
 	data=[]
 	columns = [
-        {"label": "Lease", "fieldname": "lease", "fieldtype": "Data", "width": 150},
+        {"label": "Lease", "fieldname": "lease", "fieldtype": "Data", "width": 200},
         # {"label": "Month Start Date", "fieldname": "month_start_date", "fieldtype": "Date", "width": 150},
         # {"label": "Month End Date", "fieldname": "month_end_date", "fieldtype": "Date", "width": 150},
 		{"label": "Invoice From Date", "fieldname": "invoice_from_date", "fieldtype": "Date", "width": 150},
