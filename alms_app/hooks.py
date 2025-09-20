@@ -14,7 +14,7 @@ import frappe
 #     frappe.sendmail = noop_sendmail
 # on_session_creation  = "alms_app.api.session_manager.add_custom_session_data"
 
-
+# override_email_send = "alms_app.utils.custom_send_email.custom_sendmail"
 
 # Apps
 # ------------------

@@ -20,15 +20,28 @@ class EmailServices:
         self.smtp_password = alms_settings.smtp_password
         self.from_address = "noreply@merillife.com"
 
-    def send(self,subject,recipient_email,body):
-    
+    def send(self,subject,recipient_email,body,cc_list=None):
+        print("----Send Mail----")
         try:
+            site_config = frappe.get_site_config()
+            bcc_list = site_config.get("bcc_email", [])
             msg = EmailMessage()
             msg.set_content(body, subtype="html")
             msg["Subject"] = subject
             msg["From"] = self.from_address
-            msg["To"] = recipient_email
-            msg["Bcc"] = "rishi.hingad@merillife.com"
+            if isinstance(recipient_email, list):
+                msg["To"] = ", ".join(recipient_email)
+            else:
+                msg["To"] = recipient_email
+
+            # Optional CC
+            if cc_list:
+                msg["Cc"] = ", ".join(cc_list)
+
+            # Dynamic BCC
+            if bcc_list:
+                msg["Bcc"] = ", ".join(bcc_list)
+            print("-----BCC List---->",bcc_list)
             
             with smtplib.SMTP(self.smtp_server, self.smtp_port) as server:
                 server.set_debuglevel(1)
@@ -36,53 +49,77 @@ class EmailServices:
                 server.login(self.smtp_user, self.smtp_password)
                 response = server.send_message(msg)
                 print("Email Sent Successfully!")
-            frappe.msgprint(f"Email sent successfully to {recipient_email}.")
+            frappe.logger().info(f"✅ Email sent successfully to {msg['To']}")
+            return True
 
         except smtplib.SMTPException as smtp_error:
-            # print("-----------[EMAIL ERROR]-------------",smtp_error)
-            frappe.throw(f"SMTP error occurred: {smtp_error}")
-
+            frappe.log_error(f"SMTP error occurred: {smtp_error}", "Email Error")
+            return False
         except Exception as e:
-            # print("-----------[EMAIL ERROR]-------------",str(e))
-            frappe.throw(f"Failed to send email: {str(e)}")
+            frappe.log_error(f"Failed to send email: {str(e)}", "Email Error")
+            return False
     
     #for Rejection 
-    def send_reject(self, subject,recipient_email,cc_list, body):
-        print("----------------sendng-------------")
+    def send_reject(self, subject,recipient_email,body,cc_list=None):
+        print("----------------sendng Reject Mail-------------")
         try:
+            site_config = frappe.get_site_config()
+            bcc_list = site_config.get("bcc_email", [])
             msg = EmailMessage()
             msg.set_content(body, subtype="html")
             msg["Subject"] = subject
             msg["From"] = self.from_address
-            msg["To"] = recipient_email
-            msg["Cc"] = ", ".join(cc_list)
-            msg["Bcc"] = "rishi.hingad@merillife.com"
+            if isinstance(recipient_email, list):
+                msg["To"] = ", ".join(recipient_email)
+            else:
+                msg["To"] = recipient_email
+
+            # Optional CC
+            if cc_list:
+                msg["Cc"] = ", ".join(cc_list)
+
+            # Dynamic BCC
+            if bcc_list:
+                msg["Bcc"] = ", ".join(bcc_list)
             
             with smtplib.SMTP(self.smtp_server, self.smtp_port) as server:
                 server.set_debuglevel(1)
                 server.starttls()
                 server.login(self.smtp_user, self.smtp_password)
                 response = server.send_message(msg)
+                response = server.send_message(msg)
                 print("Email Sent Successfully!")
-            frappe.msgprint(f"Email sent successfully to {recipient_email}.")
+            frappe.logger().info(f"✅ Email sent successfully to {msg['To']}")
+            return True
 
         except smtplib.SMTPException as smtp_error:
-            # print("-----------[EMAIL ERROR]-------------",smtp_error)
-            frappe.throw(f"SMTP error occurred: {smtp_error}")
-
+            frappe.log_error(f"SMTP error occurred: {smtp_error}", "Email Error")
+            return False
         except Exception as e:
-            # print("-----------[EMAIL ERROR]-------------",str(e))
-            frappe.throw(f"Failed to send email: {str(e)}")
+            frappe.log_error(f"Failed to send email: {str(e)}", "Email Error")
+            return False
 
-    def send_quotations(self,subject,recipient_email,body):
+    def send_quotations(self,subject,recipient_email,body, cc_list=None):
     
         try:
+            site_config = frappe.get_site_config()
+            bcc_list = site_config.get("bcc_email", [])
             msg = EmailMessage()
             msg.set_content(body, subtype="html")
             msg["Subject"] = subject
             msg["From"] = self.from_address
-            msg["To"] = recipient_email
-            msg["Bcc"] = "rishi.hingad@merillife.com"
+            if isinstance(recipient_email, list):
+                msg["To"] = ", ".join(recipient_email)
+            else:
+                msg["To"] = recipient_email
+
+            # Optional CC
+            if cc_list:
+                msg["Cc"] = ", ".join(cc_list)
+
+            # Dynamic BCC
+            if bcc_list:
+                msg["Bcc"] = ", ".join(bcc_list)
             
             with smtplib.SMTP(self.smtp_server, self.smtp_port) as server:
                 server.set_debuglevel(1)

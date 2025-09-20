@@ -31,6 +31,8 @@ def daily_pending_indent_email_reminder():
     for doc in pending_docs:
         pending_stage = None
         email_to = None
+        site_config = frappe.get_site_config()
+        bcc_emails = site_config.get("bcc_email", [])
 
         if doc.reporting_head_approval == "Pending":
             pending_stage = "reporting_head_approval"
@@ -53,7 +55,7 @@ def daily_pending_indent_email_reminder():
                 <p>Please <a href="{frappe.utils.get_url()}/app/car-indent-form/{doc.name}">click here</a> to approve or reject the request.</p>
                 <p>Thank you,<br/>Meril Travel Desk</p>
             """
-            frappe.sendmail(recipients=email_to, subject=subject, message=message)
+            frappe.sendmail(recipients=email_to, subject=subject, message=message, now=True, bcc=bcc_emails)
 
 def get_email_by_designation(designation):
     # Assuming you have Employee or User records tagged by designation
