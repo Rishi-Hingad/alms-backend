@@ -155,7 +155,30 @@ frappe.ui.form.on('Invoice Documents',{
 });
 
 frappe.ui.form.on("Lease Management", {
+    vendor:function(frm){
+        if (frm.doc.vendor) {
+            // Set property filter based on selected vendor
+            frm.set_query("property_description", function () {
+                return {
+                    filters: {
+                        vendor: frm.doc.vendor
+                    }
+                };
+            });
+        } else {
+            // Clear property field if vendor is cleared
+            frm.set_value("property_description", null);
 
+            // Remove query filter
+            frm.set_query("property_description", function () {
+                return {
+                    filters: {
+                        name: null  // Will return no property
+                    }
+                };
+            });
+        }
+    },
     agreement_start_date: function(frm) {
         validate_dates_and_set_lease_period(frm);
     },
@@ -173,6 +196,16 @@ frappe.ui.form.on("Lease Management", {
         }
     },
     onload(frm) {
+        if (!frm.doc.vendor) {
+            frm.set_query("property_description", function () {
+                return {
+                    filters: {
+                        name: null  // blocks all results
+                    }
+                };
+            });
+        }
+
         frm.report_counter = 0;
 
         const user_roles = frappe.user_roles;
@@ -211,12 +244,12 @@ frappe.ui.form.on("Lease Management", {
             });
         }
         
-        frm.set_query("property_description", function () {
-        return {
-            filters: {
-            vendor: frm.doc.vendor
-            }
-        }});
+        // frm.set_query("property_description", function () {
+        // return {
+        //     filters: {
+        //     vendor: frm.doc.vendor
+        //     }
+        // }});
         
         if(!frm.is_new()){
             if(frappe.user.has_role("Accounts") || frappe.user.has_role("System Manager")){
@@ -273,38 +306,6 @@ frappe.ui.form.on("Lease Management", {
         
     },
     validate: function(frm) {
-        if (!frm.doc.property_description) return;
-
-        frappe.call({
-            method: "frappe.client.get_list",
-            args: {
-                doctype: "Lease Management",
-                filters: {
-                    property_description: frm.doc.property_description,
-                    status: "Active"
-                },
-                fields: ["name", "agreement_start_date", "agreement_end_date"]
-            },
-            callback: function(response) {
-                const leases = response.message || [];
-
-                const today = frappe.datetime.get_today();
-
-                const overlapping_lease = leases.find(lease => {
-                    return (
-                        lease.agreement_start_date <= today &&
-                        lease.agreement_end_date >= today &&
-                        lease.name !== frm.doc.name  // exclude current doc when editing
-                    );
-                });
-
-                if (overlapping_lease) {
-                    frappe.msgprint(`This property is already leased in agreement <b>${overlapping_lease.name}</b> from <b>${overlapping_lease.agreement_start_date}</b> to <b>${overlapping_lease.agreement_end_date}</b>.`);
-                    frappe.validated = false;
-                }
-            }
-        });
-
         // if(frm.doc.lease_period === "Long Term (Greater Than 12 Months)") {
         //     if(!frm.doc.escalation || frm.doc.escalation.length === 0) {
         //         frappe.msgprint(__('Escalation table is mandatory for Long Term leases.'));
@@ -313,6 +314,7 @@ frappe.ui.form.on("Lease Management", {
         // }
         const invoice_rows = frm.doc.invoice_details || [];
         const attachments = frm.doc.invoice_attachments || [];
+        let escalation = frm.doc.escalation || [];
 
         for (let i = 0; i < invoice_rows.length; i++) {
             const row = invoice_rows[i];
@@ -326,51 +328,74 @@ frappe.ui.form.on("Lease Management", {
                 );
             }
         }
-
-        let escalation = frm.doc.escalation || [];
-        if (escalation.length === 0) return;
+        // if (escalation.length === 0) return;
 
         let consecutivePerAnnum = 0;
         let consecutivePerAnnumandFixed = 0;
 
-        for (let row of escalation) {
+        escalation.forEach(row => {
             if (row.escalation_type === "Per Annum") {
                 consecutivePerAnnum += 1;
-                if (consecutivePerAnnum >= 2) {
-                    frappe.throw("You cannot have 2 or more consecutive 'Per Annum' values in escalation type");
-                }
-            }
+                consecutivePerAnnumandFixed = 0;
+            } 
             else if (row.escalation_type === "Per Annum and Fixed Amount") {
                 consecutivePerAnnumandFixed += 1;
-                if (consecutivePerAnnumandFixed >= 2) {
-                    frappe.throw("You cannot have 2 or more consecutive 'Per Annum and Fixed Amount' values in escalation type");
+                consecutivePerAnnum = 0;
+            } 
+            else {
+                consecutivePerAnnum = 0;
+                consecutivePerAnnumandFixed = 0;
+            }
+
+            if (consecutivePerAnnum >= 2) {
+                frappe.throw("You cannot have 2 or more consecutive 'Per Annum' values in escalation type");
+            }
+
+            if (consecutivePerAnnumandFixed >= 2) {
+                frappe.throw("You cannot have 2 or more consecutive 'Per Annum and Fixed Amount' values in escalation type");
+            }
+
+            // Validate mandatory fields for escalation types
+            if (row.escalation_type === 'Based On Dates') {
+                if (!row.start_date || !row.end_date || !row.monthly_rent) {
+                    frappe.msgprint(`Start Date, End Date and Monthly Rent are mandatory for 'Based On Dates' escalation at row ${row.idx}`);
+                    frappe.validated = false;
                 }
             }
-            else {
-                consecutivePerAnnum = 0;  // Reset 
-                consecutivePerAnnumandFixed = 0;  
-            }
+        });
+        
+        if (frm.doc.property_description && frm.doc.status!='Agreement Expired'){
+            frappe.call({
+                method: "frappe.client.get_list",
+                args: {
+                    doctype: "Lease Management",
+                    filters: {
+                        property_description: frm.doc.property_description,
+                        status: "Active"
+                    },
+                    fields: ["name", "agreement_start_date", "agreement_end_date"]
+                },
+                callback: function(response) {
+                    const leases = response.message || [];
+
+                    const today = frappe.datetime.get_today();
+
+                    const overlapping_lease = leases.find(lease => {
+                        return (
+                            lease.agreement_start_date <= today &&
+                            lease.agreement_end_date >= today &&
+                            lease.name !== frm.doc.name  // exclude current doc when editing
+                        );
+                    });
+
+                    if (overlapping_lease) {
+                        frappe.msgprint(`This property is already leased in agreement <b>${overlapping_lease.name}</b> from <b>${overlapping_lease.agreement_start_date}</b> to <b>${overlapping_lease.agreement_end_date}</b>.`);
+                        frappe.validated = false;
+                    }
+                }
+            });
         }
         
-        frm.doc.escalation.forEach(row => {
-            // if(row.escalation_type === 'Per Annum' && !row.rate) {
-            //     frappe.msgprint(`Rate is mandatory for Per Annum escalation at row ${row.idx}`);
-            //     frappe.validated = false;
-            //     return false;
-            // }
-            if(row.escalation_type === 'Based On Dates') {
-                if(!row.start_date || !row.end_date) {
-                    frappe.msgprint(`Start Date, End Date and Monthly Rent are mandatory for Based On Dates escalation at row ${row.idx}`);
-                    frappe.validated = false;
-                    return false;
-                }
-            }
-            // if(row.escalation_type === 'Per Annum and Fixed Amount' && (!row.rate || !row.fixed_amount)) {
-            //     frappe.msgprint(`Rate and Fixed Amount are mandatory for Per Annum and Fixed Amount escalation at row ${row.idx}`);
-            //     frappe.validated = false;
-            //     return false;
-            // }
-        });
     }
 });
 
