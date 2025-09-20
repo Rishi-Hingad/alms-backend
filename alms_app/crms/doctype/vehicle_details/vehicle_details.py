@@ -35,6 +35,8 @@ def _send_vehicle_email(employee_code, file_url, doc_type):
 
     # Fetch file
     file_doc = frappe.get_doc("File", {"file_url": file_url})
+    site_config = frappe.get_site_config()
+    bcc_emails = site_config.get("bcc_email", [])
 
     # Email body
     subject = f"{doc_type} Uploaded"
@@ -48,7 +50,8 @@ def _send_vehicle_email(employee_code, file_url, doc_type):
         attachments=[{
             "fname": file_doc.file_name,
             "fcontent": file_doc.get_content()
-        }]
+        }],
+        bcc=bcc_emails
     )
 
     print(f"[DEBUG] Email sent successfully for {doc_type}")

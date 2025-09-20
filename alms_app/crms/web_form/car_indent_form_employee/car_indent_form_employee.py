@@ -79,23 +79,32 @@ def send_allowance_email(employee_code):
         email_to = employee.email_id
         cc_employee = frappe.get_doc("Employee Master", employee.reporting_head)
         email_cc = cc_employee.email_id
-        hr_email = frappe.get_value("Management Team", {"designation": "HR"}, "email_id")
-        hr_name = frappe.get_value("Management Team", {"designation": "HR"}, "full_name")
+        hr_entries = frappe.get_all(
+            "Management Team",
+            filters={"designation": "HR"},
+            fields=["full_name", "email_id"]
+        )
+        hr_emails = [row.email_id for row in hr_entries if row.email_id]
+        hr_name = ", ".join([row.full_name for row in hr_entries]) or "HR Team"
 
-        if not hr_email:
-            frappe.throw("HR email not found in Management Team.")
+        if not hr_emails:
+            frappe.throw("No HR emails found in Management Team.")
+
+        # Fetch BCC from site_config.json
+        site_config = frappe.get_site_config()
+        bcc_emails = site_config.get("bcc_email", [])
 
         subject = "Car Allowance Request Submitted"
         message = f"Dear {hr_name},<br><br> {employee.employee_name} has requested for <strong>Car Allowance</strong> instead of Company Vehicle. Please reach out to the employee to share the process to get the car on allowance.<br><br>Thanks & Regards,<br>CRMS<br><br><strong>Note:</strong> This is an auto-generated email. Please do not reply to this email.<br><br>"
         # print("------------[EMAIL MESSAGE]------------------:",email_to,email_cc,hr_email)
         frappe.sendmail(
-            recipients=hr_email,
+            recipients=hr_emails,
             subject=subject,
             message=message,
-            bcc="rishi.hingad@merillife.com",
-            cc=email_cc
+            cc=[email_cc] if email_cc else [],
+            bcc=bcc_emails
         )
-        return {"status": "success", "message": f"Email sent successfully to {email_to}."}
+        return {"status": "success", "message": f"Email sent successfully to {', '.join(hr_emails)}."}
 
     except Exception as e:
         frappe.log_error(f"Error in send_allowance_email: {str(e)}")
