@@ -290,6 +290,43 @@ frappe.ui.form.on("Car Indent Form", {
     }
 });
 
+frappe.ui.form.on("Car Indent Form", {
+    refresh: function(frm) {
+        updateStatus(frm);
+        toggleFieldStatus(frm);
+
+        // Add custom button to call both APIs
+        frm.add_custom_button(__('Check & Send Email'), function() {
+            checkAndSendEmail(frm);
+        }).css({
+            "background-color": "#28a745",
+            "color": "white",
+            "border": "none",
+            "padding": "8px 15px",
+            "font-size": "13px",
+            "border-radius": "5px",
+            "cursor": "pointer"
+        });
+    }
+});
+
+
+function checkAndSendEmail(frm) {
+    const employeeCode = frm.doc.employee_code;
+
+    frappe.call({
+                    method: "alms_app.crms.web_form.car_indent_form_employee.car_indent_form_employee.send_email_to_reporting_head",
+                    args: { doc: employeeCode },
+                    callback: function() {
+                        frappe.msgprint("Email sent to Reporting Head!");
+                    },
+                    error: function() {
+                        frappe.throw("Error sending car indent email.");
+                    }
+                });
+}
+
+
 
 
 
