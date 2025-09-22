@@ -139,7 +139,8 @@
   {
    "fieldname": "quotation_document",
    "fieldtype": "Attach",
-   "label": "Quotation Document"
+   "label": "Quotation Document",
+   "make_attachment_public": 1
   },
   {
    "fieldname": "column_break_dptt",
@@ -166,7 +167,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-11-09 14:57:41.684589",
+ "modified": "2025-09-22 13:34:40.689138",
  "modified_by": "Administrator",
  "module": "ALMS",
  "name": "Car Indent Form",

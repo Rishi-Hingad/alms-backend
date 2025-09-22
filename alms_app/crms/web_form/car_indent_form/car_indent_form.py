@@ -61,12 +61,19 @@ def check_indent_exists(employee_code):
     return False
 
 @frappe.whitelist(allow_guest=True)
-def send_email_to_reporting_head(employee_code):
+def send_email_to_reporting_head(doc, method=None):
+    # print(doc,"000000000000000")
     try:
-        employee = frappe.get_doc("Employee Master", employee_code)
-        print("------------[EMPLOYEE]------------------:",employee)
-        email_sender(name=employee_code, email_send_to="To Reporting")
-        return {"status": "success", "message": f"Email sent successfully to {employee.email_id}."}
+        employee_docname = doc
+        # print(employee_docname,"000000000000000")
+        # print(doc,"000000000000000")
+        # print(doc,"000000000000000")
+
+        email_sender(name=employee_docname, email_send_to="To Reporting", car_indent_form_name=doc)
+        return {"status": "success", "message": f"Email triggered for reporting head of {employee_docname}"}
+    except Exception as e:
+        frappe.log_error(f"Failed to send reporting head email: {str(e)}", "Car Indent Email Error")
+        return {"status": "error", "message": str(e)}
 
     except Exception as e:
         frappe.log_error(f"Error in send_email_to_reporting_head: {str(e)}")
