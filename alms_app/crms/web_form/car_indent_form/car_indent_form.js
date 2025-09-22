@@ -72,7 +72,7 @@ frappe.ready(function () {
                     } else {
                         frappe.call({
                             method: "alms_app.crms.web_form.car_indent_form.car_indent_form.send_email_to_reporting_head",
-                            args: { employee_code: employeeCode },
+                            args: { doc: employeeCode },
                             callback: function () { resolve(); },
                             error: function () {
                                 frappe.throw("Error sending car indent email.");

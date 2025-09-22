@@ -5,7 +5,7 @@
    "label": "Purchase Team Form Count"
   }
  ],
- "content": "[{\"id\":\"fuuW24Boqy\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Purchase Team Dashboard</span>\",\"col\":12}},{\"id\":\"8Eaj5YOHCF\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Total Car Indent Form\",\"col\":4}},{\"id\":\"soyTqGnze3\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Approved Car Indent Form\",\"col\":4}},{\"id\":\"Sjc-E49ae8\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Rejected Car Indent Form\",\"col\":4}},{\"id\":\"SGEJGmnGZt\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Pending Car Indent Form\",\"col\":4}},{\"id\":\"DZ4dfTq1oq\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Total Purchase Team Form\",\"col\":4}},{\"id\":\"BKGruNjwP8\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Approved Purchase Team Form\",\"col\":4}},{\"id\":\"SJ4PVkbPCW\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Purchase Team Form\",\"col\":7}},{\"id\":\"-6t2VQSc8B\",\"type\":\"quick_list\",\"data\":{\"quick_list_name\":\"Car Indent Form\",\"col\":6}},{\"id\":\"cYNRk2mVd5\",\"type\":\"quick_list\",\"data\":{\"quick_list_name\":\"Purchase Team Form\",\"col\":6}},{\"id\":\"Tt-MIObrGy\",\"type\":\"chart\",\"data\":{\"chart_name\":\"Purchase Team Form Count\",\"col\":12}}]",
+ "content": "[{\"id\":\"fuuW24Boqy\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Purchase Team Dashboard</span>\",\"col\":12}},{\"id\":\"8Eaj5YOHCF\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Total Car Indent Form\",\"col\":4}},{\"id\":\"soyTqGnze3\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Approved Car Indent Form\",\"col\":4}},{\"id\":\"Sjc-E49ae8\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Rejected Car Indent Form\",\"col\":4}},{\"id\":\"SGEJGmnGZt\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Pending Car Indent Form\",\"col\":4}},{\"id\":\"DZ4dfTq1oq\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Total Purchase Team Form\",\"col\":4}},{\"id\":\"BKGruNjwP8\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Approved Purchase Team Form\",\"col\":4}},{\"id\":\"-6t2VQSc8B\",\"type\":\"quick_list\",\"data\":{\"quick_list_name\":\"Car Indent Form\",\"col\":6}},{\"id\":\"cYNRk2mVd5\",\"type\":\"quick_list\",\"data\":{\"quick_list_name\":\"Purchase Team Form\",\"col\":6}},{\"id\":\"Tt-MIObrGy\",\"type\":\"chart\",\"data\":{\"chart_name\":\"Purchase Team Form Count\",\"col\":12}}]",
  "creation": "2025-04-16 11:27:13.000605",
  "custom_blocks": [],
  "docstatus": 0,
@@ -18,7 +18,7 @@
  "is_hidden": 0,
  "label": "Purchase Team Dashboard",
  "links": [],
- "modified": "2025-05-30 11:34:56.030698",
+ "modified": "2025-09-22 11:20:08.495450",
  "modified_by": "Administrator",
  "module": "CRMS",
  "name": "Purchase Team Dashboard",
@@ -72,15 +72,6 @@
   }
  ],
  "sequence_id": 1.0,
- "shortcuts": [
-  {
-   "color": "Pink",
-   "doc_view": "List",
-   "label": "Purchase Team Form",
-   "link_to": "Purchase Team Form",
-   "stats_filter": "[]",
-   "type": "DocType"
-  }
- ],
+ "shortcuts": [],
  "title": "Purchase Team Dashboard"
 }

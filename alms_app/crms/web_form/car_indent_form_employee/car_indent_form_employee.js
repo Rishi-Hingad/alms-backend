@@ -13,7 +13,7 @@ frappe.ready(function () {
         console.log('Employee Code:', employeeCode);
 
         frappe.call({
-            method: "alms_app.crms.web_form.car_indent_form.car_indent_form.get_employee_details",
+            method: "alms_app.crms.web_form.car_indent_form_employee.car_indent_form_employee.get_employee_details",
             args: {
                 employee_code: employeeCode
             },
@@ -113,7 +113,7 @@ frappe.ready(function () {
         if (formType === "Car") {
             return new Promise((resolve, reject) => {
                 frappe.call({
-                    method: "alms_app.crms.web_form.car_indent_form.car_indent_form.check_indent_exists",
+                    method: "alms_app.crms.web_form.car_indent_form_employee.car_indent_form_employee.check_indent_exists",
                     args: { employee_code: employeeCode },
                     callback: function (response) {
                         if (response.message === "redirect") {
@@ -124,8 +124,8 @@ frappe.ready(function () {
                             reject("Already exists");
                         } else {
                             frappe.call({
-                                method: "alms_app.crms.web_form.car_indent_form.car_indent_form.send_email_to_reporting_head",
-                                args: { employee_code: employeeCode },
+                                method: "alms_app.crms.web_form.car_indent_form_employee.car_indent_form_employee.send_email_to_reporting_head",
+                                args: { doc: employeeCode },
                                 callback: function () {
                                     resolve();
                                 },

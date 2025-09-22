@@ -48,6 +48,7 @@ class EmailServices:
                 server.starttls()
                 server.login(self.smtp_user, self.smtp_password)
                 response = server.send_message(msg)
+                print("SMTP Response:", response)
                 print("Email Sent Successfully!")
             frappe.logger().info(f"✅ Email sent successfully to {msg['To']}")
             return True
@@ -275,16 +276,7 @@ class EmailServices:
         """
         return body
         
-    def create_email_body_revised(self,
-                                form, 
-                                revised_form, 
-                                user,
-                                subject, 
-                                content,
-                                updated_by,
-                                remarks_by, 
-                                regards=None, 
-                                link=f"{frappe.utils.get_url()}/login#login"):
+    def create_email_body_revised(self,form, revised_form, user,subject, content,updated_by,remarks_by, regards=None, link=f"{frappe.utils.get_url()}/login#login"):
         user_eligibility = user.eligibility
         remark_text = getattr(revised_form, remarks_by, None)
         # changed here, eligibility
@@ -370,17 +362,7 @@ class EmailServices:
         """
         return body
     
-    def create_email_body_quot(self,
-                                form,
-                                revised_form, 
-                                quot_form, 
-                                user,
-                                subject, 
-                                content,
-                                updated_by,
-                                remarks_by, 
-                                regards=None, 
-                                link=f"{frappe.utils.get_url()}/login#login"):
+    def create_email_body_quot(self, form, revised_form,  quot_form,  user, subject,  content, updated_by, remarks_by,  regards=None,  link=f"{frappe.utils.get_url()}/login#login"):
         user_eligibility = user.eligibility
         remark_text = getattr(quot_form, remarks_by, None)
         print("+++++++++++++++++++++++++remark text found")
@@ -699,38 +681,57 @@ class EmailServices:
         body = self.create_email_body_for_emp(user)
         
         self.send(subject=subject, body=body, recipient_email=recipient_email) 
- 
-    def for_employee_to_reporting(self, user):
-        employee = frappe.get_doc("Employee Master", user.name)
 
-        # Fetch the latest submitted Car Indent Form for this employee
-        car_indent_form = frappe.get_all(
-            "Car Indent Form",
-            filters={"employee_code": employee.name},
-            fields=["name"],
-            order_by="creation desc",
-            limit=1
-        )
-        if not car_indent_form:
-            frappe.throw(f"No Car Indent Form found for {employee.employee_name}")
 
-        car_indent_form_name = car_indent_form[0].name
-        doc = frappe.get_doc("Employee Master",user.reporting_head)
-        print("------------[EMPLOYEE TO REPORTING]------------------:",doc)
-        reporting_head_name = doc.employee_name
-        recipient_email = doc.email_id
-        subject =f"Car Rental Form Submitted by {user.employee_name} for Your Review"
+    def for_employee_to_reporting(self, user, car_indent_form_name):
+        print("=== Sending email to Reporting Head ===")
+        # print("=== Sending email to Reporting Head ===",car_indent_form_name)
+
+        if not user.reporting_head:
+            print(f"Employee '{user.employee_name}' has no reporting head assigned!")
+            return
+
+        try:
+            reporting_head = frappe.get_doc("Employee Master", user.reporting_head)
+        except Exception as e:
+            print(f"Error fetching reporting head '{user.reporting_head}': {e}")
+            return
+
+        recipient_email = reporting_head.email_id
+        reporting_head_name = reporting_head.employee_name or reporting_head.full_name
+
+        if not recipient_email:
+            print(f"Reporting head '{reporting_head_name}' has no email!")
+            return
+
+        print(f"Sending email to: {reporting_head_name} <{recipient_email}>")
+
+        # Prepare email content
+        subject = f"Car Rental Form Submitted by {user.employee_name} for Your Review"
+        # print(subject)
         regards = f"{user.employee_name} (Employee)"
+        # print(regards,"regardsssssssss")
         content = f"""
         Dear {reporting_head_name},
         <br><br>
-        We are pleased to inform you that {user.employee_name} has submitted the car rental form for your review.
+        {user.employee_name} has submitted the car rental form for your review.
         <br><br>Kindly check and take necessary action at your earliest convenience.<br><br>
         """
+
+        # print(content,"conterntttttttttt")
         link = f"{frappe.utils.get_url()}/reportnig_head_approval?id={quote(car_indent_form_name)}"
-        body = self.create_reporting_email(subject, content, regards,link)
-        self.send(subject=subject, body=body, recipient_email=recipient_email)
-        # self.send(subject=subject, body=body, recipient_email=recipient_email,bcc_emails=bcc_emails)
+        # print(link,"lllllllllllllllllllllllllllll")
+        body = self.create_reporting_email(subject, content, regards, link)
+        # print(body)
+
+        # Send email
+        try:
+            print("processing the mail sendssssssssssssssssss")
+            self.send(subject=subject, recipient_email=recipient_email, body=body)
+            print(f"✅ Email sent successfully to {recipient_email}")
+        except Exception as e:
+            print(f"❌ Failed to send email: {e}")
+
 
     def for_reporting_to_hr_team(self, user):
         recipient_email = emailMaster.hr_team_email        

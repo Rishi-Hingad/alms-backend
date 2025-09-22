@@ -102,7 +102,8 @@
   {
    "fieldname": "quotation_document",
    "fieldtype": "Attach",
-   "label": "Quotation Document"
+   "label": "Quotation Document",
+   "make_attachment_public": 1
   },
   {
    "fetch_from": "employee_code.company",
@@ -287,7 +288,7 @@
    "link_fieldname": "employee_name"
   }
  ],
- "modified": "2025-09-17 12:12:46.387186",
+ "modified": "2025-09-22 14:33:55.243739",
  "modified_by": "Administrator",
  "module": "CRMS",
  "name": "Car Indent Form",
@@ -307,6 +308,7 @@
    "write": 1
   }
  ],
+ "row_format": "Dynamic",
  "sort_field": "modified",
  "sort_order": "DESC",
  "states": [
