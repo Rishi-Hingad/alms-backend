@@ -10,15 +10,15 @@ def email_sender(name, email_send_to=None, car_indent_form_name=None, payload=No
             payload = json.loads(payload)
 
         user = frappe.get_doc("Employee Master",name)
-        # print("------------[email sender name]------------------:",user)
-        # print("------------[email sender name]------------------:",email_send_to)
-        # print("------------[email sender name]------------------:",car_indent_form_name)
+        print("------------[email sender name]------------------:",user)
+        print("------------[email sender name]------------------:",email_send_to)
+        print("------------[email sender name]------------------:",car_indent_form_name)
         
         if email_send_to =="To Employee":
             Email.for_hr_team_to_employee(user)
             
         elif email_send_to == "To Reporting":
-            Email.for_employee_to_reporting(user, car_indent_form_name)
+            Email.for_employee_to_reporting(user.name, car_indent_form_name)
 
         elif email_send_to =="ReportingHead To HR":
             Email.for_reporting_to_hr_team(user) #changed here

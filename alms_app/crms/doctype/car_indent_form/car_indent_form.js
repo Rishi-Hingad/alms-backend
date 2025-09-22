@@ -316,7 +316,7 @@ function checkAndSendEmail(frm) {
     console.log(employeeCode)
 
     frappe.call({
-                    method: "alms_app.crms.web_form.car_indent_form.car_indent_form.send_email_to_reporting_head",
+                    method: "alms_app.crms.web_form.car_indent_form.car_indent_form.send_email_to_reporting_head_dcotype",
                     args: { doc: employeeCode },
                     callback: function() {
                         frappe.msgprint("Email sent to Reporting Head!");

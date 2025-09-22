@@ -36,6 +36,8 @@ class EmailServices:
                 frappe.get_doc({
                     "doctype": "Email Queue Recipient",
                     "parent": email_queue.name,
+                    "parenttype": "Email Queue",
+                    "parentfield": "recipients",
                     "recipient": r,
                     "status": "Not Sent"
                 }).insert(ignore_permissions=True)
@@ -45,6 +47,8 @@ class EmailServices:
                     frappe.get_doc({
                         "doctype": "Email Queue Recipient",
                         "parent": email_queue.name,
+                        "parenttype": "Email Queue",
+                        "parentfield": "recipients",
                         "recipient": r,
                         "status": "Not Sent"
                     }).insert(ignore_permissions=True)
@@ -54,6 +58,8 @@ class EmailServices:
                     frappe.get_doc({
                         "doctype": "Email Queue Recipient",
                         "parent": email_queue.name,
+                        "parenttype": "Email Queue",
+                        "parentfield": "recipients",
                         "recipient": r,
                         "status": "Not Sent"
                     }).insert(ignore_permissions=True)
@@ -732,12 +738,15 @@ class EmailServices:
         print("=== Sending email to Reporting Head ===")
         # print("=== Sending email to Reporting Head ===",car_indent_form_name)
 
-        if not user.reporting_head:
+        employee_doc = frappe.get_doc("Employee Master",user)
+
+        if not employee_doc.reporting_head:
             print(f"Employee '{user.employee_name}' has no reporting head assigned!")
             return
 
         try:
-            reporting_head = frappe.get_doc("Employee Master", user.reporting_head)
+            reporting_head_value = employee_doc.reporting_head
+            reporting_head = frappe.get_doc("Employee Master",reporting_head_value)
         except Exception as e:
             print(f"Error fetching reporting head '{user.reporting_head}': {e}")
             return
@@ -752,14 +761,14 @@ class EmailServices:
         print(f"Sending email to: {reporting_head_name} <{recipient_email}>")
 
         # Prepare email content
-        subject = f"Car Rental Form Submitted by {user.employee_name} for Your Review"
+        subject = f"Car Rental Form Submitted by {employee_doc.employee_name} for Your Review"
         # print(subject)
-        regards = f"{user.employee_name} (Employee)"
+        regards = f"{employee_doc.employee_name} (Employee)"
         # print(regards,"regardsssssssss")
         content = f"""
         Dear {reporting_head_name},
         <br><br>
-        {user.employee_name} has submitted the car rental form for your review.
+        {employee_doc.employee_name} has submitted the car rental form for your review.
         <br><br>Kindly check and take necessary action at your earliest convenience.<br><br>
         """
 

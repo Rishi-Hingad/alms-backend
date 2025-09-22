@@ -60,8 +60,28 @@ def check_indent_exists(employee_code):
     
     return False
 
+
 @frappe.whitelist(allow_guest=True)
-def send_email_to_reporting_head(doc, method=None):
+def send_email_to_reporting_head_dcotype(doc, method=None):
+    # print(doc,"000000000000000")
+    try:
+        employee_docname = doc
+        # print(employee_docname,"000000000000000")
+        # print(doc,"000000000000000")
+        # print(doc,"000000000000000")
+
+        email_sender(name=employee_docname, email_send_to="To Reporting", car_indent_form_name=doc)
+        return {"status": "success", "message": f"Email triggered for reporting head of {employee_docname}"}
+    except Exception as e:
+        frappe.log_error(f"Failed to send reporting head email: {str(e)}", "Car Indent Email Error")
+        return {"status": "error", "message": str(e)}
+
+    except Exception as e:
+        frappe.log_error(f"Error in send_email_to_reporting_head: {str(e)}")
+        return {"status": "failed", "message": str(e)}
+
+@frappe.whitelist(allow_guest=True)
+def send_email_to_reporting_head(car_indent_form_name):
     # print(doc,"000000000000000")
     try:
         # employee_docname = doc
@@ -69,12 +89,15 @@ def send_email_to_reporting_head(doc, method=None):
         # print(doc,"000000000000000")
         # print(doc,"000000000000000")
 
-        employee_docname_doc=frappe.get_doc("Employee Master",doc)
-        employee_docname = employee_docname_doc.name
-        print(employee_docname)
+        car_indent = frappe.get_doc("Car Indent Form", car_indent_form_name)
 
-        email_sender(name=employee_docname, email_send_to="To Reporting", car_indent_form_name=doc)
-        return {"status": "success", "message": f"Email triggered for reporting head of {employee_docname}"}
+        # Fetch the employee linked to this indent
+        employee = frappe.get_doc("Employee Master", car_indent.employee_code)
+
+        
+
+        email_sender(name=employee.name, email_send_to="To Reporting", car_indent_form_name=car_indent)
+        return {"status": "success", "message": f"Email triggered for reporting head of {employee.name}"}
     except Exception as e:
         frappe.log_error(f"Failed to send reporting head email: {str(e)}", "Car Indent Email Error")
         return {"status": "error", "message": str(e)}
