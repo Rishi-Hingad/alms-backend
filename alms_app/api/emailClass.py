@@ -20,11 +20,55 @@ class EmailServices:
         self.smtp_password = alms_settings.smtp_password
         self.from_address = "noreply@merillife.com"
 
+    def _queue_email(self, subject, recipients, cc=None, bcc=None, content=None):
+        """Insert entry in Email Queue before sending"""
+        try:
+            email_queue = frappe.get_doc({
+                "doctype": "Email Queue",
+                "sender": self.from_address,
+                "message": content,
+                "subject": subject,
+                "status": "Not Sent"
+            }).insert(ignore_permissions=True)
+
+            # Recipients must go into Email Queue Recipient child table
+            for r in (recipients if isinstance(recipients, list) else [recipients]):
+                frappe.get_doc({
+                    "doctype": "Email Queue Recipient",
+                    "parent": email_queue.name,
+                    "recipient": r,
+                    "status": "Not Sent"
+                }).insert(ignore_permissions=True)
+
+            if cc:
+                for r in cc:
+                    frappe.get_doc({
+                        "doctype": "Email Queue Recipient",
+                        "parent": email_queue.name,
+                        "recipient": r,
+                        "status": "Not Sent"
+                    }).insert(ignore_permissions=True)
+
+            if bcc:
+                for r in bcc:
+                    frappe.get_doc({
+                        "doctype": "Email Queue Recipient",
+                        "parent": email_queue.name,
+                        "recipient": r,
+                        "status": "Not Sent"
+                    }).insert(ignore_permissions=True)
+
+            frappe.db.commit()
+            print(f"✅ Email queued in Email Queue: {email_queue.name}")
+        except Exception as e:
+            frappe.log_error(f"Failed to queue email: {str(e)}", "Email Queue Error")
+
     def send(self,subject,recipient_email,body,cc_list=None):
         print("----Send Mail----")
         try:
             site_config = frappe.get_site_config()
             bcc_list = site_config.get("bcc_email", [])
+            self._queue_email(subject, recipient_email, cc_list, bcc_list, body)
             msg = EmailMessage()
             msg.set_content(body, subtype="html")
             msg["Subject"] = subject
@@ -66,6 +110,7 @@ class EmailServices:
         try:
             site_config = frappe.get_site_config()
             bcc_list = site_config.get("bcc_email", [])
+            self._queue_email(subject, recipient_email, cc_list, bcc_list, body)
             msg = EmailMessage()
             msg.set_content(body, subtype="html")
             msg["Subject"] = subject

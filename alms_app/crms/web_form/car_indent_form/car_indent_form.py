@@ -64,10 +64,14 @@ def check_indent_exists(employee_code):
 def send_email_to_reporting_head(doc, method=None):
     # print(doc,"000000000000000")
     try:
-        employee_docname = doc
+        # employee_docname = doc
         # print(employee_docname,"000000000000000")
         # print(doc,"000000000000000")
         # print(doc,"000000000000000")
+
+        employee_docname_doc=frappe.get_doc("Employee Master",doc)
+        employee_docname = employee_docname_doc.name
+        print(employee_docname)
 
         email_sender(name=employee_docname, email_send_to="To Reporting", car_indent_form_name=doc)
         return {"status": "success", "message": f"Email triggered for reporting head of {employee_docname}"}
