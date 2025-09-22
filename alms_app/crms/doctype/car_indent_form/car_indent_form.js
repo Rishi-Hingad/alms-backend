@@ -313,6 +313,7 @@ frappe.ui.form.on("Car Indent Form", {
 
 function checkAndSendEmail(frm) {
     const employeeCode = frm.doc.employee_code;
+    console.log(employeeCode)
 
     frappe.call({
                     method: "alms_app.crms.web_form.car_indent_form.car_indent_form.send_email_to_reporting_head",
@@ -323,7 +324,9 @@ function checkAndSendEmail(frm) {
                     error: function() {
                         frappe.throw("Error sending car indent email.");
                     }
+                    
                 });
+                console.log("API method for send mail to repoarting head is successfully called!!!!!!!!!!!")
 }
 
 
