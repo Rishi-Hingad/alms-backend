@@ -378,7 +378,7 @@ def execute(filters=None):
 		month_start2=current_date.replace(day=1)
 		_,last_day2=monthrange(current_date3.year, current_date3.month)
 		month_end2=datetime(current_date3.year, current_date3.month, last_day2)
-		date_difference2 = month_end2 - month_start2
+		# date_difference2 = month_end2 - month_start2
 		# total_days_of_month = date_difference2.days +1
 
 		date_difference = month_end - month_start

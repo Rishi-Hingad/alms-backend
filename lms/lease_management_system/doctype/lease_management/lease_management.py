@@ -1577,7 +1577,7 @@ class LeaseManagement(Document):
 						mlp=prev_mlp
 				else:
 					mlp_1=mlp*n_prior/total_days_of_month
-					mlp_2=0
+					# mlp_2=0
 					if current_date==start_date or month_end==end_date:
 						mlp=mlp_1
 					# mlp_new=mlp
@@ -1596,7 +1596,7 @@ class LeaseManagement(Document):
 								if mrent==0 and rate==0 and famt==0:
 									mlp=0
 								mlp=mlp+(rate*mlp/100)+famt
-								mlp_2=mlp*n_next/total_days_of_month
+								# mlp_2=mlp*n_next/total_days_of_month
 								# mlp_new=mlp_1+mlp_2
 								prev_mlp_escl=mlp
 								break
@@ -1616,7 +1616,7 @@ class LeaseManagement(Document):
 								if mrent==0 and rate==0 and famt==0:
 									mlp=0
 								mlp=mlp+(rate*mlp/100)+famt
-								mlp_2=mlp*n_next/total_days_of_month
+								# mlp_2=mlp*n_next/total_days_of_month
 								# mlp_new=mlp_1+mlp_2
 								prev_mlp_escl=mlp
 								break
@@ -1726,7 +1726,7 @@ class LeaseManagement(Document):
 				start_date=dates[0]
 				end_date=dates[1]
 				inv_month=start_date.strftime("%Y-%m")
-				lease_data=monthly_data.get(inv_month,0)
+				# lease_data=monthly_data.get(inv_month,0)
 				# ms_date=lease_data[0]
 				# me_date=lease_data[1]
 				# frappe.msgprint(str(ms_date)+"-"+str(me_date)+" "+str(start_date.strftime("%Y-%m-%d"))+"\\"+str(end_date.strftime("%Y-%m-%d")))

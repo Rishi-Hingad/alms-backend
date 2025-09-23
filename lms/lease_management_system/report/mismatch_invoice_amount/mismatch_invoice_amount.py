@@ -61,7 +61,7 @@ def execute(filters=None):
 						start_date=dates[0]
 						end_date=dates[1]
 						inv_month=start_date.strftime("%Y-%m")
-						lease_data=monthly_data.get(inv_month,0)
+						# lease_data=monthly_data.get(inv_month,0)
 						# ms_date=lease_data[0]
 						# me_date=lease_data[1]
 						# frappe.msgprint(str(ms_date)+"-"+str(me_date)+" "+str(start_date.strftime("%Y-%m-%d"))+"\\"+str(end_date.strftime("%Y-%m-%d")))

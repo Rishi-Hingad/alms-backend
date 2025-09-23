@@ -56,7 +56,7 @@ def execute(filters=None):
 
 	current_date = start_date
 	ndays = 0
-	nmonths = 0
+	# nmonths = 0
 	total_mlp = 0
 	total_pv = 0
 	total_depre = 0
