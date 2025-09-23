@@ -1493,7 +1493,7 @@ class LeaseManagement(Document):
 					month_end=current_date
 					month_start=current_date.replace(day=1)
 				date_difference = month_end - month_start
-				n_next = date_difference.days +1
+				# n_next = date_difference.days +1
 
 				n= total_days_of_month
 			else:
@@ -1699,7 +1699,7 @@ class LeaseManagement(Document):
 
 	def validate_invoice_details(self):
 		rent_timeline=self.get_lease_rent_timeline()
-		monthly_data=self.get_lease_monthly_data()
+		# monthly_data=self.get_lease_monthly_data()
 		for row in self.invoice_details:
 			from_date = datetime.strptime(row.from_date, "%Y-%m-%d")
 			to_date = datetime.strptime(row.to_date, "%Y-%m-%d")
