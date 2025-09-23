@@ -62,8 +62,8 @@ def execute(filters=None):
 						end_date=dates[1]
 						inv_month=start_date.strftime("%Y-%m")
 						lease_data=monthly_data.get(inv_month,0)
-						ms_date=lease_data[0]
-						me_date=lease_data[1]
+						# ms_date=lease_data[0]
+						# me_date=lease_data[1]
 						# frappe.msgprint(str(ms_date)+"-"+str(me_date)+" "+str(start_date.strftime("%Y-%m-%d"))+"\\"+str(end_date.strftime("%Y-%m-%d")))
 						# if start_date.strftime("%Y-%m-%d")==ms_date and end_date.strftime("%Y-%m-%d")==me_date:
 						exp_rent.append(rent_timeline.get(inv_month))
@@ -74,7 +74,7 @@ def execute(filters=None):
 
 					# inv_month=from_date.strftime("%Y-%m")
 					# expected_rent=rent_timeline.get(inv_month)
-					actual_amount=float(child.amount)
+					# actual_amount=float(child.amount)
 					tax=float(child.tax)
 
 					if int(child.with_tax)==1:

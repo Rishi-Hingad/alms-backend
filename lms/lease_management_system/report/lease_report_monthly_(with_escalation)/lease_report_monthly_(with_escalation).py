@@ -232,7 +232,7 @@ def execute(filters=None):
 			edates_pafa+=sub_dict[subkey]
 			dict_ed_pafa[subkey]=sub_dict[subkey]
 
-	# First loop – PV calculations
+	# First loop PV calculations
 	while current_date <= end_date:
 		cnt += 1
 		month_start = current_date
@@ -245,7 +245,7 @@ def execute(filters=None):
 		_,last_day2=monthrange(current_date.year, current_date.month)
 		month_end2=datetime(current_date.year, current_date.month, last_day2)
 		date_difference2 = month_end2 - month_start2
-		total_days_of_month = date_difference2.days +1
+		# total_days_of_month = date_difference2.days +1
 
 		n = cnt
 		nmonths_val = (month_end - month_start).days + 1
@@ -316,7 +316,7 @@ def execute(filters=None):
 	prev_closing_liability = total_pv
 	total_days = ndays
 
-	# Second loop – depreciation calculation
+	# Second loop depreciation calculation
 	current_date2 = start_date
 	cnt1 = 0
 	while current_date2 <= end_date:
@@ -364,7 +364,7 @@ def execute(filters=None):
 		"closing_liability": round(closing_liability, 3)
 	})
 
-	# Third loop – final report generation
+	# Third loop final report generation
 	current_date3 = start_date
 	cnt2 = 0
 	while current_date3 <= end_date:
@@ -379,7 +379,7 @@ def execute(filters=None):
 		_,last_day2=monthrange(current_date3.year, current_date3.month)
 		month_end2=datetime(current_date3.year, current_date3.month, last_day2)
 		date_difference2 = month_end2 - month_start2
-		total_days_of_month = date_difference2.days +1
+		# total_days_of_month = date_difference2.days +1
 
 		date_difference = month_end - month_start
 		if doc.calculation_rate_type=="Monthly Rate":

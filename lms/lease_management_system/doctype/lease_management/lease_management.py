@@ -422,7 +422,7 @@ def generate_lease_report_new(start_date,end_date,docname,cnt_time):
 				else:
 					pv=mlp/((1+daily_rate)**ndays)
 					pv_arr.append(pv)
-				if prev_mlp_escl==None:
+				if prev_mlp_escl is None:
 					mlp=prev_mlp
 				else:
 					mlp=prev_mlp_escl
@@ -480,7 +480,7 @@ def generate_lease_report_new(start_date,end_date,docname,cnt_time):
 				else:
 					pv=mlp/((1+daily_rate)**ndays)
 					pv_arr.append(pv)
-				if prev_mlp_escl==None:
+				if prev_mlp_escl is None:
 					mlp=prev_mlp
 				else:
 					mlp=prev_mlp_escl
@@ -680,7 +680,7 @@ def generate_lease_report_new(start_date,end_date,docname,cnt_time):
 							round(closing_liability, 3)])
 				if mrent==0 and rate==0 and famt==0:
 					mlp2=prev_mlp2
-				if prev_mlp_escl2==None:
+				if prev_mlp_escl2 is None:
 					mlp2=prev_mlp2
 				else:
 					mlp2=prev_mlp_escl2
@@ -737,7 +737,7 @@ def generate_lease_report_new(start_date,end_date,docname,cnt_time):
 							round(closing_liability, 3)])
 				if mrent==0 and rate==0 and famt==0:
 					mlp2=prev_mlp2
-				if prev_mlp_escl2==None:
+				if prev_mlp_escl2 is None:
 					mlp2=prev_mlp2
 				else:
 					mlp2=prev_mlp_escl2
@@ -821,8 +821,8 @@ def generate_lease_report_month_based_new(start_date,end_date,docname,cnt_time):
 	current_date = current_date2 = current_date3 = start_date
 	data=[]
 	pv_arr=['']
-	prev_mlp_escl=None
-	prev_mlp_escl2=None
+	# prev_mlp_escl=None
+	# prev_mlp_escl2=None
 	ndays = nmonths = ndays_pv = total_mlp = total_pv = total_depre = cnt = cnt1 = cnt2 = 0
 	columns=["Month Start Date","Month End Date", "Month","Minimum Lease Payment (MLP)","Present Value of MLP","Days in Month", "Depreciation on Right to Use", "Written Down Value (WDV)", "Interest Cost", "Closing Liability"]
 	diff_years=get_diff_years(start_date,end_date)
@@ -1335,7 +1335,7 @@ class LeaseManagement(Document):
 								break
 					timeline[current_date.date().strftime("%Y-%m")] = round(mlp, 3)
 					# timeline[current_date.date().strftime("%Y-%m")] = mlp
-					if prev_mlp_escl==None:
+					if prev_mlp_escl is None:
 						mlp=prev_mlp
 					else:
 						mlp=prev_mlp_escl
@@ -1390,7 +1390,7 @@ class LeaseManagement(Document):
 					timeline[current_date.date().strftime("%Y-%m")] = round(mlp_new, 3)
 					# timeline[current_date.date().strftime("%Y-%m")] = mlp_new
 					# mlp=prev_mlp
-					if prev_mlp_escl==None:
+					if prev_mlp_escl is None:
 						mlp=prev_mlp
 					else:
 						mlp=prev_mlp_escl
@@ -1569,7 +1569,7 @@ class LeaseManagement(Document):
 						month_start=current_date.replace(day=1)
 					val=[month_start.date(),month_end.date()]
 					monthly_data[current_date.date().strftime("%Y-%m")] = val
-					if prev_mlp_escl==None:
+					if prev_mlp_escl is None:
 						mlp=prev_mlp
 					else:
 						mlp=prev_mlp_escl
@@ -1580,7 +1580,7 @@ class LeaseManagement(Document):
 					mlp_2=0
 					if current_date==start_date or month_end==end_date:
 						mlp=mlp_1
-					mlp_new=mlp
+					# mlp_new=mlp
 					if current_date.date() in edates_pannum and escalation:
 						for k in dict_ed_pannum.keys():
 							temp_val=k
@@ -1597,7 +1597,7 @@ class LeaseManagement(Document):
 									mlp=0
 								mlp=mlp+(rate*mlp/100)+famt
 								mlp_2=mlp*n_next/total_days_of_month
-								mlp_new=mlp_1+mlp_2
+								# mlp_new=mlp_1+mlp_2
 								prev_mlp_escl=mlp
 								break
 					
@@ -1617,7 +1617,7 @@ class LeaseManagement(Document):
 									mlp=0
 								mlp=mlp+(rate*mlp/100)+famt
 								mlp_2=mlp*n_next/total_days_of_month
-								mlp_new=mlp_1+mlp_2
+								# mlp_new=mlp_1+mlp_2
 								prev_mlp_escl=mlp
 								break
 					if current_date==start_date:
@@ -1628,7 +1628,7 @@ class LeaseManagement(Document):
 						month_start=current_date.replace(day=1)
 					val=[month_start.date(),month_end.date()]
 					monthly_data[current_date.date().strftime("%Y-%m")] = val
-					if prev_mlp_escl==None:
+					if prev_mlp_escl is None:
 						mlp=prev_mlp
 					else:
 						mlp=prev_mlp_escl
@@ -1727,8 +1727,8 @@ class LeaseManagement(Document):
 				end_date=dates[1]
 				inv_month=start_date.strftime("%Y-%m")
 				lease_data=monthly_data.get(inv_month,0)
-				ms_date=lease_data[0]
-				me_date=lease_data[1]
+				# ms_date=lease_data[0]
+				# me_date=lease_data[1]
 				# frappe.msgprint(str(ms_date)+"-"+str(me_date)+" "+str(start_date.strftime("%Y-%m-%d"))+"\\"+str(end_date.strftime("%Y-%m-%d")))
 				# if start_date.strftime("%Y-%m-%d")==ms_date and end_date.strftime("%Y-%m-%d")==me_date:
 				exp_rent.append(rent_timeline.get(inv_month))
@@ -1763,22 +1763,28 @@ class LeaseManagement(Document):
 def get_permission_query_conditions(user):
 	if not user:
 		return ""
+	
 	roles=frappe.get_roles(user)
 	if "System Manager" in roles or "Accounts" in roles:
 		return ""
+	
 	if "Vendor" in roles:
 		vendor=frappe.db.get_value("Vendor Master",{"email_address":user},"name")
 
 		if not vendor:
 			return "1=0"
+		
 		return f"`tabLease Management`.`vendor`='{vendor}'"
+	
 	return ""
 
 def has_permission(doc,user):
 	roles=frappe.get_roles(user)
 	if "System Manager" in roles or "Accounts" in roles:
 		return True
+	
 	if "Vendor" in roles:
 		vendor=frappe.db.get_value("Vendor Master",{"email_address":user},"name")
 		return doc.vendor==vendor
+	
 	return False	

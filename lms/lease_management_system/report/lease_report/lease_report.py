@@ -61,8 +61,8 @@ def execute(filters=None):
 
 	current_date = start_date
 	ndays = 0
-	nmonths = 0
-	ndays_pv = 0
+	# nmonths = 0
+	# ndays_pv = 0
 	total_mlp = 0
 	total_pv = 0
 	total_depre = 0
@@ -81,7 +81,7 @@ def execute(filters=None):
 	bd_end_date=""
 	cnt_etype=0
 	new_start_date=[]
-	esc_bd_end_date=None
+	
 	escalation=True
 	diff_annually=False
 	prev_mlp_escl=None
@@ -139,6 +139,8 @@ def execute(filters=None):
 		if not doc.escalation:
 			escalation=False
 	if escalation:
+		esc_bd_end_date=None
+	if escalation:
 		for i in range(len(etype)):
 					if etype[i]=="Per Annum" or etype[i]=="Per Annum and Fixed Amount":
 						if etype[i-1]=="Based On Dates":
@@ -162,29 +164,29 @@ def execute(filters=None):
 				fixed_amt=0
 			else:
 				fixed_amt=float(child.fixed_amount)
+
 			if child.escalation_type=="Per Annum":
 				cnt_etype+=1
-				
 				for i in range(diff_years):
 					if i==0 and cnt_etype==1:
-						for j in range(len(new_start_date)):
-							if new_date>=new_start_date[j]:
-								new_date=new_start_date[j]
-							elif new_date<new_start_date[j]:
-								new_date = start_date + relativedelta(years=1)
-						if len(new_start_date)==0:
-							new_date = start_date + relativedelta(years=1)
+						if esc_bd_end_date is None:
+							new_date=start_date + relativedelta(years=1)
+						else:
+							new_date=esc_bd_end_date
 						if new_date not in date_list:
 							if isinstance(new_date, datetime):
 								new_date = new_date.date()
 							escl_dates_pannum.append(new_date)
+							
 							new_date=new_date + relativedelta(years=1)
+							continue
 					else:
 						if new_date in date_list:
 							new_date=new_date + relativedelta(years=1)
 							break
 						if isinstance(new_date, datetime):
 							new_date = new_date.date()
+						
 						if new_date<end_date.date() and new_date not in date_list:
 							escl_dates_pannum.append(new_date)	
 							new_date=new_date + relativedelta(years=1)
@@ -195,16 +197,12 @@ def execute(filters=None):
 			
 			elif child.escalation_type=="Per Annum and Fixed Amount":
 				cnt_etype+=1
-				
 				for i in range(diff_years):
 					if i==0 and cnt_etype==1:
-						for j in range(len(new_start_date)):
-							if new_date>=new_start_date[j]:
-								new_date=new_start_date[j]
-							elif new_date<new_start_date[j]:
-								new_date = start_date + relativedelta(years=1)
-						if len(new_start_date)==0:
-							new_date = start_date + relativedelta(years=1)
+						if esc_bd_end_date is None:
+							new_date=start_date + relativedelta(years=1)
+						else:
+							new_date=esc_bd_end_date
 
 						if new_date not in date_list:
 							if isinstance(new_date, datetime):
@@ -225,6 +223,70 @@ def execute(filters=None):
 				calc_dict[dkey]={dsubkey:escl_dates_pafr}	
 				escl_dates_pafr=[]
 
+			# if child.escalation_type=="Per Annum":
+			# 	cnt_etype+=1
+				
+			# 	for i in range(diff_years):
+			# 		if i==0 and cnt_etype==1:
+			# 			for j in range(len(new_start_date)):
+			# 				if new_date>=new_start_date[j]:
+			# 					new_date=new_start_date[j]
+			# 				elif new_date<new_start_date[j]:
+			# 					new_date = start_date + relativedelta(years=1)
+			# 			if len(new_start_date)==0:
+			# 				new_date = start_date + relativedelta(years=1)
+			# 			if new_date not in date_list:
+			# 				if isinstance(new_date, datetime):
+			# 					new_date = new_date.date()
+			# 				escl_dates_pannum.append(new_date)
+			# 				new_date=new_date + relativedelta(years=1)
+			# 		else:
+			# 			if new_date in date_list:
+			# 				new_date=new_date + relativedelta(years=1)
+			# 				break
+			# 			if isinstance(new_date, datetime):
+			# 				new_date = new_date.date()
+			# 			if new_date<end_date.date() and new_date not in date_list:
+			# 				escl_dates_pannum.append(new_date)	
+			# 				new_date=new_date + relativedelta(years=1)
+			# 	dkey="Per Annum"+'-'+str(rate)
+			# 	dsubkey=str(rate)+'-'+str(monthly_rent)+'-'+str(fixed_amt)
+			# 	calc_dict[dkey]={dsubkey:escl_dates_pannum}
+			# 	escl_dates_pannum=[]
+			
+			# elif child.escalation_type=="Per Annum and Fixed Amount":
+			# 	cnt_etype+=1
+				
+			# 	for i in range(diff_years):
+			# 		if i==0 and cnt_etype==1:
+			# 			for j in range(len(new_start_date)):
+			# 				if new_date>=new_start_date[j]:
+			# 					new_date=new_start_date[j]
+			# 				elif new_date<new_start_date[j]:
+			# 					new_date = start_date + relativedelta(years=1)
+			# 			if len(new_start_date)==0:
+			# 				new_date = start_date + relativedelta(years=1)
+
+			# 			if new_date not in date_list:
+			# 				if isinstance(new_date, datetime):
+			# 					new_date = new_date.date()
+			# 				escl_dates_pafr.append(new_date)
+			# 				new_date=new_date + relativedelta(years=1)
+			# 		else:
+			# 			if new_date in date_list:
+			# 				new_date=new_date + relativedelta(years=1)
+			# 				break
+			# 			if isinstance(new_date, datetime):
+			# 				new_date = new_date.date()
+			# 			if new_date<end_date.date() and new_date not in date_list:
+			# 				escl_dates_pafr.append(new_date)
+			# 				new_date=new_date + relativedelta(years=1)	
+			# 	dkey="Per Annum and Fixed Amount"+'-'+str(rate)+'-'+str(fixed_amt)
+			# 	dsubkey=str(rate)+'-'+str(monthly_rent)+'-'+str(fixed_amt)
+			# 	calc_dict[dkey]={dsubkey:escl_dates_pafr}	
+			# 	escl_dates_pafr=[]
+
+
 		for key in calc_dict:
 			calc_keys.append(key)
 
@@ -240,8 +302,8 @@ def execute(filters=None):
 	edates_pannum=[]
 	edates_bd=[]
 	edates_pafa=[]
-	pa_rate=0
-	pafa_rate=0
+	# pa_rate=0
+	# pafa_rate=0
 	famt=0
 	mrent=0
 	rate=0
@@ -295,7 +357,7 @@ def execute(filters=None):
 		if n<total_days_of_month:
 			diff_annually=True
 
-	# First loop – PV calculations
+	# First loop PV calculations
 	while current_date <= end_date:
 		cnt += 1
 		if diff_annually:
@@ -419,7 +481,7 @@ def execute(filters=None):
 				else:
 					pv=mlp/((1+daily_rate)**ndays)
 					pv_arr.append(pv)
-				if prev_mlp_escl==None:
+				if prev_mlp_escl is None:
 					mlp=prev_mlp
 				else:
 					mlp=prev_mlp_escl
@@ -479,7 +541,7 @@ def execute(filters=None):
 				else:
 					pv=mlp/((1+daily_rate)**ndays)
 					pv_arr.append(pv)
-				if prev_mlp_escl==None:
+				if prev_mlp_escl is None:
 					mlp=prev_mlp
 				else:
 					mlp=prev_mlp_escl
@@ -566,7 +628,7 @@ def execute(filters=None):
 	prev_closing_liability = total_pv
 	total_days = ndays
 
-	# Second loop – depreciation calculation
+	# Second loop depreciation calculation
 	current_date2 = start_date
 	cnt1 = 0
 	while current_date2 <= end_date:
@@ -612,7 +674,7 @@ def execute(filters=None):
 		"closing_liability": round(closing_liability, 3)
 	})
 
-	# Third loop – final report generation
+	# Third loop final report generation
 	current_date3 = start_date
 	cnt2 = 0
 	while current_date3 <= end_date:
@@ -756,7 +818,7 @@ def execute(filters=None):
 				data.append(row)
 				if mrent==0 and rate==0 and famt==0:
 					mlp2=prev_mlp2
-				if prev_mlp_escl2==None:
+				if prev_mlp_escl2 is None:
 					mlp2=prev_mlp2
 				else:
 					mlp2=prev_mlp_escl2
@@ -828,7 +890,7 @@ def execute(filters=None):
 				data.append(row)
 				if mrent==0 and rate==0 and famt==0:
 					mlp2=prev_mlp2
-				if prev_mlp_escl2==None:
+				if prev_mlp_escl2 is None:
 					mlp2=prev_mlp2
 				else:
 					mlp2=prev_mlp_escl2

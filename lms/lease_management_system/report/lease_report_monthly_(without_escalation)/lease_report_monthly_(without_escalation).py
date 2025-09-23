@@ -60,7 +60,7 @@ def execute(filters=None):
 	cnt = 0
 	data = []
 
-	# First loop – PV calculations
+	# First loop PV calculations
 	while current_date <= end_date:
 		cnt += 1
 		month_start = current_date
@@ -94,7 +94,7 @@ def execute(filters=None):
 	prev_closing_liability = total_pv
 	total_days = ndays
 
-	# Second loop – depreciation calculation
+	# Second loop depreciation calculation
 	current_date2 = start_date
 	cnt1 = 0
 	while current_date2 <= end_date:
@@ -140,7 +140,7 @@ def execute(filters=None):
 		"closing_liability": round(closing_liability, 3)
 	})
 
-	# Third loop – final report generation
+	# Third loop final report generation
 	current_date3 = start_date
 	cnt2 = 0
 	while current_date3 <= end_date:
