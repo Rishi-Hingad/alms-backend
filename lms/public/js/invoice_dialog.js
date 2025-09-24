@@ -1,4 +1,4 @@
-window.open_invoice_dialog = function () {
+export function open_invoice_dialog() {
     let lease_id = null;
     let agreement_start = null;
     let agreement_end = null;
