@@ -906,4 +906,4 @@ function open_invoice_dialog () {
             }
         });
     } 
-};
+}

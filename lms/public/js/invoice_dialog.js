@@ -351,5 +351,5 @@ export function open_invoice_dialog() {
             }
         });
     } 
-};
+}
 window.open_invoice_dialog = open_invoice_dialog;
