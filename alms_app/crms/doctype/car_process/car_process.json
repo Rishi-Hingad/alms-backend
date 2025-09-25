@@ -46,7 +46,7 @@
    "fieldname": "company",
    "fieldtype": "Select",
    "label": "Company",
-   "options": "Easy Assets\nALD\nXYZ",
+   "options": "Eazy Assets\nALD",
    "read_only": 1
   },
   {

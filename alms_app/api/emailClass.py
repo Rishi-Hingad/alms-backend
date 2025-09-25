@@ -1,4 +1,3 @@
-
 """
 this class manage the email for each levele of approvels 
 """
@@ -18,7 +17,7 @@ class EmailServices:
         self.smtp_port = alms_settings.smtp_port
         self.smtp_user = alms_settings.smtp_user
         self.smtp_password = alms_settings.smtp_password
-        self.from_address = "noreply@merillife.com"
+        self.from_address = "hr@merillife.com"
 
     def _queue_email(self, subject, recipients, cc=None, bcc=None, content=None):
         """Insert entry in Email Queue before sending"""
@@ -65,7 +64,7 @@ class EmailServices:
                     }).insert(ignore_permissions=True)
 
             frappe.db.commit()
-            print(f"✅ Email queued in Email Queue: {email_queue.name}")
+            print(f"Email queued in Email Queue: {email_queue.name}")
         except Exception as e:
             frappe.log_error(f"Failed to queue email: {str(e)}", "Email Queue Error")
 
@@ -74,7 +73,7 @@ class EmailServices:
         try:
             site_config = frappe.get_site_config()
             bcc_list = site_config.get("bcc_email", [])
-            self._queue_email(subject, recipient_email, cc_list, bcc_list, body)
+            email_queue = self._queue_email(subject, recipient_email, cc_list, bcc_list, body)
             msg = EmailMessage()
             msg.set_content(body, subtype="html")
             msg["Subject"] = subject
@@ -100,9 +99,25 @@ class EmailServices:
                 response = server.send_message(msg)
                 print("SMTP Response:", response)
                 print("Email Sent Successfully!")
+            if email_queue:
+                email_queue.db_set("status", "Sent", update_modified=False)
+                frappe.db.commit()
+
+                # Update recipients too
+                recipients = frappe.get_all(
+                    "Email Queue Recipient",
+                    filters={"parent": email_queue.name},
+                    pluck="name"
+                )
+                for r in recipients:
+                    frappe.db.set_value("Email Queue Recipient", r, "status", "Sent")
+
+                frappe.db.commit()
+                print(f"Email Queue {email_queue.name} updated to Sent")
+
             frappe.logger().info(f"✅ Email sent successfully to {msg['To']}")
             return True
-
+        
         except smtplib.SMTPException as smtp_error:
             frappe.log_error(f"SMTP error occurred: {smtp_error}", "Email Error")
             return False
@@ -138,7 +153,6 @@ class EmailServices:
                 server.set_debuglevel(1)
                 server.starttls()
                 server.login(self.smtp_user, self.smtp_password)
-                response = server.send_message(msg)
                 response = server.send_message(msg)
                 print("Email Sent Successfully!")
             frappe.logger().info(f"✅ Email sent successfully to {msg['To']}")
@@ -735,9 +749,6 @@ class EmailServices:
 
 
     def for_employee_to_reporting(self, user, car_indent_form_name):
-        print("=== Sending email to Reporting Head ===")
-        # print("=== Sending email to Reporting Head ===",car_indent_form_name)
-
         employee_doc = frappe.get_doc("Employee Master",user)
 
         if not employee_doc.reporting_head:
@@ -760,31 +771,21 @@ class EmailServices:
 
         print(f"Sending email to: {reporting_head_name} <{recipient_email}>")
 
-        # Prepare email content
         subject = f"Car Rental Form Submitted by {employee_doc.employee_name} for Your Review"
-        # print(subject)
         regards = f"{employee_doc.employee_name} (Employee)"
-        # print(regards,"regardsssssssss")
         content = f"""
         Dear {reporting_head_name},
         <br><br>
         {employee_doc.employee_name} has submitted the car rental form for your review.
         <br><br>Kindly check and take necessary action at your earliest convenience.<br><br>
         """
-
-        # print(content,"conterntttttttttt")
         link = f"{frappe.utils.get_url()}/reportnig_head_approval?id={quote(car_indent_form_name)}"
-        # print(link,"lllllllllllllllllllllllllllll")
         body = self.create_reporting_email(subject, content, regards, link)
-        # print(body)
-
-        # Send email
         try:
-            print("processing the mail sendssssssssssssssssss")
             self.send(subject=subject, recipient_email=recipient_email, body=body)
-            print(f"✅ Email sent successfully to {recipient_email}")
+            print(f"Email sent successfully to {recipient_email}")
         except Exception as e:
-            print(f"❌ Failed to send email: {e}")
+            print(f"Failed to send email: {e}")
 
 
     def for_reporting_to_hr_team(self, user):
@@ -1543,5 +1544,3 @@ class EmailServices:
         """
         body = self.create_reject_email_body(car_quot_form,subject,content,remarks_by)  
         self.send_reject(subject,recipient_email,cc_list,body) 
-
-    

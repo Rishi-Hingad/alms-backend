@@ -62,7 +62,7 @@ def email_sender(name, email_send_to=None, car_indent_form_name=None, payload=No
                 frappe.msgprint("Something Wrong!, Try Again")
             Email.acknowledgement_email(user,"Finance Department","Final Approval")  #change to congratualate mail,  finance head to employee
             
-        elif email_send_to in ["Easy Assets","ALD","XYZ"]:
+        elif email_send_to in ["Eazy Assets","ALD"]:
             Email.for_finance_fill_quotation_acknowledgement(user,email_send_to)
             # negative track starts here
         elif email_send_to == "Deduction Finance Team To Finance Head":

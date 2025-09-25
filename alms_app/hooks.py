@@ -307,11 +307,11 @@ import frappe
 # 	}
 # }
 
-doc_events = {
-    "Car Indent Form": {
-        "on_submit": "alms_app.crms.web_form.car_indent_form.car_indent_form.send_email_to_reporting_head"
-    }
-}
+# doc_events = {
+#     "Car Indent Form": {
+#         "on_submit": "alms_app.crms.web_form.car_indent_form.car_indent_form.send_email_to_reporting_head"
+#     }
+# }
 
 
 # Scheduled Tasks
