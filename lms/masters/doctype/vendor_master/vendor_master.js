@@ -3,32 +3,32 @@
 
 frappe.ui.form.on("Vendor Master", {
 	// refresh: function (frm) {
-        // frm.set_query("pin_code", function () {
-        // return {
-        //     filters: {
-        //     city: frm.doc.city
-        //     }
-        // };
-        // });
-        
+	// frm.set_query("pin_code", function () {
+	// return {
+	//     filters: {
+	//     city: frm.doc.city
+	//     }
+	// };
+	// });
+
 	// }
-    pin_code: function(frm){
-        
-        if (frm.doc.pin_code) {
-            frappe.db.get_doc('Pincode Master', frm.doc.pin_code)
-                .then(doc => {
-                    // Assuming the fieldname in Vendor Master is 'city' (not 'City')
-                    frm.set_value('city', doc.city);
-                })
-                .catch(() => {
-                    frappe.msgprint(__('Pincode not found in Pincode Master'));
-                    frm.set_value('city', '');
-                });
-        } else {
-            // Clear city if pin_code is cleared
-            frm.set_value('city', '');
-        }
-    }
+	pin_code: function (frm) {
+		if (frm.doc.pin_code) {
+			frappe.db
+				.get_doc("Pincode Master", frm.doc.pin_code)
+				.then((doc) => {
+					// Assuming the fieldname in Vendor Master is 'city' (not 'City')
+					frm.set_value("city", doc.city);
+				})
+				.catch(() => {
+					frappe.msgprint(__("Pincode not found in Pincode Master"));
+					frm.set_value("city", "");
+				});
+		} else {
+			// Clear city if pin_code is cleared
+			frm.set_value("city", "");
+		}
+	},
 });
 // frappe.ui.form.on('Vendor Master', {
 //     city: function(frm) {
