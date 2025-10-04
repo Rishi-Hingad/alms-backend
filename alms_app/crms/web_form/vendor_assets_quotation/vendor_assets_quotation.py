@@ -53,7 +53,7 @@ def get_vendor_quotation(employee_details):
     fields_to_fetch = [
         "revised_financed_amount",
         "location",
-        "kilometers_per_year",
+        "total_kilometers",
         "make",
         "revised_accessories",
         "revised_discount",
@@ -80,7 +80,7 @@ def get_vendor_quotation(employee_details):
     mapped = {
         "financed_amount": record.get("revised_financed_amount", "0"),
         "location": record.get("location", ""),
-        "kms": record.get("kilometers_per_year", "0"),
+        "kms": record.get("total_kilometers", "0"),
         "variant": record.get("make", ""),
         "accessory": record.get("revised_accessories", 0),
         "discount_excluding_gst": record.get("revised_discount", 0),
@@ -92,9 +92,18 @@ def get_vendor_quotation(employee_details):
 
     # Handle attachment
     if record.get("revised_quotation_attachment_need_to_be_done"):
-        file_name = record["revised_quotation_attachment_need_to_be_done"].split("/").pop()
+        file_path = record["revised_quotation_attachment_need_to_be_done"]
+        file_name = file_path.split("/")[-1]
+
+    if file_path.startswith("/private/files"):
+        # Move or copy it to public folder for guest access
+        import frappe, shutil
+        private_path = frappe.get_site_path("private", "files", file_name)
+        public_path = frappe.get_site_path("public", "files", file_name)
+        shutil.copy(private_path, public_path)
         file_path = f"/files/{file_name}"
-        mapped["revised_quotation_vendor"] = file_path
-        mapped["revised_quotation_vendor_url"] = frappe.utils.get_url(file_path)
+
+    mapped["revised_quotation_vendor"] = file_path
+    mapped["revised_quotation_vendor_url"] = frappe.utils.get_url(file_path)
 
     return mapped

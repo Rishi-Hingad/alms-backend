@@ -250,25 +250,21 @@
    "label": "Purchase Head Remarks"
   },
   {
-   "fetch_from": "employee_name.make",
    "fieldname": "revised_make",
    "fieldtype": "Data",
    "label": "Revised Make"
   },
   {
-   "fetch_from": "employee_name.colour",
    "fieldname": "revised_color",
    "fieldtype": "Data",
    "label": "Revised Color"
   },
   {
-   "fetch_from": "employee_name.model",
    "fieldname": "revised_car_modal",
    "fieldtype": "Data",
    "label": "Revised Car Modal"
   },
   {
-   "fetch_from": "employee_name.engine",
    "fieldname": "revised_engine",
    "fieldtype": "Data",
    "label": "Revised Engine"
@@ -281,7 +277,7 @@
    "link_fieldname": "employee_code"
   }
  ],
- "modified": "2025-09-30 17:13:33.366737",
+ "modified": "2025-10-04 18:12:39.139285",
  "modified_by": "Administrator",
  "module": "CRMS",
  "name": "Purchase Team Form",
