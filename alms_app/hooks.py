@@ -41,7 +41,7 @@ fixtures=[
 
     # "Employee Designation"
     # "Employee Department"
-    {"dt": "Role", "filters": {"name": ["in", ["Car Indent Form User"]]}},
+    {"dt": "Role", "filters": {"name": ["in", ["Car Indent Form User", "ALMS User"]]}},
 
 ]
 # fixtures=[
@@ -194,6 +194,9 @@ fixtures=[
 # include js, css files in header of web template
 # web_include_css = "/assets/alms_app/css/alms_app.css"
 # web_include_js = "/assets/alms_app/js/alms_app.js"
+app_include_js = [
+    "/assets/alms_app/js/alms_listview_handler.js"
+]
 
 # include custom scss in every website theme (without file extension ".scss")
 # website_theme_scss = "alms_app/public/scss/website"
