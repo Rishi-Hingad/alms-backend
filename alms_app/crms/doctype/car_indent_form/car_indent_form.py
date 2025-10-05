@@ -1,5 +1,6 @@
 import frappe
 from frappe.model.document import Document
+from frappe import _
 
 class CarIndentForm(Document):    
     def validate(self):
@@ -63,3 +64,22 @@ def get_email_by_designation(designation):
     return user
 
 
+
+
+
+
+
+@frappe.whitelist()
+def can_view_car_indent_list():
+    """Check if the current user has the Car Indent Form User role"""
+    user = frappe.session.user
+    
+    if user == "Administrator":
+        return True
+    
+    has_role = frappe.db.exists("Has Role", {
+        "parent": user,
+        "role": "Car Indent Form User"
+    })
+    
+    return bool(has_role)

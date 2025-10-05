@@ -34,15 +34,16 @@ import frappe
 
 # Includes in <head>
 # ------------------
-# fixtures=[
+fixtures=[
     # "Custom DocPerm",
     # "Management Team",
     # "Web Form"
 
     # "Employee Designation"
     # "Employee Department"
+    {"dt": "Role", "filters": {"name": ["in", ["Car Indent Form User"]]}},
 
-# ]
+]
 # fixtures=[
 #     # "ALMS Settings",
 #     "Vendor Master",

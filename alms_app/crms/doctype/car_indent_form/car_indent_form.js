@@ -219,11 +219,27 @@ frappe.ui.form.on("Car Indent Form", {
         frm.set_df_property('default_currency', 'read_only', 1);
         frm.set_df_property('form_type', 'read_only', 1);
         toggleFieldStatus(frm);
+        check_user_access(frm);
     },
 
     refresh: function (frm) {
         updateStatus(frm);
         toggleFieldStatus(frm);
+
+        // Add custom button to call both APIs
+        frm.add_custom_button(__('Check & Send Email'), function() {
+            checkAndSendEmail(frm);
+        }).css({
+            "background-color": "#28a745",
+            "color": "white",
+            "border": "none",
+            "padding": "8px 15px",
+            "font-size": "13px",
+            "border-radius": "5px",
+            "cursor": "pointer"
+        });
+        check_user_access(frm);
+        
     },
 
     reporting_head_approval: function (frm) {
@@ -290,26 +306,44 @@ frappe.ui.form.on("Car Indent Form", {
     }
 });
 
-frappe.ui.form.on("Car Indent Form", {
-    refresh: function(frm) {
-        updateStatus(frm);
-        toggleFieldStatus(frm);
+// frappe.ui.form.on("Car Indent Form", {
+//     refresh: function(frm) {
+//         updateStatus(frm);
+//         toggleFieldStatus(frm);
 
-        // Add custom button to call both APIs
-        frm.add_custom_button(__('Check & Send Email'), function() {
-            checkAndSendEmail(frm);
-        }).css({
-            "background-color": "#28a745",
-            "color": "white",
-            "border": "none",
-            "padding": "8px 15px",
-            "font-size": "13px",
-            "border-radius": "5px",
-            "cursor": "pointer"
-        });
-    }
-});
-
+//         // Add custom button to call both APIs
+//         frm.add_custom_button(__('Check & Send Email'), function() {
+//             checkAndSendEmail(frm);
+//         }).css({
+//             "background-color": "#28a745",
+//             "color": "white",
+//             "border": "none",
+//             "padding": "8px 15px",
+//             "font-size": "13px",
+//             "border-radius": "5px",
+//             "cursor": "pointer"
+//         });
+//     }
+// });
+function check_user_access(frm) {
+    frappe.call({
+        method: 'alms_app.crms.doctype.car_indent_form.car_indent_form.can_view_car_indent_list',
+        async: false,
+        callback: function(r) {
+            if (!r.message) {
+                frappe.msgprint({
+                    title: __('Access Denied'),
+                    indicator: 'red',
+                    message: __('You do not have the required role to access this document.')
+                });
+                
+                setTimeout(function() {
+                    frappe.set_route('');
+                }, 300);
+            }
+        }
+    });
+}
 
 function checkAndSendEmail(frm) {
     const employeeCode = frm.doc.employee_code;
