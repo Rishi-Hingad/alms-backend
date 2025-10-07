@@ -394,13 +394,17 @@ frappe.ui.form.on("Lease Management", {
 
 			if (consecutivePerAnnum >= 2) {
 				frappe.throw(
-					__("You cannot have 2 or more consecutive 'Per Annum' values in escalation type")
+					__(
+						"You cannot have 2 or more consecutive 'Per Annum' values in escalation type"
+					)
 				);
 			}
 
 			if (consecutivePerAnnumandFixed >= 2) {
 				frappe.throw(
-					__("You cannot have 2 or more consecutive 'Per Annum and Fixed Amount' values in escalation type")
+					__(
+						"You cannot have 2 or more consecutive 'Per Annum and Fixed Amount' values in escalation type"
+					)
 				);
 			}
 

@@ -7,6 +7,7 @@ import frappe
 from dateutil.relativedelta import relativedelta
 from frappe import __
 
+
 def execute(filters=None):
 	columns = [
 		{"label": "Month", "fieldname": "month", "fieldtype": "Data", "width": 150},
