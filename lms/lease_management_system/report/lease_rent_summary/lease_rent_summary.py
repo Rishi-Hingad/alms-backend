@@ -5,7 +5,7 @@ from datetime import datetime
 
 import frappe
 from dateutil.relativedelta import relativedelta
-
+from frappe import __
 
 def execute(filters=None):
 	columns = [

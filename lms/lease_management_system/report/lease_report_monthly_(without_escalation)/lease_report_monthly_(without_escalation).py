@@ -6,6 +6,7 @@ from datetime import date, datetime, timedelta
 
 import frappe
 from dateutil.relativedelta import relativedelta
+from frappe import __
 
 
 def execute(filters=None):
