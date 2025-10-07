@@ -53,7 +53,7 @@ def execute(filters=None):
 		{"label": "Month End Date", "fieldname": "month_end_date", "fieldtype": "Date", "width": 120},
 		{"label": "Days in Month", "fieldname": "days_in_month", "fieldtype": "Int", "width": 120},
 		{
-			"label": "Minimum Lease Payment (MLP)",
+			"label": __("Minimum Lease Payment (MLP)"),
 			"fieldname": "mlp",
 			"fieldtype": "Currency",
 			"width": 180,
@@ -61,7 +61,7 @@ def execute(filters=None):
 		},
 		{"label": "Present Value of MLP", "fieldname": "pv", "fieldtype": "Currency", "width": 180},
 		{
-			"label": "Depreciation on Right to Use",
+			"label": __("Depreciation on Right to Use"),
 			"fieldname": "depreciation",
 			"fieldtype": "Currency",
 			"width": 200,
@@ -69,7 +69,7 @@ def execute(filters=None):
 		{"label": "Written Down Value (WDV)", "fieldname": "wdv", "fieldtype": "Currency", "width": 180},
 		{"label": "Interest Cost", "fieldname": "interest_cost", "fieldtype": "Currency", "width": 150},
 		{
-			"label": "Closing Liability",
+			"label": __("Closing Liability"),
 			"fieldname": "closing_liability",
 			"fieldtype": "Currency",
 			"width": 180,

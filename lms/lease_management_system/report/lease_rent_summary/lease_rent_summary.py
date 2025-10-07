@@ -11,7 +11,7 @@ def execute(filters=None):
 	columns = [
 		{"label": "Month", "fieldname": "month", "fieldtype": "Data", "width": 150},
 		{
-			"label": "Total Rent",
+			"label": __("Total Rent"),
 			"fieldname": "total_rent",
 			"fieldtype": "Currency",
 			"width": 150,

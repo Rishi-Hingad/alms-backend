@@ -17,7 +17,7 @@ def execute(filters=None):
 		{"label": "Invoice From Date", "fieldname": "invoice_from_date", "fieldtype": "Date", "width": 150},
 		{"label": "Invoice To Date", "fieldname": "invoice_to_date", "fieldtype": "Date", "width": 150},
 		{
-			"label": "Calculated Rent",
+			"label": __("Calculated Rent"),
 			"fieldname": "calculated_rent",
 			"fieldtype": "Currency",
 			"width": 200,
@@ -25,14 +25,14 @@ def execute(filters=None):
 		},
 		{"label": "Tax (%)", "fieldname": "tax", "fieldtype": "Percentage", "width": 100},
 		{
-			"label": "Taxable Amount",
+			"label": __("Taxable Amount"),
 			"fieldname": "taxable_amount",
 			"fieldtype": "Currency",
 			"width": 200,
 			"precision": 4,
 		},
 		{
-			"label": "Invoice Amount",
+			"label": __("Invoice Amount"),
 			"fieldname": "invoice_amount",
 			"fieldtype": "Currency",
 			"width": 200,

@@ -264,7 +264,7 @@ frappe.ui.form.on("Lease Management", {
 						const first_record = records[0];
 						frm.set_value("discounting_rate", first_record.discounting_rate);
 					} else {
-						frappe.msgprint("No records found.");
+						frappe.msgprint(__("No records found."));
 					}
 				});
 		}
@@ -297,7 +297,7 @@ frappe.ui.form.on("Lease Management", {
 					});
 				});
 
-				frm.add_custom_button("Go to Report", function () {
+				frm.add_custom_button(__("Go to Report"), function () {
 					let lname = frm.doc.name;
 					if (
 						frm.doc.calculation_rate_type == "Daily Rate" &&
@@ -394,13 +394,13 @@ frappe.ui.form.on("Lease Management", {
 
 			if (consecutivePerAnnum >= 2) {
 				frappe.throw(
-					"You cannot have 2 or more consecutive 'Per Annum' values in escalation type"
+					__("You cannot have 2 or more consecutive 'Per Annum' values in escalation type")
 				);
 			}
 
 			if (consecutivePerAnnumandFixed >= 2) {
 				frappe.throw(
-					"You cannot have 2 or more consecutive 'Per Annum and Fixed Amount' values in escalation type"
+					__("You cannot have 2 or more consecutive 'Per Annum and Fixed Amount' values in escalation type")
 				);
 			}
 
