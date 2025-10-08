@@ -29,7 +29,7 @@ def execute(filters=None):
 			"fieldname": "payment_status",
 			"fieldtype": "Data",
 			"width": 200,
-		},
+		}
 	]
 
 	today = frappe.utils.nowdate()
