@@ -12,7 +12,7 @@ from datetime import date, datetime, timedelta
 
 import frappe
 from dateutil.relativedelta import relativedelta
-from frappe import __
+from frappe import _ as translate
 
 
 def execute(filters=None):
@@ -54,7 +54,7 @@ def execute(filters=None):
 		{"label": "Month End Date", "fieldname": "month_end_date", "fieldtype": "Date", "width": 120},
 		{"label": "Days in Month", "fieldname": "days_in_month", "fieldtype": "Int", "width": 120},
 		{
-			"label": __("Minimum Lease Payment (MLP)"),
+			"label": translate("Minimum Lease Payment (MLP)"),
 			"fieldname": "mlp",
 			"fieldtype": "Currency",
 			"width": 180,
@@ -62,7 +62,7 @@ def execute(filters=None):
 		},
 		{"label": "Present Value of MLP", "fieldname": "pv", "fieldtype": "Currency", "width": 180},
 		{
-			"label": __("Depreciation on Right to Use"),
+			"label": translate("Depreciation on Right to Use"),
 			"fieldname": "depreciation",
 			"fieldtype": "Currency",
 			"width": 200,
@@ -70,7 +70,7 @@ def execute(filters=None):
 		{"label": "Written Down Value (WDV)", "fieldname": "wdv", "fieldtype": "Currency", "width": 180},
 		{"label": "Interest Cost", "fieldname": "interest_cost", "fieldtype": "Currency", "width": 150},
 		{
-			"label": __("Closing Liability"),
+			"label": translate("Closing Liability"),
 			"fieldname": "closing_liability",
 			"fieldtype": "Currency",
 			"width": 180,

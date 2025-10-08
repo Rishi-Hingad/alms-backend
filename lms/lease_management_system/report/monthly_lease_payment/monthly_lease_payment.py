@@ -6,7 +6,7 @@ from datetime import date, datetime, timedelta
 
 import frappe
 from dateutil.relativedelta import relativedelta
-from frappe import __
+from frappe import _ as translate
 
 
 def execute(filters=None):
@@ -20,17 +20,17 @@ def execute(filters=None):
 
 	data = []
 	columns = [
-		{"label": __("Lease"), "fieldname": "lease", "fieldtype": "Data", "width": 200},
+		{"label": translate("Lease"), "fieldname": "lease", "fieldtype": "Data", "width": 200},
 		{"label": "Month Start Date", "fieldname": "month_start_date", "fieldtype": "Date", "width": 150},
 		{"label": "Month End Date", "fieldname": "month_end_date", "fieldtype": "Date", "width": 150},
 		{
-			"label": __("Total Rent"),
+			"label": translate("Total Rent"),
 			"fieldname": "total_rent",
 			"fieldtype": "Currency",
 			"width": 200,
 			"precision": 4,
 		},
-		{"label": __("Payment Status"), "fieldname": "payment_status", "fieldtype": "Data", "width": 200},
+		{"label": translate("Payment Status"), "fieldname": "payment_status", "fieldtype": "Data", "width": 200},
 	]
 
 	lease_status = "Pending"

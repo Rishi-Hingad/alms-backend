@@ -5,14 +5,14 @@ from datetime import datetime
 
 import frappe
 from dateutil.relativedelta import relativedelta
-from frappe import __
+from frappe import _ as translate
 
 
 def execute(filters=None):
 	columns = [
 		{"label": "Month", "fieldname": "month", "fieldtype": "Data", "width": 150},
 		{
-			"label": __("Total Rent"),
+			"label": translate("Total Rent"),
 			"fieldname": "total_rent",
 			"fieldtype": "Currency",
 			"width": 150,

@@ -6,19 +6,19 @@ from datetime import date, datetime, timedelta
 
 import frappe
 from dateutil.relativedelta import relativedelta
-from frappe import __
+from frappe import _ as translate
 
 
 def execute(filters=None):
 	data = []
 	columns = [
-		{"label": __("Lease"), "fieldname": "lease", "fieldtype": "Data", "width": 200},
+		{"label": translate("Lease"), "fieldname": "lease", "fieldtype": "Data", "width": 200},
 		# {"label": "Month Start Date", "fieldname": "month_start_date", "fieldtype": "Date", "width": 150},
 		# {"label": "Month End Date", "fieldname": "month_end_date", "fieldtype": "Date", "width": 150},
 		{"label": "Invoice From Date", "fieldname": "invoice_from_date", "fieldtype": "Date", "width": 150},
 		{"label": "Invoice To Date", "fieldname": "invoice_to_date", "fieldtype": "Date", "width": 150},
 		{
-			"label": __("Calculated Rent"),
+			"label": translate("Calculated Rent"),
 			"fieldname": "calculated_rent",
 			"fieldtype": "Currency",
 			"width": 200,
@@ -26,14 +26,14 @@ def execute(filters=None):
 		},
 		{"label": "Tax (%)", "fieldname": "tax", "fieldtype": "Percentage", "width": 100},
 		{
-			"label": __("Taxable Amount"),
+			"label": translate("Taxable Amount"),
 			"fieldname": "taxable_amount",
 			"fieldtype": "Currency",
 			"width": 200,
 			"precision": 4,
 		},
 		{
-			"label": __("Invoice Amount"),
+			"label": translate("Invoice Amount"),
 			"fieldname": "invoice_amount",
 			"fieldtype": "Currency",
 			"width": 200,
