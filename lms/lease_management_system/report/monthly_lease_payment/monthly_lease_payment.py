@@ -30,7 +30,12 @@ def execute(filters=None):
 			"width": 200,
 			"precision": 4,
 		},
-		{"label": translate("Payment Status"), "fieldname": "payment_status", "fieldtype": "Data", "width": 200},
+		{
+			"label": translate("Payment Status"),
+			"fieldname": "payment_status",
+			"fieldtype": "Data",
+			"width": 200,
+		},
 	]
 
 	lease_status = "Pending"
