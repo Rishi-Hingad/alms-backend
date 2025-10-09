@@ -435,7 +435,7 @@ function updateQuotationSendRequest(frm) {
                     if (selected_companies.includes("ALL")) {
                         selected_companies = companies;
                     }
-
+                    let delay = 0;
                     if (selected_companies.length > 0) {
                         selected_companies.forEach(company => {
                             if (sentCompanies.includes(company)) {
@@ -444,13 +444,12 @@ function updateQuotationSendRequest(frm) {
                                 }, delay);
                                 delay += 600;
                             } else {
-                                send_email(frm.doc.name, "FinanceHead To Quotation Company", {email_send_to: company});
+                                send_email(frm.doc.name, "FinanceHead To Quotation Company", JSON.stringify({ email_send_to: selected_companies }));
                             }
                         });
                     } else {
                         frappe.msgprint("Please select at least one company.");
                     }
-                    // Reset checkboxes
                     document.querySelectorAll('#company-checkboxes input[type="checkbox"]').forEach(checkbox => {
                         checkbox.checked = false;
                     });
@@ -787,5 +786,3 @@ function calculate_totals(frm) {
     const finance_amount = (revised_ex_show_room_price + revised_tcs - revised_discount) + revised_accessories + revised_registration_charges;
     frm.set_value("revised_financed_amount", finance_amount);
 }
-
-

@@ -5,6 +5,7 @@ this class manage the email for each levele of approvels
 import smtplib,ssl
 from email.message import EmailMessage
 import frappe
+from frappe import _
 from alms_app.api.email_master import EmailMaster
 from urllib.parse import quote
 emailMaster = EmailMaster()
@@ -30,7 +31,6 @@ class EmailServices:
                 "status": "Not Sent"
             }).insert(ignore_permissions=True)
 
-            # Recipients must go into Email Queue Recipient child table
             for r in (recipients if isinstance(recipients, list) else [recipients]):
                 frappe.get_doc({
                     "doctype": "Email Queue Recipient",
@@ -83,17 +83,15 @@ class EmailServices:
             else:
                 msg["To"] = recipient_email
 
-            # Optional CC
             if cc_list:
                 msg["Cc"] = ", ".join(cc_list)
 
-            # Dynamic BCC
             if bcc_list:
                 msg["Bcc"] = ", ".join(bcc_list)
             print("-----BCC List---->",bcc_list)
             
             with smtplib.SMTP(self.smtp_server, self.smtp_port) as server:
-                server.set_debuglevel(1)
+                # server.set_debuglevel(1)
                 server.starttls()
                 server.login(self.smtp_user, self.smtp_password)
                 response = server.send_message(msg)
@@ -103,7 +101,6 @@ class EmailServices:
                 email_queue.db_set("status", "Sent", update_modified=False)
                 frappe.db.commit()
 
-                # Update recipients too
                 recipients = frappe.get_all(
                     "Email Queue Recipient",
                     filters={"parent": email_queue.name},
@@ -141,16 +138,14 @@ class EmailServices:
             else:
                 msg["To"] = recipient_email
 
-            # Optional CC
             if cc_list:
                 msg["Cc"] = ", ".join(cc_list)
 
-            # Dynamic BCC
             if bcc_list:
                 msg["Bcc"] = ", ".join(bcc_list)
             
             with smtplib.SMTP(self.smtp_server, self.smtp_port) as server:
-                server.set_debuglevel(1)
+                # server.set_debuglevel(1)
                 server.starttls()
                 server.login(self.smtp_user, self.smtp_password)
                 response = server.send_message(msg)
@@ -179,27 +174,23 @@ class EmailServices:
             else:
                 msg["To"] = recipient_email
 
-            # Optional CC
             if cc_list:
                 msg["Cc"] = ", ".join(cc_list)
 
-            # Dynamic BCC
             if bcc_list:
                 msg["Bcc"] = ", ".join(bcc_list)
             
             with smtplib.SMTP(self.smtp_server, self.smtp_port) as server:
-                server.set_debuglevel(1)
+                # server.set_debuglevel(1)
                 server.starttls()
                 server.login(self.smtp_user, self.smtp_password)
                 response = server.send_message(msg)
                 print("Email Sent Successfully!")
 
         except smtplib.SMTPException as smtp_error:
-            # print("-----------[EMAIL ERROR]-------------",smtp_error)
             frappe.throw(f"SMTP error occurred: {smtp_error}")
 
         except Exception as e:
-            # print("-----------[EMAIL ERROR]-------------",str(e))
             frappe.throw(f"Failed to send email: {str(e)}")
 
 
@@ -789,7 +780,8 @@ class EmailServices:
 
 
     def for_reporting_to_hr_team(self, user):
-        recipient_email = emailMaster.hr_team_email        
+        recipient_email = emailMaster.hr_team_emails
+        print(" for reporting to hr team------",recipient_email,"+++++++++++++++",emailMaster.hr_team_emails)
         subject = "Car Rental Form Approved by Reporting Manager"
         regards = f"{user.reporting_head} (Reporting Manager)"
         remarks_by="reporting_head_remarks"
@@ -886,14 +878,15 @@ class EmailServices:
         revised_form = frappe.get_doc("Purchase Team Form",user.name)
         content = f"""
         Dear Sir/Madam,
-        <br><br>The Purchase Team has reviewed and approved the car rental form form submitted by {user.employee_name}.
+        <br><br>The Purchase Team has reviewed and approved the car rental form submitted by {user.employee_name}.
         <br>{updated_by} have updated the quotation for the activity mentioned below:
         """
         body = self.create_email_body_revised(form,revised_form,user,subject, content,updated_by,remarks_by,regards)
         self.send(subject=subject, body=body, recipient_email=recipient_email)
 
     def for_purchase_head_to_finance_team(self, user):
-        recipient_email = emailMaster.finance_team_email
+        recipient_emails = emailMaster.finance_team_emails
+        print("FOR ph TO ft-----",recipient_emails,"+++++++++++++++",recipient_emails)
         subject = "Car Rental Form Approved by Purchase Head"
         regards = "Purchase Head"
         form = frappe.get_doc("Car Indent Form",user.name)
@@ -906,16 +899,12 @@ class EmailServices:
         <br>{updated_by} have approved the request for the activity mentioned below:
         """
         body = self.create_email_body_revised(form,revised_form,user,subject, content,updated_by,remarks_by,regards)
-        self.send(subject=subject, body=body, recipient_email=recipient_email)
+        self.send(subject=subject, body=body, recipient_email=recipient_emails)
 
     def for_finance_team_to_finance_head(self, user):
         # print("FInacne Team to Finance Head",user.employee_details)
-
-        recipient_email = emailMaster.finance_head_email
-        print("Finance head email---->",recipient_email)
-        recipient_email2 = emailMaster.finance_head2_email
-        print("Finance head 2 email---->",recipient_email2)
-
+        recipient_emails = emailMaster.finance_head_emails
+        print("FOR FT TO FH-----",recipient_emails,"+++++++++++++++",recipient_emails)
         subject = "Car Rental Form Approved by Finance Team"
         regards ="Finance Team"
         form = frappe.get_doc("Car Indent Form",user.name)
@@ -934,17 +923,13 @@ class EmailServices:
         """
         body = self.create_email_body_quot(form,revised_form,quot_form,user,subject, content,updated_by,remarks_by,regards) 
         # print(body)
-        self.send(subject=subject, body=body, recipient_email=recipient_email)
-        self.send(subject=subject, body=body, recipient_email=recipient_email2)
+        self.send(subject=subject, body=body, recipient_email=recipient_emails)
     
     def for_finance_team_to_finance_head_payload(self, user, payload):
         print("FInacne Team to Finance Head Payload",payload)
 
-        recipient_email = emailMaster.finance_head_email
-        print("Finance head email---->",recipient_email)
-        recipient_email2 = emailMaster.finance_head2_email
-        print("Finance head 2 email---->",recipient_email2)
-
+        recipient_emails = emailMaster.finance_head_emails
+        print("FOR FH TO FT pyload-----",recipient_emails,"+++++++++++++++",recipient_emails)
         subject = "Car Rental Form Approved by Finance Team"
         regards ="Finance Team"
         form = frappe.get_doc("Car Indent Form",user.name)
@@ -962,8 +947,7 @@ class EmailServices:
         """
         body = self.create_email_body_quot(form,revised_form,quot_form,user,subject, content,updated_by,remarks_by,regards) 
         # print(body)
-        self.send(subject=subject, body=body, recipient_email=recipient_email)
-        self.send(subject=subject, body=body, recipient_email=recipient_email2)
+        self.send(subject=subject, body=body, recipient_email=recipient_emails)
 
     def for_finance_head_to_accounts_team(self, user):
         recipient_email = emailMaster.accounts_team_email
@@ -1369,47 +1353,163 @@ class EmailServices:
         
         return body
     
-    
-    def for_car_quotation_ALD_EasyAssets_Xyz(self,user,payload):
-        data = frappe.get_all("Vendor Master",fields="*")
-        # print("-------------------------------[DATA]----------------------",data)
-        car_indent_form = frappe.get_doc("Car Indent Form",user.name)  
-        car_purchase_form = frappe.get_doc("Purchase Team Form",user.name)  
-        emails_sent = []
-        for company_detail in data:
-            
-            if payload.get("email_send_to") == "ALL" or company_detail.name == payload.get("email_send_to"):
+    # ------------------------ OLD CODE DO'NOT DELETE -------------------------------
+
+    # def for_car_quotation_ALD_EazyAssets_Xyz(self, user, payload):
+    #     print("---------HIT-----")
+
+    #     data = frappe.get_all("Vendor Master", fields=["name", "company_name", "contact_email"])
+    #     selected_vendors = payload.get("email_send_to", [])
+
+    #     print("-------------------------------[PAYLOAD]----------------------", payload)
+    #     print("-------------------------------[VENDORS SELECTED]----------------------", selected_vendors)
+
+    #     car_indent_form = frappe.get_doc("Car Indent Form", user.name)
+    #     car_purchase_form = frappe.get_doc("Purchase Team Form", user.name)
+
+    #     emails_sent = []
+
+    #     for company_detail in data:
+    #         vendor_name = (company_detail.vendor_name or company_detail.name or "").strip()
+    #         print(f"CHECKING vendor_name='{vendor_name}' against {selected_vendors}")
+
+    #         # Case-insensitive match
+    #         if any(vendor_name.lower() == v.lower().strip() for v in selected_vendors):
+    #             print(f"------MATCH FOUND: {vendor_name}------")
                
-                link = (
-                        # f"http://127.0.0.1:8001/vendor-assets-quotation/new?"
-                        f"{frappe.utils.get_url()}/vendor-assets-quotation/new?"
-                        f"finance_company={company_detail.name}&"
-                        f"employee_details={user.name}&"
-                        f"location={car_indent_form.location}&"
-                        f"kms={car_purchase_form.kilometers_per_year}&"
-                        f"variant={car_indent_form.model}&"
-                        f"accessory={car_purchase_form.revised_accessories}&"
-                        f"discount_excluding_gst={car_purchase_form.revised_discount}&"
-                        f"registration_charges={car_purchase_form.revised_registration_charges}&"
-                        f"financed_amount={car_purchase_form.revised_financed_amount}&"
-                        f"ex_showroom_amount={car_purchase_form.revised_ex_show_room_price}&"
-                        f"ex_showroom_amount_net_of_discount={car_purchase_form.revised_net_ex_showroom_price}"
+    #             link = (
+    #                     f"{frappe.utils.get_url()}/vendor-assets-quotation/new?"
+    #                     f"finance_company={company_detail.name}&"
+    #                     f"employee_details={user.name}&"
+    #                     f"location={car_indent_form.location}&"
+    #                     f"kms={car_purchase_form.total_kilometers}&"
+    #                     f"variant={car_indent_form.model}&"
+    #                     f"accessory={car_purchase_form.revised_accessories}&"
+    #                     f"discount_excluding_gst={car_purchase_form.revised_discount}&"
+    #                     f"registration_charges={car_purchase_form.revised_registration_charges}&"
+    #                     f"financed_amount={car_purchase_form.revised_financed_amount}&"
+    #                     f"ex_showroom_amount={car_purchase_form.revised_ex_show_room_price}&"
+    #                     f"ex_showroom_amount_net_of_discount={car_purchase_form.revised_net_ex_showroom_price}"
                         
-                    )
-                if payload.get("email_phase") == "Revised":
-                    body = self.create_vendor_email_for_Revised_car_quotation(company_detail.name,user,car_indent_form,link)
-                # elif payload.get("email_phase") == "Modified":
-                #     body = self.create_vendor_email_for_Modified_car_quotation(company_detail.name,user,car_indent_form,link)
-                else:
-                    body = self.create_vendor_email_for_car_quotation(company_detail.name,user,car_indent_form,link)
-                subject = f"Car Quotation for {company_detail.name}"
-                self.send_quotations(subject=subject, body=body, recipient_email=company_detail.contact_email)   
-                # frappe.msgprint(f"Email sent successfully")
-                emails_sent.append(f"<li>{company_detail.name} &lt;{company_detail.contact_email}&gt;</li>")
+    #                 )
+    #             if payload.get("email_phase") == "Revised":
+    #                 body = self.create_vendor_email_for_Revised_car_quotation(company_detail.name,user,car_indent_form,link)
+    #             # elif payload.get("email_phase") == "Modified":
+    #             #     body = self.create_vendor_email_for_Modified_car_quotation(company_detail.name,user,car_indent_form,link)
+    #             else:
+    #                 body = self.create_vendor_email_for_car_quotation(company_detail.name,user,car_indent_form,link)
+    #             subject = f"Car Quotation for {company_detail.name}"
+    #             self.send_quotations(subject=subject, body=body, recipient_email=company_detail.contact_email)   
+    #             # frappe.msgprint(f"Email sent successfully")
+    #             emails_sent.append(f"<li>{company_detail.name} &lt;{company_detail.contact_email}&gt;</li>")
+    #     if emails_sent:
+    #         frappe.msgprint(f"<b>Emails sent successfully to:</b><ul>{''.join(emails_sent)}</ul>")
+    #     else:
+    #         frappe.msgprint("No matching vendors found to send emails.")
+
+    def for_car_quotation_ALD_EazyAssets_Xyz(self, user, payload):
+        """
+        Sends car quotation emails to selected vendors safely, ensuring no duplicates,
+        even if triggered multiple times simultaneously.
+        """
+        print("---------HIT-----")
+        selected_vendors = {v.lower().strip() for v in payload.get("email_send_to", [])}
+        email_phase = payload.get("email_phase")
+
+        # Fetch vendors and forms
+        all_vendors = frappe.get_all("Vendor Master", fields=["name", "company_name", "contact_email"])
+        car_indent_form = frappe.get_doc("Car Indent Form", user.name)
+        car_purchase_form = frappe.get_doc("Purchase Team Form", user.name)
+
+        emails_sent = []
+        sent_this_run = set()  # Track emails sent in this function call
+
+        # Determine if "All" was selected
+        send_to_all = len(selected_vendors) == len(all_vendors)
+
+        # If All was selected and already sent, skip everything
+        if send_to_all and car_purchase_form.email_sent_to_all:
+            frappe.msgprint("Emails to ALL vendors were already sent.")
+            return
+
+        for vendor in all_vendors:
+            vendor_name = (vendor.company_name or "").strip()
+            vendor_name_lower = vendor_name.lower()
+            email = (vendor.contact_email or "").strip()
+
+            if not email:
+                continue
+
+            # Skip vendors not selected unless "All" is chosen
+            if vendor_name_lower not in selected_vendors and not send_to_all:
+                continue
+
+            # Skip vendors already sent in this run
+            if vendor_name_lower in sent_this_run:
+                continue
+
+            # Skip based on persistent flags
+            skip = False
+            if send_to_all:
+                skip = car_purchase_form.email_sent_to_all
+            elif vendor_name_lower == "ald":
+                skip = car_purchase_form.email_sent_to_ald
+            elif vendor_name_lower == "eazy assets":
+                skip = car_purchase_form.email_sent_to_eazy_assets
+
+            if skip:
+                print(f"Skipping {vendor_name} (already sent)")
+                continue
+
+            # Compose email
+            print(f"------SENDING EMAIL TO: {vendor_name} ({email})------")
+            link = (
+                f"{frappe.utils.get_url()}/vendor-assets-quotation/new?"
+                f"finance_company={vendor_name}&"
+                f"employee_details={user.name}"
+            )
+
+            if email_phase == "Revised":
+                body = self.create_vendor_email_for_Revised_car_quotation(vendor_name, user, car_indent_form, link)
+            else:
+                body = self.create_vendor_email_for_car_quotation(vendor_name, user, car_indent_form, link)
+
+            subject = f"Car Quotation for {vendor_name}"
+
+            # Send email
+            self.send_quotations(subject=subject, body=body, recipient_email=email)
+
+            # Track email sent
+            emails_sent.append(f"<li>{vendor_name} &lt;{email}&gt;</li>")
+            sent_this_run.add(vendor_name_lower)
+
+            # Immediately update persistent flags to prevent duplicates
+            if send_to_all:
+                car_purchase_form.email_sent_to_all = 1
+            elif vendor_name_lower == "ald":
+                car_purchase_form.email_sent_to_ald = 1
+            elif vendor_name_lower == "eazy assets":
+                car_purchase_form.email_sent_to_eazy_assets = 1
+
+            car_purchase_form.save(ignore_permissions=True)
+            frappe.db.commit()
+
         if emails_sent:
             frappe.msgprint(f"<b>Emails sent successfully to:</b><ul>{''.join(emails_sent)}</ul>")
         else:
-            frappe.msgprint("No matching vendors found to send emails.")
+            frappe.msgprint("No matching vendors found or emails already sent.")
+
+
+
+
+
+
+
+
+
+
+
+
     # "-------------------------------------" EMAIL BODY COMPANY SELECTION EMAILS "-------------------------------------"
     def create_selected_company_process(self,car_form,user, form_link):
         body = f"""
