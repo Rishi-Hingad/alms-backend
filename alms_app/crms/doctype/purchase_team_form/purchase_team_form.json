@@ -45,7 +45,12 @@
   "purchase_team_remarks",
   "purchase_head_status",
   "purchase_head_remarks",
-  "status"
+  "status",
+  "more_info_tab",
+  "email_notifications_section",
+  "email_sent_to_all",
+  "email_sent_to_ald",
+  "email_sent_to_eazy_assets"
  ],
  "fields": [
   {
@@ -268,6 +273,34 @@
    "fieldname": "revised_engine",
    "fieldtype": "Data",
    "label": "Revised Engine"
+  },
+  {
+   "fieldname": "more_info_tab",
+   "fieldtype": "Tab Break",
+   "label": "More Info"
+  },
+  {
+   "default": "0",
+   "fieldname": "email_sent_to_all",
+   "fieldtype": "Check",
+   "label": "Email Sent to All"
+  },
+  {
+   "default": "0",
+   "fieldname": "email_sent_to_ald",
+   "fieldtype": "Check",
+   "label": "Email Sent to ALD"
+  },
+  {
+   "default": "0",
+   "fieldname": "email_sent_to_eazy_assets",
+   "fieldtype": "Check",
+   "label": "Email Sent to Eazy Assets"
+  },
+  {
+   "fieldname": "email_notifications_section",
+   "fieldtype": "Section Break",
+   "label": "Email Notifications"
   }
  ],
  "index_web_pages_for_search": 1,
@@ -275,9 +308,13 @@
   {
    "link_doctype": "Car Indent Form",
    "link_fieldname": "employee_code"
+  },
+  {
+   "link_doctype": "Car Quotation",
+   "link_fieldname": "employee_details"
   }
  ],
- "modified": "2025-10-04 18:12:39.139285",
+ "modified": "2025-10-08 10:55:50.902034",
  "modified_by": "Administrator",
  "module": "CRMS",
  "name": "Purchase Team Form",

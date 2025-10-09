@@ -15,43 +15,41 @@ frappe.ready(function () {
             const fieldMap = {
                 "financed_amount": "financed_amount",
                 "location": "location",
-                "kms": "kms",
+                "total_kms": "total_kms",
                 "variant": "variant",
-                "accessory": "accessory",
+                "accessories": "accessories",
                 "discount_excluding_gst": "discount_excluding_gst",
                 "registration_charges": "registration_charges",
                 "ex_showroom_amount": "ex_showroom_amount",
-                "ex_showroom_amount_net_of_discount": "ex_showroom_amount_net_of_discount"
+                "ex_showroom_amount_net_of_discount": "ex_showroom_amount_net_of_discount",
+                "tenure_in_years": "tenure",
             };
 
             Object.keys(fieldMap).forEach(key => {
                 const value = record[key] !== undefined ? record[key] : 0;
                 frappe.web_form.set_value(fieldMap[key], value);
 
-                // Make field read-only
                 const field = frappe.web_form.get_field(fieldMap[key]);
-                if (field && field.$input) {
-                    field.$input.prop("readonly", true);
-                }
+                if (field && field.$input) field.$input.prop("readonly", true);
             });
 
             if (record.revised_quotation_vendor) {
-                const filePath = record.revised_quotation_vendor;
-                const fileName = filePath.split("/").pop();
+                const fieldname = "revised_quotation_vendor";
+                const file_url = record.revised_quotation_vendor;
+                const file_name = record.revised_quotation_vendor_name;
 
-                frappe.web_form.set_value("revised_quotation_vendor", filePath);
+                frappe.web_form.set_value(fieldname, file_url);
 
-                setTimeout(() => {
-                    const field = frappe.web_form.get_field("revised_quotation_vendor");
-                    if (field) {
-                        field.df.read_only = 1;
-                        field.refresh();
+                const field = frappe.web_form.get_field(fieldname);
+                if (field) {
+                    field.df.read_only = 1;
+                    field.refresh();
+
+                    if (field.$wrapper) {
+                        field.$wrapper.empty();
+                        const link = $(`<a href="${file_url}" target="_blank">${file_name}</a>`);
+                        field.$wrapper.append(link);
                     }
-                }, 300);
-
-                const container = document.getElementById("quotation-file");
-                if (container) {
-                    container.innerHTML = `<a href="${filePath}" target="_blank">${fileName}</a>`;
                 }
             }
         }
