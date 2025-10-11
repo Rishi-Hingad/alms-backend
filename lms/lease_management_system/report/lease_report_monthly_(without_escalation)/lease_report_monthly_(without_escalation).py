@@ -1,10 +1,13 @@
 # Copyright (c) 2025, Shradha_Siddhi and contributors
 # For license information, please see license.txt
 
-import frappe
-from datetime import datetime, timedelta, date
-from dateutil.relativedelta import relativedelta
 from calendar import monthrange
+from datetime import date, datetime, timedelta
+
+import frappe
+from dateutil.relativedelta import relativedelta
+from frappe import _ as translate
+
 
 def execute(filters=None):
 	if not filters:
@@ -40,13 +43,29 @@ def execute(filters=None):
 		{"label": "Month Start Date", "fieldname": "month_start_date", "fieldtype": "Date", "width": 120},
 		{"label": "Month End Date", "fieldname": "month_end_date", "fieldtype": "Date", "width": 120},
 		{"label": "Month", "fieldname": "month_number", "fieldtype": "Int", "width": 80},
-		{"label": "Minimum Lease Payment (MLP)", "fieldname": "mlp", "fieldtype": "Currency", "width": 180,"precision":4},
+		{
+			"label": translate("Minimum Lease Payment (MLP)"),
+			"fieldname": "mlp",
+			"fieldtype": "Currency",
+			"width": 180,
+			"precision": 4,
+		},
 		{"label": "Present Value of MLP", "fieldname": "pv", "fieldtype": "Currency", "width": 180},
 		{"label": "Days in Month", "fieldname": "days_in_month", "fieldtype": "Int", "width": 120},
-		{"label": "Depreciation on Right to Use", "fieldname": "depreciation", "fieldtype": "Currency", "width": 200},
+		{
+			"label": translate("Depreciation on Right to Use"),
+			"fieldname": "depreciation",
+			"fieldtype": "Currency",
+			"width": 200,
+		},
 		{"label": "Written Down Value (WDV)", "fieldname": "wdv", "fieldtype": "Currency", "width": 180},
 		{"label": "Interest Cost", "fieldname": "interest_cost", "fieldtype": "Currency", "width": 150},
-		{"label": "Closing Liability", "fieldname": "closing_liability", "fieldtype": "Currency", "width": 180}
+		{
+			"label": translate("Closing Liability"),
+			"fieldname": "closing_liability",
+			"fieldtype": "Currency",
+			"width": 180,
+		},
 	]
 
 	current_date = start_date
@@ -56,11 +75,11 @@ def execute(filters=None):
 	total_mlp = 0
 	total_pv = 0
 	total_depre = 0
-	pv_arr = ['']
+	pv_arr = [""]
 	cnt = 0
 	data = []
 
-	# First loop – PV calculations
+	# First loop PV calculations
 	while current_date <= end_date:
 		cnt += 1
 		month_start = current_date
@@ -94,7 +113,7 @@ def execute(filters=None):
 	prev_closing_liability = total_pv
 	total_days = ndays
 
-	# Second loop – depreciation calculation
+	# Second loop depreciation calculation
 	current_date2 = start_date
 	cnt1 = 0
 	while current_date2 <= end_date:
@@ -127,20 +146,22 @@ def execute(filters=None):
 	total_interest_cost = 0
 
 	# Append opening balance row
-	data.append({
-		"month_start_date": "",
-		"month_end_date": "",
-		"month_number": "",
-		"mlp": "",
-		"pv": "",
-		"days_in_month": "",
-		"depreciation": "",
-		"wdv": round(wdv, 3),
-		"interest_cost": "",
-		"closing_liability": round(closing_liability, 3)
-	})
+	data.append(
+		{
+			"month_start_date": "",
+			"month_end_date": "",
+			"month_number": "",
+			"mlp": "",
+			"pv": "",
+			"days_in_month": "",
+			"depreciation": "",
+			"wdv": round(wdv, 3),
+			"interest_cost": "",
+			"closing_liability": round(closing_liability, 3),
+		}
+	)
 
-	# Third loop – final report generation
+	# Third loop final report generation
 	current_date3 = start_date
 	cnt2 = 0
 	while current_date3 <= end_date:
@@ -153,7 +174,7 @@ def execute(filters=None):
 
 		n_days_of_month = (month_end - month_start).days + 1
 
-		interest_cost = ((closing_liability - mlp2) * daily_rate)
+		interest_cost = (closing_liability - mlp2) * daily_rate
 		total_interest_cost += interest_cost
 		closing_liability = closing_liability + interest_cost - mlp2
 
@@ -168,12 +189,12 @@ def execute(filters=None):
 			"month_end_date": month_end.date(),
 			"month_number": cnt2,
 			"mlp": mlp2,
-			"pv": pv_arr[cnt2] if cnt2 < len(pv_arr) else '',
+			"pv": pv_arr[cnt2] if cnt2 < len(pv_arr) else "",
 			"days_in_month": n_days_of_month,
 			"depreciation": round(depreciation, 3),
 			"wdv": round(wdv, 3),
 			"interest_cost": round(interest_cost, 3),
-			"closing_liability": round(closing_liability, 3)
+			"closing_liability": round(closing_liability, 3),
 		}
 		data.append(row)
 
@@ -184,17 +205,19 @@ def execute(filters=None):
 			current_date3 = datetime(current_date3.year, current_date3.month + 1, 1)
 
 	# Add summary row
-	data.append({
-		"month_start_date": "",
-		"month_end_date": "",
-		"month_number": total_days,
-		"mlp": round(total_mlp, 3),
-		"pv": round(total_pv, 3),
-		"days_in_month": nmonths,
-		"depreciation": round(total_depre, 3),
-		"wdv": "",
-		"interest_cost": round(total_interest_cost, 3),
-		"closing_liability": ""
-	})
+	data.append(
+		{
+			"month_start_date": "",
+			"month_end_date": "",
+			"month_number": total_days,
+			"mlp": round(total_mlp, 3),
+			"pv": round(total_pv, 3),
+			"days_in_month": nmonths,
+			"depreciation": round(total_depre, 3),
+			"wdv": "",
+			"interest_cost": round(total_interest_cost, 3),
+			"closing_liability": "",
+		}
+	)
 
 	return columns, data

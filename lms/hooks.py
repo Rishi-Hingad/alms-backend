@@ -42,9 +42,9 @@ app_license = "mit"
 
 # include js in page
 # page_js = {"page" : "public/js/file.js"}
-page_js={"account-dashboard":"public/js/account-dashboard.js"}
-app_include_js=["/assets/lms/js/account-dashboard.js"]
-app_include_js=["/assets/lms/js/invoice_dialog.js"]
+page_js = {"account-dashboard": "public/js/account-dashboard.js"}
+app_include_js = ["/assets/lms/js/account-dashboard.js"]
+app_include_js = ["/assets/lms/js/invoice_dialog.js"]
 
 
 # scheduler_events = {
@@ -143,12 +143,12 @@ app_include_js=["/assets/lms/js/invoice_dialog.js"]
 
 permission_query_conditions = {
 	"Lease Management": "lms.lease_management_system.doctype.lease_management.lease_management.get_permission_query_conditions",
-	"Property Master": "lms.masters.doctype.property_master.property_master.get_permission_query_conditions"
+	"Property Master": "lms.masters.doctype.property_master.property_master.get_permission_query_conditions",
 }
 
 has_permission = {
 	"Lease Management": "lms.lease_management_system.doctype.lease_management.lease_management.has_permission",
-    "Property Master": "lms.masters.doctype.property_master.property_master.has_permission"
+	"Property Master": "lms.masters.doctype.property_master.property_master.has_permission",
 }
 
 # DocType Class
@@ -267,4 +267,3 @@ has_permission = {
 # default_log_clearing_doctypes = {
 # 	"Logging DocType Name": 30  # days to retain logs
 # }
-
