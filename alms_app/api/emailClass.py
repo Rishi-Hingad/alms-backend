@@ -378,7 +378,7 @@ class EmailServices:
                 </tr>
                 <tr>
                     <td>Vehicle Make & Model</td>
-                    <td>{form.make} - {form.model}</td>
+                    <td>{form.revised_make} - {form.revised_car_modal}</td>
                 </tr>
                 <tr>
                     <td>Eligibility</td>
@@ -386,7 +386,7 @@ class EmailServices:
                 </tr>
                 <tr>
                     <td>Net Ex-Showroom Price</td>
-                    <td>{form.net_ex_showroom_price}</td>
+                    <td>{form.revised_net_ex_showroom_price}</td>
                 </tr>
                 <tr>
                     <td>Revised Financed Amount</td>
