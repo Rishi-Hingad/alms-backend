@@ -135,15 +135,15 @@
   },
   {
    "fieldname": "country_name",
-   "fieldtype": "Select",
+   "fieldtype": "Link",
    "label": "Country Name",
-   "options": "\nIndia"
+   "options": "Country"
   },
   {
    "fieldname": "payment_term_description",
-   "fieldtype": "Select",
+   "fieldtype": "Link",
    "label": "Payment Term Description",
-   "options": "\n100% within 45 days after Receipt of Goods/Service\n100% within 100 Days from the Date of Invoice\n100% within 90 days after Receipt of Goods/Service\n100% within 30 days after Receipt of Goods/Service\n100% within 7 days after Receipt of Goods/Service\nPay immediately w/o deduction\n45 days PDC from the Date of Invoice\nPay immediately w/o deduction\n100% within 120 Days from the Date of Invoice\n100% against Tax Invoice after Receipt of Goods/Service\n100% Against Proof Invoice Prior to Despatch Material\n100% within 100 Days from the Date of Invoice\n100% Advance against Proforma Invoice\n100% Advance along with  PO/Service Order\n50% Adv,50% against Delivery of Goods\n30% Adv,60% against  PI & 10% after Installation.\n30% Advance , 70% within 15 days after Receipt of Goods\nPay immediately w/o deduction\n100% Advance along with  PO/Service Order\n30 days PDC from the Date of Invoice\n100% Payment on COD Basis\n45 days PDC from the Date of Invoice\n90 days PDC from the Date of Invoice\n30% Adv,70% against  PI prior to Dispatch of Goods"
+   "options": "Payment Term Master"
   },
   {
    "fieldname": "city",
@@ -155,7 +155,7 @@
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-09-03 12:09:06.871840",
+ "modified": "2025-10-14 11:38:03.874335",
  "modified_by": "Administrator",
  "module": "Masters",
  "name": "Vendor Master",

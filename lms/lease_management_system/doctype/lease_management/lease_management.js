@@ -203,6 +203,7 @@ frappe.ui.form.on("Lease Management", {
 		}
 	},
 	onload(frm) {
+		set_agreement_status(frm);
 		if (!frm.doc.vendor) {
 			frm.set_query("property_description", function () {
 				return {
@@ -289,6 +290,7 @@ frappe.ui.form.on("Lease Management", {
 						callback: function (r) {
 							if (!r.exc) {
 								let file_url = r.message.file_url;
+								// frappe.msgprint("mes"+r.message);
 								window.open(file_url);
 							} else {
 								frappe.msgprint(__("Failed to generate report."));
@@ -310,7 +312,7 @@ frappe.ui.form.on("Lease Management", {
 						frm.doc.calculation_rate_type == "Daily Rate" &&
 						frm.doc.lease_period == "Short Term (Less Than 12 Months)"
 					) {
-						frappe.set_route("query-report", "Lease Report (Without Escalation)", {
+						frappe.set_route("query-report", "Lease Report", {
 							docname: lname,
 						});
 					} else if (

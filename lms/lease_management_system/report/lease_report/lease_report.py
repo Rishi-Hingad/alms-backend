@@ -7,7 +7,9 @@
 # def execute(filters=None):
 # 	columns, data = [], []
 # 	return columns, data
+import calendar
 from calendar import monthrange
+from collections import Counter
 from datetime import date, datetime, timedelta
 
 import frappe
@@ -154,8 +156,8 @@ def execute(filters=None):
 	else:
 		if not doc.escalation:
 			escalation = False
-	if escalation:
-		esc_bd_end_date = None
+	# if escalation:
+	esc_bd_end_date = None
 	if escalation:
 		for i in range(len(etype)):
 			if etype[i] == "Per Annum" or etype[i] == "Per Annum and Fixed Amount":
@@ -371,7 +373,68 @@ def execute(filters=None):
 
 		if n < total_days_of_month:
 			diff_annually = True
+	if len(edates_pannum) > 0:
+		if edates_pannum[0] != edates_pannum[0].replace(day=1) and current_date != current_date.replace(
+			day=1
+		):
+			diff_annually = True
+	if len(edates_pafa) > 0:
+		if edates_pafa[0] != edates_pafa[0].replace(day=1) and current_date != current_date.replace(day=1):
+			diff_annually = True
 
+	cnt_keys = len(dict_ed_bdates)
+	dict_new = {}
+	common_month = []
+	common_dict = {}
+	if dict_ed_bdates is not None and escalation and cnt_keys > 1:
+		for key in dict_ed_bdates.keys():
+			temp_val = key
+			temp = temp_val.split("-")
+			escl = dict_ed_bdates[key]
+			escl_months = []
+			escl_months = [f"{d.year}-{d.month:02d}" for d in escl]
+			month_count = dict(Counter(escl_months))
+			month_count = dict(sorted(month_count.items()))
+			dict_new[key] = month_count
+		keys = list(dict_new.keys())
+		if len(keys) > 1:
+			for i in range(len(keys) - 1):
+				k1, k2 = keys[i], keys[i + 1]
+				month_1 = set(dict_new[k1].keys())
+				month_2 = set(dict_new[k2].keys())
+				common = sorted(month_1.intersection(month_2))
+				common_month.extend(common)
+			if len(common_month) > 0:
+				for i in range(len(common_month)):
+					total_mlp_escl = 0
+					for k in range(len(keys)):
+						key_n = keys[k]
+						date_dict = dict_new[key_n]
+						if common_month[i] in date_dict.keys():
+							temp = key_n.split("-")
+							cmonth = common_month[i]
+							year, month = map(int, cmonth.split("-"))
+							total_days_of_month = calendar.monthrange(year, month)[1]
+							n = date_dict[common_month[i]]
+							rate = float(temp[0])
+							mrent = float(temp[1])
+							famt = float(temp[2])
+							if mrent != 0:
+								mlp_escl = mrent
+								mlp_escl = mlp_escl * n / total_days_of_month
+							if mrent == 0 and rate == 0 and famt == 0:
+								mlp_escl = 0
+							mlp_escl = mlp_escl + (rate * mlp_escl / 100) + famt
+							total_mlp_escl += mlp_escl
+					common_dict[cmonth] = total_mlp_escl
+
+	if esc_bd_end_date is not None:
+		if esc_bd_end_date != esc_bd_end_date.replace(day=1):
+			mid_diff_annually = True
+		else:
+			mid_diff_annually = False
+	else:
+		mid_diff_annually = False
 	# First loop PV calculations
 	while current_date <= end_date:
 		cnt += 1
@@ -405,18 +468,29 @@ def execute(filters=None):
 		if end_date < month_end:
 			month_end = end_date
 
-		if diff_annually:
+		if diff_annually and not mid_diff_annually:
 			if month_end < month_end2 and month_end == end_date:
 				month_end = current_date
 				month_start = current_date.replace(day=1)
 			date_difference = month_end - month_start
 			n_next = date_difference.days + 1
-
+			n = total_days_of_month
+		elif mid_diff_annually:
+			if month_end < month_end2 and month_end != end_date:
+				month_end = current_date
+				month_start = current_date.replace(day=1)
+			if month_end == end_date:
+				month_end = end_date
+				month_start = current_date.replace(day=1)
+			date_difference = month_end - month_start
+			n_next = date_difference.days + 1
 			n = total_days_of_month
 		else:
 			date_difference = month_end - month_start
 			n = date_difference.days + 1
-
+			n_next = 0
+		if current_date.strftime("%Y-%m") == end_date.strftime("%Y-%m"):
+			month_end = end_date
 		if current_date == start_date or month_end == end_date:
 			date_difference = month_end - month_start
 			n = date_difference.days + 1
@@ -451,6 +525,13 @@ def execute(filters=None):
 						temp_val = k
 						temp = temp_val.split("-")
 						escl = dict_ed_bdates[k]
+						current_month_str = current_date.strftime("%Y-%m")
+						if len(common_month) > 0:
+							mlp_common_dict = common_dict.get(current_month_str)
+							if mlp_common_dict is not None:
+								mlp = mlp_common_dict
+								prev_mlp_escl = mlp
+								break
 						if current_date.date() in escl:
 							# mrent=rpm
 							rate = float(temp[0])
@@ -507,6 +588,15 @@ def execute(filters=None):
 				if current_date == start_date or month_end == end_date:
 					mlp = mlp_1
 				mlp_new = mlp
+				if current_date.date() == start_date.date() and escalation and edates_pafa is not None:
+					for k in dict_ed_pafa.keys():
+						temp_val = k
+						temp = temp_val.split("-")
+						famt = float(temp[2])
+						new_famt = famt * n_prior / total_days_of_month
+						mlp_new = mlp_new + new_famt
+						prev_mlp_escl = prev_mlp + famt
+						break
 				if current_date.date() in edates_pannum and escalation:
 					for k in dict_ed_pannum.keys():
 						temp_val = k
@@ -526,7 +616,24 @@ def execute(filters=None):
 							mlp_new = mlp_1 + mlp_2
 							prev_mlp_escl = mlp
 							break
-
+				elif current_date.date() in edates_bd and escalation:
+					for k in dict_ed_bdates.keys():
+						temp_val = k
+						temp = temp_val.split("-")
+						escl = dict_ed_bdates[k]
+						if current_date.date() in escl:
+							rate = float(temp[0])
+							mrent = float(temp[1])
+							famt = float(temp[2])
+							if mrent != 0:
+								mlp = mrent
+								mlp = mlp * n / total_days_of_month
+							if mrent == 0 and rate == 0 and famt == 0:
+								mlp = 0
+							mlp = mlp + (rate * mlp / 100) + famt
+							mlp_new = mlp
+							prev_mlp_escl = mlp
+							break
 				elif current_date.date() in edates_pafa and escalation:
 					for k in dict_ed_pafa.keys():
 						temp_val = k
@@ -562,6 +669,13 @@ def execute(filters=None):
 				if mrent == 0 and rate == 0 and famt == 0 and escalation:
 					mlp = prev_mlp
 		else:
+			if current_date.date() == start_date.date() and escalation and edates_pafa is not None:
+				for k in dict_ed_pafa.keys():
+					temp_val = k
+					temp = temp_val.split("-")
+					famt = float(temp[2])
+					mlp = mlp + famt
+					break
 			if current_date.date() in edates_pannum:
 				for k in dict_ed_pannum.keys():
 					temp_val = k
@@ -583,6 +697,13 @@ def execute(filters=None):
 					temp_val = k
 					temp = temp_val.split("-")
 					escl = dict_ed_bdates[k]
+					current_month_str = current_date.strftime("%Y-%m")
+					if len(common_month) > 0:
+						mlp_common_dict = common_dict.get(current_month_str)
+						if mlp_common_dict is not None:
+							mlp = mlp_common_dict
+							prev_mlp_escl = mlp
+							break
 					if current_date.date() in escl:
 						# mrent=rpm
 						rate = float(temp[0])
@@ -624,21 +745,35 @@ def execute(filters=None):
 
 		total_pv += pv
 		ndays += n
-
+		if esc_bd_end_date is not None:
+			if esc_bd_end_date != esc_bd_end_date.replace(day=1):
+				if current_date.month == 12:
+					next_current_date = datetime(current_date.year + 1, 1, 1)
+				else:
+					next_current_date = datetime(current_date.year, current_date.month + 1, 1)
+				if next_current_date.strftime("%Y-%m") == esc_bd_end_date.strftime("%Y-%m"):
+					diff_annually = True
 		# Move to next month
 		if current_date.month == 12:
-			if diff_annually:
+			if diff_annually and not mid_diff_annually:
 				current_date = datetime(current_date.year + 1, 1, current_date.day) - relativedelta(days=1)
+			elif diff_annually and mid_diff_annually:
+				current_date = datetime(current_date.year + 1, 1, esc_bd_end_date.day) - relativedelta(days=1)
 			else:
 				current_date = datetime(current_date.year + 1, 1, 1)
 		else:
-			if diff_annually:
+			if diff_annually and not mid_diff_annually:
 				current_date = datetime(
 					current_date.year, current_date.month + 1, current_date.day
 				) - relativedelta(days=1)
+			elif diff_annually and mid_diff_annually:
+				current_date = datetime(
+					current_date.year, current_date.month + 1, esc_bd_end_date.day
+				) - relativedelta(days=1)
 			else:
 				current_date = datetime(current_date.year, current_date.month + 1, 1)
-
+		if current_date.strftime("%Y-%m") == end_date.strftime("%Y-%m"):
+			current_date = current_date.replace(day=1)
 	prev_closing_liability = total_pv
 	total_days = ndays
 
@@ -771,6 +906,13 @@ def execute(filters=None):
 						temp_val = k
 						temp = temp_val.split("-")
 						escl = dict_ed_bdates[k]
+						current_month_str2 = current_date3.strftime("%Y-%m")
+						if len(common_month) > 0:
+							mlp_common_dict2 = common_dict.get(current_month_str2)
+							if mlp_common_dict2 is not None:
+								mlp2 = mlp_common_dict2
+								prev_mlp_escl2 = mlp2
+								break
 						if current_date3.date() in escl:
 							# mrent=rpm
 							rate = float(temp[0])
@@ -841,6 +983,15 @@ def execute(filters=None):
 				if current_date3 == start_date or month_end == end_date:
 					mlp2 = mlp2_1
 				mlp_new = mlp2
+				if current_date3.date() == start_date.date() and escalation and edates_pafa is not None:
+					for k in dict_ed_pafa.keys():
+						temp_val = k
+						temp = temp_val.split("-")
+						famt = float(temp[2])
+						new_famt = famt * n_prior / total_days_of_month
+						mlp_new = mlp_new + new_famt
+						prev_mlp_escl2 = prev_mlp2 + famt
+						break
 				if current_date3.date() in edates_pannum and escalation:
 					for k in dict_ed_pannum.keys():
 						temp_val = k
@@ -858,7 +1009,24 @@ def execute(filters=None):
 							mlp_new = mlp2_1 + mlp2_2
 							prev_mlp_escl2 = mlp2
 							break
-
+				elif current_date3.date() in edates_bd and escalation:
+					for k in dict_ed_bdates.keys():
+						temp_val = k
+						temp = temp_val.split("-")
+						escl = dict_ed_bdates[k]
+						if current_date3.date() in escl:
+							rate = float(temp[0])
+							mrent = float(temp[1])
+							famt = float(temp[2])
+							if mrent != 0:
+								mlp2 = mrent
+								mlp2 = mlp2 * n / total_days_of_month
+							if mrent == 0 and rate == 0 and famt == 0:
+								mlp2 = 0
+							mlp2 = mlp2 + (rate * mlp2 / 100) + famt
+							mlp_new = mlp2
+							prev_mlp_escl2 = mlp2
+							break
 				elif current_date3.date() in edates_pafa and escalation:
 					for k in dict_ed_pafa.keys():
 						temp_val = k
@@ -908,6 +1076,14 @@ def execute(filters=None):
 				else:
 					mlp2 = prev_mlp_escl2
 		else:
+			prev_mlp2 = mlp2
+			if current_date3.date() == start_date.date() and escalation and edates_pafa is not None:
+				for k in dict_ed_pafa.keys():
+					temp_val = k
+					temp = temp_val.split("-")
+					famt = float(temp[2])
+					mlp2 = mlp2 + famt
+					break
 			if current_date3.date() in edates_pannum:
 				for k in dict_ed_pannum.keys():
 					temp_val = k
@@ -929,6 +1105,13 @@ def execute(filters=None):
 					temp_val = k
 					temp = temp_val.split("-")
 					escl = dict_ed_bdates[k]
+					current_month_str2 = current_date3.strftime("%Y-%m")
+					if len(common_month) > 0:
+						mlp_common_dict2 = common_dict.get(current_month_str2)
+						if mlp_common_dict2 is not None:
+							mlp2 = mlp_common_dict2
+							prev_mlp_escl2 = mlp2
+							break
 					if current_date3.date() in escl:
 						# mrent=rpm
 						rate = float(temp[0])
@@ -983,20 +1166,42 @@ def execute(filters=None):
 				"closing_liability": round(closing_liability, 3),
 			}
 			data.append(row)
+			if mrent == 0 and rate == 0 and famt == 0 and escalation:
+				mlp2 = prev_mlp2
+		if month_end > end_date:
+			month_end = end_date
+		if esc_bd_end_date is not None:
+			if esc_bd_end_date != esc_bd_end_date.replace(day=1):
+				if current_date3.month == 12:
+					next_current_date = datetime(current_date3.year + 1, 1, 1)
+				else:
+					next_current_date = datetime(current_date3.year, current_date3.month + 1, 1)
+				if next_current_date.strftime("%Y-%m") == esc_bd_end_date.strftime("%Y-%m"):
+					diff_annually = True
 
 		# Move to next month
 		if current_date3.month == 12:
-			if diff_annually:
+			if diff_annually and not mid_diff_annually:
 				current_date3 = datetime(current_date3.year + 1, 1, current_date3.day) - timedelta(days=1)
+			elif diff_annually and mid_diff_annually:
+				current_date3 = datetime(current_date3.year + 1, 1, esc_bd_end_date.day) - relativedelta(
+					days=1
+				)
 			else:
 				current_date3 = datetime(current_date3.year + 1, 1, 1)
 		else:
-			if diff_annually:
+			if diff_annually and not mid_diff_annually:
 				current_date3 = datetime(
 					current_date3.year, current_date3.month + 1, current_date3.day
 				) - timedelta(days=1)
+			elif diff_annually and mid_diff_annually:
+				current_date3 = datetime(
+					current_date3.year, current_date3.month + 1, esc_bd_end_date.day
+				) - relativedelta(days=1)
 			else:
 				current_date3 = datetime(current_date3.year, current_date3.month + 1, 1)
+		if current_date3.strftime("%Y-%m") == end_date.strftime("%Y-%m"):
+			current_date3 = current_date3.replace(day=1)
 
 	# Add summary row
 	data.append(
