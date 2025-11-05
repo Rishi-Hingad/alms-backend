@@ -1216,8 +1216,8 @@ def generate_lease_report_month_based_new(start_date, end_date, docname, cnt_tim
 
 		if month_end > end_date:
 			month_end = end_date
-
-		current_date = date_increment(current_date, diff_annually)
+		mid_diff_annually = False
+		current_date = date_increment(current_date, diff_annually, mid_diff_annually, esc_bd_end_date)
 	prev_closing_liability = total_pv
 	total_days = ndays
 
@@ -1346,8 +1346,8 @@ def generate_lease_report_month_based_new(start_date, end_date, docname, cnt_tim
 
 		if month_end > end_date:
 			month_end = end_date
-
-		current_date3 = date_increment(current_date3, diff_annually)
+		mid_diff_annually = False
+		current_date3 = date_increment(current_date3, diff_annually, mid_diff_annually, esc_bd_end_date)
 	if not data:
 		frappe.msgprint("No Data Calculated")
 
@@ -1438,27 +1438,37 @@ def get_lease_rent_dashboard_chart():
 def bulk_update_agreement_status():
 	today = nowdate()
 
-	updated_count = frappe.db.sql(
-		"""
-		UPDATE `tabLease Management`
-		SET status = 'Agreement Expired'
-		WHERE agreement_end_date < %s
-		AND status != 'Agreement Expired'
-	""",
-		(today,),
+	# updated_count = frappe.db.sql(
+	# 	"""
+	# 	UPDATE `tabLease Management`
+	# 	SET status = 'Agreement Expired'
+	# 	WHERE agreement_end_date < %s
+	# 	AND status != 'Agreement Expired'
+	# """,
+	# 	(today,),
+	# )
+	expired_docs = frappe.get_all(
+		"Lease Management",
+		filters={"agreement_end_date": ["<", today], "status": ["!=", "Agreement Expired"]},
+		fields=["name"],
 	)
+	for name in expired_docs:
+		frappe.db.set_value("Lease Management", name, "status", "Agreement Expired")
+
 	frappe.db.commit()
-	return {"updated": True, "count": updated_count}
+	# return {"updated": True, "count": updated_count}
+	return len(expired_docs)
 
 
-@frappe.whitelist()
-def has_expired_agreements():
-	today = nowdate()
-	count = frappe.db.count(
-		"Lease Management", {"status": ["!=", "Agreement Expired"], "agreement_end_date": ["<", today]}
-	)
+# @frappe.whitelist()
+# def has_expired_agreements():
+# 	today = nowdate()
+# 	count = frappe.db.count(
+# 		"Lease Management", {"status": ["!=", "Agreement Expired"], "agreement_end_date": ["<", today]}
+# 	)
 
-	return {"needs_update": count > 0, "count": count}
+# 	# return {"needs_update": count > 0, "count": count}
+# 	return count
 
 
 @frappe.whitelist()
@@ -1816,8 +1826,8 @@ class LeaseManagement(Document):
 					mlp = prev_mlp
 			if month_end > end_date:
 				month_end = end_date
-
-			current_date = date_increment(current_date, diff_annually)
+			mid_diff_annually = False
+			current_date = date_increment(current_date, diff_annually, mid_diff_annually, esc_bd_end_date)
 		return timeline
 
 	def get_lease_monthly_data(self):
@@ -2074,8 +2084,8 @@ class LeaseManagement(Document):
 					mlp = prev_mlp
 			if month_end > end_date:
 				month_end = end_date
-
-			current_date = date_increment(current_date, diff_annually)
+			mid_diff_annually = False
+			current_date = date_increment(current_date, diff_annually, mid_diff_annually, esc_bd_end_date)
 		return monthly_data
 
 	def validate_invoice_details(self):

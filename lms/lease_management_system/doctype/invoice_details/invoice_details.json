@@ -1,0 +1,84 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2025-11-04 11:43:09.204681",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "lease_agreements",
+  "month",
+  "amount",
+  "with_tax",
+  "tax",
+  "attachments"
+ ],
+ "fields": [
+  {
+   "fieldname": "lease_agreements",
+   "fieldtype": "Table MultiSelect",
+   "label": "Lease Agreement's",
+   "options": "Lease Agreements",
+   "reqd": 1
+  },
+  {
+   "fieldname": "month",
+   "fieldtype": "Select",
+   "label": "Month",
+   "options": "\nJanuary\nFebruary\nMarch\nApril\nMay\nJune\nJuly\nAugust\nSeptember\nOctober\nNovember\nDecember",
+   "reqd": 1
+  },
+  {
+   "fieldname": "amount",
+   "fieldtype": "Float",
+   "in_list_view": 1,
+   "label": "Amount",
+   "reqd": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "with_tax",
+   "fieldtype": "Check",
+   "label": "With tax"
+  },
+  {
+   "default": "0",
+   "description": "(%)",
+   "fieldname": "tax",
+   "fieldtype": "Percent",
+   "label": "Tax"
+  },
+  {
+   "fieldname": "attachments",
+   "fieldtype": "Table",
+   "label": "Attachment's",
+   "options": "Attachments",
+   "reqd": 1
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2025-11-05 09:48:07.238706",
+ "modified_by": "Administrator",
+ "module": "Lease Management System",
+ "name": "Invoice Details",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

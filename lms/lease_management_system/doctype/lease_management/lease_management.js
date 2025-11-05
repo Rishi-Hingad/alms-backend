@@ -339,6 +339,22 @@ frappe.ui.form.on("Lease Management", {
 						);
 					}
 				});
+
+				// frm.add_custom_button(__("Update Expired Lease's"),function (){
+				//  frappe.call({
+				//      method:"lms.lease_management_system.doctype.lease_management.lease_management.bulk_update_agreement_status",
+				//      callback(res){
+				// 		if(res.message==0){
+				// 			frappe.msgprint("No Agreement Status to Update");
+				// 		}
+				// 		else{
+				// 			frappe.msgprint(res.message+" Agreement Status Updated");
+				// 			frm.reload_doc();
+				// 		}
+				//      }
+				//  });
+				// }
+				// );
 			}
 			if (frappe.user.has_role("Vendor") || frappe.user.has_role("Accounts")) {
 				frm.add_custom_button(__("Go to Invoice Details"), function () {
