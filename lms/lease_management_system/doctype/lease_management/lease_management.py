@@ -490,7 +490,7 @@ def generate_lease_report_new(start_date, end_date, docname, cnt_time):
 			n = date_difference.days + 1
 			n_prior = n
 		# res+="||"+str(current_date.date())+"||"+str(month_start)+"||"+str(month_end)+"||enddate"+str(end_date)+"**"
-		# res+="$$n="+str(n)+"||n_prior="+str(n_prior)+"||n_next="+str(n_next)+"total_days_of_month"+str(total_days_of_month)+"$$"
+		# res+="$first_loop$n="+str(n)+"||n_prior="+str(n_prior)+"||n_next="+str(n_next)+"total_days_of_month"+str(total_days_of_month)+"$$"
 		if n_prior < total_days_of_month or n < total_days_of_month:
 			prev_mlp = mlp
 			if not diff_annually:
@@ -786,6 +786,7 @@ def generate_lease_report_new(start_date, end_date, docname, cnt_time):
 		month_start, month_end, month_start2, month_end2, total_days_of_month = get_month_details(
 			current_date3
 		)
+
 		if diff_annually:
 			if current_date3.month == 12:
 				prior_month = 1
@@ -800,11 +801,13 @@ def generate_lease_report_new(start_date, end_date, docname, cnt_time):
 
 			diff_prior_month = prior_month_end - prior_month_start
 			n_prior = diff_prior_month.days
+		else:
+			n_prior = 0
 
 		if end_date < month_end:
 			month_end = end_date
 
-		if diff_annually:
+		if diff_annually and not mid_diff_annually:
 			if month_end < month_end2 and month_end == end_date:
 				month_start = current_date3.replace(day=1)
 			date_difference = month_end - month_start
@@ -812,18 +815,38 @@ def generate_lease_report_new(start_date, end_date, docname, cnt_time):
 			if not current_date3 == start_date:
 				month_start = current_date3.replace(day=1)
 			n = total_days_of_month
+		elif mid_diff_annually:
+			if month_end < month_end2 and month_end != end_date:
+				month_end = current_date3
+				month_start = current_date3.replace(day=1)
+			if month_end == end_date:
+				month_end = end_date
+				month_start = current_date3.replace(day=1)
+			date_difference = month_end - month_start
+			n_next = date_difference.days + 1
+			n = total_days_of_month
 		else:
 			date_difference = month_end - month_start
 			n = date_difference.days + 1
-
+		if current_date3.strftime("%Y-%m") == end_date.strftime("%Y-%m"):
+			month_end = end_date
 		if current_date3 == start_date or month_end == end_date:
 			date_difference = month_end - month_start
 			n = date_difference.days + 1
 			n_prior = n
+		# res+="$second_loop$n="+str(n)+"||n_prior="+str(n_prior)+"||n_next="+str(n_next)+"total_days_of_month"+str(total_days_of_month)+"$$"
 		if n_prior < total_days_of_month or n < total_days_of_month:
 			prev_mlp2 = mlp2
 			if not diff_annually:
 				mlp2 = mlp2 * n / total_days_of_month
+				if current_date3.date() == start_date and escalation and edates_pafa is not None:
+					for k in dict_ed_pafa.keys():
+						temp_val = k
+						temp = temp_val.split("-")
+						famt = float(temp[2])
+						new_famt = famt * n / total_days_of_month
+						mlp2 = mlp2 + new_famt
+						break
 				if current_date3.date() in edates_pannum and escalation:
 					for k in dict_ed_pannum.keys():
 						temp_val = k
@@ -836,6 +859,8 @@ def generate_lease_report_new(start_date, end_date, docname, cnt_time):
 							if mrent != 0:
 								mlp2 = mrent
 								mlp2 = mlp2 * n / total_days_of_month
+							if mrent == 0 and rate == 0 and famt == 0:
+								mlp2 = 0
 							mlp2 = mlp2 + (rate * mlp2 / 100) + famt
 							prev_mlp_escl2 = mlp2
 							break
@@ -858,6 +883,8 @@ def generate_lease_report_new(start_date, end_date, docname, cnt_time):
 							if mrent != 0:
 								mlp2 = mrent
 								mlp2 = mlp2 * n / total_days_of_month
+							if mrent == 0 and rate == 0 and famt == 0:
+								mlp2 = 0
 							mlp2 = mlp2 + (rate * mlp2 / 100) + famt
 							prev_mlp_escl2 = mlp2
 							break
@@ -873,14 +900,20 @@ def generate_lease_report_new(start_date, end_date, docname, cnt_time):
 							if mrent != 0:
 								mlp2 = mrent
 								mlp2 = mlp2 * n / total_days_of_month
+							if mrent == 0 and rate == 0 and famt == 0:
+								mlp2 = 0
 							mlp2 = mlp2 + (rate * mlp2 / 100) + famt
 							prev_mlp_escl2 = mlp2
 							break
+				# res+="mlp2 else="+str(mlp2)+"||"+str(current_date3.date())
 				interest_cost = (closing_liability - mlp2) * ((1 + daily_rate) ** n - 1)
 				total_interest_cost += interest_cost
 				closing_liability = closing_liability + interest_cost - mlp2
 				depreciation = calculate_depreciation(doc, n, total_days, prev_closing_liability)
 				wdv -= depreciation
+				if cnt2 != 1:
+					if month_start.date() != month_start.replace(day=1):
+						month_start = month_start.replace(day=1)
 				data.append(
 					[
 						month_start.date(),
@@ -893,7 +926,7 @@ def generate_lease_report_new(start_date, end_date, docname, cnt_time):
 						round(closing_liability, 3),
 					]
 				)
-				if mrent == 0 and rate == 0 and famt == 0:
+				if mrent == 0 and rate == 0 and famt == 0 and escalation:
 					mlp2 = prev_mlp2
 				if prev_mlp_escl2 is None:
 					mlp2 = prev_mlp2
@@ -926,6 +959,8 @@ def generate_lease_report_new(start_date, end_date, docname, cnt_time):
 							if mrent != 0:
 								mlp2 = mrent
 								mlp2 = mlp2 * n / total_days_of_month
+							if mrent == 0 and rate == 0 and famt == 0:
+								mlp2 = 0
 							mlp2 = mlp2 + (rate * mlp2 / 100) + famt
 							mlp2_2 = mlp2 * n_next / total_days_of_month
 							mlp_new = mlp2_1 + mlp2_2
@@ -961,18 +996,24 @@ def generate_lease_report_new(start_date, end_date, docname, cnt_time):
 							if mrent != 0:
 								mlp2 = mrent
 								mlp2 = mlp2 * n / total_days_of_month
+							if mrent == 0 and rate == 0 and famt == 0:
+								mlp2 = 0
 							mlp2 = mlp2 + (rate * mlp2 / 100) + famt
 							mlp2_2 = mlp2 * n_next / total_days_of_month
 							mlp_new = mlp2_1 + mlp2_2
 							prev_mlp_escl2 = mlp2
 							break
 				mlp2 = mlp_new
+				# res+="mlp2 inner="+str(mlp2)+"||"+str(current_date3.date())
 				interest_cost = (closing_liability - mlp2) * ((1 + daily_rate) ** n - 1)
 				total_interest_cost += interest_cost
 				closing_liability = closing_liability + interest_cost - mlp2
 
 				depreciation = calculate_depreciation(doc, n, total_days, prev_closing_liability)
 				wdv -= depreciation
+				if cnt2 != 1:
+					if month_start.date() != month_start.replace(day=1):
+						month_start = month_start.replace(day=1)
 				data.append(
 					[
 						month_start.date(),
@@ -985,7 +1026,7 @@ def generate_lease_report_new(start_date, end_date, docname, cnt_time):
 						round(closing_liability, 3),
 					]
 				)
-				if mrent == 0 and rate == 0 and famt == 0:
+				if mrent == 0 and rate == 0 and famt == 0 and escalation:
 					mlp2 = prev_mlp2
 				if prev_mlp_escl2 is None:
 					mlp2 = prev_mlp2
@@ -1048,6 +1089,7 @@ def generate_lease_report_new(start_date, end_date, docname, cnt_time):
 							mlp2 = mrent
 						mlp2 = mlp2 + (rate * mlp2 / 100) + famt
 						break
+			# res+="mlp2 outer else="+str(mlp2)+"||"+str(current_date3.date())
 			interest_cost = (closing_liability - mlp2) * ((1 + daily_rate) ** n - 1)
 			total_interest_cost += interest_cost
 			closing_liability = closing_liability + interest_cost - mlp2
@@ -1079,6 +1121,7 @@ def generate_lease_report_new(start_date, end_date, docname, cnt_time):
 		current_date3 = date_increment(current_date3, diff_annually, mid_diff_annually, esc_bd_end_date)
 		if current_date3.strftime("%Y-%m") == end_date.strftime("%Y-%m"):
 			current_date3 = current_date3.replace(day=1)
+
 	if not data:
 		frappe.msgprint("No Data Calculated")
 	# return res

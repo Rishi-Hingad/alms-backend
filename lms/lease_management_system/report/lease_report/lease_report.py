@@ -464,6 +464,8 @@ def execute(filters=None):
 			prior_month_start = prior_date.replace(day=1)
 			diff_prior_month = prior_month_end - prior_month_start
 			n_prior = diff_prior_month.days
+		else:
+			n_prior = 0
 
 		if end_date < month_end:
 			month_end = end_date
@@ -500,6 +502,14 @@ def execute(filters=None):
 			prev_mlp = mlp
 			if not diff_annually:
 				mlp = mlp * n / total_days_of_month
+				if current_date.date() == start_date and escalation and edates_pafa is not None:
+					for k in dict_ed_pafa.keys():
+						temp_val = k
+						temp = temp_val.split("-")
+						famt = float(temp[2])
+						new_famt = famt * n / total_days_of_month
+						mlp = mlp + new_famt
+						break
 				if current_date.date() in edates_pannum:
 					for k in dict_ed_pannum.keys():
 						temp_val = k
@@ -669,6 +679,7 @@ def execute(filters=None):
 				if mrent == 0 and rate == 0 and famt == 0 and escalation:
 					mlp = prev_mlp
 		else:
+			prev_mlp = mlp
 			if current_date.date() == start_date.date() and escalation and edates_pafa is not None:
 				for k in dict_ed_pafa.keys():
 					temp_val = k
@@ -742,6 +753,8 @@ def execute(filters=None):
 			else:
 				pv = mlp / ((1 + daily_rate) ** ndays)
 				pv_arr.append(pv)
+			if mrent == 0 and rate == 0 and famt == 0 and escalation:
+				mlp = prev_mlp
 
 		total_pv += pv
 		ndays += n
@@ -852,6 +865,8 @@ def execute(filters=None):
 
 			diff_prior_month = prior_month_end - prior_month_start
 			n_prior = diff_prior_month.days
+		else:
+			n_prior = 0
 
 		if end_date < month_end:
 			month_end = end_date
@@ -862,7 +877,7 @@ def execute(filters=None):
 		date_difference2 = month_end2 - month_start2
 		total_days_of_month = date_difference2.days + 1
 
-		if diff_annually:
+		if diff_annually and not mid_diff_annually:
 			if month_end < month_end2 and month_end == end_date:
 				month_start = current_date3.replace(day=1)
 			date_difference = month_end - month_start
@@ -870,10 +885,21 @@ def execute(filters=None):
 			if not current_date3 == start_date:
 				month_start = current_date3.replace(day=1)
 			n = total_days_of_month
+		elif mid_diff_annually:
+			if month_end < month_end2 and month_end != end_date:
+				month_end = current_date3
+				month_start = current_date3.replace(day=1)
+			if month_end == end_date:
+				month_end = end_date
+				month_start = current_date3.replace(day=1)
+			date_difference = month_end - month_start
+			n_next = date_difference.days + 1
+			n = total_days_of_month
 		else:
 			date_difference = month_end - month_start
 			n = date_difference.days + 1
-
+		if current_date3.strftime("%Y-%m") == end_date.strftime("%Y-%m"):
+			month_end = end_date
 		if current_date3 == start_date or month_end == end_date:
 			date_difference = month_end - month_start
 			n = date_difference.days + 1
@@ -958,7 +984,9 @@ def execute(filters=None):
 				else:
 					depreciation = (n / total_days) * prev_closing_liability
 					wdv -= depreciation
-
+				if cnt2 != 1:
+					if month_start.date() != month_start.replace(day=1):
+						month_start = month_start.replace(day=1)
 				row = {
 					"month_start_date": month_start.date(),
 					"month_end_date": month_end.date(),
@@ -1057,6 +1085,9 @@ def execute(filters=None):
 				else:
 					depreciation = (n / total_days) * prev_closing_liability
 					wdv -= depreciation
+				if cnt2 != 1:
+					if month_start.date() != month_start.replace(day=1):
+						month_start = month_start.replace(day=1)
 				row = {
 					"month_start_date": month_start.date(),
 					"month_end_date": month_end.date(),

@@ -434,6 +434,7 @@ def execute(filters=None):
 							mlp2 = mrent
 						mlp2 = mlp2 + (rate * mlp2 / 100) + famt
 						break
+				mlp2 = mrent
 
 			elif current_date3.date() in edates_pafa and len(edates_pafa) > 0:
 				for k in dict_ed_pafa.keys():
