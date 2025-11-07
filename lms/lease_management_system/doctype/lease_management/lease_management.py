@@ -434,10 +434,13 @@ def generate_lease_report_new(start_date, end_date, docname, cnt_time):
 							famt = float(temp[2])
 							if mrent != 0:
 								mlp_escl = mrent
-								mlp_escl = mlp_escl * n / total_days_of_month
+								# mlp_escl = mlp_escl * n / total_days_of_month
 							if mrent == 0 and rate == 0 and famt == 0:
 								mlp_escl = 0
+							if rate != 0 and mrent == 0:
+								mlp_escl = float(doc.monthly_rent)
 							mlp_escl = mlp_escl + (rate * mlp_escl / 100) + famt
+							mlp_escl = mlp_escl * n / total_days_of_month
 							total_mlp_escl += mlp_escl
 					common_dict[cmonth] = total_mlp_escl
 	# res+="|| common month == "+ str(common_month)+"$$$"+str(common_dict)
@@ -542,8 +545,16 @@ def generate_lease_report_new(start_date, end_date, docname, cnt_time):
 								mlp = mlp * n / total_days_of_month
 							if mrent == 0 and rate == 0 and famt == 0:
 								mlp = 0
+							if rate != 0 and mrent == 0:
+								if escl[0] == current_date.date():
+									rate = float(temp[0])
+								else:
+									rate = 0
 							mlp = mlp + (rate * mlp / 100) + famt
-							prev_mlp_escl = mlp
+							if mrent == 0 and rate == 0 and famt == 0:
+								prev_mlp_escl = prev_mlp
+							else:
+								prev_mlp_escl = mlp
 							break
 				elif current_date.date() in edates_pafa and escalation:
 					for k in dict_ed_pafa.keys():
@@ -624,9 +635,17 @@ def generate_lease_report_new(start_date, end_date, docname, cnt_time):
 								mlp = mlp * n / total_days_of_month
 							if mrent == 0 and rate == 0 and famt == 0:
 								mlp = 0
+							if rate != 0 and mrent == 0:
+								if escl[0] == current_date.date():
+									rate = float(temp[0])
+								else:
+									rate = 0
 							mlp = mlp + (rate * mlp / 100) + famt
 							mlp_new = mlp
-							prev_mlp_escl = mlp
+							if mrent == 0 and rate == 0 and famt == 0:
+								prev_mlp_escl = prev_mlp
+							else:
+								prev_mlp_escl = mlp
 							break
 				elif current_date.date() in edates_pafa and escalation:
 					for k in dict_ed_pafa.keys():
@@ -705,6 +724,11 @@ def generate_lease_report_new(start_date, end_date, docname, cnt_time):
 							mlp = mrent
 						if mrent == 0 and rate == 0 and famt == 0:
 							mlp = 0
+						if rate != 0 and mrent == 0:
+							if escl[0] == current_date.date():
+								rate = float(temp[0])
+							else:
+								rate = 0
 						mlp = mlp + (rate * mlp / 100) + famt
 						break
 			elif current_date.date() in edates_pafa and escalation:
@@ -885,8 +909,16 @@ def generate_lease_report_new(start_date, end_date, docname, cnt_time):
 								mlp2 = mlp2 * n / total_days_of_month
 							if mrent == 0 and rate == 0 and famt == 0:
 								mlp2 = 0
+							if rate != 0 and mrent == 0:
+								if escl[0] == current_date3.date():
+									rate = float(temp[0])
+								else:
+									rate = 0
 							mlp2 = mlp2 + (rate * mlp2 / 100) + famt
-							prev_mlp_escl2 = mlp2
+							if mrent == 0 and rate == 0 and famt == 0:
+								prev_mlp_escl2 = prev_mlp2
+							else:
+								prev_mlp_escl2 = mlp2
 							break
 				elif current_date3.date() in edates_pafa and escalation:
 					for k in dict_ed_pafa.keys():
@@ -980,9 +1012,17 @@ def generate_lease_report_new(start_date, end_date, docname, cnt_time):
 								mlp2 = mlp2 * n / total_days_of_month
 							if mrent == 0 and rate == 0 and famt == 0:
 								mlp2 = 0
+							if rate != 0 and mrent == 0:
+								if escl[0] == current_date3.date():
+									rate = float(temp[0])
+								else:
+									rate = 0
 							mlp2 = mlp2 + (rate * mlp2 / 100) + famt
 							mlp_new = mlp2
-							prev_mlp_escl2 = mlp2
+							if mrent == 0 and rate == 0 and famt == 0:
+								prev_mlp_escl2 = mlp2
+							else:
+								prev_mlp_escl2 = mlp2
 							break
 				elif current_date3.date() in edates_pafa and escalation:
 					for k in dict_ed_pafa.keys():
@@ -1074,6 +1114,11 @@ def generate_lease_report_new(start_date, end_date, docname, cnt_time):
 							mlp2 = mrent
 						if mrent == 0 and rate == 0 and famt == 0:
 							mlp2 = 0
+						if rate != 0 and mrent == 0:
+							if escl[0] == current_date3.date():
+								rate = float(temp[0])
+							else:
+								rate = 0
 						mlp2 = mlp2 + (rate * mlp2 / 100) + famt
 						break
 			elif current_date3.date() in edates_pafa and escalation:
