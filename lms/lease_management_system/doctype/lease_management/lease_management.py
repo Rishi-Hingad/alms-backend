@@ -45,6 +45,7 @@ def get_month_details(cdate):
 
 	return month_start, month_end, month_start2, month_end2, total_days_of_month
 
+
 def get_escalation_dates(doc, current_date, start_date, end_date, diff_years):
 	etype = []
 	escl_dates_pafr = []
