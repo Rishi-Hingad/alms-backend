@@ -540,11 +540,6 @@ def generate_lease_report_new(start_date, end_date, docname, cnt_time):
 								mlp = mlp * n / total_days_of_month
 							if mrent == 0 and rate == 0 and famt == 0:
 								mlp = 0
-							if rate != 0 and mrent != 0:
-								if escl[0] == current_date.date():
-									mlp = float(temp[1])
-								else:
-									mlp = prev_mlp_escl
 							mlp = mlp + (rate * mlp / 100) + famt
 							prev_mlp_escl = mlp
 							break
@@ -603,11 +598,6 @@ def generate_lease_report_new(start_date, end_date, docname, cnt_time):
 								mlp = mlp * n / total_days_of_month
 							if mrent == 0 and rate == 0 and famt == 0:
 								mlp = 0
-							if rate != 0 and mrent != 0:
-								if escl[0] == current_date.date():
-									mlp = float(temp[1])
-								else:
-									mlp = prev_mlp_escl
 							mlp = mlp + (rate * mlp / 100) + famt
 							prev_mlp_escl = mlp
 							break
@@ -654,11 +644,6 @@ def generate_lease_report_new(start_date, end_date, docname, cnt_time):
 								mlp = mlp * n / total_days_of_month
 							if mrent == 0 and rate == 0 and famt == 0:
 								mlp = 0
-							if rate != 0 and mrent != 0:
-								if escl[0] == current_date.date():
-									mlp = float(temp[1])
-								else:
-									mlp = prev_mlp_escl
 							mlp = mlp + (rate * mlp / 100) + famt
 							mlp_2 = mlp * n_next / total_days_of_month
 							mlp_new = mlp_1 + mlp_2
@@ -705,11 +690,6 @@ def generate_lease_report_new(start_date, end_date, docname, cnt_time):
 								mlp = mlp * n / total_days_of_month
 							if mrent == 0 and rate == 0 and famt == 0:
 								mlp = 0
-							if rate != 0 and mrent != 0:
-								if escl[0] == current_date.date():
-									mlp = float(temp[1])
-								else:
-									mlp = prev_mlp_escl
 							mlp = mlp + (rate * mlp / 100) + famt
 							mlp_2 = mlp * n_next / total_days_of_month
 							mlp_new = mlp_1 + mlp_2
@@ -751,11 +731,6 @@ def generate_lease_report_new(start_date, end_date, docname, cnt_time):
 						famt = float(temp[2])
 						if mrent != 0:
 							mlp = mrent
-						if rate != 0 and mrent != 0:
-							if escl[0] == current_date.date():
-								mlp = float(temp[1])
-							else:
-								mlp = prev_mlp
 						mlp = mlp + (rate * mlp / 100) + famt
 						break
 			elif current_date.date() in edates_bd and escalation:
@@ -801,11 +776,6 @@ def generate_lease_report_new(start_date, end_date, docname, cnt_time):
 						famt = float(temp[2])
 						if mrent != 0:
 							mlp = mrent
-						if rate != 0 and mrent != 0:
-							if escl[0] == current_date.date():
-								mlp = float(temp[1])
-							else:
-								mlp = prev_mlp
 						mlp = mlp + (rate * mlp / 100) + famt
 						break
 			total_mlp += mlp
@@ -950,11 +920,6 @@ def generate_lease_report_new(start_date, end_date, docname, cnt_time):
 								mlp2 = mlp2 * n / total_days_of_month
 							if mrent == 0 and rate == 0 and famt == 0:
 								mlp2 = 0
-							if rate != 0 and mrent != 0:
-								if escl[0] == current_date3.date():
-									mlp2 = float(temp[1])
-								else:
-									mlp2 = prev_mlp_escl2
 							mlp2 = mlp2 + (rate * mlp2 / 100) + famt
 							prev_mlp_escl2 = mlp2
 							break
@@ -1009,11 +974,6 @@ def generate_lease_report_new(start_date, end_date, docname, cnt_time):
 								mlp2 = mlp2 * n / total_days_of_month
 							if mrent == 0 and rate == 0 and famt == 0:
 								mlp2 = 0
-							if rate != 0 and mrent != 0:
-								if escl[0] == current_date3.date():
-									mlp2 = float(temp[1])
-								else:
-									mlp2 = prev_mlp_escl2
 							mlp2 = mlp2 + (rate * mlp2 / 100) + famt
 							prev_mlp_escl2 = mlp2
 							break
@@ -1073,11 +1033,6 @@ def generate_lease_report_new(start_date, end_date, docname, cnt_time):
 								mlp2 = mlp2 * n / total_days_of_month
 							if mrent == 0 and rate == 0 and famt == 0:
 								mlp2 = 0
-							if rate != 0 and mrent != 0:
-								if escl[0] == current_date3.date():
-									mlp2 = float(temp[1])
-								else:
-									mlp2 = prev_mlp_escl2
 							mlp2 = mlp2 + (rate * mlp2 / 100) + famt
 							mlp2_2 = mlp2 * n_next / total_days_of_month
 							mlp_new = mlp2_1 + mlp2_2
@@ -1124,11 +1079,6 @@ def generate_lease_report_new(start_date, end_date, docname, cnt_time):
 								mlp2 = mlp2 * n / total_days_of_month
 							if mrent == 0 and rate == 0 and famt == 0:
 								mlp2 = 0
-							if rate != 0 and mrent != 0:
-								if escl[0] == current_date3.date():
-									mlp2 = float(temp[1])
-								else:
-									mlp2 = prev_mlp_escl2
 							mlp2 = mlp2 + (rate * mlp2 / 100) + famt
 							mlp2_2 = mlp2 * n_next / total_days_of_month
 							mlp_new = mlp2_1 + mlp2_2
@@ -1183,11 +1133,6 @@ def generate_lease_report_new(start_date, end_date, docname, cnt_time):
 						famt = float(temp[2])
 						if mrent != 0:
 							mlp2 = mrent
-						if rate != 0 and mrent != 0:
-							if escl[0] == current_date3.date():
-								mlp2 = float(temp[1])
-							else:
-								mlp2 = prev_mlp2
 						mlp2 = mlp2 + (rate * mlp2 / 100) + famt
 						break
 			elif current_date3.date() in edates_bd and escalation:
@@ -1233,11 +1178,6 @@ def generate_lease_report_new(start_date, end_date, docname, cnt_time):
 						famt = float(temp[2])
 						if mrent != 0:
 							mlp2 = mrent
-						if rate != 0 and mrent != 0:
-							if escl[0] == current_date3.date():
-								mlp2 = float(temp[1])
-							else:
-								mlp2 = prev_mlp2
 						mlp2 = mlp2 + (rate * mlp2 / 100) + famt
 						break
 			# res+="mlp2 outer else="+str(mlp2)+"||"+str(current_date3.date())
@@ -1954,11 +1894,6 @@ class LeaseManagement(Document):
 									mlp = mlp * n / total_days_of_month
 								if mrent == 0 and rate == 0 and famt == 0:
 									mlp = 0
-								if rate != 0 and mrent != 0:
-									if escl[0] == current_date.date():
-										mlp = float(temp[1])
-									else:
-										mlp = prev_mlp_escl
 								mlp = mlp + (rate * mlp / 100) + famt
 								prev_mlp_escl = mlp
 								break
@@ -2057,11 +1992,6 @@ class LeaseManagement(Document):
 									mlp = mlp * n / total_days_of_month
 								if mrent == 0 and rate == 0 and famt == 0:
 									mlp = 0
-								if rate != 0 and mrent != 0:
-									if escl[0] == current_date.date():
-										mlp = float(temp[1])
-									else:
-										mlp = prev_mlp_escl
 								mlp = mlp + (rate * mlp / 100) + famt
 								mlp_2 = mlp * n_next / total_days_of_month
 								mlp_new = mlp_1 + mlp_2
@@ -2144,11 +2074,6 @@ class LeaseManagement(Document):
 							famt = float(temp[2])
 							if mrent != 0:
 								mlp = mrent
-							if rate != 0 and mrent != 0:
-								if escl[0] == current_date.date():
-									mlp = float(temp[1])
-								else:
-									mlp = prev_mlp
 							mlp = mlp + (rate * mlp / 100) + famt
 							break
 				elif current_date.date() in edates_bd:
@@ -2299,11 +2224,6 @@ class LeaseManagement(Document):
 									mlp = mlp * n / total_days_of_month
 								if mrent == 0 and rate == 0 and famt == 0:
 									mlp = 0
-								if rate != 0 and mrent != 0:
-									if escl[0] == current_date.date():
-										mlp = float(temp[1])
-									else:
-										mlp = prev_mlp_escl
 								mlp = mlp + (rate * mlp / 100) + famt
 								prev_mlp_escl = mlp
 								break
@@ -2376,11 +2296,6 @@ class LeaseManagement(Document):
 									mlp = mlp * n / total_days_of_month
 								if mrent == 0 and rate == 0 and famt == 0:
 									mlp = 0
-								if rate != 0 and mrent != 0:
-									if escl[0] == current_date.date():
-										mlp = float(temp[1])
-									else:
-										mlp = prev_mlp_escl
 								mlp = mlp + (rate * mlp / 100) + famt
 								# mlp_2=mlp*n_next/total_days_of_month
 								# mlp_new=mlp_1+mlp_2
@@ -2435,11 +2350,6 @@ class LeaseManagement(Document):
 							famt = float(temp[2])
 							if mrent != 0:
 								mlp = mrent
-							if rate != 0 and mrent != 0:
-								if escl[0] == current_date.date():
-									mlp = float(temp[1])
-								else:
-									mlp = prev_mlp
 							mlp = mlp + (rate * mlp / 100) + famt
 							break
 				elif current_date.date() in edates_bd and escalation:
