@@ -623,6 +623,8 @@ def execute(filters=None):
 							if rate != 0 and mrent != 0:
 								if escl[0] == current_date.date():
 									mlp = float(temp[1])
+									new_famt = famt * n / total_days_of_month
+									mlp = mlp + new_famt
 								else:
 									mlp = prev_mlp_escl
 							mlp = mlp + (rate * mlp / 100) + famt
@@ -730,6 +732,8 @@ def execute(filters=None):
 							if rate != 0 and mrent != 0:
 								if escl[0] == current_date.date():
 									mlp = float(temp[1])
+									new_famt = famt * n / total_days_of_month
+									mlp = mlp + new_famt
 								else:
 									mlp = prev_mlp_escl
 							mlp = mlp + (rate * mlp / 100) + famt
@@ -760,6 +764,7 @@ def execute(filters=None):
 					temp = temp_val.split("-")
 					famt = float(temp[2])
 					mlp = mlp + famt
+					# prev_mlp=mlp
 					break
 			if current_date.date() in edates_pannum:
 				for k in dict_ed_pannum.keys():
@@ -779,6 +784,7 @@ def execute(filters=None):
 							else:
 								mlp = prev_mlp
 						mlp = mlp + (rate * mlp / 100) + famt
+						prev_mlp_escl = mlp
 						break
 				# mlp=mlp+(pa_rate*mlp/100)
 			elif current_date.date() in edates_bd:
@@ -834,6 +840,7 @@ def execute(filters=None):
 						if rate != 0 and mrent != 0:
 							if escl[0] == current_date.date():
 								mlp = float(temp[1])
+								mlp = mlp + famt
 							else:
 								mlp = prev_mlp
 						mlp = mlp + (rate * mlp / 100) + famt
@@ -1019,7 +1026,7 @@ def execute(filters=None):
 							rate = float(temp[0])
 							mrent = float(temp[1])
 							famt = float(temp[2])
-							
+
 							if mrent != 0:
 								mlp2 = mrent
 								mlp2 = mlp2 * n / total_days_of_month
@@ -1099,13 +1106,14 @@ def execute(filters=None):
 							if rate != 0 and mrent != 0:
 								if escl[0] == current_date3.date():
 									mlp2 = float(temp[1])
+									new_famt = famt * n / total_days_of_month
+									mlp2 = mlp2 + new_famt
 								else:
 									mlp2 = prev_mlp_escl2
 							mlp2 = mlp2 + (rate * mlp2 / 100) + famt
 							prev_mlp_escl2 = mlp2
 							break
 					# mlp=mlp+(pafa_rate*mlp/100)+famt
-
 				interest_cost = (closing_liability - mlp2) * ((1 + daily_rate) ** n - 1)
 				total_interest_cost += interest_cost
 				closing_liability = closing_liability + interest_cost - mlp2
@@ -1221,6 +1229,8 @@ def execute(filters=None):
 							if rate != 0 and mrent != 0:
 								if escl[0] == current_date3.date():
 									mlp2 = float(temp[1])
+									new_famt = famt * n / total_days_of_month
+									mlp2 = mlp2 + new_famt
 								else:
 									mlp2 = prev_mlp_escl2
 							mlp2 = mlp2 + (rate * mlp2 / 100) + famt
@@ -1228,8 +1238,8 @@ def execute(filters=None):
 							mlp_new = mlp2_1 + mlp2_2
 							prev_mlp_escl2 = mlp2
 							break
-
 				mlp2 = mlp_new
+
 				interest_cost = (closing_liability - mlp2) * ((1 + daily_rate) ** n - 1)
 				total_interest_cost += interest_cost
 				closing_liability = closing_liability + interest_cost - mlp2
@@ -1345,12 +1355,12 @@ def execute(filters=None):
 						if rate != 0 and mrent != 0:
 							if escl[0] == current_date3.date():
 								mlp2 = float(temp[1])
+								mlp2 = mlp2 + famt
 							else:
 								mlp2 = prev_mlp2
 						mlp2 = mlp2 + (rate * mlp2 / 100) + famt
 						break
 				# mlp=mlp+(pafa_rate*mlp/100)+famt
-
 			interest_cost = (closing_liability - mlp2) * ((1 + daily_rate) ** n - 1)
 			total_interest_cost += interest_cost
 			closing_liability = closing_liability + interest_cost - mlp2
