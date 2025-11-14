@@ -392,8 +392,6 @@ def generate_lease_report_new(start_date, end_date, docname, cnt_time):
 		famt,
 	) = get_escalation_dates(doc, current_date, start_date, end_date, diff_years)
 	diff_annually2 = diff_annually
-	# res+=str(esc_bd_end_date)+"//**//"+str(dict_ed_bdates)+"//**//"+str(dict_ed_pannum)
-	# res+="###"+str(dict_ed_pannum)+"//**//"+str(dict_ed_pafa)+"//"+str(edates_pannum)
 	if len(edates_pannum) > 0:
 		if edates_pannum[0] != edates_pannum[0].replace(day=1) and current_date != current_date.replace(
 			day=1
@@ -404,8 +402,6 @@ def generate_lease_report_new(start_date, end_date, docname, cnt_time):
 		if edates_pafa[0] != edates_pafa[0].replace(day=1) and current_date != current_date.replace(day=1):
 			diff_annually = True
 			diff_annually2 = True
-	# res+="diff_ann"+str(diff_annually)+"||"+str(edates_pannum[0])
-	# return res
 	cnt_keys = len(dict_ed_bdates)
 	dict_new = {}
 	common_month = []
@@ -447,7 +443,6 @@ def generate_lease_report_new(start_date, end_date, docname, cnt_time):
 							famt = float(temp[2])
 							if mrent != 0:
 								mlp_escl = mrent
-								# mlp_escl = mlp_escl * n / total_days_of_month
 							if mrent == 0 and rate == 0 and famt == 0:
 								mlp_escl = 0
 							if rate != 0 and mrent == 0:
@@ -462,9 +457,6 @@ def generate_lease_report_new(start_date, end_date, docname, cnt_time):
 							mlp_escl = mlp_escl * n / total_days_of_month
 							total_mlp_escl += mlp_escl
 					common_dict[cmonth] = total_mlp_escl
-	# res+="|| common month == "+ str(common_month)+"$$$"+str(common_dict)
-	# res+="|||"+str(dict_new)+"|||"
-	# return res
 	if esc_bd_end_date is not None and esc_bd_end_date != esc_bd_end_date.replace(day=1):
 		mid_diff_annually = True
 		mid_diff_annually2 = True
@@ -558,7 +550,6 @@ def generate_lease_report_new(start_date, end_date, docname, cnt_time):
 									prev_mlp = prev_mlp_escl
 								else:
 									prev_mlp_escl = prev_mlp
-								# prev_mlp_escl = mlp
 								break
 						if current_date.date() in escl:
 							rate = float(temp[0])
@@ -609,7 +600,6 @@ def generate_lease_report_new(start_date, end_date, docname, cnt_time):
 							prev_mlp_escl = mlp
 							break
 				total_mlp += mlp
-				# res+="//***//mlp"+str(mlp)+"==//TMLP="+str(total_mlp)+"**"
 				if cnt == 1:
 					pv = mlp
 					pv_arr.append(pv)
@@ -711,7 +701,6 @@ def generate_lease_report_new(start_date, end_date, docname, cnt_time):
 							break
 				mlp = mlp_new
 				total_mlp += mlp
-				# res+="mlp-else"+str(mlp)+"::TMLP="+str(total_mlp)+"**"
 				if cnt == 1:
 					pv = mlp
 					pv_arr.append(pv)
@@ -800,7 +789,6 @@ def generate_lease_report_new(start_date, end_date, docname, cnt_time):
 						mlp = mlp + (rate * mlp / 100) + famt
 						break
 			total_mlp += mlp
-			# res+="mlp-outer-else"+str(mlp)+"//TMLP="+str(total_mlp)+"**"
 			if cnt == 1:
 				pv = mlp
 				pv_arr.append(pv)
@@ -824,7 +812,7 @@ def generate_lease_report_new(start_date, end_date, docname, cnt_time):
 			current_date = current_date.replace(day=1)
 	prev_closing_liability = total_pv
 	total_days = ndays
-	# return res
+
 	while current_date2 <= end_date:
 		cnt1 += 1
 		month_start = current_date2
@@ -914,7 +902,7 @@ def generate_lease_report_new(start_date, end_date, docname, cnt_time):
 			date_difference = month_end - month_start
 			n = date_difference.days + 1
 			n_prior = n
-		# res+="$second_loop$n="+str(n)+"||n_prior="+str(n_prior)+"||n_next="+str(n_next)+"total_days_of_month"+str(total_days_of_month)+"$$"
+
 		if n_prior < total_days_of_month or n < total_days_of_month:
 			prev_mlp2 = mlp2
 			if not diff_annually2:
@@ -1005,7 +993,6 @@ def generate_lease_report_new(start_date, end_date, docname, cnt_time):
 							mlp2 = mlp2 + (rate * mlp2 / 100) + famt
 							prev_mlp_escl2 = mlp2
 							break
-				# res+="mlp2 else="+str(mlp2)+"||"+str(current_date3.date())
 				interest_cost = (closing_liability - mlp2) * ((1 + daily_rate) ** n - 1)
 				total_interest_cost += interest_cost
 				closing_liability = closing_liability + interest_cost - mlp2
@@ -1120,7 +1107,6 @@ def generate_lease_report_new(start_date, end_date, docname, cnt_time):
 							prev_mlp_escl2 = mlp2
 							break
 				mlp2 = mlp_new
-				# res+="mlp2 inner="+str(mlp2)+"||"+str(current_date3.date())
 				interest_cost = (closing_liability - mlp2) * ((1 + daily_rate) ** n - 1)
 				total_interest_cost += interest_cost
 				closing_liability = closing_liability + interest_cost - mlp2
@@ -1221,7 +1207,6 @@ def generate_lease_report_new(start_date, end_date, docname, cnt_time):
 								mlp2 = prev_mlp2
 						mlp2 = mlp2 + (rate * mlp2 / 100) + famt
 						break
-			# res+="mlp2 outer else="+str(mlp2)+"||"+str(current_date3.date())
 			interest_cost = (closing_liability - mlp2) * ((1 + daily_rate) ** n - 1)
 			total_interest_cost += interest_cost
 			closing_liability = closing_liability + interest_cost - mlp2
@@ -1592,23 +1577,6 @@ def get_all_active_lease_rent_data():
 	return monthly_totals
 
 
-# @frappe.whitelist()
-# def get_lease_rent_dashboard_chart():
-# 	data = get_all_active_lease_rent_data()
-
-# 	return {
-# 		"labels": list(data.keys()),  # ["Previous Month", "Current Month", "Next Month"]
-# 		"datasets": [
-# 			{
-# 				"name": "Lease Rent",
-# 				"values": list(data.values()),  # [1000.0, 1200.0, 1400.0]
-# 			}
-# 		],
-# 		"type": "bar",  # chart type
-# 		"colors": ["#7cd6fd"],  # optional
-# 	}
-
-
 @frappe.whitelist()
 def bulk_update_agreement_status():
 	today = nowdate()
@@ -1847,7 +1815,6 @@ class LeaseManagement(Document):
 								famt = float(temp[2])
 								if mrent != 0:
 									mlp_escl = mrent
-									# mlp_escl = mlp_escl * n / total_days_of_month
 								if mrent == 0 and rate == 0 and famt == 0:
 									mlp_escl = 0
 								if rate != 0 and mrent == 0:
@@ -2004,7 +1971,6 @@ class LeaseManagement(Document):
 								prev_mlp_escl = mlp
 								break
 					timeline[current_date.date().strftime("%Y-%m")] = round(mlp, 3)
-					# timeline[current_date.date().strftime("%Y-%m")] = mlp
 					if prev_mlp_escl is None:
 						mlp = prev_mlp
 					else:
@@ -2100,7 +2066,6 @@ class LeaseManagement(Document):
 								break
 					mlp = mlp_new
 					timeline[current_date.date().strftime("%Y-%m")] = round(mlp_new, 3)
-					# timeline[current_date.date().strftime("%Y-%m")] = mlp_new
 					# mlp=prev_mlp
 					if prev_mlp_escl is None:
 						mlp = prev_mlp
@@ -2184,12 +2149,11 @@ class LeaseManagement(Document):
 							mlp = mlp + (rate * mlp / 100) + famt
 							break
 				timeline[current_date.date().strftime("%Y-%m")] = round(mlp, 3)
-				# timeline[current_date.date().strftime("%Y-%m")] = mlp
 				if mrent == 0 and rate == 0 and famt == 0 and escalation:
 					mlp = prev_mlp
 			if month_end > end_date:
 				month_end = end_date
-			# mid_diff_annually = False
+
 			if esc_bd_end_date is not None and esc_bd_end_date != esc_bd_end_date.replace(day=1):
 				if current_date.month == 12:
 					next_current_date = datetime(current_date.year + 1, 1, 1)
@@ -2257,7 +2221,6 @@ class LeaseManagement(Document):
 					month_start = current_date.replace(day=1)
 				date_difference = month_end - month_start
 				# n_next = date_difference.days +1
-
 				n = total_days_of_month
 			else:
 				date_difference = month_end - month_start
@@ -2400,7 +2363,6 @@ class LeaseManagement(Document):
 
 			else:
 				prev_mlp = mlp
-
 				if current_date.date() in edates_pannum and escalation:
 					for k in dict_ed_pannum.keys():
 						temp_val = k
@@ -2462,7 +2424,6 @@ class LeaseManagement(Document):
 
 	def validate_invoice_details(self):
 		rent_timeline = self.get_lease_rent_timeline()
-		# monthly_data=self.get_lease_monthly_data()
 		for row in self.invoice_details:
 			from_date = datetime.strptime(row.from_date, "%Y-%m-%d")
 			to_date = datetime.strptime(row.to_date, "%Y-%m-%d")
@@ -2499,14 +2460,9 @@ class LeaseManagement(Document):
 			expected_rent = 0.0
 			for i in range(len(exp_rent)):
 				expected_rent += exp_rent[i]
-			# frappe.msgprint(str(expected_rent))
-			# inv_month=from_date.strftime("%Y-%m")
-			# expected_rent=rent_timeline.get(inv_month)
-
 			if expected_rent is None:
 				row.is_mismatch = 1
 				continue
-
 			actual_amount = float(row.amount)
 			tax = float(row.tax)
 			if int(row.with_tax) == 1:
@@ -2515,11 +2471,9 @@ class LeaseManagement(Document):
 					row.is_mismatch = 1
 				else:
 					row.is_mismatch = 0
-
 			else:
 				if round(actual_amount, 3) != round(expected_rent, 3):
 					row.is_mismatch = 1
-					# frappe.msgprint("row is_mismatch at row no. "+str(row.idx)+" "+str(round(expected_rent,3))+" /"+str(row.amount))
 				else:
 					row.is_mismatch = 0
 
