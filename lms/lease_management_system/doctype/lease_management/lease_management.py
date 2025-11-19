@@ -119,9 +119,9 @@ def get_escalation_dates(doc, current_date, start_date, end_date, diff_years):
 					+ "-"
 					+ str(rate_bdates)
 					+ "-"
-					+ str(fixed_amt_bdates)
+					+ str(fixed_amt_bdates)+"-"+str(bd_start_date)+"-"+str(bd_end_date)
 				)
-				dsubkey = str(rate_bdates) + "-" + str(monthly_rent_bdates) + "-" + str(fixed_amt_bdates)
+				dsubkey = str(rate_bdates) + "-" + str(monthly_rent_bdates) + "-" + str(fixed_amt_bdates)+"-"+str(bd_start_date)+"-"+str(bd_end_date)
 
 				calc_dict[dkey] = {dsubkey: escl_dates_bdates}
 				total_escl_dates_bdates += escl_dates_bdates
@@ -557,7 +557,12 @@ def generate_lease_report_new(start_date, end_date, docname, cnt_time):
 							famt = float(temp[2])
 							if mrent != 0:
 								mlp = mrent
-								mlp = mlp * n / total_days_of_month
+								_, last_day_of_month = monthrange(current_date.year, current_date.month)
+								current_month_end = datetime(current_date.year, current_date.month, last_day_of_month)
+								if (escl[len(escl)-1]==current_month_end.date() and current_month_end.date() in escl) or (escl[len(escl)-1]==end_date.date() and end_date.replace(day=1).date()==current_date.date() and escl[0]==end_date.replace(day=1).date()):
+									mlp=mrent
+								else:
+									mlp = mlp * n / total_days_of_month
 							if mrent == 0 and rate == 0 and famt == 0:
 								mlp = 0
 							if rate != 0 and mrent == 0:
@@ -657,7 +662,12 @@ def generate_lease_report_new(start_date, end_date, docname, cnt_time):
 							famt = float(temp[2])
 							if mrent != 0:
 								mlp = mrent
-								mlp = mlp * n / total_days_of_month
+								_, last_day_of_month = monthrange(current_date.year, current_date.month)
+								current_month_end = datetime(current_date.year, current_date.month, last_day_of_month)
+								if (escl[len(escl)-1]==current_month_end.date() and current_month_end.date() in escl) or (escl[len(escl)-1]==end_date.date() and end_date.replace(day=1).date()==current_date.date() and escl[0]==end_date.replace(day=1).date()):
+									mlp=mrent
+								else:
+									mlp = mlp * n / total_days_of_month
 							if mrent == 0 and rate == 0 and famt == 0:
 								mlp = 0
 							if rate != 0 and mrent == 0:
@@ -954,7 +964,13 @@ def generate_lease_report_new(start_date, end_date, docname, cnt_time):
 							famt = float(temp[2])
 							if mrent != 0:
 								mlp2 = mrent
-								mlp2 = mlp2 * n / total_days_of_month
+								# mlp2 = mlp2 * n / total_days_of_month
+								_, last_day_of_month2 = monthrange(current_date3.year, current_date3.month)
+								current_month_end2 = datetime(current_date3.year, current_date3.month, last_day_of_month2)
+								if (escl[len(escl)-1]==current_month_end2.date() and current_month_end2.date() in escl) or (escl[len(escl)-1]==end_date.date() and end_date.replace(day=1).date()==current_date3.date() and escl[0]==end_date.replace(day=1).date()):
+									mlp2=mrent
+								else:
+									mlp2 = mlp2 * n / total_days_of_month
 							if mrent == 0 and rate == 0 and famt == 0:
 								mlp2 = 0
 							if rate != 0 and mrent == 0:
@@ -1064,7 +1080,13 @@ def generate_lease_report_new(start_date, end_date, docname, cnt_time):
 							famt = float(temp[2])
 							if mrent != 0:
 								mlp2 = mrent
-								mlp2 = mlp2 * n / total_days_of_month
+								# mlp2 = mlp2 * n / total_days_of_month
+								_, last_day_of_month2 = monthrange(current_date3.year, current_date3.month)
+								current_month_end2 = datetime(current_date3.year, current_date3.month, last_day_of_month2)
+								if (escl[len(escl)-1]==current_month_end2.date() and current_month_end2.date() in escl) or (escl[len(escl)-1]==end_date.date() and end_date.replace(day=1).date()==current_date3.date() and escl[0]==end_date.replace(day=1).date()):
+									mlp2=mrent
+								else:
+									mlp2 = mlp2 * n / total_days_of_month
 							if mrent == 0 and rate == 0 and famt == 0:
 								mlp2 = 0
 							if rate != 0 and mrent == 0:

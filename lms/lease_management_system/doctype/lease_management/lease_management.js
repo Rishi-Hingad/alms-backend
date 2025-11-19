@@ -177,11 +177,6 @@ frappe.ui.form.on("Lease Management", {
 	agreement_end_date: function (frm) {
 		validate_dates_and_set_lease_period(frm);
 	},
-	security_deposit: function (frm) {
-		if (frm.doc.security_deposit == "Paid") {
-			frm.set_df_property("security_deposit_amount", "reqd", 1);
-		}
-	},
 	onload_post_render(frm) {
 		if (
 			frm.doc.invoice_details &&

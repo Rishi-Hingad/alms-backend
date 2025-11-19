@@ -139,9 +139,9 @@ def execute(filters=None):
 					+ "-"
 					+ str(rate_bdates)
 					+ "-"
-					+ str(fixed_amt_bdates)
+					+ str(fixed_amt_bdates)+"-"+str(bd_start_date)+"-"+str(bd_end_date)
 				)
-				dsubkey = str(rate_bdates) + "-" + str(monthly_rent_bdates) + "-" + str(fixed_amt_bdates)
+				dsubkey = str(rate_bdates) + "-" + str(monthly_rent_bdates) + "-" + str(fixed_amt_bdates)+"-"+str(bd_start_date)+"-"+str(bd_end_date)
 
 				calc_dict[dkey] = {dsubkey: escl_dates_bdates}
 				total_escl_dates_bdates += escl_dates_bdates
@@ -387,6 +387,8 @@ def execute(filters=None):
 	else:
 		mid_diff_annually = False
 		mid_diff_annually2 = False
+	# frappe.msgprint("calc_dict"+str(calc_dict))
+	# frappe.msgprint("dict_ed_bdates="+str(dict_ed_bdates)+"||dict_ed_pannum="+str(dict_ed_pannum))
 	# First loop PV calculations
 	while current_date <= end_date:
 		cnt += 1
@@ -449,6 +451,7 @@ def execute(filters=None):
 			date_difference = month_end - month_start
 			n = date_difference.days + 1
 			n_prior = n
+		# frappe.msgprint("n="+str(n)+"||n_prior="+str(n_prior)+"||n_next="+str(n_next))
 		if n_prior < total_days_of_month or n < total_days_of_month:
 			prev_mlp = mlp
 			if not diff_annually:
@@ -501,7 +504,13 @@ def execute(filters=None):
 							famt = float(temp[2])
 							if mrent != 0:
 								mlp = mrent
-								mlp = mlp * n / total_days_of_month
+								_, last_day_of_month = monthrange(current_date.year, current_date.month)
+								current_month_end = datetime(current_date.year, current_date.month, last_day_of_month)
+								if (escl[len(escl)-1]==current_month_end.date() and current_month_end.date() in escl) or (escl[len(escl)-1]==end_date.date() and end_date.replace(day=1).date()==current_date.date() and escl[0]==end_date.replace(day=1).date()):
+									mlp=mrent
+								else:
+									mlp = mlp * n / total_days_of_month
+								# frappe.msgprint("not diff_annually mrent="+str(mrent)+"||mlp="+str(mlp)+"current_month_end"+str(current_month_end.date())+"||"+str(escl[len(escl)-1])+"||"+str(end_date.replace(day=1).date()))
 							if mrent == 0 and rate == 0 and famt == 0:
 								mlp = 0
 							if rate != 0 and mrent == 0:
@@ -603,7 +612,14 @@ def execute(filters=None):
 							famt = float(temp[2])
 							if mrent != 0:
 								mlp = mrent
-								mlp = mlp * n / total_days_of_month
+								# mlp = mlp * n / total_days_of_month
+								_, last_day_of_month = monthrange(current_date.year, current_date.month)
+								current_month_end = datetime(current_date.year, current_date.month, last_day_of_month)
+								if (escl[len(escl)-1]==current_month_end.date() and current_month_end.date() in escl) or (escl[len(escl)-1]==end_date.date() and end_date.replace(day=1).date()==current_date.date() and escl[0]==end_date.replace(day=1).date()):
+									mlp=mrent
+								else:
+									mlp = mlp * n / total_days_of_month
+								# frappe.msgprint("mrent="+str(mrent)+"||mlp="+str(mlp))
 							if mrent == 0 and rate == 0 and famt == 0:
 								mlp = 0
 							if rate != 0 and mrent == 0:
@@ -947,7 +963,13 @@ def execute(filters=None):
 							famt = float(temp[2])
 							if mrent != 0:
 								mlp2 = mrent
-								mlp2 = mlp2 * n / total_days_of_month
+								# mlp2 = mlp2 * n / total_days_of_month
+								_, last_day_of_month2 = monthrange(current_date3.year, current_date3.month)
+								current_month_end2 = datetime(current_date3.year, current_date3.month, last_day_of_month2)
+								if (escl[len(escl)-1]==current_month_end2.date() and current_month_end2.date() in escl) or (escl[len(escl)-1]==end_date.date() and end_date.replace(day=1).date()==current_date3.date() and escl[0]==end_date.replace(day=1).date()):
+									mlp2=mrent
+								else:
+									mlp2 = mlp2 * n / total_days_of_month
 							if mrent == 0 and rate == 0 and famt == 0:
 								mlp2 = 0
 							if rate != 0 and mrent == 0:
@@ -1065,7 +1087,13 @@ def execute(filters=None):
 							famt = float(temp[2])
 							if mrent != 0:
 								mlp2 = mrent
-								mlp2 = mlp2 * n / total_days_of_month
+								# mlp2 = mlp2 * n / total_days_of_month
+								_, last_day_of_month2 = monthrange(current_date3.year, current_date3.month)
+								current_month_end2 = datetime(current_date3.year, current_date3.month, last_day_of_month2)
+								if (escl[len(escl)-1]==current_month_end2.date() and current_month_end2.date() in escl) or (escl[len(escl)-1]==end_date.date() and end_date.replace(day=1).date()==current_date3.date() and escl[0]==end_date.replace(day=1).date()):
+									mlp2=mrent
+								else:
+									mlp2 = mlp2 * n / total_days_of_month
 							if mrent == 0 and rate == 0 and famt == 0:
 								mlp2 = 0
 							if rate != 0 and mrent == 0:
