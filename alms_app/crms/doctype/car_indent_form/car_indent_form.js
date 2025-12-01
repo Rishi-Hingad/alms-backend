@@ -306,25 +306,6 @@ frappe.ui.form.on("Car Indent Form", {
     }
 });
 
-// frappe.ui.form.on("Car Indent Form", {
-//     refresh: function(frm) {
-//         updateStatus(frm);
-//         toggleFieldStatus(frm);
-
-//         // Add custom button to call both APIs
-//         frm.add_custom_button(__('Check & Send Email'), function() {
-//             checkAndSendEmail(frm);
-//         }).css({
-//             "background-color": "#28a745",
-//             "color": "white",
-//             "border": "none",
-//             "padding": "8px 15px",
-//             "font-size": "13px",
-//             "border-radius": "5px",
-//             "cursor": "pointer"
-//         });
-//     }
-// });
 function check_user_access(frm) {
     frappe.call({
         method: 'alms_app.crms.doctype.car_indent_form.car_indent_form.can_view_car_indent_list',
