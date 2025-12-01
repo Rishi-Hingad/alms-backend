@@ -332,10 +332,16 @@ class EmailServices:
         """
         return body
         
-    def create_email_body_revised(self,form, revised_form, user,subject, content,updated_by,remarks_by, regards=None, link=f"{frappe.utils.get_url()}/login#login"):
+    def create_email_body_revised(self,form, revised_form, user,subject, content,updated_by,remarks_by, regards=None, link=None):
+        if not link:
+            link = f"{frappe.utils.get_url()}/login#login"
+        print("ENTER BODY FUNCTION")
+        # print("ENTER user    FUNCTION--------------",user)
+        # print("REVISED FORM DUMP:", revised_form.as_dict())
         user_eligibility = user.eligibility
         remark_text = getattr(revised_form, remarks_by, None)
         # changed here, eligibility
+        print("CHECKPOINT 1 — start building body")
         body = f"""
         <html>
         <head>
@@ -378,7 +384,7 @@ class EmailServices:
                 </tr>
                 <tr>
                     <td>Vehicle Make & Model</td>
-                    <td>{form.revised_make} - {form.revised_car_modal}</td>
+                    <td>{revised_form.revised_make} - {revised_form.revised_car_modal}</td>
                 </tr>
                 <tr>
                     <td>Eligibility</td>
@@ -386,7 +392,7 @@ class EmailServices:
                 </tr>
                 <tr>
                     <td>Net Ex-Showroom Price</td>
-                    <td>{form.revised_net_ex_showroom_price}</td>
+                    <td>{revised_form.revised_net_ex_showroom_price}</td>
                 </tr>
                 <tr>
                     <td>Revised Financed Amount</td>
@@ -416,9 +422,12 @@ class EmailServices:
         </body>
         </html>
         """
+        print("EXIT BODY FUNCTION")
         return body
     
-    def create_email_body_quot(self, form, revised_form,  quot_form,  user, subject,  content, updated_by, remarks_by,  regards=None,  link=f"{frappe.utils.get_url()}/login#login"):
+    def create_email_body_quot(self, form, revised_form,  quot_form,  user, subject,  content, updated_by, remarks_by,  regards=None, link=None):
+        if not link:
+            link = f"{frappe.utils.get_url()}/login#login"
         user_eligibility = user.eligibility
         remark_text = getattr(quot_form, remarks_by, None)
         print("+++++++++++++++++++++++++remark text found")
@@ -882,6 +891,7 @@ class EmailServices:
         <br>{updated_by} have updated the quotation for the activity mentioned below:
         """
         body = self.create_email_body_revised(form,revised_form,user,subject, content,updated_by,remarks_by,regards)
+        print(">>> NOW CALLING SEND <<<")
         self.send(subject=subject, body=body, recipient_email=recipient_email)
 
     def for_purchase_head_to_finance_team(self, user):
