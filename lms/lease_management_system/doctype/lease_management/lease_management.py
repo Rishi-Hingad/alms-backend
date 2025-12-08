@@ -1748,6 +1748,9 @@ class LeaseManagement(Document):
 		self.name = f"LMS-{start_month}{start_year}_{end_month}{end_year}-{seq_num}"
 
 	def validate(self):
+		# validate property decription field
+		self.validate_property_details()
+
 		if self.invoice_details and len(self.invoice_details) > 0:
 			self.validate_invoice_details()
 		for row in self.escalation:
@@ -1781,6 +1784,26 @@ class LeaseManagement(Document):
 			# self.populate_invoice_details()
 			if not self.escalation and len(self.escalation) == 0:
 				self.populate_escalation_record()
+
+	def validate_property_details(self):
+		if not self.property_description:
+			return
+
+		property_doc = frappe.get_doc("Property Master", self.property_description)
+
+		if property_doc.vendor != self.vendor:
+			frappe.throw(
+				f"Vendor Mismatch:<br>"
+				f"Selected Property belongs to Vendor <b>{property_doc.vendor}</b> "
+				f"but you have selected <b>{self.vendor}</b>."
+			)
+
+		# if property_doc.type_of_asset != self.type_of_asset:
+		# 	frappe.throw(
+		# 		f"Type of Asset mismatch:<br>"
+		# 		f"Selected Property has Type of Asset <b>{property_doc.type_of_asset}</b> "
+		# 		f"but you selected <b>{self.type_of_asset}</b>."
+		# 	)
 
 	def populate_escalation_record(self):
 		start_date = datetime.strptime(self.agreement_start_date, "%Y-%m-%d").date()
