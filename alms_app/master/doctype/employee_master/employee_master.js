@@ -50,6 +50,10 @@ function updateEmailButton(frm) {
     frm.remove_custom_button("Send Email");
     frm.remove_custom_button("Email Sent");
 
+    if (frm.doc.inactive === 1) {
+        return;
+    }
+
     if (frm.doc.status === "Sent") {
         frm.add_custom_button("Email Sent", null)
             .addClass("btn-disabled")
