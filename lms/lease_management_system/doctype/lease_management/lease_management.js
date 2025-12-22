@@ -157,12 +157,21 @@ frappe.ui.form.on("Lease Management", {
 					},
 				};
 			});
+
+			frm.set_query("car_description", function () {
+				return {
+					filters: {
+						vendor: frm.doc.vendor,
+					},
+				};
+			});
 		} else {
 			// Clear property field if vendor is cleared
 			frm.set_value("property_description", null);
+			frm.set_value("car_description", null);
 
 			// Remove query filter
-			frm.set_query("property_description", function () {
+			frm.set_query("car_description", function () {
 				return {
 					filters: {
 						name: null, // Will return no property
@@ -190,6 +199,13 @@ frappe.ui.form.on("Lease Management", {
 		set_agreement_status(frm);
 		if (!frm.doc.vendor) {
 			frm.set_query("property_description", function () {
+				return {
+					filters: {
+						name: null, // blocks all results
+					},
+				};
+			});
+			frm.set_query("car_description", function () {
 				return {
 					filters: {
 						name: null, // blocks all results
@@ -263,27 +279,27 @@ frappe.ui.form.on("Lease Management", {
 
 		if (!frm.is_new()) {
 			if (frappe.user.has_role("Accounts") || frappe.user.has_role("System Manager")) {
-				frm.add_custom_button(__("Generate Report"), function () {
-					frm.report_counter = (frm.report_counter || 0) + 1;
-					frappe.call({
-						method: "lms.lease_management_system.doctype.lease_management.lease_management.generate_report",
-						args: {
-							docname: frm.doc.name,
-							cnt: frm.report_counter,
-						},
-						callback: function (r) {
-							if (!r.exc) {
-								let file_url = r.message.file_url;
-								// frappe.msgprint("mes"+r.message);
-								window.open(file_url);
-							} else {
-								frappe.msgprint(__("Failed to generate report."));
-							}
-						},
-					});
-				});
+				// frm.add_custom_button(__("Generate Report"), function () {
+				// 	frm.report_counter = (frm.report_counter || 0) + 1;
+				// 	frappe.call({
+				// 		method: "lms.lease_management_system.doctype.lease_management.lease_management.generate_report",
+				// 		args: {
+				// 			docname: frm.doc.name,
+				// 			cnt: frm.report_counter,
+				// 		},
+				// 		callback: function (r) {
+				// 			if (!r.exc) {
+				// 				let file_url = r.message.file_url;
+				// 				// frappe.msgprint("mes"+r.message);
+				// 				window.open(file_url);
+				// 			} else {
+				// 				frappe.msgprint(__("Failed to generate report."));
+				// 			}
+				// 		},
+				// 	});
+				// });
 
-				frm.add_custom_button(__("Go to Report"), function () {
+				frm.add_custom_button(__("View Report"), function () {
 					let lname = frm.doc.name;
 					if (
 						frm.doc.calculation_rate_type == "Daily Rate" &&
