@@ -107,15 +107,24 @@ def execute(filters=None):
 		if escl_type:
 			etype.append(escl_type)
 			if "Based On Dates" == escl_type:
-				if child.monthly_rent is None:
+				if child.monthly_rent in (
+					None,
+					"",
+				):
 					monthly_rent_bdates = 0
 				else:
 					monthly_rent_bdates = float(child.monthly_rent)
-				if child.rate is None:
+				if child.rate in (
+					None,
+					"",
+				):
 					rate_bdates = 0
 				else:
 					rate_bdates = float(child.rate)
-				if child.fixed_amount is None:
+				if child.fixed_amount in (
+					None,
+					"",
+				):
 					fixed_amt_bdates = 0
 				else:
 					fixed_amt_bdates = float(child.fixed_amount)
@@ -182,15 +191,24 @@ def execute(filters=None):
 			date_list = total_escl_dates_bdates
 
 		for child in doc.escalation:
-			if child.monthly_rent is None:
+			if child.monthly_rent in (
+				None,
+				"",
+			):
 				monthly_rent = 0
 			else:
 				monthly_rent = float(child.monthly_rent)
-			if child.rate is None:
+			if child.rate in (
+				None,
+				"",
+			):
 				rate = 0
 			else:
 				rate = float(child.rate)
-			if child.fixed_amount is None:
+			if child.fixed_amount in (
+				None,
+				"",
+			):
 				fixed_amt = 0
 			else:
 				fixed_amt = float(child.fixed_amount)
@@ -401,8 +419,8 @@ def execute(filters=None):
 	else:
 		mid_diff_annually = False
 		mid_diff_annually2 = False
-	# frappe.msgprint("calc_dict"+str(calc_dict))
-	# frappe.msgprint("dict_ed_bdates="+str(dict_ed_bdates)+"||dict_ed_pannum="+str(dict_ed_pannum))
+	famt_prev_mlp1 = 0
+
 	# First loop PV calculations
 	while current_date <= end_date:
 		cnt += 1
@@ -465,16 +483,19 @@ def execute(filters=None):
 			date_difference = month_end - month_start
 			n = date_difference.days + 1
 			n_prior = n
-		# frappe.msgprint("n="+str(n)+"||n_prior="+str(n_prior)+"||n_next="+str(n_next))
+
 		if n_prior < total_days_of_month or n < total_days_of_month:
 			prev_mlp = mlp
 			if not diff_annually:
+				if famt_prev_mlp1 != 0 and current_date.date() in edates_pafa:
+					mlp = famt_prev_mlp1
 				mlp = mlp * n / total_days_of_month
 				if current_date.date() == start_date and escalation and edates_pafa is not None:
 					for k in dict_ed_pafa.keys():
 						temp_val = k
 						temp = temp_val.split("-")
 						famt = float(temp[2])
+						famt_prev_mlp1 = prev_mlp
 						new_famt = famt * n / total_days_of_month
 						mlp = mlp + new_famt
 						break
@@ -533,7 +554,7 @@ def execute(filters=None):
 									mlp = mrent
 								else:
 									mlp = mlp * n / total_days_of_month
-								# frappe.msgprint("not diff_annually mrent="+str(mrent)+"||mlp="+str(mlp)+"current_month_end"+str(current_month_end.date())+"||"+str(escl[len(escl)-1])+"||"+str(end_date.replace(day=1).date()))
+
 							if mrent == 0 and rate == 0 and famt == 0:
 								mlp = 0
 							if rate != 0 and mrent == 0:
@@ -575,6 +596,7 @@ def execute(filters=None):
 									mlp = prev_mlp_escl
 							mlp = mlp + (rate * mlp / 100) + famt
 							prev_mlp_escl = mlp
+							famt_prev_mlp1 = famt_prev_mlp1 + (famt_prev_mlp1 * rate / 100)
 							break
 
 				total_mlp += mlp
@@ -591,6 +613,8 @@ def execute(filters=None):
 				if mrent == 0 and rate == 0 and famt == 0 and escalation:
 					mlp = prev_mlp
 			else:
+				if famt_prev_mlp1 != 0 and current_date.date() in edates_pafa:
+					mlp = famt_prev_mlp1
 				mlp_1 = mlp * n_prior / total_days_of_month
 				mlp_2 = 0
 				if current_date == start_date or month_end == end_date:
@@ -601,6 +625,7 @@ def execute(filters=None):
 						temp_val = k
 						temp = temp_val.split("-")
 						famt = float(temp[2])
+						famt_prev_mlp1 = prev_mlp
 						new_famt = famt * n_prior / total_days_of_month
 						mlp_new = mlp_new + new_famt
 						prev_mlp_escl = prev_mlp + famt
@@ -651,7 +676,7 @@ def execute(filters=None):
 									mlp = mrent
 								else:
 									mlp = mlp * n / total_days_of_month
-								# frappe.msgprint("mrent="+str(mrent)+"||mlp="+str(mlp))
+
 							if mrent == 0 and rate == 0 and famt == 0:
 								mlp = 0
 							if rate != 0 and mrent == 0:
@@ -692,9 +717,12 @@ def execute(filters=None):
 								else:
 									mlp = prev_mlp_escl
 							mlp = mlp + (rate * mlp / 100) + famt
+							if famt != 0:
+								mlp_1 = mlp_1 + (famt * n_prior / total_days_of_month)
 							mlp_2 = mlp * n_next / total_days_of_month
 							mlp_new = mlp_1 + mlp_2
 							prev_mlp_escl = mlp
+							famt_prev_mlp1 = famt_prev_mlp1 + (famt_prev_mlp1 * rate / 100)
 							break
 
 				mlp = mlp_new
@@ -718,6 +746,7 @@ def execute(filters=None):
 					temp_val = k
 					temp = temp_val.split("-")
 					famt = float(temp[2])
+					famt_prev_mlp1 = prev_mlp
 					mlp = mlp + famt
 					break
 			if current_date.date() in edates_pannum:
@@ -796,6 +825,7 @@ def execute(filters=None):
 				mlp = prev_mlp
 		total_pv += pv
 		ndays += n
+
 		if esc_bd_end_date is not None:
 			if esc_bd_end_date != esc_bd_end_date.replace(day=1):
 				if current_date.month == 12:
@@ -879,6 +909,7 @@ def execute(filters=None):
 	# Third loop final report generation
 	current_date3 = start_date
 	cnt2 = 0
+	famt_prev_mlp2 = 0
 	while current_date3 <= end_date:
 		cnt2 += 1
 		if diff_annually2:
@@ -946,12 +977,15 @@ def execute(filters=None):
 		if n_prior < total_days_of_month or n < total_days_of_month:
 			prev_mlp2 = mlp2
 			if not diff_annually2:
+				if famt_prev_mlp2 != 0 and current_date3.date() in edates_pafa:
+					mlp2 = famt_prev_mlp2
 				mlp2 = mlp2 * n / total_days_of_month
 				if current_date3.date() == start_date and escalation and edates_pafa is not None:
 					for k in dict_ed_pafa.keys():
 						temp_val = k
 						temp = temp_val.split("-")
 						famt = float(temp[2])
+						famt_prev_mlp2 = prev_mlp2
 						new_famt = famt * n / total_days_of_month
 						mlp2 = mlp2 + new_famt
 						break
@@ -1051,6 +1085,7 @@ def execute(filters=None):
 									mlp2 = prev_mlp_escl2
 							mlp2 = mlp2 + (rate * mlp2 / 100) + famt
 							prev_mlp_escl2 = mlp2
+							famt_prev_mlp2 = famt_prev_mlp2 + (famt_prev_mlp2 * rate / 100)
 							break
 				interest_cost = (closing_liability - mlp2) * ((1 + daily_rate) ** n - 1)
 				total_interest_cost += interest_cost
@@ -1084,6 +1119,8 @@ def execute(filters=None):
 				if mrent == 0 and rate == 0 and famt == 0 and escalation:
 					mlp2 = prev_mlp2
 			else:
+				if famt_prev_mlp2 != 0 and current_date3.date() in edates_pafa:
+					mlp2 = famt_prev_mlp2
 				mlp2_1 = mlp2 * n_prior / total_days_of_month
 				mlp2_2 = 0
 				if current_date3 == start_date or month_end == end_date:
@@ -1094,6 +1131,7 @@ def execute(filters=None):
 						temp_val = k
 						temp = temp_val.split("-")
 						famt = float(temp[2])
+						famt_prev_mlp2 = prev_mlp2
 						new_famt = famt * n_prior / total_days_of_month
 						mlp_new = mlp_new + new_famt
 						prev_mlp_escl2 = prev_mlp2 + famt
@@ -1182,9 +1220,12 @@ def execute(filters=None):
 								else:
 									mlp2 = prev_mlp_escl2
 							mlp2 = mlp2 + (rate * mlp2 / 100) + famt
+							if famt != 0:
+								mlp2_1 = mlp2_1 + (famt * n_prior / total_days_of_month)
 							mlp2_2 = mlp2 * n_next / total_days_of_month
 							mlp_new = mlp2_1 + mlp2_2
 							prev_mlp_escl2 = mlp2
+							famt_prev_mlp2 = famt_prev_mlp2 + (famt_prev_mlp2 * rate / 100)
 							break
 				mlp2 = mlp_new
 
@@ -1221,6 +1262,7 @@ def execute(filters=None):
 					mlp2 = prev_mlp_escl2
 				if mrent == 0 and rate == 0 and famt == 0 and escalation:
 					mlp2 = prev_mlp2
+
 		else:
 			prev_mlp2 = mlp2
 			if current_date3.date() == start_date.date() and escalation and edates_pafa is not None:
@@ -1228,6 +1270,7 @@ def execute(filters=None):
 					temp_val = k
 					temp = temp_val.split("-")
 					famt = float(temp[2])
+					famt_prev_mlp2 = prev_mlp2
 					mlp2 = mlp2 + famt
 					break
 			if current_date3.date() in edates_pannum:
@@ -1319,6 +1362,7 @@ def execute(filters=None):
 			data.append(row)
 			if mrent == 0 and rate == 0 and famt == 0 and escalation:
 				mlp2 = prev_mlp2
+
 		if month_end > end_date:
 			month_end = end_date
 		if esc_bd_end_date is not None:

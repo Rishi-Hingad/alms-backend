@@ -19,4 +19,9 @@ frappe.query_reports["Lease Report"] = {
 			},
 		},
 	],
+	onload: function (report) {
+		report.page.add_button(__("Download Excel"), function () {
+			frappe.query_report.export_report();
+		});
+	},
 };

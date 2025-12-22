@@ -15,11 +15,12 @@
  ],
  "fields": [
   {
+   "default": "Property",
    "fieldname": "type_of_asset",
    "fieldtype": "Select",
+   "hidden": 1,
    "label": "Type of Asset",
-   "options": "\nProperty\nCar",
-   "reqd": 1
+   "options": "\nProperty\nCar"
   },
   {
    "depends_on": "eval:doc.type_of_asset=='Property';",
@@ -62,7 +63,7 @@
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-11-14 11:39:22.829895",
+ "modified": "2025-12-15 16:13:01.583917",
  "modified_by": "Administrator",
  "module": "Masters",
  "name": "Property Master",
