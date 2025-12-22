@@ -10,11 +10,14 @@ class CarDescriptionMaster(Document):
 		if not self.employee_code:
 			frappe.throw("Employee Code is required")
 
-		last_number = frappe.db.sql("""
+		last_number = frappe.db.sql(
+			"""
             SELECT MAX(CAST(SUBSTRING_INDEX(name, '-', -1) AS UNSIGNED))
             FROM `tabCar Description Master`
             WHERE employee_code = %s
-        """, (self.employee_code,))[0][0]
-		
+        """,
+			(self.employee_code,),
+		)[0][0]
+
 		next_number = (last_number or 0) + 1
 		self.name = f"CAR-{self.employee_code}-{next_number}"
