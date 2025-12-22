@@ -2,13 +2,14 @@
 # For license information, please see license.txt
 
 import frappe
+from frappe import _
 from frappe.model.document import Document
 
 
 class CarDescriptionMaster(Document):
 	def autoname(self):
 		if not self.employee_code:
-			frappe.throw("Employee Code is required")
+			frappe.throw(_("Employee Code is required"))
 
 		last_number = frappe.db.sql(
 			"""

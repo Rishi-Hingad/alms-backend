@@ -6,6 +6,7 @@ from datetime import date, datetime
 
 import frappe
 import pandas as pd
+from frappe import _
 from frappe.desk.query_report import run
 
 
@@ -16,85 +17,90 @@ def execute(filters=None):
 	company_name = filters.get("company_name")
 
 	if not company_name:
-		frappe.throw("Please select a Company.")
+		frappe.throw(_("Please select a Company."))
 
 	data = []
 	columns = [
-		{"label": "Lease", "fieldname": "lease_id", "fieldtype": "Data", "width": 120},
-		{"label": "Vendor", "fieldname": "vendor", "fieldtype": "Data", "width": 120},
-		{"label": "Asset Description", "fieldname": "asset_description", "fieldtype": "Data", "width": 150},
+		{"label": _("Lease"), "fieldname": "lease_id", "fieldtype": "Data", "width": 120},
+		{"label": _("Vendor"), "fieldname": "vendor", "fieldtype": "Data", "width": 120},
 		{
-			"label": "Opening ROU Asset",
+			"label": _("Asset Description"),
+			"fieldname": "asset_description",
+			"fieldtype": "Data",
+			"width": 150,
+		},
+		{
+			"label": _("Opening ROU Asset"),
 			"fieldname": "rou_opening",
 			"fieldtype": "Currency",
 			"width": 200,
 			"precision": 2,
 		},
 		{
-			"label": "Closing ROU Asset",
+			"label": _("Closing ROU Asset"),
 			"fieldname": "rou_closing",
 			"fieldtype": "Currency",
 			"width": 200,
 			"precision": 2,
 		},
 		{
-			"label": "Opening Liability",
+			"label": _("Opening Liability"),
 			"fieldname": "liability_opening",
 			"fieldtype": "Currency",
 			"width": 200,
 			"precision": 2,
 		},
 		{
-			"label": "Closing Liability",
+			"label": _("Closing Liability"),
 			"fieldname": "liability_closing",
 			"fieldtype": "Currency",
 			"width": 200,
 			"precision": 2,
 		},
 		{
-			"label": "Rent Paid",
+			"label": _("Rent Paid"),
 			"fieldname": "rent_paid",
 			"fieldtype": "Currency",
 			"width": 200,
 			"precision": 2,
 		},
 		{
-			"label": "Interest Expense",
+			"label": _("Interest Expense"),
 			"fieldname": "interest",
 			"fieldtype": "Currency",
 			"width": 200,
 			"precision": 2,
 		},
 		{
-			"label": "Depreciation",
+			"label": _("Depreciation"),
 			"fieldname": "depreciation",
 			"fieldtype": "Currency",
 			"width": 200,
 			"precision": 2,
 		},
 		{
-			"label": "Additions - ROU Asset",
+			"label": _("Additions - ROU Asset"),
 			"fieldname": "additions_rou_asset",
 			"fieldtype": "Currency",
 			"width": 120,
 			"precision": 2,
 		},
 		{
-			"label": "Additions - Lease Liability",
+			"label": _("Additions - Lease Liability"),
 			"fieldname": "additions_lease_liability",
 			"fieldtype": "Currency",
 			"width": 120,
 			"precision": 2,
 		},
 		{
-			"label": "Check ROU",
+			"label": _("Check ROU"),
 			"fieldname": "check_rou",
 			"fieldtype": "Currency",
 			"width": 200,
 			"precision": 2,
 		},
 		{
-			"label": "Check Lease Liability",
+			"label": _("Check Lease Liability"),
 			"fieldname": "check_liability",
 			"fieldtype": "Currency",
 			"width": 200,
@@ -130,7 +136,7 @@ def execute(filters=None):
 	)
 
 	if len(leases) == 0:
-		frappe.throw("No Report Available for the Selected Company")
+		frappe.throw(_("No Report Available for the Selected Company"))
 
 	grand_total_opening_rou = 0
 	grand_total_closing_rou = 0

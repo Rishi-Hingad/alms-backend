@@ -6,6 +6,7 @@ from datetime import date, datetime
 
 import frappe
 import pandas as pd
+from frappe import _ as translate
 from frappe.desk.query_report import run
 
 
@@ -15,13 +16,13 @@ def execute(filters=None):
 	company_name = filters.get("company_name")
 
 	if not company_name:
-		frappe.throw("Please select a Company.")
+		frappe.throw(translate("Please select a Company."))
 
 	fin_start_year = filters.get("fin_start_year")
 	fin_end_year = filters.get("fin_end_year")
 
 	if not fin_start_year or not fin_end_year:
-		frappe.throw("Please Enter Financial Start Year")
+		frappe.throw(translate("Please Enter Financial Start Year"))
 	if not frappe.db.exists("GL Code Master", {"company": company_name}):
 		frappe.throw(f"GL Code doesn't exist for the selected company: {company_name}")
 
@@ -74,17 +75,17 @@ def execute(filters=None):
 
 	data = []
 	columns = [
-		{"label": "GL No.", "fieldname": "gl_no", "fieldtype": "Int", "width": 120},
-		{"label": "Particulars", "fieldname": "particulars", "fieldtype": "Data", "width": 300},
+		{"label": translate("GL No."), "fieldname": "gl_no", "fieldtype": "Int", "width": 120},
+		{"label": translate("Particulars"), "fieldname": "particulars", "fieldtype": "Data", "width": 300},
 		{
-			"label": "Debit",
+			"label": translate("Debit"),
 			"fieldname": "debit",
 			"fieldtype": "Currency",
 			"width": 200,
 			"precision": 2,
 		},
 		{
-			"label": "Credit",
+			"label": translate("Credit"),
 			"fieldname": "credit",
 			"fieldtype": "Currency",
 			"width": 200,
