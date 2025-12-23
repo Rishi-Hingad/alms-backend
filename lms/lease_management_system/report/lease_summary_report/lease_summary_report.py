@@ -197,9 +197,9 @@ def execute(filters=None):
 		lease_df = pd.DataFrame({"month_start_date": date_range}).merge(df, on="month_start_date", how="left")
 
 		# Extract mlp column as a list
-		mlp_list = lease_df["mlp"].tolist()  # mlp list
-		interest_list = lease_df["interest_cost"].tolist()  # interest cost list
-		depreciation_list = lease_df["depreciation"].tolist()  # depreciation list
+		mlp_list = lease_df["mlp"].tolist()
+		interest_list = lease_df["interest_cost"].tolist()
+		depreciation_list = lease_df["depreciation"].tolist()
 
 		if opening_rou == 0:
 			wdv_list = df["wdv"].tolist()
