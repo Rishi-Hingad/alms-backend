@@ -13,6 +13,7 @@
   "discounting_rate",
   "calculation_rate_type",
   "previous_wdv",
+  "type_of_report",
   "column_break_hwhu",
   "agreement_start_date",
   "agreement_end_date",
@@ -181,12 +182,20 @@
    "label": "Car Description",
    "mandatory_depends_on": "eval:doc.type_of_asset=='Car';",
    "options": "Car Description Master"
+  },
+  {
+   "default": "Monthly",
+   "depends_on": "eval:doc.type_of_asset=='Car';",
+   "fieldname": "type_of_report",
+   "fieldtype": "Select",
+   "label": "Type of Report",
+   "options": "Monthly\nQuarterly"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-12-19 10:23:45.050726",
+ "modified": "2025-12-25 11:59:16.968350",
  "modified_by": "Administrator",
  "module": "Lease Management System",
  "name": "Lease Management",
