@@ -560,8 +560,16 @@ class LeaseManagement(Document):
 		# 	)
 
 	def populate_escalation_record(self):
-		start_date = datetime.strptime(self.agreement_start_date, "%Y-%m-%d").date()
-		end_date = datetime.strptime(self.agreement_end_date, "%Y-%m-%d").date()
+		# start_date = datetime.strptime(self.agreement_start_date, "%Y-%m-%d").date()
+		if isinstance(self.agreement_start_date, str):
+			start_date = datetime.strptime(self.agreement_start_date, "%Y-%m-%d").date()
+		else:
+			start_date = self.agreement_start_date
+		# end_date = datetime.strptime(self.agreement_end_date, "%Y-%m-%d").date()
+		if isinstance(self.agreement_start_date, str):
+			end_date = datetime.strptime(self.agreement_end_date, "%Y-%m-%d").date()
+		else:
+			end_date = self.agreement_end_date
 		# self.escalation=[]
 		# if self.escalation and len(self.escalation)==0:
 		self.append(

@@ -427,14 +427,14 @@ def execute(filters=None):
 		cnt += 1
 		# if doc.type_of_asset=="Car":
 		# 	if doc.type_of_report=="Quarterly":
-		# frappe.msgprint("Type of Report"+str(doc.type_of_report)+"||"+str(current_date.date())+"||"+str(current_date.month))
-		# if current_date.month not in quarterly_months:
-		# if current_date.month == 12:
-		# 	current_date = datetime(current_date.year + 1, 1, 1)
-		# else:
-		# 	current_date = datetime(current_date.year, current_date.month + 1, 1)
-		# continue
-		# frappe.msgprint("QM"+"||"+str(current_date.date()))
+		# 		# frappe.msgprint("Type of Report"+str(doc.type_of_report)+"||"+str(current_date.date())+"||"+str(current_date.month))
+		# 		if current_date.month not in quarterly_months:
+		# 			if current_date.month == 12:
+		# 				current_date = datetime(current_date.year + 1, 1, 1)
+		# 			else:
+		# 				current_date = datetime(current_date.year, current_date.month + 1, 1)
+		# 			continue
+		# 		# frappe.msgprint("QM"+"||"+str(current_date.date()))
 		if diff_annually:
 			if cnt > 1:
 				if current_date != end_date:
@@ -876,13 +876,13 @@ def execute(filters=None):
 		cnt1 += 1
 		# if doc.type_of_asset=="Car":
 		# 	if doc.type_of_report=="Quarterly":
-		# frappe.msgprint("Type of Report"+str(doc.type_of_report)+"||"+str(current_date.date())+"||"+str(current_date.month))
-		# if current_date2.month  not in quarterly_months:
-		# if current_date2.month == 12:
-		# 	current_date2 = datetime(current_date2.year + 1, 1, 1)
-		# else:
-		# 	current_date2 = datetime(current_date2.year, current_date2.month + 1, 1)
-		# continue
+		# 		# frappe.msgprint("Type of Report"+str(doc.type_of_report)+"||"+str(current_date.date())+"||"+str(current_date.month))
+		# 		if current_date2.month  not in quarterly_months:
+		# 			if current_date2.month == 12:
+		# 				current_date2 = datetime(current_date2.year + 1, 1, 1)
+		# 			else:
+		# 				current_date2 = datetime(current_date2.year, current_date2.month + 1, 1)
+		# 			continue
 		month_start = current_date2
 		_, last_day = monthrange(current_date2.year, current_date2.month)
 		month_end = datetime(current_date2.year, current_date2.month, last_day)
@@ -935,13 +935,13 @@ def execute(filters=None):
 		# if doc.type_of_asset=="Car":
 		# 	if doc.type_of_report=="Quarterly":
 		# 		# frappe.msgprint("Type of Report"+str(doc.type_of_report)+"||"+str(current_date.date())+"||"+str(current_date.month))
-		# 		if current_date3.month in quarterly_months:
-		# 			# if current_date3.month == 12:
-		# 			# 	current_date3 = datetime(current_date3.year + 1, 1, 1)
-		# 			# else:
-		# 			# 	current_date3 = datetime(current_date3.year, current_date3.month + 1, 1)
-		# 			# continue
-		# 			frappe.msgprint("QM"+"||"+str(current_date3.date())+"||"+str(n_prior)+"||"+str(total_days_of_month))
+		# 		if current_date3.month not in quarterly_months:
+		# 			if current_date3.month == 12:
+		# 				current_date3 = datetime(current_date3.year + 1, 1, 1)
+		# 			else:
+		# 				current_date3 = datetime(current_date3.year, current_date3.month + 1, 1)
+		# 			continue
+		# 			# frappe.msgprint("QM"+"||"+str(current_date3.date())+"||"+str(n_prior)+"||"+str(total_days_of_month))
 		if diff_annually2:
 			if cnt2 > 1:
 				if current_date3 != end_date:
