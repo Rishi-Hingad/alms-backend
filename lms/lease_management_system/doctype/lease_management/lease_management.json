@@ -13,6 +13,7 @@
   "discounting_rate",
   "calculation_rate_type",
   "previous_wdv",
+  "type_of_report",
   "column_break_hwhu",
   "agreement_start_date",
   "agreement_end_date",
@@ -24,6 +25,7 @@
   "agreement",
   "section_break_ewvt",
   "escalation",
+  "additional_amounts",
   "invoice_details",
   "invoice_attachments"
  ],
@@ -80,6 +82,7 @@
   },
   {
    "columns": 7,
+   "depends_on": "eval:doc.type_of_asset=='Immovable';",
    "fieldname": "escalation",
    "fieldtype": "Table",
    "label": "Escalation",
@@ -181,12 +184,27 @@
    "label": "Car Description",
    "mandatory_depends_on": "eval:doc.type_of_asset=='Car';",
    "options": "Car Description Master"
+  },
+  {
+   "default": "Monthly",
+   "depends_on": "eval:doc.type_of_asset=='Car';",
+   "fieldname": "type_of_report",
+   "fieldtype": "Select",
+   "label": "Type of Report",
+   "options": "Monthly\nQuarterly"
+  },
+  {
+   "depends_on": "eval:doc.type_of_asset=='Car';",
+   "fieldname": "additional_amounts",
+   "fieldtype": "Table",
+   "label": "Additional Amounts",
+   "options": "Additional Amounts"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-12-19 10:23:45.050726",
+ "modified": "2026-01-02 14:30:57.512440",
  "modified_by": "Administrator",
  "module": "Lease Management System",
  "name": "Lease Management",

@@ -108,22 +108,6 @@ def execute(filters=None):
 		},
 	]
 
-	# def get_financial_year(d=None):
-	# 	if d is None:
-	# 		d = date.today()
-
-	# 	year = d.year
-
-	# 	# If month is Jan to Mar, the financial year started last year
-	# 	if d.month < 4:
-	# 		start_year = year - 1
-	# 		end_year = year
-	# 	else:
-	# 		start_year = year
-	# 		end_year = year + 1
-
-	# 	return start_year,end_year
-
 	fin_start_year = filters.get("fin_start_year")
 	fin_end_year = filters.get("fin_end_year")
 	leases = frappe.get_all(
@@ -166,23 +150,6 @@ def execute(filters=None):
 			lreport = "Lease Report Monthly (With Escalation)"
 		result = run(lreport, filters={"docname": lease.name})
 		rows = result.get("result")
-		sdate = date(int(fin_start_year), 3, 31)
-		edate = date(int(fin_end_year), 3, 31)
-		row_opening = next((r for r in rows if str(r.get("month_end_date")) == str(sdate)), None)
-		if row_opening:
-			opening_rou = row_opening.get("wdv")
-			opening_liability = row_opening.get("closing_liability")
-		else:
-			opening_rou = 0
-			opening_liability = 0
-
-		row_closing = next((r for r in rows if str(r.get("month_end_date")) == str(edate)), None)
-		if row_closing:
-			closing_rou = row_closing.get("wdv")
-			closing_liability = row_closing.get("closing_liability")
-		else:
-			closing_rou = 0
-			closing_liability = 0
 
 		# Convert to DataFrame
 		df = pd.DataFrame(rows)
@@ -190,20 +157,57 @@ def execute(filters=None):
 		# Ensure the 'month_start_date' column is datetime
 		df["month_start_date"] = pd.to_datetime(df["month_start_date"])
 
-		# Create a date range for the months
-		date_range = pd.date_range(start=str(msdate), end=str(medate), freq="MS")  # MS = Month Start
+		# # Create a date range for the months
+		# date_range = pd.date_range(start=str(msdate), end=str(medate), freq="MS")  # MS = Month Start
 
-		# Merge your date range with the DataFrame to align months
-		lease_df = pd.DataFrame({"month_start_date": date_range}).merge(df, on="month_start_date", how="left")
+		# # Merge your date range with the DataFrame to align months
+		# lease_df = pd.DataFrame({"month_start_date": date_range}).merge(df, on="month_start_date", how="left")
 
-		# Extract mlp column as a list
-		mlp_list = lease_df["mlp"].tolist()
-		interest_list = lease_df["interest_cost"].tolist()
-		depreciation_list = lease_df["depreciation"].tolist()
+		# if lease_doc.type_of_asset=="Car" and lease_doc.type_of_report=="Quarterly":
+		# 	sdate = datetime(int(fin_start_year), 3, 31)
+		# 	edate = datetime(int(fin_end_year), 3, 31)
+		# else:
+		sdate = date(int(fin_start_year), 3, 31)
+		edate = date(int(fin_end_year), 3, 31)
+
+		row_opening = df.loc[df["month_end_date"] == sdate]
+
+		if len(row_opening) == 1:
+			opening_rou = row_opening["wdv"].iloc[0]
+			opening_liability = row_opening["closing_liability"].iloc[0]
+		else:
+			opening_rou = 0
+			opening_liability = 0
+
+		row_closing = df.loc[df["month_end_date"] == edate]
+		if len(row_closing) == 1:
+			closing_rou = row_closing["wdv"].iloc[0]
+			closing_liability = row_closing["closing_liability"].iloc[0]
+		else:
+			closing_rou = 0
+			closing_liability = 0
+
+		mlp_list, interest_list, depreciation_list = [], [], []
+		# if lease_doc.type_of_asset=="Car":
+		dates = df["month_start_date"].dropna().dt.date.tolist()
+		for i in range(len(dates)):
+			if dates[i] >= msdate and dates[i] <= medate:
+				val = str(dates[i])
+				row = df.loc[df["month_start_date"] == val]
+				mlp = row["mlp"].iloc[0]
+				mlp_list.append(mlp)
+				interest = row["interest_cost"].iloc[0]
+				interest_list.append(interest)
+				depre = row["depreciation"].iloc[0]
+				depreciation_list.append(depre)
+		# else:
+		# 	# Extract mlp column as a list
+		# 	mlp_list = lease_df["mlp"].tolist()
+		# 	interest_list = lease_df["interest_cost"].tolist()
+		# 	depreciation_list = lease_df["depreciation"].tolist()
 
 		if opening_rou == 0:
-			wdv_list = df["wdv"].tolist()
-			additions_rou_asset = wdv_list[0]
+			additions_rou_asset = df["wdv"][0]
 			additions_lease_lia = additions_rou_asset
 		else:
 			additions_rou_asset = additions_lease_lia = 0
