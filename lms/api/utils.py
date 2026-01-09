@@ -352,7 +352,7 @@ def get_common_month(doc, dict_ed_bdates, escalation, esc_bd_end_date):
 						if common_month[i] in date_dict.keys():
 							temp = key_n.split("-")
 							cmonth = common_month[i]
-							year, month = map(int, cmonth.split("-"))
+							year, month = [int(part) for part in cmonth.split("-")]
 							total_days_of_month = calendar.monthrange(year, month)[1]
 							n = date_dict[common_month[i]]
 							rate = float(temp[0])
