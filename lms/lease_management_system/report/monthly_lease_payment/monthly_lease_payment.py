@@ -45,7 +45,9 @@ def execute(filters=None):
 	if isinstance(today, str):
 		today = datetime.strptime(today, "%Y-%m-%d")
 
-	leases = frappe.get_all("Lease Management", order_by="name asc", fields=["name"])
+	leases = frappe.get_all(
+		"Lease Management", filters={"type_of_asset": "Immovable"}, order_by="name asc", fields=["name"]
+	)
 	# month_year="2025-03"
 	for lease in leases:
 		lease_status = ""
