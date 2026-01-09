@@ -41,7 +41,11 @@ def execute(filters=None):
 
 	leases = frappe.get_all(
 		"Lease Management",
-		filters={"agreement_start_date": ("<=", today), "agreement_end_date": (">=", today)},
+		filters={
+			"agreement_start_date": ("<=", today),
+			"agreement_end_date": (">=", today),
+			"type_of_asset": "Immovable",
+		},
 		order_by="name asc",
 		fields=["name"],
 	)
