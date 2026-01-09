@@ -465,7 +465,6 @@ def get_mlp(
 	prev_mlp_escl,
 	prev_mlp_next,
 ):
-	prev_mlp_escl = None
 	mrent, rate, famt = 0, 0, 0
 	if n_prior < total_days_of_month or n < total_days_of_month:
 		prev_mlp = mlp
@@ -700,6 +699,7 @@ def get_mlp(
 							else:
 								mlp = prev_mlp_escl
 						mlp = mlp + (rate * mlp / 100) + famt
+
 						if famt != 0:
 							mlp_1 = mlp_1 + (famt * n_prior / total_days_of_month)
 						mlp_2 = mlp * n_next / total_days_of_month
