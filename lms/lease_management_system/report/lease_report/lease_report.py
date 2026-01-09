@@ -247,6 +247,7 @@ def execute(filters=None):
 
 		# frappe.msgprint("Prior IF QM"+"||"+str(current_date.date())+"||"+str(n_prior)+"||"+str(total_days_of_month))
 		if n_prior < total_days_of_month or n < total_days_of_month:
+			# frappe.msgprint("**"+str(get_mlp(escalation,n_prior,total_days_of_month,n,n_next,mlp,diff_annually,famt_prev_mlp1,current_date,start_date,end_date,month_end,edates_pafa,dict_ed_pafa,edates_pannum,dict_ed_pannum,edates_bd,dict_ed_bdates,common_month,common_dict,prev_mlp_escl,prev_mlp_next,))+"**")
 			prev_mlp = mlp
 			if not diff_annually:
 				if famt_prev_mlp1 != 0 and current_date.date() in edates_pafa:
