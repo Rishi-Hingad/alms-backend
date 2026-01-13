@@ -157,6 +157,10 @@ def execute(filters=None):
 		cnt += 1
 		if quarterly_report:
 			q_start, q_end = get_q_start_q_end(cnt, current_date, quarterly_months, end_date)
+			if cnt == 1:
+				for child in doc.additional_amounts:
+					if child.start_date == q_start.date() and child.end_date != q_end.date():
+						q_end = datetime(child.end_date.year, child.end_date.month, child.end_date.day)
 			quarterly_n = (q_end - q_start).days + 1
 			n_days_quarterly += quarterly_n
 			# frappe.msgprint("cnt="+str(cnt)+"q_start="+str(q_start.date())+"-- q_end="+str(q_end.date())+"total_days="+str(quarterly_n)+"n_days_quarterly="+str(n_days_quarterly)+"||")
@@ -579,6 +583,7 @@ def execute(filters=None):
 						break
 			if add_amount:
 				for child in doc.additional_amounts:
+					# frappe.msgprint("child.start_date="+str(child.start_date)+"-- child.end_date="+str(child.end_date)+"--child.additional_amount="+str(child.additional_amount))
 					if quarterly_report:
 						if child.start_date == q_start.date() and child.end_date == q_end.date():
 							mlp = child.additional_amount
@@ -629,7 +634,14 @@ def execute(filters=None):
 				current_date = datetime(current_date.year + 1, 1, esc_bd_end_date.day) - relativedelta(days=1)
 			elif quarterly_report:
 				if q_end != month_end and q_end != end_date:
-					current_date = datetime(q_end.year, 1, q_end.day + 1)
+					_, last_day_q_end = monthrange(q_end.year, q_end.month)
+					if last_day_q_end == q_end.day:
+						if q_end.month == 12:
+							current_date = datetime(q_end.year, 1, 1)
+						else:
+							current_date = datetime(q_end.year, q_end.month + 1, 1)
+					else:
+						current_date = datetime(q_end.year, 1, q_end.day + 1)
 				elif q_end == end_date:
 					if q_end.month != 12:
 						current_date = datetime(q_end.year + 1, q_end.month + 1, 1)
@@ -654,7 +666,14 @@ def execute(filters=None):
 				) - relativedelta(days=1)
 			elif quarterly_report:
 				if q_end != month_end and q_end.month != 3 and q_end != end_date:
-					current_date = datetime(q_end.year, q_end.month, q_end.day + 1)
+					_, last_day_q_end = monthrange(q_end.year, q_end.month)
+					if last_day_q_end == q_end.day:
+						if q_end.month == 12:
+							current_date = datetime(q_end.year, 1, 1)
+						else:
+							current_date = datetime(q_end.year, q_end.month + 1, 1)
+					else:
+						current_date = datetime(q_end.year, q_end.month, q_end.day + 1)
 				elif q_end == end_date:
 					if q_end.month != 12:
 						current_date = datetime(q_end.year + 1, q_end.month + 1, 1)
@@ -683,6 +702,10 @@ def execute(filters=None):
 		cnt1 += 1
 		if quarterly_report:
 			q_start, q_end = get_q_start_q_end(cnt1, current_date2, quarterly_months, end_date)
+			if cnt1 == 1:
+				for child in doc.additional_amounts:
+					if child.start_date == q_start.date() and child.end_date != q_end.date():
+						q_end = datetime(child.end_date.year, child.end_date.month, child.end_date.day)
 			quarterly_n = (q_end - q_start).days + 1
 			if (
 				q_end.month not in quarterly_months
@@ -722,7 +745,14 @@ def execute(filters=None):
 		if current_date2.month == 12:
 			if quarterly_report:
 				if q_end != month_end and q_end != end_date:
-					current_date2 = datetime(q_end.year, 1, q_end.day + 1)
+					_, last_day_q_end = monthrange(q_end.year, q_end.month)
+					if last_day_q_end == q_end.day:
+						if q_end.month == 12:
+							current_date2 = datetime(q_end.year, 1, 1)
+						else:
+							current_date2 = datetime(q_end.year, q_end.month + 1, 1)
+					else:
+						current_date2 = datetime(q_end.year, 1, q_end.day + 1)
 				elif q_end == end_date:
 					if q_end.month != 12:
 						current_date2 = datetime(q_end.year + 1, q_end.month + 1, 1)
@@ -739,7 +769,14 @@ def execute(filters=None):
 		else:
 			if quarterly_report:
 				if q_end != month_end and q_end.month != 3 and q_end != end_date:
-					current_date2 = datetime(q_end.year, q_end.month, q_end.day + 1)
+					_, last_day_q_end = monthrange(q_end.year, q_end.month)
+					if last_day_q_end == q_end.day:
+						if q_end.month == 12:
+							current_date2 = datetime(q_end.year, 1, 1)
+						else:
+							current_date2 = datetime(q_end.year, q_end.month + 1, 1)
+					else:
+						current_date2 = datetime(q_end.year, q_end.month, q_end.day + 1)
 				elif q_end == end_date:
 					if q_end.month != 12:
 						current_date2 = datetime(q_end.year, q_end.month + 1, 1)
@@ -783,6 +820,10 @@ def execute(filters=None):
 		cnt2 += 1
 		if quarterly_report:
 			q_start, q_end = get_q_start_q_end(cnt2, current_date3, quarterly_months, end_date)
+			if cnt2 == 1:
+				for child in doc.additional_amounts:
+					if child.start_date == q_start.date() and child.end_date != q_end.date():
+						q_end = datetime(child.end_date.year, child.end_date.month, child.end_date.day)
 			quarterly_n = (q_end - q_start).days + 1
 			# frappe.msgprint("q_start="+str(q_start.date())+"--q+end=="+str(q_end.date())+"||"+str(quarterly_n))
 			if (
@@ -1302,7 +1343,14 @@ def execute(filters=None):
 				)
 			elif quarterly_report:
 				if q_end != month_end and q_end != end_date:
-					current_date3 = datetime(q_end.year, 1, q_end.day + 1)
+					_, last_day_q_end = monthrange(q_end.year, q_end.month)
+					if last_day_q_end == q_end.day:
+						if q_end.month == 12:
+							current_date3 = datetime(q_end.year, 1, 1)
+						else:
+							current_date3 = datetime(q_end.year, q_end.month + 1, 1)
+					else:
+						current_date3 = datetime(q_end.year, 1, q_end.day + 1)
 				elif q_end == end_date:
 					if q_end.month != 12:
 						current_date3 = datetime(q_end.year + 1, q_end.month + 1, 1)
@@ -1327,7 +1375,14 @@ def execute(filters=None):
 				) - relativedelta(days=1)
 			elif quarterly_report:
 				if q_end != month_end and q_end.month != 3 and q_end != end_date:
-					current_date3 = datetime(q_end.year, q_end.month, q_end.day + 1)
+					_, last_day_q_end = monthrange(q_end.year, q_end.month)
+					if last_day_q_end == q_end.day:
+						if q_end.month == 12:
+							current_date3 = datetime(q_end.year, 1, 1)
+						else:
+							current_date3 = datetime(q_end.year, q_end.month + 1, 1)
+					else:
+						current_date3 = datetime(q_end.year, q_end.month, q_end.day + 1)
 				elif q_end == end_date:
 					if q_end.month != 12:
 						current_date3 = datetime(q_end.year + 1, q_end.month + 1, 1)

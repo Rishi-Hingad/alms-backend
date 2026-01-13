@@ -398,11 +398,6 @@ def get_q_start_q_end(cnt, current_date, quarterly_months, end_date):
 			else:
 				for i in range(len(quarterly_months)):
 					if quarterly_months[i] > current_date.month:
-						# if current_date.month==2 and current_date.month<3:
-						# 	_, last_day = monthrange(current_date.year, current_date.month)
-						# 	q_end=datetime(current_date.year, current_date.month, last_day)
-						# 	frappe.msgprint("new_date="+str(datetime(current_date.year, current_date.month, last_day)))
-						# else:
 						q_end = datetime(current_date.year, quarterly_months[i], 15)
 						break
 		elif current_date.month in quarterly_months:
