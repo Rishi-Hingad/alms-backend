@@ -1,12 +1,6 @@
 // Copyright (c) 2025, Shradha_Siddhi and contributors
 // For license information, please see license.txt
 
-// frappe.ui.form.on("Lease Management", {
-// 	refresh(frm) {
-
-// 	},
-// });
-
 frappe.ui.form.on("Escalation", {
 	escalation_type: function (frm, cdt, cdn) {
 		auto_set_start_end_date_escalation(frm, cdt, cdn);
@@ -32,18 +26,13 @@ frappe.ui.form.on("Invoice Documents", {
 			frappe.msgprint(__("Save the document before adding attachments."));
 			return;
 		}
-
 		const row = locals[cdt][cdn];
-
 		// gather current attachments for this invoice-row
 		const att = (frm.doc.invoice_attachments || []).filter(
 			(a) => a.invoice_row === row.custom_row_id
 		);
-
 		// Dialog to show attachments and upload new ones
 		const dialog = new frappe.ui.Dialog({
-			// title: `Attachments for ${row.month || row.from_date || row.name}`,
-			// title: `Attachments for ${row.from_date} to ${row.to_date}`,
 			title: `Attachments for ${frappe.datetime.str_to_user(
 				row.from_date
 			)} to ${frappe.datetime.str_to_user(row.to_date)}`,
@@ -168,12 +157,21 @@ frappe.ui.form.on("Lease Management", {
 					},
 				};
 			});
+
+			frm.set_query("car_description", function () {
+				return {
+					filters: {
+						vendor: frm.doc.vendor,
+					},
+				};
+			});
 		} else {
 			// Clear property field if vendor is cleared
 			frm.set_value("property_description", null);
+			frm.set_value("car_description", null);
 
 			// Remove query filter
-			frm.set_query("property_description", function () {
+			frm.set_query("car_description", function () {
 				return {
 					filters: {
 						name: null, // Will return no property
@@ -188,11 +186,6 @@ frappe.ui.form.on("Lease Management", {
 	agreement_end_date: function (frm) {
 		validate_dates_and_set_lease_period(frm);
 	},
-	security_deposit: function (frm) {
-		if (frm.doc.security_deposit == "Paid") {
-			frm.set_df_property("security_deposit_amount", "reqd", 1);
-		}
-	},
 	onload_post_render(frm) {
 		if (
 			frm.doc.invoice_details &&
@@ -206,6 +199,13 @@ frappe.ui.form.on("Lease Management", {
 		set_agreement_status(frm);
 		if (!frm.doc.vendor) {
 			frm.set_query("property_description", function () {
+				return {
+					filters: {
+						name: null, // blocks all results
+					},
+				};
+			});
+			frm.set_query("car_description", function () {
 				return {
 					filters: {
 						name: null, // blocks all results
@@ -279,27 +279,27 @@ frappe.ui.form.on("Lease Management", {
 
 		if (!frm.is_new()) {
 			if (frappe.user.has_role("Accounts") || frappe.user.has_role("System Manager")) {
-				frm.add_custom_button(__("Generate Report"), function () {
-					frm.report_counter = (frm.report_counter || 0) + 1;
-					frappe.call({
-						method: "lms.lease_management_system.doctype.lease_management.lease_management.generate_report",
-						args: {
-							docname: frm.doc.name,
-							cnt: frm.report_counter,
-						},
-						callback: function (r) {
-							if (!r.exc) {
-								let file_url = r.message.file_url;
-								// frappe.msgprint("mes"+r.message);
-								window.open(file_url);
-							} else {
-								frappe.msgprint(__("Failed to generate report."));
-							}
-						},
-					});
-				});
+				// frm.add_custom_button(__("Generate Report"), function () {
+				// 	frm.report_counter = (frm.report_counter || 0) + 1;
+				// 	frappe.call({
+				// 		method: "lms.lease_management_system.doctype.lease_management.lease_management.generate_report",
+				// 		args: {
+				// 			docname: frm.doc.name,
+				// 			cnt: frm.report_counter,
+				// 		},
+				// 		callback: function (r) {
+				// 			if (!r.exc) {
+				// 				let file_url = r.message.file_url;
+				// 				// frappe.msgprint("mes"+r.message);
+				// 				window.open(file_url);
+				// 			} else {
+				// 				frappe.msgprint(__("Failed to generate report."));
+				// 			}
+				// 		},
+				// 	});
+				// });
 
-				frm.add_custom_button(__("Go to Report"), function () {
+				frm.add_custom_button(__("View Report"), function () {
 					let lname = frm.doc.name;
 					if (
 						frm.doc.calculation_rate_type == "Daily Rate" &&
@@ -745,13 +745,6 @@ function open_invoice_dialog() {
 				fieldname: "tax",
 				fieldtype: "Percent",
 			},
-			// {
-			//     label: 'Payment Status',
-			//     fieldname: 'payment_status',
-			//     fieldtype: 'Select',
-			//     options: 'Unpaid\nPaid',
-			//     default: 'Unpaid'
-			// }
 		],
 		primary_action_label: "Add Invoice",
 		primary_action(values) {
@@ -770,7 +763,6 @@ function open_invoice_dialog() {
 			const to_date = frappe.datetime.str_to_obj(values.to_date);
 			const start_date = frappe.datetime.str_to_obj(agreement_start);
 			const end_date = frappe.datetime.str_to_obj(agreement_end);
-			// const custom_row_id = `${lease_id}-row-${idx}-${from_date}-to-${to_date}`;
 
 			if (from_date < start_date || to_date > end_date || from_date > to_date) {
 				frappe.msgprint(
@@ -812,10 +804,8 @@ function open_invoice_dialog() {
 							from_date: values.from_date,
 							to_date: values.to_date,
 							amount: values.amount,
-							// invoice_attachment: values.invoice_attachment,
 							with_tax: values.with_tax ? 1 : 0,
 							tax: values.tax || 0,
-							// payment_status: values.payment_status,
 							custom_row_id: custom_row_id,
 						};
 
@@ -887,34 +877,6 @@ function open_invoice_dialog() {
 
 	d.show();
 	toggle_invoice_fields(false);
-
-	// d.fields_dict.manage_attachments.input.onclick = () => {
-	//     const upload_dialog = new frappe.ui.Dialog({
-	//         title: "Upload Additional Attachments",
-	//         fields: [
-	//             {
-	//                 label: "File(s)",
-	//                 fieldname: "files",
-	//                 fieldtype: "Attach",
-	//                 reqd: 1,
-	//                 multiple: 1
-	//             }
-	//         ],
-	//         primary_action_label: "Attach",
-	//         primary_action(values) {
-	//             if (values.files) {
-	//                 extra_attachments.push({
-	//                     file_url: values.files,
-	//                     name: frappe.utils.get_random(10) // fake name to differentiate
-	//                 });
-	//                 frappe.msgprint("Attachment added.");
-	//                 upload_dialog.hide();
-	//             }
-	//         }
-	//     });
-
-	//     upload_dialog.show();
-	// };
 
 	// Modified loader to store start/end dates in outer variables
 

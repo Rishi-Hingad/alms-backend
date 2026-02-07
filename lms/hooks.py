@@ -42,8 +42,6 @@ app_license = "mit"
 
 # include js in page
 # page_js = {"page" : "public/js/file.js"}
-# page_js = {"account-dashboard": "public/js/account-dashboard.js"}
-# app_include_js = ["/assets/lms/js/account-dashboard.js"]
 app_include_js = ["/assets/lms/js/invoice_dialog.js"]
 
 

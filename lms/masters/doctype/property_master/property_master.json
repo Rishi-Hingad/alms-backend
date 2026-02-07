@@ -7,35 +7,42 @@
  "engine": "InnoDB",
  "field_order": [
   "vendor",
-  "city",
   "type_of_asset",
+  "city",
   "area_sq_ft",
-  "address"
+  "address",
+  "employee"
  ],
  "fields": [
   {
+   "default": "Property",
    "fieldname": "type_of_asset",
    "fieldtype": "Select",
+   "hidden": 1,
    "label": "Type of Asset",
-   "options": "Property\nCar"
+   "options": "\nProperty\nCar"
   },
   {
+   "depends_on": "eval:doc.type_of_asset=='Property';",
    "fieldname": "area_sq_ft",
    "fieldtype": "Data",
-   "label": "Area (sq. ft.)"
+   "label": "Area (sq. ft.)",
+   "mandatory_depends_on": "eval:doc.type_of_asset=='Property';"
   },
   {
+   "depends_on": "eval:doc.type_of_asset=='Property';",
    "fieldname": "address",
    "fieldtype": "Text",
    "label": "Address",
-   "reqd": 1
+   "mandatory_depends_on": "eval:doc.type_of_asset=='Property';"
   },
   {
+   "depends_on": "eval:doc.type_of_asset=='Property';",
    "fieldname": "city",
    "fieldtype": "Link",
    "label": "City ",
-   "options": "City Master",
-   "reqd": 1
+   "mandatory_depends_on": "eval:doc.type_of_asset=='Property';",
+   "options": "City Master"
   },
   {
    "fieldname": "vendor",
@@ -44,12 +51,19 @@
    "label": "Vendor",
    "options": "Vendor Master",
    "reqd": 1
+  },
+  {
+   "depends_on": "eval:doc.type_of_asset=='Car';",
+   "fieldname": "employee",
+   "fieldtype": "Data",
+   "label": "Employee",
+   "mandatory_depends_on": "eval:doc.type_of_asset=='Car';"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-09-03 11:55:37.036156",
+ "modified": "2025-12-15 16:13:01.583917",
  "modified_by": "Administrator",
  "module": "Masters",
  "name": "Property Master",
