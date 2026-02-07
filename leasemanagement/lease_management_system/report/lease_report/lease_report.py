@@ -10,7 +10,7 @@ import frappe
 from dateutil.relativedelta import relativedelta
 from frappe import _ as translate
 
-from lms.api.utils import (
+from lease-management.api.utils import (
 	calculate_daily_rate,
 	get_common_month,
 	get_diff_years,
