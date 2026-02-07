@@ -12,6 +12,14 @@ frappe.ui.form.on("Escalation", {
 		validate_escalation_dates(frm, cdt, cdn);
 	},
 });
+frappe.ui.form.on("Additional Amounts", {
+	start_date: function (frm, cdt, cdn) {
+		validate_additional_dates(frm, cdt, cdn);
+	},
+	end_date: function (frm, cdt, cdn) {
+		validate_additional_dates(frm, cdt, cdn);
+	},
+});
 frappe.ui.form.on("Invoice Documents", {
 	from_date: function (frm, cdt, cdn) {
 		validate_from_to_dates(frm, cdt, cdn);
@@ -591,6 +599,35 @@ function validate_escalation_dates(frm, cdt, cdn) {
 		// Check escalation end date is greater than start date
 		if (row.end_date <= row.start_date) {
 			frappe.msgprint(__("Escalation End Date must be greater than Escalation Start Date."));
+			frappe.model.set_value(cdt, cdn, "end_date", null);
+		}
+	}
+}
+
+function validate_additional_dates(frm, cdt, cdn) {
+	const row = frappe.get_doc(cdt, cdn);
+	const agreement_start = frm.doc.agreement_start_date;
+	const agreement_end = frm.doc.agreement_end_date;
+
+	if (!agreement_start || !agreement_end) {
+		frappe.msgprint(__("Please set Agreement Start Date and Agreement End Date first."));
+		return;
+	}
+
+	if (row.start_date && row.end_date) {
+		// Check start/end dates are inside agreement range
+		if (row.start_date < agreement_start || row.end_date > agreement_end) {
+			frappe.msgprint(
+				__("Start and End Dates must be within Agreement Start and Agreement End Dates.")
+			);
+			frappe.model.set_value(cdt, cdn, "start_date", null);
+			frappe.model.set_value(cdt, cdn, "end_date", null);
+			return;
+		}
+
+		// Check end date is greater than start date
+		if (row.end_date <= row.start_date) {
+			frappe.msgprint(__("End Date must be greater than Start Date."));
 			frappe.model.set_value(cdt, cdn, "end_date", null);
 		}
 	}
