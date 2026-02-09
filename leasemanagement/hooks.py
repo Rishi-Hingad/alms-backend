@@ -1,4 +1,4 @@
-app_name = "lms"
+app_name = "leasemanagement"
 app_title = "Lease Management System"
 app_publisher = "Shradha_Siddhi"
 app_description = "LMS"
@@ -17,7 +17,7 @@ app_license = "mit"
 # 		"logo": "/assets/lms/logo.png",
 # 		"title": "Lease Management System",
 # 		"route": "/lms",
-# 		"has_permission": "lms.api.permission.has_app_permission"
+# 		"has_permission": "leasemanagement.api.permission.has_app_permission"
 # 	}
 # ]
 
@@ -25,13 +25,13 @@ app_license = "mit"
 # ------------------
 
 # include js, css files in header of desk.html
-# app_include_css = "/assets/lms/css/lms.css"
-# app_include_js = "/assets/lms/js/lms.js"
+# app_include_css = "/assets/lms/css/leasemanagement.css"
+# app_include_js = "/assets/lms/js/leasemanagement.js"
 
 
 # include js, css files in header of web template
-# web_include_css = "/assets/lms/css/lms.css"
-# web_include_js = "/assets/lms/js/lms.js"
+# web_include_css = "/assets/lms/css/leasemanagement.css"
+# web_include_js = "/assets/lms/js/leasemanagement.js"
 
 # include custom scss in every website theme (without file extension ".scss")
 # website_theme_scss = "lms/public/scss/website"
@@ -47,13 +47,13 @@ app_include_js = ["/assets/lms/js/invoice_dialog.js"]
 
 # scheduler_events = {
 #     "daily": [
-#         "lms.lease_management_system.doctype.lease_management.lease_management.daily_lease_status_update"
+#         "leasemanagement.lease_management_system.doctype.lease_management.lease_management.daily_lease_status_update"
 #     ]
 # }
 
 # doc_events = {
 #     "User": {
-#         "on_login": "lms.lease_management_system.doctype.lease_management.lease_management.run_daily_update_on_login"
+#         "on_login": "leasemanagement.lease_management_system.doctype.lease_management.lease_management.run_daily_update_on_login"
 #     }
 # }
 
@@ -89,43 +89,43 @@ app_include_js = ["/assets/lms/js/invoice_dialog.js"]
 
 # add methods and filters to jinja environment
 # jinja = {
-# 	"methods": "lms.utils.jinja_methods",
-# 	"filters": "lms.utils.jinja_filters"
+# 	"methods": "leasemanagement.utils.jinja_methods",
+# 	"filters": "leasemanagement.utils.jinja_filters"
 # }
 
 # Installation
 # ------------
 
-# before_install = "lms.install.before_install"
-# after_install = "lms.install.after_install"
+# before_install = "leasemanagement.install.before_install"
+# after_install = "leasemanagement.install.after_install"
 
 # Uninstallation
 # ------------
 
-# before_uninstall = "lms.uninstall.before_uninstall"
-# after_uninstall = "lms.uninstall.after_uninstall"
+# before_uninstall = "leasemanagement.uninstall.before_uninstall"
+# after_uninstall = "leasemanagement.uninstall.after_uninstall"
 
 # Integration Setup
 # ------------------
 # To set up dependencies/integrations with other apps
 # Name of the app being installed is passed as an argument
 
-# before_app_install = "lms.utils.before_app_install"
-# after_app_install = "lms.utils.after_app_install"
+# before_app_install = "leasemanagement.utils.before_app_install"
+# after_app_install = "leasemanagement.utils.after_app_install"
 
 # Integration Cleanup
 # -------------------
 # To clean up dependencies/integrations with other apps
 # Name of the app being uninstalled is passed as an argument
 
-# before_app_uninstall = "lms.utils.before_app_uninstall"
-# after_app_uninstall = "lms.utils.after_app_uninstall"
+# before_app_uninstall = "leasemanagement.utils.before_app_uninstall"
+# after_app_uninstall = "leasemanagement.utils.after_app_uninstall"
 
 # Desk Notifications
 # ------------------
 # See frappe.core.notifications.get_notification_config
 
-# notification_config = "lms.notifications.get_notification_config"
+# notification_config = "leasemanagement.notifications.get_notification_config"
 
 # Permissions
 # -----------
@@ -140,13 +140,13 @@ app_include_js = ["/assets/lms/js/invoice_dialog.js"]
 # }
 
 permission_query_conditions = {
-	"Lease Management": "lms.lease_management_system.doctype.lease_management.lease_management.get_permission_query_conditions",
-	"Property Master": "lms.masters.doctype.property_master.property_master.get_permission_query_conditions",
+	"Lease Management": "leasemanagement.lease_management_system.doctype.lease_management.lease_management.get_permission_query_conditions",
+	"Property Master": "leasemanagement.masters.doctype.property_master.property_master.get_permission_query_conditions",
 }
 
 has_permission = {
-	"Lease Management": "lms.lease_management_system.doctype.lease_management.lease_management.has_permission",
-	"Property Master": "lms.masters.doctype.property_master.property_master.has_permission",
+	"Lease Management": "leasemanagement.lease_management_system.doctype.lease_management.lease_management.has_permission",
+	"Property Master": "leasemanagement.masters.doctype.property_master.property_master.has_permission",
 }
 
 # DocType Class
@@ -174,39 +174,39 @@ has_permission = {
 
 # scheduler_events = {
 # 	"all": [
-# 		"lms.tasks.all"
+# 		"leasemanagement.tasks.all"
 # 	],
 # 	"daily": [
-# 		"lms.tasks.daily"
+# 		"leasemanagement.tasks.daily"
 # 	],
 # 	"hourly": [
-# 		"lms.tasks.hourly"
+# 		"leasemanagement.tasks.hourly"
 # 	],
 # 	"weekly": [
-# 		"lms.tasks.weekly"
+# 		"leasemanagement.tasks.weekly"
 # 	],
 # 	"monthly": [
-# 		"lms.tasks.monthly"
+# 		"leasemanagement.tasks.monthly"
 # 	],
 # }
 
 # Testing
 # -------
 
-# before_tests = "lms.install.before_tests"
+# before_tests = "leasemanagement.install.before_tests"
 
 # Overriding Methods
 # ------------------------------
 #
 # override_whitelisted_methods = {
-# 	"frappe.desk.doctype.event.event.get_events": "lms.event.get_events"
+# 	"frappe.desk.doctype.event.event.get_events": "leasemanagement.event.get_events"
 # }
 #
 # each overriding function accepts a `data` argument;
 # generated from the base implementation of the doctype dashboard,
 # along with any modifications made in other Frappe apps
 # override_doctype_dashboards = {
-# 	"Task": "lms.task.get_dashboard_data"
+# 	"Task": "leasemanagement.task.get_dashboard_data"
 # }
 
 # exempt linked doctypes from being automatically cancelled
@@ -220,13 +220,13 @@ has_permission = {
 
 # Request Events
 # ----------------
-# before_request = ["lms.utils.before_request"]
-# after_request = ["lms.utils.after_request"]
+# before_request = ["leasemanagement.utils.before_request"]
+# after_request = ["leasemanagement.utils.after_request"]
 
 # Job Events
 # ----------
-# before_job = ["lms.utils.before_job"]
-# after_job = ["lms.utils.after_job"]
+# before_job = ["leasemanagement.utils.before_job"]
+# after_job = ["leasemanagement.utils.after_job"]
 
 # User Data Protection
 # --------------------
@@ -256,7 +256,7 @@ has_permission = {
 # --------------------------------
 
 # auth_hooks = [
-# 	"lms.auth.validate"
+# 	"leasemanagement.auth.validate"
 # ]
 
 # Automatically update python controller files with type annotations for this app.
