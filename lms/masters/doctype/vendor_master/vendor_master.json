@@ -93,8 +93,7 @@
    "fieldtype": "Data",
    "in_list_view": 1,
    "label": "Email Address",
-   "options": "Email",
-   "reqd": 1
+   "options": "Email"
   },
   {
    "fieldname": "cst",
@@ -155,7 +154,7 @@
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-10-14 11:38:03.874335",
+ "modified": "2026-02-13 11:12:17.217761",
  "modified_by": "Administrator",
  "module": "Masters",
  "name": "Vendor Master",
