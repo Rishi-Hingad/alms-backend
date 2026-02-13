@@ -75,7 +75,7 @@ frappe.ui.form.on("Invoice Documents", {
 		dialog.show();
 
 		frappe.call({
-			method: "lms.lease_management_system.doctype.lease_management.lease_management.get_invoice_attachments",
+			method: "leasemanagement.lease_management_system.doctype.lease_management.lease_management.get_invoice_attachments",
 			args: {
 				filters: {
 					parent: frm.doc.name,
@@ -133,7 +133,7 @@ frappe.ui.form.on("Invoice Documents", {
 					const name = $(this).attr("data-name");
 					frappe.confirm(__("Delete this attachment?"), () => {
 						frappe.call({
-							method: "lms.lease_management_system.doctype.lease_management.lease_management.delete_invoice_attachment",
+							method: "leasemanagement.lease_management_system.doctype.lease_management.lease_management.delete_invoice_attachment",
 							args: {
 								parent_doctype: frm.doctype,
 								parent_name: frm.doc.name,
@@ -290,7 +290,7 @@ frappe.ui.form.on("Lease Management", {
 				// frm.add_custom_button(__("Generate Report"), function () {
 				// 	frm.report_counter = (frm.report_counter || 0) + 1;
 				// 	frappe.call({
-				// 		method: "lms.lease_management_system.doctype.lease_management.lease_management.generate_report",
+				// 		method: "leasemanagement.lease_management_system.doctype.lease_management.lease_management.generate_report",
 				// 		args: {
 				// 			docname: frm.doc.name,
 				// 			cnt: frm.report_counter,
@@ -350,7 +350,7 @@ frappe.ui.form.on("Lease Management", {
 
 				// frm.add_custom_button(__("Update Expired Lease's"),function (){
 				//  frappe.call({
-				//      method:"lms.lease_management_system.doctype.lease_management.lease_management.bulk_update_agreement_status",
+				//      method:"leasemanagement.lease_management_system.doctype.lease_management.lease_management.bulk_update_agreement_status",
 				//      callback(res){
 				// 		if(res.message==0){
 				// 			frappe.msgprint("No Agreement Status to Update");
