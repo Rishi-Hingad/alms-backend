@@ -6,6 +6,7 @@
  "engine": "InnoDB",
  "field_order": [
   "vendor",
+  "company",
   "employee_code",
   "employee_name",
   "registration_number",
@@ -47,12 +48,18 @@
    "fieldname": "contract_details",
    "fieldtype": "Data",
    "label": "Contract Details"
+  },
+  {
+   "fieldname": "company",
+   "fieldtype": "Link",
+   "label": "Company",
+   "options": "Company Master"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-01-08 15:02:23.354922",
+ "modified": "2026-02-13 11:11:32.462557",
  "modified_by": "Administrator",
  "module": "Masters",
  "name": "Car Description Master",
