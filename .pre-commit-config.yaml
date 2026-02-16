@@ -43,6 +43,7 @@ repos:
                 .*boilerplate.*|
                 lease_app/templates/includes/.*|
                 lease_app/public/js/lib/.*
+
             )$
 
 
@@ -61,6 +62,7 @@ repos:
                 .*boilerplate.*|
                 lease_app/templates/includes/.*|
                 lease_app/public/js/lib/.*
+
             )$
 
 ci:
