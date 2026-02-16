@@ -58,7 +58,6 @@ You can install this app using the [bench](https://github.com/frappe/bench) CLI:
 cd $PATH_TO_YOUR_BENCH
 bench get-app $URL_OF_THIS_REPO --branch develop
 bench install-app lease_app
-bench install-app lms
 ```
 
 ### Contributing
@@ -67,7 +66,6 @@ This app uses `pre-commit` for code formatting and linting. Please [install pre-
 
 ```bash
 cd apps/lease_app
-cd apps/lms
 pre-commit install
 ```
 
