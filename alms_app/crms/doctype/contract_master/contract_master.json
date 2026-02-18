@@ -1,7 +1,7 @@
 {
  "actions": [],
  "allow_rename": 1,
- "autoname": "field:employee_car_process_form",
+ "autoname": "field:contract_number",
  "creation": "2026-02-17 18:19:05.301300",
  "doctype": "DocType",
  "engine": "InnoDB",
@@ -9,8 +9,9 @@
   "contract_details_section",
   "employee_car_process_form",
   "contract_signed",
-  "contract_start_date",
+  "contract_number",
   "column_break_rioq",
+  "contract_start_date",
   "contract_end_date",
   "upload_contract",
   "installments_dates_section",
@@ -102,12 +103,18 @@
    "fieldtype": "Table",
    "label": "Old Contract Details",
    "options": "Old Contract Details"
+  },
+  {
+   "fieldname": "contract_number",
+   "fieldtype": "Data",
+   "label": "Contract Number",
+   "unique": 1
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-02-18 15:41:46.601872",
+ "modified": "2026-02-18 18:16:16.313939",
  "modified_by": "Administrator",
  "module": "CRMS",
  "name": "Contract Master",

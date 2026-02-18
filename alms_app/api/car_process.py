@@ -451,6 +451,7 @@ def car_form_fill():
         form_status = frappe.form_dict.get("form_status")
         form_document = frappe.form_dict.get("form_document")
         form_date = frappe.form_dict.get("form_date")
+        contract_number = frappe.form_dict.get("contract_number")
 
         if form_document:
             form_document = make_file_public(form_document)
@@ -509,6 +510,7 @@ def car_form_fill():
                 "document_field": "contract_document",
                 "status_field": "contract_signed",
                 "date_field": "contract_start_date",
+                "contract_field": "contract_number",
                 "next_route": None,
                 "next_label": None
             }
@@ -549,6 +551,9 @@ def car_form_fill():
 
         if config.get("date_field") and form_date:
             setattr(doc, config["date_field"], form_date)
+
+        if config.get("contract_field") and contract_number:
+            setattr(doc, config["contract_field"], contract_number)
 
         # Save or Insert
         if existing_doc:

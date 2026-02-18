@@ -19,7 +19,8 @@ frappe.ui.form.on("Contract Master", {
                 row.old_contract_end_date = frm.doc.contract_end_date;
                 row.old_no_of_installments = frm.doc.no_of_installments;
                 row.old_additional_cost = frm.doc.additional_cost;
-                 row.old_contract_agreement = frm.doc.upload_contract;
+                row.old_contract_agreement = frm.doc.upload_contract;
+                row.contact_number = frm.doc.contract_number;
 
                 frm.refresh_field("old_contract_details");
 
@@ -29,6 +30,7 @@ frappe.ui.form.on("Contract Master", {
                 frm.set_value("additional_cost", null);
                 frm.set_value("no_of_installments", 0);
                 frm.set_value("upload_contract", null);
+                frm.set_value("contract_number", null);
 
                 frm.clear_table("installment_date");
                 frm.refresh_field("installment_date");
