@@ -1,6 +1,7 @@
 {
  "actions": [],
  "allow_rename": 1,
+ "autoname": "field:employee_car_process_form",
  "creation": "2026-02-17 18:19:05.301300",
  "doctype": "DocType",
  "engine": "InnoDB",
@@ -81,7 +82,8 @@
    "fieldname": "employee_car_process_form",
    "fieldtype": "Link",
    "label": "Employee Car Process Form",
-   "options": "Car Process"
+   "options": "Employee Master",
+   "unique": 1
   },
   {
    "default": "No",
@@ -105,10 +107,11 @@
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-02-18 12:53:53.675453",
+ "modified": "2026-02-18 15:41:46.601872",
  "modified_by": "Administrator",
  "module": "CRMS",
  "name": "Contract Master",
+ "naming_rule": "By fieldname",
  "owner": "Administrator",
  "permissions": [
   {
