@@ -9,6 +9,7 @@
   "user",
   "company",
   "quotation_form",
+  "column_break_phvl",
   "payment_done",
   "payment_document"
  ],
@@ -43,11 +44,15 @@
    "fieldname": "payment_document",
    "fieldtype": "Attach",
    "label": "Payment Document"
+  },
+  {
+   "fieldname": "column_break_phvl",
+   "fieldtype": "Column Break"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-03-25 17:16:19.799781",
+ "modified": "2026-02-17 18:08:10.504837",
  "modified_by": "Administrator",
  "module": "CRMS",
  "name": "Car Payment Form",
@@ -67,6 +72,7 @@
    "write": 1
   }
  ],
+ "row_format": "Dynamic",
  "sort_field": "modified",
  "sort_order": "DESC",
  "states": []

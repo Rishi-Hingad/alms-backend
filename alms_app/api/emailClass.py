@@ -19,6 +19,8 @@ class EmailServices:
         self.smtp_user = alms_settings.smtp_user
         self.smtp_password = alms_settings.smtp_password
         self.from_address = "hr@merillife.com"
+        self.bcc_email = ["rishi.hingad@merillife.com","dhrumit.solanki@merillife.com","deepkumar.bhatt@merillife.com"]
+        
 
     def _queue_email(self, subject, recipients, cc=None, bcc=None, content=None):
         """Insert entry in Email Queue before sending"""
@@ -71,8 +73,7 @@ class EmailServices:
     def send(self,subject,recipient_email,body,cc_list=None):
         print("----Send Mail----")
         try:
-            site_config = frappe.get_site_config()
-            bcc_list = site_config.get("bcc_email", [])
+            bcc_list = self.bcc_email
             email_queue = self._queue_email(subject, recipient_email, cc_list, bcc_list, body)
             msg = EmailMessage()
             msg.set_content(body, subtype="html")
@@ -126,8 +127,7 @@ class EmailServices:
     def send_reject(self, subject,recipient_email,body,cc_list=None):
         print("----------------sendng Reject Mail-------------")
         try:
-            site_config = frappe.get_site_config()
-            bcc_list = site_config.get("bcc_email", [])
+            bcc_list = self.bcc_email
             self._queue_email(subject, recipient_email, cc_list, bcc_list, body)
             msg = EmailMessage()
             msg.set_content(body, subtype="html")
@@ -163,8 +163,7 @@ class EmailServices:
     def send_quotations(self,subject,recipient_email,body, cc_list=None):
     
         try:
-            site_config = frappe.get_site_config()
-            bcc_list = site_config.get("bcc_email", [])
+            bcc_list = self.bcc_email
             msg = EmailMessage()
             msg.set_content(body, subtype="html")
             msg["Subject"] = subject
