@@ -21,6 +21,7 @@
   "car_delivery",
   "delivery_date",
   "contract_signed",
+  "contract_number",
   "contract_start_date",
   "column_break_ybdw",
   "po_document",
@@ -200,11 +201,16 @@
    "fieldname": "contract_start_date",
    "fieldtype": "Date",
    "label": "Contract Start Date"
+  },
+  {
+   "fieldname": "contract_number",
+   "fieldtype": "Data",
+   "label": "Contract Number"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-02-18 12:35:25.469492",
+ "modified": "2026-02-18 18:15:51.444122",
  "modified_by": "Administrator",
  "module": "CRMS",
  "name": "Car Process",
