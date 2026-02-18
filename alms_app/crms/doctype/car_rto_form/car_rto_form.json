@@ -9,6 +9,7 @@
   "user",
   "company",
   "quotation_form",
+  "column_break_tqcb",
   "registration_done",
   "registration_document"
  ],
@@ -42,11 +43,15 @@
    "fieldname": "registration_document",
    "fieldtype": "Attach",
    "label": "Registration Document"
+  },
+  {
+   "fieldname": "column_break_tqcb",
+   "fieldtype": "Column Break"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-03-25 17:15:56.881204",
+ "modified": "2026-02-17 18:07:55.348285",
  "modified_by": "Administrator",
  "module": "CRMS",
  "name": "Car RTO Form",
@@ -66,6 +71,7 @@
    "write": 1
   }
  ],
+ "row_format": "Dynamic",
  "sort_field": "modified",
  "sort_order": "DESC",
  "states": []

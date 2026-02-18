@@ -8,6 +8,7 @@
   "user",
   "company",
   "quotation_form",
+  "column_break_nzpt",
   "rc_book_received",
   "rc_book_document"
  ],
@@ -41,11 +42,15 @@
    "fieldname": "rc_book_document",
    "fieldtype": "Attach",
    "label": "RC Book Document"
+  },
+  {
+   "fieldname": "column_break_nzpt",
+   "fieldtype": "Column Break"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-03-06 11:27:15.826011",
+ "modified": "2026-02-17 18:08:39.695105",
  "modified_by": "Administrator",
  "module": "CRMS",
  "name": "Car RC Book Form",
@@ -64,6 +69,7 @@
    "write": 1
   }
  ],
+ "row_format": "Dynamic",
  "sort_field": "modified",
  "sort_order": "DESC",
  "states": []
