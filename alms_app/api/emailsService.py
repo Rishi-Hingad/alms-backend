@@ -1,18 +1,19 @@
 import frappe
 from alms_app.api.emailClass import EmailServices
 import json
+import traceback
 
 Email = EmailServices()
 @frappe.whitelist(allow_guest=True)
 def email_sender(name, email_send_to=None, car_indent_form_name=None, payload=None):
     try:
-        if payload:
+        if payload and isinstance(payload, str):
             payload = json.loads(payload)
 
         user = frappe.get_doc("Employee Master",name)
         print("------------[email sender name]------------------:",user)
         print("------------[email sender name]------------------:",email_send_to)
-        print("------------[email sender name]------------------:",car_indent_form_name)
+        print("------------[payload]------------------:", payload)
         
         if email_send_to =="To Employee":
             Email.for_hr_team_to_employee(user)
@@ -45,7 +46,7 @@ def email_sender(name, email_send_to=None, car_indent_form_name=None, payload=No
             Email.acknowledgement_email(user,"Purchase Department","Finance Department")
             
         elif email_send_to == "FinanceHead To Quotation Company":
-            Email.for_car_quotation_ALD_EasyAssets_Xyz(user,payload)
+            Email.for_car_quotation_ALD_EazyAssets_Xyz(user,payload)
             
         elif email_send_to =="FinanceTeam To FinanceHead":
             Email.for_finance_team_to_finance_head(user) 
@@ -67,10 +68,13 @@ def email_sender(name, email_send_to=None, car_indent_form_name=None, payload=No
             # negative track starts here
         elif email_send_to == "Deduction Finance Team To Finance Head":
             Email.for_deduction_finance_to_finance_head(user,payload)
+
         elif email_send_to == "Deduction Finance Head To Accounts":
             Email.for_deduction_finance_head_to_accounts(user,payload)
+
         elif email_send_to == "Reject Finance Head To Finance Team":
             Email.for_reject_deduction_by_finance_head(user,payload)
+
          #rejection
         elif email_send_to=="Reject Reporting to Employee":
             Email.for_reject_by_reporting(user)
@@ -102,13 +106,10 @@ def email_sender(name, email_send_to=None, car_indent_form_name=None, payload=No
             else:
                 frappe.msgprint("Something Wrong!, Try Again!!")
 
-
         return {"status": "success", "message": f"Email sent"}
     except Exception as e:
         # print(f"------------[Error:{e}]---------------")
         return {"status": "error","message":str(e)}
-
-import traceback
 
 @frappe.whitelist(allow_guest=True)
 def approve_car_indent_by_reporting(indent_form, remarks):

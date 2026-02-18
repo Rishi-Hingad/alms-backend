@@ -9,6 +9,7 @@
   "user",
   "company",
   "quotation_form",
+  "column_break_ruau",
   "proforma_invoice_received",
   "proforma_invoice_document"
  ],
@@ -43,11 +44,15 @@
    "fieldname": "proforma_invoice_document",
    "fieldtype": "Attach",
    "label": "Proforma Invoice Document"
+  },
+  {
+   "fieldname": "column_break_ruau",
+   "fieldtype": "Column Break"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-03-25 17:16:38.887020",
+ "modified": "2026-02-17 18:07:38.066935",
  "modified_by": "Administrator",
  "module": "CRMS",
  "name": "Car Proforma Form",
@@ -67,6 +72,7 @@
    "write": 1
   }
  ],
+ "row_format": "Dynamic",
  "sort_field": "modified",
  "sort_order": "DESC",
  "states": []

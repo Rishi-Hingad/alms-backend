@@ -5,9 +5,6 @@ app_description = "Assest Lease Management System"
 app_email = "rishi.hingad@merillife.com"
 app_license = "mit"
 
-
-import frappe
-
 # if frappe.flags.in_migrate or frappe.conf.disable_emails_during_migration:
 #     def noop_sendmail(*args, **kwargs):
 #         print("[EMAIL BLOCKED]")

@@ -13,7 +13,7 @@
   "employee_details",
   "car_indent_form_id",
   "location",
-  "kms",
+  "total_kms",
   "variant",
   "quote",
   "interest_rate",
@@ -22,7 +22,7 @@
   "gst",
   "ex_showroom_amount",
   "column_break_xjhs",
-  "accessory",
+  "accessories",
   "discount_excluding_gst",
   "base_price_less_discounts",
   "total_discount",
@@ -80,11 +80,6 @@
    "label": "Location"
   },
   {
-   "fieldname": "kms",
-   "fieldtype": "Data",
-   "label": "KMS"
-  },
-  {
    "fieldname": "variant",
    "fieldtype": "Data",
    "label": "Variant"
@@ -102,7 +97,7 @@
   {
    "fieldname": "tenure",
    "fieldtype": "Data",
-   "label": "Tenure"
+   "label": "Tenure (in Years)"
   },
   {
    "fieldname": "base_price_excluding_gst",
@@ -118,11 +113,6 @@
    "fieldname": "ex_showroom_amount",
    "fieldtype": "Data",
    "label": "Ex-Showroom Amount"
-  },
-  {
-   "fieldname": "accessory",
-   "fieldtype": "Data",
-   "label": "Accessory"
   },
   {
    "fieldname": "column_break_xjhs",
@@ -312,11 +302,21 @@
    "fieldname": "revised_quotation_vendor",
    "fieldtype": "Attach",
    "label": "Revised Quotation"
+  },
+  {
+   "fieldname": "total_kms",
+   "fieldtype": "Data",
+   "label": "Total KMS"
+  },
+  {
+   "fieldname": "accessories",
+   "fieldtype": "Data",
+   "label": "Accessories"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-09-23 10:54:27.508398",
+ "modified": "2025-10-07 15:39:14.226978",
  "modified_by": "Administrator",
  "module": "CRMS",
  "name": "Car Quotation",
