@@ -6,11 +6,12 @@
  "engine": "InnoDB",
  "field_order": [
   "old_details_section",
+  "old_contract_number",
   "old_contract_start_date",
+  "old_contract_end_date",
+  "column_break_ydvj",
   "old_no_of_installments",
   "old_additional_cost",
-  "column_break_ydvj",
-  "old_contract_end_date",
   "old_contract_agreement"
  ],
  "fields": [
@@ -57,13 +58,20 @@
    "in_list_view": 1,
    "in_preview": 1,
    "label": "Old Additional Cost"
+  },
+  {
+   "fieldname": "old_contract_number",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "in_preview": 1,
+   "label": "Old Contract Number"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2026-02-18 13:04:47.311286",
+ "modified": "2026-02-18 18:15:16.312159",
  "modified_by": "Administrator",
  "module": "CRMS",
  "name": "Old Contract Details",
