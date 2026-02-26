@@ -1,2 +1,2 @@
 Lease Management System
-Masters
+Lease Masters

@@ -1,39 +1,38 @@
 {
  "actions": [],
  "allow_rename": 1,
- "autoname": "field:pincode",
- "creation": "2025-07-15 09:28:58.678644",
+ "autoname": "field:city",
+ "creation": "2025-07-10 15:42:29.147418",
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
-  "city",
-  "pincode"
+  "state",
+  "city"
  ],
  "fields": [
   {
-   "fieldname": "pincode",
+   "fieldname": "city",
    "fieldtype": "Data",
    "in_list_view": 1,
-   "label": "Pincode ",
+   "label": "City",
    "reqd": 1,
    "unique": 1
   },
   {
-   "fieldname": "city",
+   "fieldname": "state",
    "fieldtype": "Link",
-   "in_list_view": 1,
-   "label": "City",
-   "options": "City Master",
+   "label": "State",
+   "options": "State Master",
    "reqd": 1
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-09-03 12:10:31.195609",
+ "modified": "2025-09-03 12:09:59.000818",
  "modified_by": "Administrator",
- "module": "Masters",
- "name": "Pincode Master",
+ "module": "Lease Masters",
+ "name": "City Master",
  "naming_rule": "By fieldname",
  "owner": "Administrator",
  "permissions": [

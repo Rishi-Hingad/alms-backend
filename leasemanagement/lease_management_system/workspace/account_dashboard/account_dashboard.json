@@ -5,7 +5,7 @@
    "label": "Recent Immovable Lease Rent"
   }
  ],
- "content": "[{\"id\":\"tE6Yba4cN9\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h3\\\">Account Dashboard</span>\",\"col\":12}},{\"id\":\"lfcM1XoeZz\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"D7oCLhh5CR\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Total Vendor's\",\"col\":3}},{\"id\":\"XZ3Emphpna\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Total Lease Agreement\",\"col\":3}},{\"id\":\"DMk1m6l4FD\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Total Ongoing Lease Agreement\",\"col\":3}},{\"id\":\"Vaho1-BSo2\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Total Expired Lease Agreement\",\"col\":3}},{\"id\":\"azygFqm047\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"SSbIbSYQ7l\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Immovable Current Lease Payment Amount\",\"col\":4}},{\"id\":\"bhwAySb7Nb\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Immovable Monthly Lease Payment Report\",\"col\":4}},{\"id\":\"uy9hB2yoYk\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Mismatch Invoice Amount Report\",\"col\":4}},{\"id\":\"nDH1QJEUcd\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"a_dotlxwGM\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Lease Summary Report\",\"col\":4}},{\"id\":\"4wK7En-zMC\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Lease Summary Entries Report\",\"col\":4}},{\"id\":\"W-pDBz3Gpc\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"zh90fhYYkn\",\"type\":\"quick_list\",\"data\":{\"quick_list_name\":\"Lease Agreement's\",\"col\":4}},{\"id\":\"70Lood7HkB\",\"type\":\"chart\",\"data\":{\"chart_name\":\"Recent Immovable Lease Rent\",\"col\":8}}]",
+ "content": "[{\"id\":\"tE6Yba4cN9\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h3\\\">Account Dashboard</span>\",\"col\":12}},{\"id\":\"lfcM1XoeZz\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"D7oCLhh5CR\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Total Vendor's\",\"col\":3}},{\"id\":\"XZ3Emphpna\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Total Lease Agreement\",\"col\":3}},{\"id\":\"DMk1m6l4FD\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Total Ongoing Lease Agreement\",\"col\":3}},{\"id\":\"Vaho1-BSo2\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Total Expired Lease Agreement\",\"col\":3}},{\"id\":\"azygFqm047\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"SSbIbSYQ7l\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Immovable Current Lease Payment Amount\",\"col\":4}},{\"id\":\"bhwAySb7Nb\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Immovable Monthly Lease Payment Report\",\"col\":4}},{\"id\":\"uy9hB2yoYk\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Mismatch Invoice Amount Report\",\"col\":4}},{\"id\":\"nDH1QJEUcd\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"a_dotlxwGM\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Lease Summary Report\",\"col\":4}},{\"id\":\"4wK7En-zMC\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Journal Entries Report\",\"col\":4}},{\"id\":\"W-pDBz3Gpc\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"zh90fhYYkn\",\"type\":\"quick_list\",\"data\":{\"quick_list_name\":\"Lease Agreement's\",\"col\":4}},{\"id\":\"70Lood7HkB\",\"type\":\"chart\",\"data\":{\"chart_name\":\"Recent Immovable Lease Rent\",\"col\":8}}]",
  "creation": "2025-09-04 10:42:48.359547",
  "custom_blocks": [],
  "docstatus": 0,
@@ -18,7 +18,7 @@
  "is_hidden": 0,
  "label": "Account Dashboard",
  "links": [],
- "modified": "2026-01-09 09:43:54.666526",
+ "modified": "2026-02-26 17:08:58.609395",
  "modified_by": "Administrator",
  "module": "Lease Management System",
  "name": "Account Dashboard",
@@ -68,16 +68,16 @@
   {
    "color": "Grey",
    "doc_view": "List",
-   "label": "Lease Summary Entries Report",
-   "link_to": "Lease Summary Entries Report",
+   "label": "Lease Summary Report",
+   "link_to": "Lease Summary Report",
    "report_ref_doctype": "Lease Management",
    "type": "Report"
   },
   {
    "color": "Grey",
    "doc_view": "List",
-   "label": "Lease Summary Report",
-   "link_to": "Lease Summary Report",
+   "label": "Journal Entries Report",
+   "link_to": "Lease Summary Entries Report",
    "report_ref_doctype": "Lease Management",
    "type": "Report"
   },
