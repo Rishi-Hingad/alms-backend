@@ -42,7 +42,7 @@ app_license = "mit"
 
 # include js in page
 # page_js = {"page" : "public/js/file.js"}
-app_include_js = ["/assets/lms/js/invoice_dialog.js"]
+app_include_js = ["/assets/leasemanagement/js/invoice_dialog.js"]
 
 
 # scheduler_events = {

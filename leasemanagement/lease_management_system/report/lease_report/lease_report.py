@@ -637,7 +637,7 @@ def execute(filters=None):
 					_, last_day_q_end = monthrange(q_end.year, q_end.month)
 					if last_day_q_end == q_end.day:
 						if q_end.month == 12:
-							current_date = datetime(q_end.year, 1, 1)
+							current_date = datetime(q_end.year + 1, 1, 1)
 						else:
 							current_date = datetime(q_end.year, q_end.month + 1, 1)
 					else:
@@ -669,7 +669,7 @@ def execute(filters=None):
 					_, last_day_q_end = monthrange(q_end.year, q_end.month)
 					if last_day_q_end == q_end.day:
 						if q_end.month == 12:
-							current_date = datetime(q_end.year, 1, 1)
+							current_date = datetime(q_end.year + 1, 1, 1)
 						else:
 							current_date = datetime(q_end.year, q_end.month + 1, 1)
 					else:
@@ -748,7 +748,7 @@ def execute(filters=None):
 					_, last_day_q_end = monthrange(q_end.year, q_end.month)
 					if last_day_q_end == q_end.day:
 						if q_end.month == 12:
-							current_date2 = datetime(q_end.year, 1, 1)
+							current_date2 = datetime(q_end.year + 1, 1, 1)
 						else:
 							current_date2 = datetime(q_end.year, q_end.month + 1, 1)
 					else:
@@ -772,7 +772,7 @@ def execute(filters=None):
 					_, last_day_q_end = monthrange(q_end.year, q_end.month)
 					if last_day_q_end == q_end.day:
 						if q_end.month == 12:
-							current_date2 = datetime(q_end.year, 1, 1)
+							current_date2 = datetime(q_end.year + 1, 1, 1)
 						else:
 							current_date2 = datetime(q_end.year, q_end.month + 1, 1)
 					else:
@@ -1346,7 +1346,7 @@ def execute(filters=None):
 					_, last_day_q_end = monthrange(q_end.year, q_end.month)
 					if last_day_q_end == q_end.day:
 						if q_end.month == 12:
-							current_date3 = datetime(q_end.year, 1, 1)
+							current_date3 = datetime(q_end.year + 1, 1, 1)
 						else:
 							current_date3 = datetime(q_end.year, q_end.month + 1, 1)
 					else:
@@ -1378,7 +1378,7 @@ def execute(filters=None):
 					_, last_day_q_end = monthrange(q_end.year, q_end.month)
 					if last_day_q_end == q_end.day:
 						if q_end.month == 12:
-							current_date3 = datetime(q_end.year, 1, 1)
+							current_date3 = datetime(q_end.year + 1, 1, 1)
 						else:
 							current_date3 = datetime(q_end.year, q_end.month + 1, 1)
 					else:

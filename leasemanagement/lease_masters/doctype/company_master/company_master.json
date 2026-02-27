@@ -1,46 +1,39 @@
 {
  "actions": [],
  "allow_rename": 1,
- "autoname": "format:disc-{##}",
- "creation": "2025-07-17 10:52:40.370114",
+ "autoname": "field:company_name",
+ "creation": "2025-07-10 15:18:57.442337",
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
-  "discounting_rate",
-  "daily_rate",
-  "monthly_rate"
+  "company_code",
+  "company_name"
  ],
  "fields": [
   {
-   "description": "(in %)",
-   "fieldname": "discounting_rate",
-   "fieldtype": "Float",
+   "fieldname": "company_code",
+   "fieldtype": "Data",
    "in_list_view": 1,
-   "label": "Discounting Rate",
-   "precision": "2",
+   "label": "Company Code",
    "reqd": 1
   },
   {
-   "fieldname": "daily_rate",
+   "fieldname": "company_name",
    "fieldtype": "Data",
-   "label": "Daily Rate",
-   "read_only": 1
-  },
-  {
-   "fieldname": "monthly_rate",
-   "fieldtype": "Data",
-   "label": "Monthly Rate",
-   "read_only": 1
+   "in_list_view": 1,
+   "label": "Company Name",
+   "reqd": 1,
+   "unique": 1
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-09-03 12:13:01.015814",
+ "modified": "2025-09-03 12:10:57.727657",
  "modified_by": "Administrator",
- "module": "Masters",
- "name": "Discounting Rate",
- "naming_rule": "Expression",
+ "module": "Lease Masters",
+ "name": "Company Master",
+ "naming_rule": "By fieldname",
  "owner": "Administrator",
  "permissions": [
   {
