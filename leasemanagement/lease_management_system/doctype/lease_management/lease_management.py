@@ -12,7 +12,7 @@ import pandas as pd
 from dateutil.relativedelta import relativedelta
 from frappe import _, db
 from frappe.model.document import Document
-from frappe.utils import now_datetime, nowdate
+from frappe.utils import getdate, now_datetime, nowdate
 from frappe.utils.file_manager import save_file
 from openpyxl.utils import get_column_letter
 
@@ -461,38 +461,43 @@ class LeaseManagement(Document):
 	def autoname(self):
 		# start_date = datetime.strptime(self.agreement_start_date, "%Y-%m-%d").date()
 		# end_date = datetime.strptime(self.agreement_end_date, "%Y-%m-%d").date()
+		if self.modification_version == 0:
+			start_date = self.agreement_start_date
+			if isinstance(start_date, str):
+				start_date = datetime.strptime(start_date, "%Y-%m-%d")
+			if isinstance(start_date, date) and not isinstance(start_date, datetime):
+				start_date = datetime.combine(start_date, datetime.min.time())
+			start_date = start_date.date()
 
-		start_date = self.agreement_start_date
-		if isinstance(start_date, str):
-			start_date = datetime.strptime(start_date, "%Y-%m-%d")
-		if isinstance(start_date, date) and not isinstance(start_date, datetime):
-			start_date = datetime.combine(start_date, datetime.min.time())
-		start_date = start_date.date()
+			end_date = self.agreement_end_date
+			if isinstance(end_date, str):
+				end_date = datetime.strptime(end_date, "%Y-%m-%d")
+			if isinstance(end_date, date) and not isinstance(end_date, datetime):
+				end_date = datetime.combine(end_date, datetime.min.time())
+			end_date = end_date.date()
 
-		end_date = self.agreement_end_date
-		if isinstance(end_date, str):
-			end_date = datetime.strptime(end_date, "%Y-%m-%d")
-		if isinstance(end_date, date) and not isinstance(end_date, datetime):
-			end_date = datetime.combine(end_date, datetime.min.time())
-		end_date = end_date.date()
+			start_month = calendar.month_abbr[start_date.month].upper()
+			start_year = str(start_date.year)[-2:]
 
-		start_month = calendar.month_abbr[start_date.month].upper()
-		start_year = str(start_date.year)[-2:]
+			end_month = calendar.month_abbr[end_date.month].upper()
+			end_year = str(end_date.year)[-2:]
 
-		end_month = calendar.month_abbr[end_date.month].upper()
-		end_year = str(end_date.year)[-2:]
+			full_seq = frappe.model.naming.getseries("LMS-", 4)
 
-		full_seq = frappe.model.naming.getseries("LMS-", 4)
+			seq_num_str = full_seq.replace("LMS-", "")
+			seq_num = int(seq_num_str)
 
-		seq_num_str = full_seq.replace("LMS-", "")
-		seq_num = int(seq_num_str)
-
-		self.name = f"LMS-{start_month}{start_year}_{end_month}{end_year}-{seq_num}"
+			self.name = f"LMS-{start_month}{start_year}_{end_month}{end_year}-{seq_num}"
+			pass
+		else:
+			self.name = f"{self.parent_lease}-{self.modification_version}"
 
 	def validate(self):
 		# validate property decription field
 		self.validate_property_details()
 		self.validate_car_description_details()
+		if self.is_modified == 1:
+			self.validate_modification_start_date()
 
 		if self.invoice_details and len(self.invoice_details) > 0:
 			self.validate_invoice_details()
@@ -527,6 +532,43 @@ class LeaseManagement(Document):
 			# self.populate_invoice_details()
 			if not self.escalation and len(self.escalation) == 0:
 				self.populate_escalation_record()
+
+		if self.is_modified and self.previous_lease and self.parent_lease:
+			self.discard_previous_lease()
+
+	def after_insert(self):
+		# Only run if this is a modification record
+		if self.is_modified and self.parent_lease:
+			parent_doc = frappe.get_doc("Lease Management", self.parent_lease)
+			already_exists = any(d.modified_lease == self.name for d in parent_doc.modifications)
+
+			if not already_exists:
+				parent_doc.append(
+					"modifications",
+					{
+						"modified_lease": self.name,
+					},
+				)
+
+				parent_doc.save(ignore_permissions=True)
+
+	def discard_previous_lease(self):
+		previous = frappe.get_doc("Lease Management", self.previous_lease)
+		if previous.status != "Discarded":
+			previous.status = "Discarded"
+			previous.save(ignore_permissions=True)
+
+	def validate_modification_start_date(self):
+		if not self.agreement_start_date:
+			return
+
+		previous_start = frappe.db.get_value("Lease Management", self.previous_lease, "agreement_start_date")
+
+		if not previous_start:
+			return
+
+		if getdate(self.agreement_start_date) <= getdate(previous_start):
+			frappe.throw(f"Modification Start Date Must be Greater than {previous_start}")
 
 	def validate_car_description_details(self):
 		if not self.car_description:

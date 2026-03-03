@@ -23,9 +23,18 @@
   "security_deposit_amount",
   "monthly_rent",
   "agreement",
+  "column_break_rjjx",
+  "is_modified",
+  "parent_lease",
+  "previous_lease",
+  "modification_reason",
+  "modification_version",
   "section_break_ewvt",
   "escalation",
   "additional_amounts",
+  "modification_details_section",
+  "modifications",
+  "section_break_jnax",
   "invoice_details",
   "invoice_attachments"
  ],
@@ -48,8 +57,9 @@
    "fieldname": "status",
    "fieldtype": "Select",
    "label": "Status",
-   "options": "\nActive\nAgreement Expired",
-   "permlevel": 1
+   "options": "\nActive\nAgreement Expired\nModified\nDiscarded\nCancelled",
+   "permlevel": 1,
+   "read_only_depends_on": "eval:doc.is_modified==1;"
   },
   {
    "fieldname": "security_deposit",
@@ -111,6 +121,7 @@
    "label": "Company",
    "options": "Company Master",
    "permlevel": 1,
+   "read_only_depends_on": "eval:doc.is_modified==1;",
    "reqd": 1
   },
   {
@@ -119,6 +130,7 @@
    "label": "Vendor",
    "options": "Vendor Master",
    "permlevel": 1,
+   "read_only_depends_on": "eval:doc.is_modified==1;",
    "reqd": 1
   },
   {
@@ -129,7 +141,8 @@
    "label": "Property Description",
    "mandatory_depends_on": "eval:doc.type_of_asset=='Immovable';",
    "options": "Property Master",
-   "permlevel": 1
+   "permlevel": 1,
+   "read_only_depends_on": "eval:doc.is_modified==1;"
   },
   {
    "description": "(in %)",
@@ -146,7 +159,8 @@
    "fieldtype": "Select",
    "label": "Calculation Rate Type",
    "options": "Daily Rate\nMonthly Rate",
-   "permlevel": 1
+   "permlevel": 1,
+   "read_only_depends_on": "eval:doc.is_modified==1;"
   },
   {
    "default": "0",
@@ -175,6 +189,7 @@
    "fieldtype": "Select",
    "label": "Type of Asset",
    "options": "\nImmovable\nCar",
+   "read_only_depends_on": "eval:doc.is_modified==1;",
    "reqd": 1
   },
   {
@@ -183,7 +198,8 @@
    "fieldtype": "Link",
    "label": "Car Description",
    "mandatory_depends_on": "eval:doc.type_of_asset=='Car';",
-   "options": "Car Description Master"
+   "options": "Car Description Master",
+   "read_only_depends_on": "eval:doc.is_modified==1;"
   },
   {
    "default": "Monthly",
@@ -191,7 +207,8 @@
    "fieldname": "type_of_report",
    "fieldtype": "Select",
    "label": "Type of Report",
-   "options": "Monthly\nQuarterly"
+   "options": "Monthly\nQuarterly",
+   "read_only_depends_on": "eval:doc.is_modified==1;"
   },
   {
    "depends_on": "eval:doc.type_of_asset=='Car';",
@@ -199,12 +216,70 @@
    "fieldtype": "Table",
    "label": "Additional Amounts",
    "options": "Additional Amounts"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_modified",
+   "fieldtype": "Check",
+   "hidden": 1,
+   "label": "Is Modified"
+  },
+  {
+   "fieldname": "column_break_rjjx",
+   "fieldtype": "Column Break"
+  },
+  {
+   "depends_on": "eval:doc.is_modified==1;",
+   "fieldname": "previous_lease",
+   "fieldtype": "Link",
+   "label": "Previous Lease",
+   "options": "Lease Management",
+   "read_only": 1
+  },
+  {
+   "depends_on": "eval:doc.is_modified==1;",
+   "fieldname": "parent_lease",
+   "fieldtype": "Link",
+   "label": "Parent Lease",
+   "options": "Lease Management",
+   "read_only": 1
+  },
+  {
+   "depends_on": "eval:doc.is_modified==1;",
+   "fieldname": "modification_reason",
+   "fieldtype": "Data",
+   "label": "Modification Reason",
+   "mandatory_depends_on": "eval:doc.is_modified==1;"
+  },
+  {
+   "default": "0",
+   "fieldname": "modification_version",
+   "fieldtype": "Int",
+   "hidden": 1,
+   "label": "Modification Version",
+   "read_only": 1
+  },
+  {
+   "depends_on": "eval:doc.modification_version==0&&!doc.parent_lease",
+   "fieldname": "modifications",
+   "fieldtype": "Table",
+   "label": "Modifications",
+   "options": "Modifications"
+  },
+  {
+   "fieldname": "section_break_jnax",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "modification_details_section",
+   "fieldtype": "Section Break",
+   "label": "Modification Details"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-01-02 14:30:57.512440",
+ "modified": "2026-02-28 12:50:41.412889",
  "modified_by": "Administrator",
  "module": "Lease Management System",
  "name": "Lease Management",

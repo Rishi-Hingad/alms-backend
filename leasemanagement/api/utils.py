@@ -5,7 +5,10 @@ from collections import Counter
 from datetime import date, datetime, time, timedelta
 
 import frappe
+import pandas as pd
 from dateutil.relativedelta import relativedelta
+from frappe.desk.query_report import run
+from frappe.utils import add_days
 
 
 @frappe.whitelist()
@@ -401,7 +404,14 @@ def get_q_start_q_end(cnt, current_date, quarterly_months, end_date):
 						q_end = datetime(current_date.year, quarterly_months[i], 15)
 						break
 		elif current_date.month in quarterly_months:
-			q_end = datetime(current_date.year, current_date.month, 15)
+			if q_start.day > 15:
+				for i in range(len(quarterly_months)):
+					if quarterly_months[i] > current_date.month:
+						q_end = datetime(current_date.year, quarterly_months[i], 15)
+						break
+			else:
+				q_end = datetime(current_date.year, current_date.month, 15)
+
 		else:
 			if current_date.month == 12:
 				q_end = datetime(current_date.year + 1, 1, 15)
@@ -429,15 +439,41 @@ def get_q_start_q_end(cnt, current_date, quarterly_months, end_date):
 				q_end = end_date
 	if (q_start.month == 1 and q_end.month == 4) or (q_start.month == 3 and q_end.month == 4):
 		q_end = datetime(current_date.year, 3, 31)
-	if cnt == 1 and q_end.month == 4 and q_start.month >= 1:
+	if cnt == 1 and q_end.month == 4 and q_start.month >= 1 and not (q_start.month == 4 and q_end.month == 4):
 		if q_start.month == 2:
 			_, last_day = monthrange(current_date.year, current_date.month)
 		else:
-			_, last_day = monthrange(current_date.year, 2)
+			# _, last_day = monthrange(current_date.year, 2)
+			_, last_day = monthrange(current_date.year, current_date.month)
 		q_end = datetime(current_date.year, current_date.month, last_day)
 		# frappe.msgprint("**"+str(datetime(current_date.year, current_date.month, last_day))+"**"+"cnt="+str(cnt))
-
+	# frappe.msgprint("q_start"+str(q_start)+"||q_end"+str(q_end))
 	return (q_start, q_end)
+
+
+@frappe.whitelist()
+def get_prev_wdv_modification(
+	calculation_rate_type, previous_lease, agreement_start_date, prev_closing_liability
+):
+	prev_wdv = None
+	if calculation_rate_type == "Daily Rate":
+		lreport = "Lease Report"
+	else:
+		lreport = "Lease Report Monthly (With Escalation)"
+	result = run(lreport, filters={"docname": previous_lease})
+	rows = result.get("result")
+	df = pd.DataFrame(rows)
+	previous_date = add_days(agreement_start_date, -1)
+	last_row = df.loc[df["month_end_date"] == previous_date]
+	# frappe.msgprint("previous_date"+str(previous_date)+'||last_row["wdv"].iloc[0]='+str(last_row["wdv"].iloc[0])+'||last_row["closing_liability"].iloc[0]='+str(last_row["closing_liability"].iloc[0]))
+	if not last_row.empty:
+		prev_wdv = (
+			float(last_row["wdv"].iloc[0])
+			- float(last_row["closing_liability"].iloc[0])
+			+ float(prev_closing_liability)
+		)
+
+	return prev_wdv
 
 
 @frappe.whitelist()
