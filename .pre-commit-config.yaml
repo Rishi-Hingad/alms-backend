@@ -8,7 +8,7 @@ repos:
     rev: v5.0.0
     hooks:
       - id: trailing-whitespace
-        files: "lms.*"
+        files: "leasemanagement.*"
         exclude: ".*json$|.*txt$|.*csv|.*md|.*svg"
       - id: check-merge-conflict
       - id: check-ast
@@ -38,11 +38,11 @@ repos:
         # Ignore any files that might contain jinja / bundles
         exclude: |
             (?x)^(
-                lms/public/dist/.*|
+                leasemanagement/public/dist/.*|
                 .*node_modules.*|
                 .*boilerplate.*|
-                lms/templates/includes/.*|
-                lms/public/js/lib/.*
+                leasemanagement/templates/includes/.*|
+                leasemanagement/public/js/lib/.*
             )$
 
 
@@ -55,12 +55,12 @@ repos:
         # Ignore any files that might contain jinja / bundles
         exclude: |
             (?x)^(
-                lms/public/dist/.*|
+                leasemanagement/public/dist/.*|
                 cypress/.*|
                 .*node_modules.*|
                 .*boilerplate.*|
-                lms/templates/includes/.*|
-                lms/public/js/lib/.*
+                leasemanagement/templates/includes/.*|
+                leasemanagement/public/js/lib/.*
             )$
 
 ci:
