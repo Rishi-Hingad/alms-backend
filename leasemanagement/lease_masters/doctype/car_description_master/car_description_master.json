@@ -53,13 +53,14 @@
    "fieldname": "company",
    "fieldtype": "Link",
    "label": "Company",
-   "options": "Company Master"
+   "options": "Company Master",
+   "reqd": 1
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-02-13 11:11:32.462557",
+ "modified": "2026-03-09 14:40:34.263100",
  "modified_by": "Administrator",
  "module": "Lease Masters",
  "name": "Car Description Master",
@@ -92,7 +93,9 @@
  ],
  "row_format": "Dynamic",
  "rows_threshold_for_grid_search": 20,
+ "show_title_field_in_link": 1,
  "sort_field": "modified",
  "sort_order": "DESC",
- "states": []
+ "states": [],
+ "title_field": "employee_name"
 }

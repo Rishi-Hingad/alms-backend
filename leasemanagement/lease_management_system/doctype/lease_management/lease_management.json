@@ -6,10 +6,10 @@
  "engine": "InnoDB",
  "field_order": [
   "type_of_asset",
+  "car_description",
   "company",
   "vendor",
   "property_description",
-  "car_description",
   "discounting_rate",
   "calculation_rate_type",
   "previous_wdv",
@@ -29,6 +29,8 @@
   "previous_lease",
   "modification_reason",
   "modification_version",
+  "termination_date",
+  "termination_reason",
   "section_break_ewvt",
   "escalation",
   "additional_amounts",
@@ -57,7 +59,7 @@
    "fieldname": "status",
    "fieldtype": "Select",
    "label": "Status",
-   "options": "\nActive\nAgreement Expired\nModified\nDiscarded\nCancelled",
+   "options": "\nActive\nAgreement Expired\nModified\nDiscarded\nTerminated",
    "permlevel": 1,
    "read_only_depends_on": "eval:doc.is_modified==1;"
   },
@@ -260,7 +262,6 @@
    "read_only": 1
   },
   {
-   "depends_on": "eval:doc.modification_version==0&&!doc.parent_lease",
    "fieldname": "modifications",
    "fieldtype": "Table",
    "label": "Modifications",
@@ -274,12 +275,26 @@
    "fieldname": "modification_details_section",
    "fieldtype": "Section Break",
    "label": "Modification Details"
+  },
+  {
+   "depends_on": "eval:doc.status==\"Terminated\";",
+   "fieldname": "termination_date",
+   "fieldtype": "Date",
+   "label": "Termination Date",
+   "mandatory_depends_on": "eval:doc.status==\"Terminated\";"
+  },
+  {
+   "depends_on": "eval:doc.status==\"Terminated\";",
+   "fieldname": "termination_reason",
+   "fieldtype": "Small Text",
+   "label": "Termination Reason",
+   "mandatory_depends_on": "eval:doc.status==\"Terminated\";"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-02-28 12:50:41.412889",
+ "modified": "2026-03-09 14:44:59.461175",
  "modified_by": "Administrator",
  "module": "Lease Management System",
  "name": "Lease Management",
