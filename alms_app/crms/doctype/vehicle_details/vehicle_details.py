@@ -5,7 +5,9 @@ import frappe
 from frappe.model.document import Document
 
 class VehicleDetails(Document):
-    pass
+
+    def autoname(self):
+        self.name = self.employee_code_and_name
 
 @frappe.whitelist()
 def send_car_allotment_email(docname, employee_code, file_url):

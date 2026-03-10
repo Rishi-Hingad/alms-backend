@@ -7,9 +7,11 @@
  "engine": "InnoDB",
  "field_order": [
   "installment_dates_section",
+  "installment_no",
   "installment_start_date",
   "installment_end_date",
   "column_break_htqv",
+  "installment_amount",
   "installment_status"
  ],
  "fields": [
@@ -43,16 +45,30 @@
    "in_preview": 1,
    "label": "Installment Status",
    "options": "Not Paid\nPaid"
+  },
+  {
+   "fieldname": "installment_amount",
+   "fieldtype": "Currency",
+   "in_list_view": 1,
+   "in_preview": 1,
+   "label": "Installment Amount"
+  },
+  {
+   "fieldname": "installment_no",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "in_preview": 1,
+   "label": "Installment Number"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2026-02-18 09:47:22.136680",
+ "modified": "2026-03-10 14:30:20.983521",
  "modified_by": "Administrator",
  "module": "CRMS",
- "name": "Installment Dates",
+ "name": "Installment Payment Status",
  "owner": "Administrator",
  "permissions": [],
  "row_format": "Dynamic",

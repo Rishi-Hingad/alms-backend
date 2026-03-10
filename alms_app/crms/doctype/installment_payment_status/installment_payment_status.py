@@ -5,5 +5,5 @@
 from frappe.model.document import Document
 
 
-class InstallmentDates(Document):
+class InstallmentPaymentStatus(Document):
 	pass
