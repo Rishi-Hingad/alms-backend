@@ -36,6 +36,7 @@
    "label": "Contract Start Date"
   },
   {
+   "fetch_from": "employee_car_process_form.contract_document",
    "fieldname": "upload_contract",
    "fieldtype": "Attach",
    "label": "Upload Contract"
@@ -45,6 +46,7 @@
    "fieldtype": "Column Break"
   },
   {
+   "fetch_from": "employee_car_process_form.contract_end_date",
    "fieldname": "contract_end_date",
    "fieldtype": "Date",
    "label": "Contract End Date"
@@ -117,7 +119,7 @@
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-03-06 16:05:56.399680",
+ "modified": "2026-03-10 17:03:22.137677",
  "modified_by": "Administrator",
  "module": "CRMS",
  "name": "Contract Master",
