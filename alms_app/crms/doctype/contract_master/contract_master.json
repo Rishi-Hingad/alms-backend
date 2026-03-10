@@ -30,6 +30,7 @@
    "label": "Contract Details"
   },
   {
+   "fetch_from": "employee_car_process_form.contract_start_date",
    "fieldname": "contract_start_date",
    "fieldtype": "Date",
    "label": "Contract Start Date"
@@ -77,17 +78,18 @@
    "fieldname": "installment_date",
    "fieldtype": "Table",
    "label": "Installment Date",
-   "options": "Installment Dates"
+   "options": "Installment Details"
   },
   {
    "fieldname": "employee_car_process_form",
    "fieldtype": "Link",
    "label": "Employee Car Process Form",
-   "options": "Employee Master",
+   "options": "Car Process",
    "unique": 1
   },
   {
    "default": "No",
+   "fetch_from": "employee_car_process_form.contract_signed",
    "fieldname": "contract_signed",
    "fieldtype": "Select",
    "label": "Contract Signed",
@@ -105,6 +107,7 @@
    "options": "Old Contract Details"
   },
   {
+   "fetch_from": "employee_car_process_form.contract_number",
    "fieldname": "contract_number",
    "fieldtype": "Data",
    "label": "Contract Number",
@@ -114,7 +117,7 @@
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-02-18 18:16:16.313939",
+ "modified": "2026-03-06 16:05:56.399680",
  "modified_by": "Administrator",
  "module": "CRMS",
  "name": "Contract Master",

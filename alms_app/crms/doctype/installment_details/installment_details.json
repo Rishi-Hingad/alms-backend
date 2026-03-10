@@ -1,0 +1,84 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2026-03-06 15:56:21.479828",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "installment_dates_section",
+  "installment_no",
+  "installment_start_date",
+  "installment_end_date",
+  "column_break_htqv",
+  "due_date",
+  "installment_amount",
+  "invoice_id"
+ ],
+ "fields": [
+  {
+   "fieldname": "installment_dates_section",
+   "fieldtype": "Section Break",
+   "label": "Installment Dates"
+  },
+  {
+   "fieldname": "installment_start_date",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "in_preview": 1,
+   "label": "Installment Start Date"
+  },
+  {
+   "fieldname": "installment_end_date",
+   "fieldtype": "Date",
+   "in_filter": 1,
+   "in_list_view": 1,
+   "label": "Installment End Date"
+  },
+  {
+   "fieldname": "column_break_htqv",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "due_date",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "in_preview": 1,
+   "label": "Due Date"
+  },
+  {
+   "fieldname": "installment_amount",
+   "fieldtype": "Currency",
+   "in_list_view": 1,
+   "in_preview": 1,
+   "label": "Installment Amount"
+  },
+  {
+   "fieldname": "invoice_id",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "in_preview": 1,
+   "label": "Invoice ID",
+   "options": "Invoice Details"
+  },
+  {
+   "fieldname": "installment_no",
+   "fieldtype": "Data",
+   "label": "Installment Number"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2026-03-10 11:21:51.515715",
+ "modified_by": "Administrator",
+ "module": "CRMS",
+ "name": "Installment Details",
+ "owner": "Administrator",
+ "permissions": [],
+ "row_format": "Dynamic",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

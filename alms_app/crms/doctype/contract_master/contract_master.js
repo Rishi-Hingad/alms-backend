@@ -1,10 +1,10 @@
 frappe.ui.form.on("Contract Master", {
 
-    refresh: function(frm) {
+    refresh: function (frm) {
 
         if (!frm.is_new()) {
 
-            frm.add_custom_button("Renew Contract", function() {
+            frm.add_custom_button("Renew Contract", function () {
 
                 // Validate existing data
                 if (!frm.doc.contract_start_date || !frm.doc.contract_end_date) {
@@ -45,15 +45,15 @@ frappe.ui.form.on("Contract Master", {
         }
     },
 
-    contract_start_date: function(frm) {
+    contract_start_date: function (frm) {
         frm.trigger("calculate_installments");
     },
 
-    contract_end_date: function(frm) {
+    contract_end_date: function (frm) {
         frm.trigger("calculate_installments");
     },
 
-    calculate_installments: function(frm) {
+    calculate_installments: function (frm) {
 
         if (!frm.doc.contract_start_date || !frm.doc.contract_end_date) {
             return;
@@ -87,8 +87,13 @@ frappe.ui.form.on("Contract Master", {
             }
 
             let row = frm.add_child("installment_date");
+            row.installment_no = installment_count + 1;
             row.installment_start_date = frappe.datetime.obj_to_str(current_start);
             row.installment_end_date = frappe.datetime.obj_to_str(current_end);
+            let due_date = new Date(current_start);
+            due_date.setDate(15);
+
+            row.due_date = frappe.datetime.obj_to_str(due_date);
 
             installment_count++;
 
