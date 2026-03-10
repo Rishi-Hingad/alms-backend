@@ -29,8 +29,11 @@ frappe.query_reports["Lease Summary Entries Report"] = {
 			default: get_financial_year().end_year,
 		},
 	],
-	onload: function () {
+	onload: function (report) {
 		auto_set_end_year();
+		report.page.add_button(__("Download Excel"), function () {
+			frappe.query_report.export_report();
+		});
 	},
 };
 

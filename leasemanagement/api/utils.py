@@ -5,7 +5,10 @@ from collections import Counter
 from datetime import date, datetime, time, timedelta
 
 import frappe
+import pandas as pd
 from dateutil.relativedelta import relativedelta
+from frappe.desk.query_report import run
+from frappe.utils import add_days
 
 
 @frappe.whitelist()
@@ -388,7 +391,7 @@ def get_common_month(doc, dict_ed_bdates, escalation, esc_bd_end_date):
 	return (dict_new, common_month, common_dict, prev_mlp_next, mid_diff_annually)
 
 
-def get_q_start_q_end(cnt, current_date, quarterly_months, end_date):
+def get_q_start_q_end(cnt, current_date, quarterly_months, end_date, modified_start):
 	q_start = current_date
 	if cnt == 1 and current_date.day != 15:
 		if current_date.month not in quarterly_months:
@@ -401,7 +404,14 @@ def get_q_start_q_end(cnt, current_date, quarterly_months, end_date):
 						q_end = datetime(current_date.year, quarterly_months[i], 15)
 						break
 		elif current_date.month in quarterly_months:
-			q_end = datetime(current_date.year, current_date.month, 15)
+			if q_start.day > 15:
+				for i in range(len(quarterly_months)):
+					if quarterly_months[i] > current_date.month:
+						q_end = datetime(current_date.year, quarterly_months[i], 15)
+						break
+			else:
+				q_end = datetime(current_date.year, current_date.month, 15)
+
 		else:
 			if current_date.month == 12:
 				q_end = datetime(current_date.year + 1, 1, 15)
@@ -429,15 +439,173 @@ def get_q_start_q_end(cnt, current_date, quarterly_months, end_date):
 				q_end = end_date
 	if (q_start.month == 1 and q_end.month == 4) or (q_start.month == 3 and q_end.month == 4):
 		q_end = datetime(current_date.year, 3, 31)
-	if cnt == 1 and q_end.month == 4 and q_start.month >= 1:
+	if cnt == 1 and q_end.month == 4 and q_start.month >= 1 and not (q_start.month == 4 and q_end.month == 4):
 		if q_start.month == 2:
 			_, last_day = monthrange(current_date.year, current_date.month)
 		else:
-			_, last_day = monthrange(current_date.year, 2)
+			# _, last_day = monthrange(current_date.year, 2)
+			_, last_day = monthrange(current_date.year, current_date.month)
 		q_end = datetime(current_date.year, current_date.month, last_day)
 		# frappe.msgprint("**"+str(datetime(current_date.year, current_date.month, last_day))+"**"+"cnt="+str(cnt))
-
+	# if modified_start is not None and current_date.date().month==modified_start.month and current_date.date().year==modified_start.year and modified_start.day!=1 and current_date.date().day!=modified_start.day:
+	# 	q_end = datetime(modified_start.year, modified_start.month, modified_start.day-1)
+	# frappe.msgprint("q_start"+str(q_start)+"||q_end"+str(q_end))
 	return (q_start, q_end)
+
+
+def advance_to_next_period(
+	current_date,
+	diff_annually,
+	mid_diff_annually,
+	quarterly_report,
+	modified_start,
+	q_end=None,
+	month_end=None,
+	end_date=None,
+	esc_bd_end_date=None,
+):
+	is_dec = current_date.month == 12
+
+	if diff_annually and not mid_diff_annually:
+		base_year = current_date.year + 1 if is_dec else current_date.year
+		base_month = 1 if is_dec else current_date.month + 1
+		return datetime(base_year, base_month, current_date.day) - relativedelta(days=1)
+
+	if diff_annually and mid_diff_annually:
+		base_year = current_date.year + 1 if is_dec else current_date.year
+		base_month = 1 if is_dec else current_date.month + 1
+		return datetime(base_year, base_month, esc_bd_end_date.day) - relativedelta(days=1)
+
+	if quarterly_report and q_end is not None:
+		return _advance_quarterly(current_date, q_end, month_end, end_date, is_dec)
+
+	# Default monthly advance
+	if is_dec:
+		return datetime(current_date.year + 1, 1, 1)
+	# frappe.msgprint("curr="+str(current_date.date())+"||"+str(datetime(current_date.year, current_date.month + 1, 1)))
+	if (
+		modified_start is not None
+		and current_date.date().month == modified_start.month
+		and current_date.date().year == modified_start.year
+		and modified_start.day != 1
+		and current_date.date().day != modified_start.day
+	):
+		modified_start = datetime(modified_start.year, modified_start.month, modified_start.day)
+		# frappe.msgprint("next="+str(modified_start))
+		return datetime(modified_start.year, modified_start.month, modified_start.day)
+	else:
+		# frappe.msgprint("curr="+str(current_date.date())+"||"+str(datetime(current_date.year, current_date.month + 1, 1)))
+		return datetime(current_date.year, current_date.month + 1, 1)
+
+
+def _advance_quarterly(current_date, q_end, month_end, end_date, is_dec):
+	_, last_day_q_end = monthrange(q_end.year, q_end.month)
+
+	if q_end == end_date:
+		if q_end.month != 12:
+			return datetime(q_end.year + 1 if is_dec else q_end.year, 1 if is_dec else q_end.month + 1, 1)
+		return datetime(q_end.year + 1, 1, 1)
+
+	if q_end.month in (2, 3):
+		return datetime(q_end.year, q_end.month + 1, 1)
+
+	if q_end != month_end and q_end.month != 3:
+		if last_day_q_end == q_end.day:
+			next_month = 1 if q_end.month == 12 else q_end.month + 1
+			next_year = q_end.year + 1 if q_end.month == 12 else q_end.year
+			return datetime(next_year, next_month, 1)
+		else:
+			if is_dec:
+				return datetime(q_end.year, 1, q_end.day + 1)
+			return datetime(q_end.year, q_end.month, q_end.day + 1)
+
+	if is_dec:
+		return datetime(current_date.year, 1, 16)
+	return datetime(current_date.year, current_date.month + 1, 16)
+
+
+@frappe.whitelist()
+def get_prev_wdv_modification(
+	calculation_rate_type, previous_lease, agreement_start_date, prev_closing_liability
+):
+	prev_wdv = None
+	if calculation_rate_type == "Daily Rate":
+		lreport = "Lease Report"
+	else:
+		lreport = "Lease Report Monthly (With Escalation)"
+	result = run(lreport, filters={"docname": previous_lease})
+	rows = result.get("result")
+	df = pd.DataFrame(rows)
+	previous_date = add_days(agreement_start_date, -1)
+	last_row = df.loc[df["month_end_date"] == previous_date]
+	# frappe.msgprint("previous_date"+str(previous_date)+'||last_row["wdv"].iloc[0]='+str(last_row["wdv"].iloc[0])+'||last_row["closing_liability"].iloc[0]='+str(last_row["closing_liability"].iloc[0]))
+	if not last_row.empty:
+		prev_wdv = (
+			float(last_row["wdv"].iloc[0])
+			- float(last_row["closing_liability"].iloc[0])
+			+ float(prev_closing_liability)
+		)
+
+	return prev_wdv
+
+
+def get_period_details(current_date, start_date, end_date, diff_annually, mid_diff_annually, modified_start):
+	month_start, month_end, month_start2, month_end2, total_days_of_month = get_month_details(current_date)
+	if (
+		modified_start is not None
+		and month_start.date().month == modified_start.month
+		and month_start.date().year == modified_start.year
+		and modified_start.day != 1
+		and month_start.day != modified_start.day
+	):
+		# frappe.msgprint("Modified"+str(modified_start - timedelta(days=1)))
+		modified_start = datetime(modified_start.year, modified_start.month, modified_start.day)
+		month_end = modified_start - timedelta(days=1)
+
+	# Calculate n_prior
+	if diff_annually:
+		if current_date.month == 12:
+			prior_date = datetime(current_date.year + 1, 1, current_date.day)
+		else:
+			prior_date = datetime(current_date.year, current_date.month + 1, current_date.day)
+		prior_month_end = datetime(prior_date.year, prior_date.month, current_date.day)
+		prior_month_start = prior_date.replace(day=1)
+		n_prior = (prior_month_end - prior_month_start).days
+	else:
+		n_prior = 0
+
+	if end_date < month_end:
+		month_end = end_date
+
+	# Calculate n and n_next based on annually/mid flags
+	if diff_annually and not mid_diff_annually:
+		if month_end < month_end2 and month_end == end_date:
+			month_end = current_date
+			month_start = current_date.replace(day=1)
+		n_next = (month_end - month_start).days + 1
+		n = total_days_of_month
+
+	elif mid_diff_annually:
+		if month_end < month_end2 and month_end != end_date:
+			month_end = current_date
+			month_start = current_date.replace(day=1)
+		if month_end == end_date:
+			month_end = end_date
+			month_start = current_date.replace(day=1)
+		n_next = (month_end - month_start).days + 1
+		n = total_days_of_month
+
+	else:
+		n = (month_end - month_start).days + 1
+		n_next = 0
+
+	if current_date.strftime("%Y-%m") == end_date.strftime("%Y-%m"):
+		month_end = end_date
+	if current_date == start_date or month_end == end_date:
+		n = (month_end - month_start).days + 1
+		n_prior = n
+	# frappe.msgprint("in period month_start"+str(month_start)+"== month_end"+str(month_end))
+	return month_start, month_end, total_days_of_month, n, n_prior, n_next
 
 
 @frappe.whitelist()
@@ -464,8 +632,14 @@ def get_mlp(
 	common_dict,
 	prev_mlp_escl,
 	prev_mlp_next,
+	modified_start,
 ):
 	mrent, rate, famt = 0, 0, 0
+	# if modified_start.month == current_date.date().month and modified_start.year == current_date.date().year:
+	# 	n_prior = (modified_start - timedelta(days=1)).day
+	# 	n_next = (calendar.monthrange(modified_start.year, modified_start.month)[1]) - modified_start.day + 1
+	# 	frappe.msgprint("n_prior="+str(n_prior)+"=="+str(n_next))
+	# frappe.msgprint("modified_start"+str((modified_start - timedelta(days=1)).day)+"||"+str(modified_start - timedelta(days=1))+"--"+str(current_date.date())+"--"+str(total_days_of_month)+"--"+str(n_prior)+"=="+str(calendar.monthrange(modified_start.year, modified_start.month)[1]))
 	if n_prior < total_days_of_month or n < total_days_of_month:
 		prev_mlp = mlp
 		if not diff_annually:
@@ -497,7 +671,17 @@ def get_mlp(
 						if mrent == 0 and rate == 0 and famt == 0:
 							mlp = 0
 						mlp = mlp + (rate * mlp / 100) + famt
-						prev_mlp_escl = mlp
+						if (
+							modified_start is not None
+							and current_date.date().month == modified_start.month
+							and current_date.date().year == modified_start.year
+							and modified_start.day != 1
+							and current_date.date().day != modified_start.day
+						):
+							# frappe.msgprint(str(prev_mlp)+"In MLP Loop"+"||curr_date"+str(current_date.date())+"||"+str((rate*prev_mlp/100)+prev_mlp+famt))
+							prev_mlp_escl = prev_mlp + (rate * prev_mlp / 100) + famt
+						else:
+							prev_mlp_escl = mlp
 						break
 			elif current_date.date() in edates_bd:
 				for k in dict_ed_bdates.keys():
@@ -580,6 +764,7 @@ def get_mlp(
 						prev_mlp_escl = mlp
 						famt_prev_mlp1 = famt_prev_mlp1 + (famt_prev_mlp1 * rate / 100)
 						break
+				# frappe.msgprint("prev_mlp_escl="+str(prev_mlp_escl)+"||prev_mlp="+str(prev_mlp)+"||famt_prev_mlp1="+str(famt_prev_mlp1))
 			return (mlp, prev_mlp_escl, famt_prev_mlp1, prev_mlp, mrent, rate, famt)
 			# total_mlp += mlp
 			# if cnt == 1:

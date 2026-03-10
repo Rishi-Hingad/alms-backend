@@ -141,12 +141,12 @@ app_include_js = ["/assets/leasemanagement/js/invoice_dialog.js"]
 
 permission_query_conditions = {
 	"Lease Management": "leasemanagement.lease_management_system.doctype.lease_management.lease_management.get_permission_query_conditions",
-	"Property Master": "leasemanagement.masters.doctype.property_master.property_master.get_permission_query_conditions",
+	"Property Master": "leasemanagement.lease_masters.doctype.property_master.property_master.get_permission_query_conditions",
 }
 
 has_permission = {
 	"Lease Management": "leasemanagement.lease_management_system.doctype.lease_management.lease_management.has_permission",
-	"Property Master": "leasemanagement.masters.doctype.property_master.property_master.has_permission",
+	"Property Master": "leasemanagement.lease_masters.doctype.property_master.property_master.has_permission",
 }
 
 # DocType Class

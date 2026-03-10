@@ -6,8 +6,10 @@ from datetime import date, datetime
 
 import frappe
 import pandas as pd
+from dateutil.relativedelta import relativedelta
 from frappe import _
 from frappe.desk.query_report import run
+from frappe.utils import getdate
 
 
 def execute(filters=None):
@@ -37,6 +39,34 @@ def execute(filters=None):
 			"precision": 2,
 		},
 		{
+			"label": _("Additions - ROU Asset"),
+			"fieldname": "additions_rou_asset",
+			"fieldtype": "Currency",
+			"width": 120,
+			"precision": 2,
+		},
+		{
+			"label": _("Depreciation"),
+			"fieldname": "depreciation",
+			"fieldtype": "Currency",
+			"width": 200,
+			"precision": 2,
+		},
+		{
+			"label": _("Modification"),
+			"fieldname": "modification",
+			"fieldtype": "Currency",
+			"width": 200,
+			"precision": 2,
+		},
+		{
+			"label": _("Termination"),
+			"fieldname": "termination",
+			"fieldtype": "Currency",
+			"width": 200,
+			"precision": 2,
+		},
+		{
 			"label": _("Closing ROU Asset"),
 			"fieldname": "rou_closing",
 			"fieldtype": "Currency",
@@ -51,8 +81,15 @@ def execute(filters=None):
 			"precision": 2,
 		},
 		{
-			"label": _("Closing Liability"),
-			"fieldname": "liability_closing",
+			"label": _("Additions - Lease Liability"),
+			"fieldname": "additions_lease_liability",
+			"fieldtype": "Currency",
+			"width": 120,
+			"precision": 2,
+		},
+		{
+			"label": _("Interest Expense"),
+			"fieldname": "interest",
 			"fieldtype": "Currency",
 			"width": 200,
 			"precision": 2,
@@ -65,31 +102,10 @@ def execute(filters=None):
 			"precision": 2,
 		},
 		{
-			"label": _("Interest Expense"),
-			"fieldname": "interest",
+			"label": _("Closing Liability"),
+			"fieldname": "liability_closing",
 			"fieldtype": "Currency",
 			"width": 200,
-			"precision": 2,
-		},
-		{
-			"label": _("Depreciation"),
-			"fieldname": "depreciation",
-			"fieldtype": "Currency",
-			"width": 200,
-			"precision": 2,
-		},
-		{
-			"label": _("Additions - ROU Asset"),
-			"fieldname": "additions_rou_asset",
-			"fieldtype": "Currency",
-			"width": 120,
-			"precision": 2,
-		},
-		{
-			"label": _("Additions - Lease Liability"),
-			"fieldname": "additions_lease_liability",
-			"fieldtype": "Currency",
-			"width": 120,
 			"precision": 2,
 		},
 		{
@@ -108,13 +124,17 @@ def execute(filters=None):
 		},
 	]
 
-	fin_start_year = filters.get("fin_start_year")
-	fin_end_year = filters.get("fin_end_year")
+	fin_start_year = filters.get("fin_start_year")  # output 2025
+	fin_end_year = filters.get("fin_end_year")  # output 2026
+	fy_start = getdate(f"{fin_start_year}-04-01")
+	fy_end = getdate(f"{fin_end_year}-03-31")
 	leases = frappe.get_all(
 		"Lease Management",
 		order_by="name asc",
 		filters={
 			"Company": company_name,
+			"agreement_start_date": ["<=", fy_end],
+			"agreement_end_date": [">=", fy_start],
 		},
 		fields=["name"],
 	)
@@ -129,17 +149,30 @@ def execute(filters=None):
 
 	for lease in leases:
 		lease_doc = frappe.get_doc("Lease Management", lease.name)
+		lease_status = lease_doc.status
 		if lease_doc.type_of_asset == "Immovable":
 			prop_doc = frappe.get_doc("Property Master", lease_doc.property_description)
 		else:
 			car_desc = frappe.get_doc("Car Description Master", lease_doc.car_description)
+		# frappe.msgprint("AED="+str(lease_doc.agreement_end_date))
+		modified_start = None
+		if lease_status == "Discarded":
+			if lease_doc.modifications:
+				modified_start = frappe.db.get_value(
+					"Lease Management", lease_doc.modifications[0].modified_lease, "agreement_start_date"
+				)
+				# frappe.msgprint("lease="+lease_doc.name+" status="+str(lease_status)+"modified_start"+str(modified_start)+"||"+str(datetime(modified_start.year, modified_start.month, modified_start.day) - relativedelta(days=1)))
+				lease_doc.agreement_end_date = datetime(
+					modified_start.year, modified_start.month, modified_start.day
+				) - relativedelta(days=1)
 
 		msdate = date(int(fin_start_year), 4, 1)
 		medate = date(int(fin_end_year), 3, 1)
 
 		lease_end = None
 		if lease_doc.agreement_end_date:
-			lease_end = datetime.strptime(str(lease_doc.agreement_end_date), "%Y-%m-%d").date()
+			# lease_end = datetime.strptime(str(lease_doc.agreement_end_date), "%Y-%m-%d").date()
+			lease_end = getdate(lease_doc.agreement_end_date)
 
 		if lease_end and lease_end < msdate:
 			continue
@@ -170,6 +203,11 @@ def execute(filters=None):
 		sdate = date(int(fin_start_year), 3, 31)
 		edate = date(int(fin_end_year), 3, 31)
 
+		if lease_end < edate:
+			# 	edate=lease_end
+			medate = date(lease_end.year, lease_end.month, 1)
+			# frappe.msgprint(str(date(lease_end.year,lease_end.month,1)))
+
 		row_opening = df.loc[df["month_end_date"] == sdate]
 
 		if len(row_opening) == 1:
@@ -183,9 +221,25 @@ def execute(filters=None):
 		if len(row_closing) == 1:
 			closing_rou = row_closing["wdv"].iloc[0]
 			closing_liability = row_closing["closing_liability"].iloc[0]
+			# if modified_start:
+			# 	modification_val=-row_closing["wdv"].iloc[0]
+			# else:
+			# 	modification_val=0
+			if lease_end < edate:
+				closing_rou = 0
+				closing_liability = 0
 		else:
 			closing_rou = 0
 			closing_liability = 0
+			# modification_val=0
+		if modified_start:
+			mod_rec = df.loc[df["month_end_date"] == lease_end]
+			if len(mod_rec) == 1:
+				modification_val = -mod_rec["wdv"].iloc[0]
+			else:
+				modification_val = 0
+		else:
+			modification_val = 0
 
 		mlp_list, interest_list, depreciation_list = [], [], []
 		# if lease_doc.type_of_asset=="Car":
@@ -205,13 +259,14 @@ def execute(filters=None):
 		# 	mlp_list = lease_df["mlp"].tolist()
 		# 	interest_list = lease_df["interest_cost"].tolist()
 		# 	depreciation_list = lease_df["depreciation"].tolist()
-
 		if opening_rou == 0:
-			additions_rou_asset = df["wdv"][0]
-			additions_lease_lia = additions_rou_asset
+			if lease_doc.status != "Modified":
+				additions_rou_asset = df["wdv"][0]
+				additions_lease_lia = additions_rou_asset
+			else:
+				additions_rou_asset = additions_lease_lia = 0
 		else:
 			additions_rou_asset = additions_lease_lia = 0
-
 		total_rent_paid = 0
 		total_interest_cost = 0
 		total_depreciation = 0
@@ -224,7 +279,7 @@ def execute(filters=None):
 			if not math.isnan(depreciation_list[i]):
 				total_depreciation += depreciation_list[i]
 
-		rou_check = opening_rou - total_depreciation - closing_rou + additions_rou_asset
+		rou_check = opening_rou - total_depreciation - closing_rou + additions_rou_asset + modification_val
 		liability_check = (
 			opening_liability
 			+ total_interest_cost
@@ -254,6 +309,8 @@ def execute(filters=None):
 					"additions_lease_liability": additions_lease_lia,
 					"check_rou": rou_check,
 					"check_liability": liability_check,
+					"modification": modification_val,
+					"termination": 0,
 				}
 			)
 		else:
@@ -273,6 +330,8 @@ def execute(filters=None):
 					"additions_lease_liability": additions_lease_lia,
 					"check_rou": rou_check,
 					"check_liability": liability_check,
+					"modification": "",
+					"termination": "",
 				}
 			)
 	data.append(
@@ -291,6 +350,8 @@ def execute(filters=None):
 			"additions_lease_liability": "",
 			"check_rou": "",
 			"check_liability": "",
+			"modification": "",
+			"termination": "",
 		}
 	)
 

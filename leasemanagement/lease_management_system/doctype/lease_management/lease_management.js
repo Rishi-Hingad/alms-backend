@@ -166,26 +166,44 @@ frappe.ui.form.on("Lease Management", {
 				};
 			});
 
-			frm.set_query("car_description", function () {
-				return {
-					filters: {
-						vendor: frm.doc.vendor,
-					},
-				};
-			});
+			// frm.set_query("car_description", function () {
+			// 	return {
+			// 		filters: {
+			// 			vendor: frm.doc.vendor,
+			// 		},
+			// 	};
+			// });
 		} else {
 			// Clear property field if vendor is cleared
 			frm.set_value("property_description", null);
-			frm.set_value("car_description", null);
+			// frm.set_value("car_description", null);
 
 			// Remove query filter
-			frm.set_query("car_description", function () {
-				return {
-					filters: {
-						name: null, // Will return no property
-					},
-				};
-			});
+			// frm.set_query("car_description", function () {
+			// 	return {
+			// 		filters: {
+			// 			name: null, // Will return no property
+			// 		},
+			// 	};
+			// });
+		}
+	},
+	car_description: function (frm) {
+		if (frm.doc.car_description) {
+			frappe.db
+				.get_value("Car Description Master", { name: frm.doc.car_description }, [
+					"company",
+					"vendor",
+				])
+				.then((r) => {
+					if (r.message) {
+						frm.set_value("company", r.message.company);
+						frm.set_value("vendor", r.message.vendor);
+					}
+				});
+		} else {
+			frm.set_value("company", null);
+			frm.set_value("vendor", null);
 		}
 	},
 	agreement_start_date: function (frm) {
@@ -204,7 +222,9 @@ frappe.ui.form.on("Lease Management", {
 		}
 	},
 	onload(frm) {
-		set_agreement_status(frm);
+		// if(!frm.doc.is_modified){
+		// 	set_agreement_status(frm);
+		// }
 		if (!frm.doc.vendor) {
 			frm.set_query("property_description", function () {
 				return {
@@ -213,13 +233,13 @@ frappe.ui.form.on("Lease Management", {
 					},
 				};
 			});
-			frm.set_query("car_description", function () {
-				return {
-					filters: {
-						name: null, // blocks all results
-					},
-				};
-			});
+			// frm.set_query("car_description", function () {
+			// 	return {
+			// 		filters: {
+			// 			name: null, // blocks all results
+			// 		},
+			// 	};
+			// });
 		}
 
 		frm.report_counter = 0;
@@ -239,6 +259,26 @@ frappe.ui.form.on("Lease Management", {
 		}
 	},
 	refresh: function (frm) {
+		frm.page.set_indicator(__(frm.doc.status), get_status_color(frm.doc.status));
+		// frm.dashboard.clear_headline();
+
+		// // ── Root/Original Lease ─────────────────────────────────────
+		// if (!frm.doc.parent_lease && !frm.doc.is_modified) {
+		// 	frm.dashboard.set_headline(
+		// 		`<span class="indicator-pill green">Parent Lease</span>`
+		// 	);
+		// }
+
+		// // ── Modified/Child Lease ────────────────────────────────────
+		// if (frm.doc.parent_lease) {
+		// 	frm.dashboard.set_headline(
+		// 		`<span class="indicator-pill orange">
+		// 			Modified Lease — Version ${frm.doc.modification_version}
+		// 			| Parent: ${frm.doc.parent_lease}
+		// 		</span>`
+		// 	);
+		// }
+
 		if (
 			frappe.user.has_role("Vendor") &&
 			!frappe.user.has_role("System Manager") &&
@@ -306,6 +346,123 @@ frappe.ui.form.on("Lease Management", {
 				// 		},
 				// 	});
 				// });
+				if (frm.doc.status == "Active" || frm.doc.status == "Modified") {
+					frm.add_custom_button(__("Terminate Lease"), function () {
+						frappe.confirm("Are you sure you want to terminate this lease?", () => {
+							let d = new frappe.ui.Dialog({
+								title: "Terminate Lease",
+								fields: [
+									{
+										label: "Termination Date",
+										fieldname: "termination_date",
+										fieldtype: "Date",
+										reqd: 1,
+									},
+									{
+										label: "Termination Reason",
+										fieldname: "termination_reason",
+										fieldtype: "Small Text",
+										reqd: 1,
+									},
+								],
+								primary_action_label: "Terminate",
+								primary_action(values) {
+									let termination_date = frappe.datetime.str_to_obj(
+										values.termination_date
+									);
+									let start_date = frappe.datetime.str_to_obj(
+										frm.doc.agreement_start_date
+									);
+									let end_date = frappe.datetime.str_to_obj(
+										frm.doc.agreement_end_date
+									);
+
+									if (
+										termination_date < start_date ||
+										termination_date > end_date
+									) {
+										frappe.msgprint(
+											__(
+												"Termination Date must be between Agreement Start Date and Agreement End Date"
+											)
+										);
+										return;
+									}
+									frappe.call({
+										method: "frappe.client.set_value",
+										args: {
+											doctype: "Lease Management",
+											name: frm.doc.name,
+											fieldname: {
+												termination_date: values.termination_date,
+												termination_reason: values.termination_reason,
+												status: "Terminated",
+											},
+										},
+										callback: function () {
+											frappe.msgprint("Lease Terminated Successfully");
+											frm.reload_doc();
+										},
+									});
+
+									d.hide();
+								},
+							});
+
+							d.show();
+						});
+					}).addClass("btn-danger");
+				}
+
+				if (
+					frm.doc.status == "Active" ||
+					frm.doc.status == "Modified" ||
+					frm.doc.status == "Agreement Expired"
+				) {
+					frm.add_custom_button(__("Modify Agreement"), function () {
+						// frappe.new_doc("Lease Management", {
+						// 	previous_lease:frm.doc.name,
+						// 	parent_lease:frm.doc.name,
+						// 	is_modified: 1,
+						// 	status:"Modified",
+						// });
+						let new_doc = frappe.model.copy_doc(frm.doc);
+
+						new_doc.agreement_start_date = null;
+						new_doc.agreement_end_date = null;
+						new_doc.monthly_rent = null;
+						new_doc.modification_reason = null;
+						new_doc.previous_wdv = 0;
+
+						new_doc.modifications = [];
+						new_doc.invoice_details = [];
+						new_doc.invoice_attachments = [];
+						new_doc.escalation = [];
+						new_doc.additional_amounts = [];
+
+						new_doc.is_modified = 1;
+						new_doc.status = "Modified";
+						new_doc.modification_version = frm.doc.modification_version + 1;
+						new_doc.previous_lease = frm.doc.name;
+
+						new_doc.parent_lease = frm.doc.parent_lease || frm.doc.name;
+
+						frappe.set_route("Form", "Lease Management", new_doc.name);
+					});
+				}
+
+				if (
+					!frm.doc.parent_lease &&
+					frm.doc.modifications &&
+					frm.doc.modifications.length > 0
+				) {
+					frm.add_custom_button(
+						__(`View Modifications (${frm.doc.modifications.length})`),
+						function () {
+							frm.scroll_to_field("modifications");
+						}
+					);
+				}
 
 				frm.add_custom_button(__("View Report"), function () {
 					let lname = frm.doc.name;
@@ -347,29 +504,13 @@ frappe.ui.form.on("Lease Management", {
 						);
 					}
 				});
-
-				// frm.add_custom_button(__("Update Expired Lease's"),function (){
-				//  frappe.call({
-				//      method:"leasemanagement.lease_management_system.doctype.lease_management.lease_management.bulk_update_agreement_status",
-				//      callback(res){
-				// 		if(res.message==0){
-				// 			frappe.msgprint("No Agreement Status to Update");
-				// 		}
-				// 		else{
-				// 			frappe.msgprint(res.message+" Agreement Status Updated");
-				// 			frm.reload_doc();
-				// 		}
-				//      }
-				//  });
-				// }
-				// );
 			}
-			if (frappe.user.has_role("Vendor") || frappe.user.has_role("Accounts")) {
-				frm.add_custom_button(__("Go to Invoice Details"), function () {
-					// Scroll to the field
-					frm.scroll_to_field("invoice_details");
-				});
-			}
+			// if (frappe.user.has_role("Vendor") || frappe.user.has_role("Accounts")) {
+			// 	frm.add_custom_button(__("Go to Invoice Details"), function () {
+			// 		// Scroll to the field
+			// 		frm.scroll_to_field("invoice_details");
+			// 	});
+			// }
 		}
 	},
 	validate: function (frm) {
@@ -450,7 +591,11 @@ frappe.ui.form.on("Lease Management", {
 			// }
 		});
 
-		if (frm.doc.property_description && frm.doc.status != "Agreement Expired") {
+		if (
+			frm.doc.property_description &&
+			frm.doc.status != "Agreement Expired" &&
+			!frm.doc.is_modified
+		) {
 			frappe.call({
 				method: "frappe.client.get_list",
 				args: {
@@ -486,6 +631,18 @@ frappe.ui.form.on("Lease Management", {
 	},
 });
 
+function get_status_color(status) {
+	const status_colors = {
+		Active: "green",
+		Terminated: "red",
+		Modified: "blue",
+		Discarded: "yellow",
+		"Agreement Expired": "grey",
+	};
+
+	return status_colors[status] || "orange";
+}
+
 function set_agreement_status(frm) {
 	const start_date = frm.doc.agreement_start_date;
 	const end_date = frm.doc.agreement_end_date;
@@ -512,33 +669,37 @@ function set_agreement_status(frm) {
 }
 
 function validate_dates_and_set_lease_period(frm) {
-	const start_date = frm.doc.agreement_start_date;
-	const end_date = frm.doc.agreement_end_date;
-	if (start_date && end_date) {
-		if (end_date <= start_date) {
-			frappe.msgprint(__("Agreement End Date must be greater than Agreement Start Date."));
-			frm.set_value("agreement_end_date", null);
-			return;
-		}
+	if (!frm.doc.is_modified) {
+		const start_date = frm.doc.agreement_start_date;
+		const end_date = frm.doc.agreement_end_date;
+		if (start_date && end_date) {
+			if (end_date <= start_date) {
+				frappe.msgprint(
+					__("Agreement End Date must be greater than Agreement Start Date.")
+				);
+				frm.set_value("agreement_end_date", null);
+				return;
+			}
 
-		// Calculate difference in months between dates
-		const start = frappe.datetime.str_to_obj(start_date);
-		const end = frappe.datetime.str_to_obj(end_date);
+			// Calculate difference in months between dates
+			const start = frappe.datetime.str_to_obj(start_date);
+			const end = frappe.datetime.str_to_obj(end_date);
 
-		let months_diff = (end.getFullYear() - start.getFullYear()) * 12;
-		months_diff -= start.getMonth();
-		months_diff += end.getMonth();
+			let months_diff = (end.getFullYear() - start.getFullYear()) * 12;
+			months_diff -= start.getMonth();
+			months_diff += end.getMonth();
 
-		if (months_diff > 12) {
-			frm.set_value("lease_period", "Long Term (Greater Than 12 Months)");
-		} else {
-			frm.set_value("lease_period", "Short Term (Less Than 12 Months)");
-		}
+			if (months_diff > 12) {
+				frm.set_value("lease_period", "Long Term (Greater Than 12 Months)");
+			} else {
+				frm.set_value("lease_period", "Short Term (Less Than 12 Months)");
+			}
 
-		if (end_date < frappe.datetime.get_today()) {
-			frm.set_value("status", "Agreement Expired");
-		} else {
-			frm.set_value("status", "Active");
+			if (end_date < frappe.datetime.get_today()) {
+				frm.set_value("status", "Agreement Expired");
+			} else {
+				frm.set_value("status", "Active");
+			}
 		}
 	}
 }
