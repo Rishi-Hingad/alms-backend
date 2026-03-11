@@ -11,12 +11,13 @@ from dateutil.relativedelta import relativedelta
 from frappe import _ as translate
 
 from leasemanagement.api.utils import (
+	advance_to_next_period,
 	calculate_daily_rate,
 	get_common_month,
 	get_diff_years,
 	get_escalation_dates,
 	get_mlp,
-	get_month_details,
+	get_period_details,
 	get_prev_wdv_modification,
 	get_q_start_q_end,
 )
@@ -119,11 +120,26 @@ def execute(filters=None):
 		doc, dict_ed_bdates, escalation, esc_bd_end_date
 	)
 	mid_diff_annually2 = mid_diff_annually
+	q_start = None
+	q_end = None
+	modified_start = None
+	if doc.status == "Discarded" and doc.modifications:
+		modified_start = frappe.db.get_value(
+			"Lease Management", doc.modifications[0].modified_lease, "agreement_start_date"
+		)
+		if quarterly_report:
+			# if modified_start.day==16:
+			modified_start = None
+	if doc.status == "Terminated" and not quarterly_report:
+		last_date_of_month = monthrange(doc.termination_date.year, doc.termination_date.month)[1]
+		if not (doc.termination_date.day == last_date_of_month):
+			modified_start = doc.termination_date + relativedelta(days=1)
+			# frappe.msgprint("terminated prior="+str(doc.termination_date)+"||"+str(doc.termination_date.day == last_date_of_month))
 	# First loop PV calculations
 	while current_date <= end_date:
 		cnt += 1
 		if quarterly_report:
-			q_start, q_end = get_q_start_q_end(cnt, current_date, quarterly_months, end_date)
+			q_start, q_end = get_q_start_q_end(cnt, current_date, quarterly_months, end_date, modified_start)
 			if cnt == 1:
 				for child in doc.additional_amounts:
 					if child.start_date == q_start.date() and child.end_date != q_end.date():
@@ -147,55 +163,9 @@ def execute(filters=None):
 			if cnt > 1:
 				if current_date != end_date:
 					current_date = current_date + timedelta(days=1)
-		month_start, month_end, month_start2, month_end2, total_days_of_month = get_month_details(
-			current_date
+		month_start, month_end, total_days_of_month, n, n_prior, n_next = get_period_details(
+			current_date, start_date, end_date, diff_annually, mid_diff_annually, modified_start
 		)
-		if diff_annually:
-			if current_date.month == 12:
-				prior_month = 1
-				prior_date = datetime(current_date.year + 1, prior_month, current_date.day)
-			else:
-				prior_month = current_date.month + 1
-				prior_date = datetime(current_date.year, prior_month, current_date.day)
-			prior_day = current_date.day
-			prior_month_end = datetime(prior_date.year, prior_date.month, prior_day)
-
-			prior_month_start = prior_date.replace(day=1)
-			diff_prior_month = prior_month_end - prior_month_start
-			n_prior = diff_prior_month.days
-		else:
-			n_prior = 0
-
-		if end_date < month_end:
-			month_end = end_date
-
-		if diff_annually and not mid_diff_annually:
-			if month_end < month_end2 and month_end == end_date:
-				month_end = current_date
-				month_start = current_date.replace(day=1)
-			date_difference = month_end - month_start
-			n_next = date_difference.days + 1
-			n = total_days_of_month
-		elif mid_diff_annually:
-			if month_end < month_end2 and month_end != end_date:
-				month_end = current_date
-				month_start = current_date.replace(day=1)
-			if month_end == end_date:
-				month_end = end_date
-				month_start = current_date.replace(day=1)
-			date_difference = month_end - month_start
-			n_next = date_difference.days + 1
-			n = total_days_of_month
-		else:
-			date_difference = month_end - month_start
-			n = date_difference.days + 1
-			n_next = 0
-		if current_date.strftime("%Y-%m") == end_date.strftime("%Y-%m"):
-			month_end = end_date
-		if current_date == start_date or month_end == end_date:
-			date_difference = month_end - month_start
-			n = date_difference.days + 1
-			n_prior = n
 
 		if quarterly_report:
 			n = n_prior = total_days_of_month
@@ -203,7 +173,6 @@ def execute(filters=None):
 		if doc.type_of_asset == "Car":
 			if n == total_days_of_month:
 				n_prior = n
-
 		if n_prior < total_days_of_month or n < total_days_of_month:
 			prev_mlp = mlp
 			if not diff_annually:
@@ -230,15 +199,30 @@ def execute(filters=None):
 					common_dict,
 					prev_mlp_escl,
 					prev_mlp_next,
+					modified_start,
 				)
-
-				total_mlp += mlp
+				if add_amount:
+					for child in doc.additional_amounts:
+						if quarterly_report:
+							if child.start_date == q_start.date() and child.end_date == q_end.date():
+								mlp = child.additional_amount
+						else:
+							if child.start_date == month_start.date() and child.end_date == month_end.date():
+								mlp = child.additional_amount
+				if quarterly_report:
+					if q_end.month == 3:
+						total_mlp += 0
+					else:
+						total_mlp += mlp
+				else:
+					total_mlp += mlp
 				if cnt == 1:
 					pv = mlp
 					pv_arr.append(pv)
 				else:
 					pv = mlp / ((1 + daily_rate) ** ndays)
 					pv_arr.append(pv)
+
 				if prev_mlp_escl is None:
 					mlp = prev_mlp
 				else:
@@ -269,6 +253,7 @@ def execute(filters=None):
 					common_dict,
 					prev_mlp_escl,
 					prev_mlp_next,
+					modified_start,
 				)
 				mlp = mlp_new
 				total_mlp += mlp
@@ -308,6 +293,7 @@ def execute(filters=None):
 				common_dict,
 				prev_mlp_escl,
 				prev_mlp_next,
+				modified_start,
 			)
 			if add_amount:
 				for child in doc.additional_amounts:
@@ -352,66 +338,18 @@ def execute(filters=None):
 					diff_annually = True
 
 		# Move to next month
-		if current_date.month == 12:
-			if diff_annually and not mid_diff_annually:
-				current_date = datetime(current_date.year + 1, 1, current_date.day) - relativedelta(days=1)
-			elif diff_annually and mid_diff_annually:
-				current_date = datetime(current_date.year + 1, 1, esc_bd_end_date.day) - relativedelta(days=1)
-			elif quarterly_report:
-				if q_end != month_end and q_end != end_date:
-					_, last_day_q_end = monthrange(q_end.year, q_end.month)
-					if last_day_q_end == q_end.day:
-						if q_end.month == 12:
-							current_date = datetime(q_end.year + 1, 1, 1)
-						else:
-							current_date = datetime(q_end.year, q_end.month + 1, 1)
-					else:
-						current_date = datetime(q_end.year, 1, q_end.day + 1)
-				elif q_end == end_date:
-					if q_end.month != 12:
-						current_date = datetime(q_end.year + 1, q_end.month + 1, 1)
-					else:
-						current_date = datetime(q_end.year + 1, 1, 1)
-				elif q_end.month == 2:
-					current_date = datetime(q_end.year, q_end.month + 1, 1)
-				elif q_end.month == 3:
-					current_date = datetime(q_end.year, q_end.month + 1, 1)
-				else:
-					current_date = datetime(current_date.year, 1, 16)
-			else:
-				current_date = datetime(current_date.year + 1, 1, 1)
-		else:
-			if diff_annually and not mid_diff_annually:
-				current_date = datetime(
-					current_date.year, current_date.month + 1, current_date.day
-				) - relativedelta(days=1)
-			elif diff_annually and mid_diff_annually:
-				current_date = datetime(
-					current_date.year, current_date.month + 1, esc_bd_end_date.day
-				) - relativedelta(days=1)
-			elif quarterly_report:
-				if q_end != month_end and q_end.month != 3 and q_end != end_date:
-					_, last_day_q_end = monthrange(q_end.year, q_end.month)
-					if last_day_q_end == q_end.day:
-						if q_end.month == 12:
-							current_date = datetime(q_end.year + 1, 1, 1)
-						else:
-							current_date = datetime(q_end.year, q_end.month + 1, 1)
-					else:
-						current_date = datetime(q_end.year, q_end.month, q_end.day + 1)
-				elif q_end == end_date:
-					if q_end.month != 12:
-						current_date = datetime(q_end.year + 1, q_end.month + 1, 1)
-					else:
-						current_date = datetime(q_end.year + 1, 1, 1)
-				elif q_end.month == 2:
-					current_date = datetime(q_end.year, q_end.month + 1, 1)
-				elif q_end.month == 3:
-					current_date = datetime(q_end.year, q_end.month + 1, 1)
-				else:
-					current_date = datetime(current_date.year, current_date.month + 1, 16)
-			else:
-				current_date = datetime(current_date.year, current_date.month + 1, 1)
+		current_date = advance_to_next_period(
+			current_date,
+			diff_annually,
+			mid_diff_annually,
+			quarterly_report,
+			modified_start,
+			q_end,
+			month_end,
+			end_date,
+			esc_bd_end_date,
+		)
+
 		if not quarterly_report:
 			if current_date.strftime("%Y-%m") == end_date.strftime("%Y-%m"):
 				current_date = current_date.replace(day=1)
@@ -430,7 +368,9 @@ def execute(filters=None):
 	while current_date2 <= end_date:
 		cnt1 += 1
 		if quarterly_report:
-			q_start, q_end = get_q_start_q_end(cnt1, current_date2, quarterly_months, end_date)
+			q_start, q_end = get_q_start_q_end(
+				cnt1, current_date2, quarterly_months, end_date, modified_start
+			)
 			if cnt1 == 1:
 				for child in doc.additional_amounts:
 					if child.start_date == q_start.date() and child.end_date != q_end.date():
@@ -546,7 +486,9 @@ def execute(filters=None):
 	while current_date3 <= end_date:
 		cnt2 += 1
 		if quarterly_report:
-			q_start, q_end = get_q_start_q_end(cnt2, current_date3, quarterly_months, end_date)
+			q_start, q_end = get_q_start_q_end(
+				cnt2, current_date3, quarterly_months, end_date, modified_start
+			)
 			if cnt2 == 1:
 				for child in doc.additional_amounts:
 					if child.start_date == q_start.date() and child.end_date != q_end.date():
@@ -598,35 +540,10 @@ def execute(filters=None):
 		date_difference2 = month_end2 - month_start2
 		total_days_of_month = date_difference2.days + 1
 
-		if diff_annually2 and not mid_diff_annually2:
-			if month_end < month_end2 and month_end == end_date:
-				month_end = current_date3
-				month_start = current_date3.replace(day=1)
-			date_difference = month_end - month_start
-			n_next = date_difference.days + 1
-			if not current_date3 == start_date:
-				month_start = current_date3.replace(day=1)
-			n = total_days_of_month
-		elif mid_diff_annually2:
-			if month_end < month_end2 and month_end != end_date:
-				month_end = current_date3
-				month_start = current_date3.replace(day=1)
-			if month_end == end_date:
-				month_end = end_date
-				month_start = current_date3.replace(day=1)
-			date_difference = month_end - month_start
-			n_next = date_difference.days + 1
-			n = total_days_of_month
-		else:
-			date_difference = month_end - month_start
-			n = date_difference.days + 1
-			n_next = 0
-		if current_date3.strftime("%Y-%m") == end_date.strftime("%Y-%m"):
-			month_end = end_date
-		if current_date3 == start_date or month_end == end_date:
-			date_difference = month_end - month_start
-			n = date_difference.days + 1
-			n_prior = n
+		month_start, month_end, total_days_of_month, n, n_prior, n_next = get_period_details(
+			current_date3, start_date, end_date, diff_annually2, mid_diff_annually2, modified_start
+		)
+
 		if quarterly_report:
 			n = n_prior = total_days_of_month = quarterly_n
 			diff_annually2 = mid_diff_annually2 = False
@@ -659,7 +576,19 @@ def execute(filters=None):
 					common_dict,
 					prev_mlp_escl2,
 					prev_mlp_next,
+					modified_start,
 				)
+				if add_amount:
+					for child in doc.additional_amounts:
+						if quarterly_report:
+							if child.start_date == q_start.date() and child.end_date == q_end.date():
+								mlp2 = child.additional_amount
+						else:
+							if child.start_date == month_start.date() and child.end_date == month_end.date():
+								mlp2 = child.additional_amount
+				if quarterly_report:
+					if q_end.month == 3:
+						mlp2 = 0
 				interest_cost = (closing_liability - mlp2) * ((1 + daily_rate) ** n - 1)
 				total_interest_cost += interest_cost
 				closing_liability = closing_liability + interest_cost - mlp2
@@ -671,7 +600,12 @@ def execute(filters=None):
 					depreciation = (n / total_days) * prev_closing_liability
 					wdv -= depreciation
 				if cnt2 != 1:
-					if month_start.date() != month_start.replace(day=1):
+					if month_start.date() != month_start.replace(day=1) and not (
+						modified_start is not None
+						and month_start.date().month == modified_start.month
+						and month_start.date().year == modified_start.year
+						and modified_start.day != 1
+					):
 						month_start = month_start.replace(day=1)
 				row = {
 					"month_start_date": month_start.date(),
@@ -715,6 +649,7 @@ def execute(filters=None):
 					common_dict,
 					prev_mlp_escl2,
 					prev_mlp_next,
+					modified_start,
 				)
 				mlp2 = mlp_new
 
@@ -775,6 +710,7 @@ def execute(filters=None):
 				common_dict,
 				prev_mlp_escl2,
 				prev_mlp_next,
+				modified_start,
 			)
 			if add_amount:
 				for child in doc.additional_amounts:
@@ -836,72 +772,21 @@ def execute(filters=None):
 				if next_current_date2.strftime("%Y-%m") == esc_bd_end_date.strftime("%Y-%m"):
 					diff_annually2 = True
 		# Move to next month
-		if current_date3.month == 12:
-			if diff_annually2 and not mid_diff_annually2:
-				current_date3 = datetime(current_date3.year + 1, 1, current_date3.day) - relativedelta(days=1)
-			elif diff_annually2 and mid_diff_annually2:
-				current_date3 = datetime(current_date3.year + 1, 1, esc_bd_end_date.day) - relativedelta(
-					days=1
-				)
-			elif quarterly_report:
-				if q_end != month_end and q_end != end_date:
-					_, last_day_q_end = monthrange(q_end.year, q_end.month)
-					if last_day_q_end == q_end.day:
-						if q_end.month == 12:
-							current_date3 = datetime(q_end.year + 1, 1, 1)
-						else:
-							current_date3 = datetime(q_end.year, q_end.month + 1, 1)
-					else:
-						current_date3 = datetime(q_end.year, 1, q_end.day + 1)
-				elif q_end == end_date:
-					if q_end.month != 12:
-						current_date3 = datetime(q_end.year + 1, q_end.month + 1, 1)
-					else:
-						current_date3 = datetime(q_end.year + 1, 1, 1)
-				elif q_end.month == 2:
-					current_date3 = datetime(q_end.year, q_end.month + 1, 1)
-				elif q_end.month == 3:
-					current_date3 = datetime(q_end.year, q_end.month + 1, 1)
-				else:
-					current_date3 = datetime(current_date3.year, 1, 16)
-			else:
-				current_date3 = datetime(current_date3.year + 1, 1, 1)
-		else:
-			if diff_annually2 and not mid_diff_annually2:
-				current_date3 = datetime(
-					current_date3.year, current_date3.month + 1, current_date3.day
-				) - relativedelta(days=1)
-			elif diff_annually2 and mid_diff_annually2:
-				current_date3 = datetime(
-					current_date3.year, current_date3.month + 1, esc_bd_end_date.day
-				) - relativedelta(days=1)
-			elif quarterly_report:
-				if q_end != month_end and q_end.month != 3 and q_end != end_date:
-					_, last_day_q_end = monthrange(q_end.year, q_end.month)
-					if last_day_q_end == q_end.day:
-						if q_end.month == 12:
-							current_date3 = datetime(q_end.year + 1, 1, 1)
-						else:
-							current_date3 = datetime(q_end.year, q_end.month + 1, 1)
-					else:
-						current_date3 = datetime(q_end.year, q_end.month, q_end.day + 1)
-				elif q_end == end_date:
-					if q_end.month != 12:
-						current_date3 = datetime(q_end.year + 1, q_end.month + 1, 1)
-					else:
-						current_date3 = datetime(q_end.year + 1, 1, 1)
-				elif q_end.month == 2:
-					current_date3 = datetime(q_end.year, q_end.month + 1, 1)
-				elif q_end.month == 3:
-					current_date3 = datetime(q_end.year, q_end.month + 1, 1)
-				else:
-					current_date3 = datetime(current_date3.year, current_date3.month + 1, 16)
-			else:
-				current_date3 = datetime(current_date3.year, current_date3.month + 1, 1)
+		current_date3 = advance_to_next_period(
+			current_date3,
+			diff_annually2,
+			mid_diff_annually2,
+			quarterly_report,
+			modified_start,
+			q_end,
+			month_end,
+			end_date,
+			esc_bd_end_date,
+		)
+
 		if not quarterly_report:
 			if current_date3.strftime("%Y-%m") == end_date.strftime("%Y-%m"):
 				current_date3 = current_date3.replace(day=1)
-
 	# Add summary row
 	data.append(
 		{
