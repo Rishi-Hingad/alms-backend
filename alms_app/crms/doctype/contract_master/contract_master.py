@@ -22,13 +22,14 @@ class ContractMaster(Document):
         # Only generate if table is empty
         if self.installment_date:
             return
-
+        
+        interval_months = 1 if self.vendor == "ALD" else 3
         current_start = start_date
         installment_count = 0
 
         while current_start <= end_date:
 
-            current_end = add_days(add_months(current_start, 3), -1)
+            current_end = add_days(add_months(current_start, interval_months), -1)
 
             if current_end > end_date:
                 current_end = end_date
@@ -43,7 +44,7 @@ class ContractMaster(Document):
             })
 
             installment_count += 1
-            current_start = add_months(current_start, 3)
+            current_start = add_months(current_start, interval_months)
 
         self.no_of_installments = installment_count
 

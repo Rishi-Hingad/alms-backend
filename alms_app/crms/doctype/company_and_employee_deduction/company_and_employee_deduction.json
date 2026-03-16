@@ -61,6 +61,7 @@
   "employee_total_emi",
   "employee_interim_payment",
   "employee_quarterly_payment",
+  "approval_tab",
   "approvals_section",
   "finance_team_status",
   "finance_head_status",
@@ -82,7 +83,7 @@
    "label": "Location"
   },
   {
-   "fetch_from": "finance_quotation_id.kms",
+   "fetch_from": "finance_quotation_id.total_kms",
    "fieldname": "kms",
    "fieldtype": "Data",
    "label": "KMS"
@@ -340,8 +341,9 @@
   {
    "fetch_from": "finance_quotation_id.employee_details",
    "fieldname": "employee_name",
-   "fieldtype": "Data",
+   "fieldtype": "Link",
    "label": "Employee Name",
+   "options": "Employee Master",
    "unique": 1
   },
   {
@@ -354,8 +356,7 @@
    "fieldname": "assist",
    "fieldtype": "Currency",
    "in_list_view": 1,
-   "label": "24x7 Assist",
-   "reqd": 1
+   "label": "24x7 Assist"
   },
   {
    "fieldname": "basic_details_section",
@@ -402,11 +403,16 @@
    "fieldtype": "Select",
    "label": "Status",
    "options": "Pending\nApproved\nRejected"
+  },
+  {
+   "fieldname": "approval_tab",
+   "fieldtype": "Tab Break",
+   "label": "Approval"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-06-14 14:20:52.087052",
+ "modified": "2026-03-16 10:06:16.546769",
  "modified_by": "Administrator",
  "module": "CRMS",
  "name": "Company and Employee Deduction",
