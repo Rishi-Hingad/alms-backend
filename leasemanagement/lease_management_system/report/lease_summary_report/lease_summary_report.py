@@ -2,6 +2,7 @@
 # For license information, please see license.txt
 
 import math
+from calendar import monthrange
 from datetime import date, datetime
 
 import frappe
@@ -46,22 +47,22 @@ def execute(filters=None):
 			"precision": 2,
 		},
 		{
+			"label": _("Modification - ROU"),
+			"fieldname": "modification_rou",
+			"fieldtype": "Currency",
+			"width": 200,
+			"precision": 2,
+		},
+		{
+			"label": _("Termination - ROU"),
+			"fieldname": "termination_rou",
+			"fieldtype": "Currency",
+			"width": 200,
+			"precision": 2,
+		},
+		{
 			"label": _("Depreciation"),
 			"fieldname": "depreciation",
-			"fieldtype": "Currency",
-			"width": 200,
-			"precision": 2,
-		},
-		{
-			"label": _("Modification"),
-			"fieldname": "modification",
-			"fieldtype": "Currency",
-			"width": 200,
-			"precision": 2,
-		},
-		{
-			"label": _("Termination"),
-			"fieldname": "termination",
 			"fieldtype": "Currency",
 			"width": 200,
 			"precision": 2,
@@ -88,6 +89,13 @@ def execute(filters=None):
 			"precision": 2,
 		},
 		{
+			"label": _("Modification - Lease Liability"),
+			"fieldname": "modification_lease_liability",
+			"fieldtype": "Currency",
+			"width": 200,
+			"precision": 2,
+		},
+		{
 			"label": _("Interest Expense"),
 			"fieldname": "interest",
 			"fieldtype": "Currency",
@@ -97,6 +105,13 @@ def execute(filters=None):
 		{
 			"label": _("Rent Paid"),
 			"fieldname": "rent_paid",
+			"fieldtype": "Currency",
+			"width": 200,
+			"precision": 2,
+		},
+		{
+			"label": _("Termination - Lease Liability"),
+			"fieldname": "termination_lease_liability",
 			"fieldtype": "Currency",
 			"width": 200,
 			"precision": 2,
@@ -154,24 +169,36 @@ def execute(filters=None):
 			prop_doc = frappe.get_doc("Property Master", lease_doc.property_description)
 		else:
 			car_desc = frappe.get_doc("Car Description Master", lease_doc.car_description)
-		# frappe.msgprint("AED="+str(lease_doc.agreement_end_date))
 		modified_start = None
+		terminated_on = None
+		terminated = False
+		modified = False
 		if lease_status == "Discarded":
 			if lease_doc.modifications:
 				modified_start = frappe.db.get_value(
 					"Lease Management", lease_doc.modifications[0].modified_lease, "agreement_start_date"
 				)
-				# frappe.msgprint("lease="+lease_doc.name+" status="+str(lease_status)+"modified_start"+str(modified_start)+"||"+str(datetime(modified_start.year, modified_start.month, modified_start.day) - relativedelta(days=1)))
-				lease_doc.agreement_end_date = datetime(
+				sum_modified = datetime(
 					modified_start.year, modified_start.month, modified_start.day
 				) - relativedelta(days=1)
+				lease_doc.agreement_end_date = sum_modified
+		if lease_status == "Terminated":
+			terminated_on = lease_doc.termination_date + relativedelta(days=1)
+			lease_doc.agreement_end_date = lease_doc.termination_date
 
 		msdate = date(int(fin_start_year), 4, 1)
 		medate = date(int(fin_end_year), 3, 1)
 
+		if modified_start is not None:
+			if modified_start > msdate and modified_start <= medate:
+				modified = True
+
+		if terminated_on is not None:
+			if terminated_on > msdate and terminated_on <= medate:
+				terminated = True
+
 		lease_end = None
 		if lease_doc.agreement_end_date:
-			# lease_end = datetime.strptime(str(lease_doc.agreement_end_date), "%Y-%m-%d").date()
 			lease_end = getdate(lease_doc.agreement_end_date)
 
 		if lease_end and lease_end < msdate:
@@ -181,7 +208,10 @@ def execute(filters=None):
 			lreport = "Lease Report"
 		else:
 			lreport = "Lease Report Monthly (With Escalation)"
-		result = run(lreport, filters={"docname": lease.name})
+		if lease_doc.status == "Terminated":
+			result = run(lreport, filters={"docname": lease.name, "sum_modified": terminated_on})
+		else:
+			result = run(lreport, filters={"docname": lease.name, "sum_modified": modified_start})
 		rows = result.get("result")
 
 		# Convert to DataFrame
@@ -202,11 +232,14 @@ def execute(filters=None):
 		# else:
 		sdate = date(int(fin_start_year), 3, 31)
 		edate = date(int(fin_end_year), 3, 31)
+		mod_rou = 0
+		mod_lia = 0
+		ter_rou = 0
+		ter_lia = 0
 
 		if lease_end < edate:
 			# 	edate=lease_end
-			medate = date(lease_end.year, lease_end.month, 1)
-			# frappe.msgprint(str(date(lease_end.year,lease_end.month,1)))
+			medate = date(lease_end.year, lease_end.month, lease_end.day)
 
 		row_opening = df.loc[df["month_end_date"] == sdate]
 
@@ -221,44 +254,34 @@ def execute(filters=None):
 		if len(row_closing) == 1:
 			closing_rou = row_closing["wdv"].iloc[0]
 			closing_liability = row_closing["closing_liability"].iloc[0]
-			# if modified_start:
-			# 	modification_val=-row_closing["wdv"].iloc[0]
-			# else:
-			# 	modification_val=0
 			if lease_end < edate:
 				closing_rou = 0
 				closing_liability = 0
 		else:
 			closing_rou = 0
 			closing_liability = 0
-			# modification_val=0
-		if modified_start:
-			mod_rec = df.loc[df["month_end_date"] == lease_end]
-			if len(mod_rec) == 1:
-				modification_val = -mod_rec["wdv"].iloc[0]
-			else:
-				modification_val = 0
-		else:
-			modification_val = 0
 
+		df["month_end_date"] = pd.to_datetime(df["month_end_date"])
 		mlp_list, interest_list, depreciation_list = [], [], []
 		# if lease_doc.type_of_asset=="Car":
 		dates = df["month_start_date"].dropna().dt.date.tolist()
+		# dates_end = df["month_end_date"].dropna().dt.date.tolist()
 		for i in range(len(dates)):
 			if dates[i] >= msdate and dates[i] <= medate:
 				val = str(dates[i])
 				row = df.loc[df["month_start_date"] == val]
 				mlp = row["mlp"].iloc[0]
-				mlp_list.append(mlp)
 				interest = row["interest_cost"].iloc[0]
-				interest_list.append(interest)
 				depre = row["depreciation"].iloc[0]
+				mlp_list.append(mlp)
+				interest_list.append(interest)
 				depreciation_list.append(depre)
 		# else:
 		# 	# Extract mlp column as a list
 		# 	mlp_list = lease_df["mlp"].tolist()
 		# 	interest_list = lease_df["interest_cost"].tolist()
 		# 	depreciation_list = lease_df["depreciation"].tolist()
+
 		if opening_rou == 0:
 			if lease_doc.status != "Modified":
 				additions_rou_asset = df["wdv"][0]
@@ -279,13 +302,25 @@ def execute(filters=None):
 			if not math.isnan(depreciation_list[i]):
 				total_depreciation += depreciation_list[i]
 
-		rou_check = opening_rou - total_depreciation - closing_rou + additions_rou_asset + modification_val
+		if modified:
+			mod_rou = -(row["wdv"].iloc[0])
+			mod_lia = -(row["closing_liability"].iloc[0])
+		if lease_status == "Modified":
+			if opening_rou == 0 and opening_liability == 0:
+				mod_rou = df["wdv"][0]
+				mod_lia = df["closing_liability"][0]
+		if terminated:
+			ter_rou = -(row["wdv"].iloc[0])
+			ter_lia = -(row["closing_liability"].iloc[0])
+		rou_check = opening_rou - total_depreciation - closing_rou + additions_rou_asset + mod_rou + ter_rou
 		liability_check = (
 			opening_liability
 			+ total_interest_cost
 			- total_rent_paid
 			- closing_liability
 			+ additions_rou_asset
+			+ mod_lia
+			+ ter_lia
 		)
 		grand_total_opening_rou += opening_rou
 		grand_total_closing_rou += closing_rou
@@ -309,8 +344,10 @@ def execute(filters=None):
 					"additions_lease_liability": additions_lease_lia,
 					"check_rou": rou_check,
 					"check_liability": liability_check,
-					"modification": modification_val,
-					"termination": 0,
+					"modification_rou": mod_rou,
+					"modification_lease_liability": mod_lia,
+					"termination_rou": ter_rou,
+					"termination_lease_liability": ter_lia,
 				}
 			)
 		else:
@@ -330,8 +367,10 @@ def execute(filters=None):
 					"additions_lease_liability": additions_lease_lia,
 					"check_rou": rou_check,
 					"check_liability": liability_check,
-					"modification": "",
-					"termination": "",
+					"modification_rou": mod_rou,
+					"modification_lease_liability": mod_lia,
+					"termination_rou": ter_rou,
+					"termination_lease_liability": ter_lia,
 				}
 			)
 	data.append(
@@ -350,8 +389,10 @@ def execute(filters=None):
 			"additions_lease_liability": "",
 			"check_rou": "",
 			"check_liability": "",
-			"modification": "",
-			"termination": "",
+			"modification_rou": "",
+			"modification_lease_liability": "",
+			"termination_rou": "",
+			"termination_lease_liability": "",
 		}
 	)
 

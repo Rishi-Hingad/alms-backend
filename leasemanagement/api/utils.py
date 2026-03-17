@@ -391,7 +391,7 @@ def get_common_month(doc, dict_ed_bdates, escalation, esc_bd_end_date):
 	return (dict_new, common_month, common_dict, prev_mlp_next, mid_diff_annually)
 
 
-def get_q_start_q_end(cnt, current_date, quarterly_months, end_date, modified_start):
+def get_q_start_q_end(cnt, current_date, quarterly_months, end_date, sum_modified):
 	q_start = current_date
 	if cnt == 1 and current_date.day != 15:
 		if current_date.month not in quarterly_months:
@@ -433,11 +433,24 @@ def get_q_start_q_end(cnt, current_date, quarterly_months, end_date, modified_st
 				if current_date.month == 4 and current_date.day == 1:
 					q_end = datetime(current_date.year, current_date.month, 15)
 				# q_end = datetime(current_date.year, current_date.month+1, 15)
+			elif current_date.month not in quarterly_months:
+				if current_date.month >= 10:
+					q_end = datetime(current_date.year + 1, 1, 15)
+					# break
+				else:
+					for i in range(len(quarterly_months)):
+						if quarterly_months[i] > current_date.month:
+							q_end = datetime(current_date.year, quarterly_months[i], 15)
+							break
 			else:
 				q_end = datetime(current_date.year, current_date.month + 1, 15)
 			if q_end > end_date:
 				q_end = end_date
-	if (q_start.month == 1 and q_end.month == 4) or (q_start.month == 3 and q_end.month == 4):
+	if (
+		(q_start.month == 1 and q_end.month == 4)
+		or (q_start.month == 3 and q_end.month == 4)
+		or (q_start.month == 2 and q_end.month == 4)
+	):
 		q_end = datetime(current_date.year, 3, 31)
 	if cnt == 1 and q_end.month == 4 and q_start.month >= 1 and not (q_start.month == 4 and q_end.month == 4):
 		if q_start.month == 2:
@@ -446,10 +459,12 @@ def get_q_start_q_end(cnt, current_date, quarterly_months, end_date, modified_st
 			# _, last_day = monthrange(current_date.year, 2)
 			_, last_day = monthrange(current_date.year, current_date.month)
 		q_end = datetime(current_date.year, current_date.month, last_day)
-		# frappe.msgprint("**"+str(datetime(current_date.year, current_date.month, last_day))+"**"+"cnt="+str(cnt))
-	# if modified_start is not None and current_date.date().month==modified_start.month and current_date.date().year==modified_start.year and modified_start.day!=1 and current_date.date().day!=modified_start.day:
-	# 	q_end = datetime(modified_start.year, modified_start.month, modified_start.day-1)
-	# frappe.msgprint("q_start"+str(q_start)+"||q_end"+str(q_end))
+
+	if sum_modified is not None:
+		sum_modified = sum_modified - timedelta(days=1)
+		sum_modified = datetime(sum_modified.year, sum_modified.month, sum_modified.day)
+		if sum_modified.date() >= q_start.date() and sum_modified.date() <= q_end.date():
+			q_end = datetime(sum_modified.year, sum_modified.month, sum_modified.day)
 	return (q_start, q_end)
 
 
@@ -476,13 +491,6 @@ def advance_to_next_period(
 		base_month = 1 if is_dec else current_date.month + 1
 		return datetime(base_year, base_month, esc_bd_end_date.day) - relativedelta(days=1)
 
-	if quarterly_report and q_end is not None:
-		return _advance_quarterly(current_date, q_end, month_end, end_date, is_dec)
-
-	# Default monthly advance
-	if is_dec:
-		return datetime(current_date.year + 1, 1, 1)
-	# frappe.msgprint("curr="+str(current_date.date())+"||"+str(datetime(current_date.year, current_date.month + 1, 1)))
 	if (
 		modified_start is not None
 		and current_date.date().month == modified_start.month
@@ -491,16 +499,29 @@ def advance_to_next_period(
 		and current_date.date().day != modified_start.day
 	):
 		modified_start = datetime(modified_start.year, modified_start.month, modified_start.day)
-		# frappe.msgprint("next="+str(modified_start))
 		return datetime(modified_start.year, modified_start.month, modified_start.day)
-	else:
-		# frappe.msgprint("curr="+str(current_date.date())+"||"+str(datetime(current_date.year, current_date.month + 1, 1)))
-		return datetime(current_date.year, current_date.month + 1, 1)
+	if quarterly_report and q_end is not None:
+		return _advance_quarterly(current_date, q_end, month_end, end_date, is_dec, modified_start)
+
+	# Default monthly advance
+	if is_dec:
+		return datetime(current_date.year + 1, 1, 1)
+	# frappe.msgprint("curr="+str(current_date.date())+"||"+str(datetime(current_date.year, current_date.month + 1, 1)))
+
+	# else:
+	# frappe.msgprint("curr="+str(current_date.date())+"||"+str(datetime(current_date.year, current_date.month + 1, 1)))
+	return datetime(current_date.year, current_date.month + 1, 1)
 
 
-def _advance_quarterly(current_date, q_end, month_end, end_date, is_dec):
+def _advance_quarterly(current_date, q_end, month_end, end_date, is_dec, modified_start):
 	_, last_day_q_end = monthrange(q_end.year, q_end.month)
-
+	if modified_start:
+		actual_modified = modified_start - timedelta(days=1)
+		actual_modified = datetime(
+			actual_modified.year, actual_modified.month, actual_modified.day
+		)  # convert in datetime then return modified start date
+		if actual_modified.date() == q_end.date():
+			return datetime(modified_start.year, modified_start.month, modified_start.day)
 	if q_end == end_date:
 		if q_end.month != 12:
 			return datetime(q_end.year + 1 if is_dec else q_end.year, 1 if is_dec else q_end.month + 1, 1)
@@ -508,7 +529,6 @@ def _advance_quarterly(current_date, q_end, month_end, end_date, is_dec):
 
 	if q_end.month in (2, 3):
 		return datetime(q_end.year, q_end.month + 1, 1)
-
 	if q_end != month_end and q_end.month != 3:
 		if last_day_q_end == q_end.day:
 			next_month = 1 if q_end.month == 12 else q_end.month + 1
@@ -518,6 +538,11 @@ def _advance_quarterly(current_date, q_end, month_end, end_date, is_dec):
 			if is_dec:
 				return datetime(q_end.year, 1, q_end.day + 1)
 			return datetime(q_end.year, q_end.month, q_end.day + 1)
+	if modified_start:
+		if q_end == month_end:
+			next_month = 1 if q_end.month == 12 else q_end.month + 1
+			next_year = q_end.year + 1 if q_end.month == 12 else q_end.year
+			return datetime(next_year, next_month, 1)
 
 	if is_dec:
 		return datetime(current_date.year, 1, 16)
@@ -533,12 +558,11 @@ def get_prev_wdv_modification(
 		lreport = "Lease Report"
 	else:
 		lreport = "Lease Report Monthly (With Escalation)"
-	result = run(lreport, filters={"docname": previous_lease})
+	previous_date = add_days(agreement_start_date, -1)
+	result = run(lreport, filters={"docname": previous_lease, "sum_modified": agreement_start_date})
 	rows = result.get("result")
 	df = pd.DataFrame(rows)
-	previous_date = add_days(agreement_start_date, -1)
 	last_row = df.loc[df["month_end_date"] == previous_date]
-	# frappe.msgprint("previous_date"+str(previous_date)+'||last_row["wdv"].iloc[0]='+str(last_row["wdv"].iloc[0])+'||last_row["closing_liability"].iloc[0]='+str(last_row["closing_liability"].iloc[0]))
 	if not last_row.empty:
 		prev_wdv = (
 			float(last_row["wdv"].iloc[0])
@@ -558,7 +582,6 @@ def get_period_details(current_date, start_date, end_date, diff_annually, mid_di
 		and modified_start.day != 1
 		and month_start.day != modified_start.day
 	):
-		# frappe.msgprint("Modified"+str(modified_start - timedelta(days=1)))
 		modified_start = datetime(modified_start.year, modified_start.month, modified_start.day)
 		month_end = modified_start - timedelta(days=1)
 
@@ -604,8 +627,33 @@ def get_period_details(current_date, start_date, end_date, diff_annually, mid_di
 	if current_date == start_date or month_end == end_date:
 		n = (month_end - month_start).days + 1
 		n_prior = n
-	# frappe.msgprint("in period month_start"+str(month_start)+"== month_end"+str(month_end))
 	return month_start, month_end, total_days_of_month, n, n_prior, n_next
+
+
+def get_sum_modified_mlp(
+	sum_modified,
+	q_start,
+	q_end,
+	total_days_prior,
+	mlp,
+	cnt,
+	current_date,
+	quarterly_months,
+	end_date,
+	quarterly_n,
+):
+	d = datetime(sum_modified.year, sum_modified.month, sum_modified.day)
+	d_prior = datetime(sum_modified.year, sum_modified.month, sum_modified.day) - timedelta(days=1)
+	if q_end.date() == d_prior.date():
+		prior_q_start, prior_q_end = get_q_start_q_end(cnt, current_date, quarterly_months, end_date, None)
+		if q_start.date() == prior_q_start.date() and q_end.date() == prior_q_end.date():
+			return mlp, total_days_prior
+		total_days_prior = total_days_prior + int((prior_q_end - prior_q_start).days + 1)
+		mlp = mlp * quarterly_n / total_days_prior
+	if d.date() == q_start.date():
+		if total_days_prior != 0:
+			mlp = mlp * quarterly_n / total_days_prior
+	return mlp, total_days_prior
 
 
 @frappe.whitelist()
@@ -635,11 +683,6 @@ def get_mlp(
 	modified_start,
 ):
 	mrent, rate, famt = 0, 0, 0
-	# if modified_start.month == current_date.date().month and modified_start.year == current_date.date().year:
-	# 	n_prior = (modified_start - timedelta(days=1)).day
-	# 	n_next = (calendar.monthrange(modified_start.year, modified_start.month)[1]) - modified_start.day + 1
-	# 	frappe.msgprint("n_prior="+str(n_prior)+"=="+str(n_next))
-	# frappe.msgprint("modified_start"+str((modified_start - timedelta(days=1)).day)+"||"+str(modified_start - timedelta(days=1))+"--"+str(current_date.date())+"--"+str(total_days_of_month)+"--"+str(n_prior)+"=="+str(calendar.monthrange(modified_start.year, modified_start.month)[1]))
 	if n_prior < total_days_of_month or n < total_days_of_month:
 		prev_mlp = mlp
 		if not diff_annually:
@@ -678,7 +721,6 @@ def get_mlp(
 							and modified_start.day != 1
 							and current_date.date().day != modified_start.day
 						):
-							# frappe.msgprint(str(prev_mlp)+"In MLP Loop"+"||curr_date"+str(current_date.date())+"||"+str((rate*prev_mlp/100)+prev_mlp+famt))
 							prev_mlp_escl = prev_mlp + (rate * prev_mlp / 100) + famt
 						else:
 							prev_mlp_escl = mlp
@@ -764,21 +806,7 @@ def get_mlp(
 						prev_mlp_escl = mlp
 						famt_prev_mlp1 = famt_prev_mlp1 + (famt_prev_mlp1 * rate / 100)
 						break
-				# frappe.msgprint("prev_mlp_escl="+str(prev_mlp_escl)+"||prev_mlp="+str(prev_mlp)+"||famt_prev_mlp1="+str(famt_prev_mlp1))
 			return (mlp, prev_mlp_escl, famt_prev_mlp1, prev_mlp, mrent, rate, famt)
-			# total_mlp += mlp
-			# if cnt == 1:
-			# 	pv = mlp
-			# 	pv_arr.append(pv)
-			# else:
-			# 	pv = mlp / ((1 + daily_rate) ** ndays)
-			# 	pv_arr.append(pv)
-			# if prev_mlp_escl is None:
-			# 	mlp = prev_mlp
-			# else:
-			# 	mlp = prev_mlp_escl
-			# if mrent == 0 and rate == 0 and famt == 0 and escalation:
-			# 	mlp = prev_mlp
 		else:
 			if famt_prev_mlp1 != 0 and current_date.date() in edates_pafa:
 				mlp = famt_prev_mlp1

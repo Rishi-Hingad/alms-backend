@@ -736,10 +736,10 @@ class LeaseManagement(Document):
 		else:
 			mid_diff_annually = False
 		modified_start = None
-		if doc.status == "Discarded" and doc.modifications:
-			modified_start = frappe.db.get_value(
-				"Lease Management", doc.modifications[0].modified_lease, "agreement_start_date"
-			)
+		# if doc.status == "Discarded" and doc.modifications:
+		# 	modified_start = frappe.db.get_value(
+		# 		"Lease Management", doc.modifications[0].modified_lease, "agreement_start_date"
+		# 	)
 
 		# Calculate Previous Closing Liability from Present Value and Total Days
 		while current_date <= end_date:
