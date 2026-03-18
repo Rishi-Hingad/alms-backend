@@ -24,13 +24,14 @@ def execute(filters=None):
 
 	data = []
 	columns = [
-		{"label": _("Lease"), "fieldname": "lease_id", "fieldtype": "Data", "width": 120},
+		{"label": _("Status"), "fieldname": "lease_status", "fieldtype": "Data", "width": 100},
+		{"label": _("Lease"), "fieldname": "lease_id", "fieldtype": "Data", "width": 240},
 		{"label": _("Vendor"), "fieldname": "vendor", "fieldtype": "Data", "width": 120},
 		{
 			"label": _("Asset Description"),
 			"fieldname": "asset_description",
 			"fieldtype": "Data",
-			"width": 150,
+			"width": 200,
 		},
 		{
 			"label": _("Opening ROU Asset"),
@@ -187,16 +188,17 @@ def execute(filters=None):
 			lease_doc.agreement_end_date = lease_doc.termination_date
 
 		msdate = date(int(fin_start_year), 4, 1)
-		medate = date(int(fin_end_year), 3, 1)
+		# medate = date(int(fin_end_year), 3, 1)
+		medate = date(int(fin_end_year), 3, 31)
 
 		if modified_start is not None:
 			if modified_start > msdate and modified_start <= medate:
 				modified = True
 
 		if terminated_on is not None:
-			if terminated_on > msdate and terminated_on <= medate:
+			if lease_doc.termination_date > msdate and lease_doc.termination_date <= medate:
 				terminated = True
-
+			# frappe.msgprint(lease.name+" modified="+str(modified)+" terminated="+str(terminated)+" "+str(lease_doc.termination_date>msdate)+" "+str(lease_doc.termination_date <= medate) +" "+str(medate))
 		lease_end = None
 		if lease_doc.agreement_end_date:
 			lease_end = getdate(lease_doc.agreement_end_date)
@@ -244,12 +246,16 @@ def execute(filters=None):
 		row_opening = df.loc[df["month_end_date"] == sdate]
 
 		if len(row_opening) == 1:
+			# frappe.msgprint(lease.name+"wdv="+str(row_opening["wdv"].iloc[0]))
 			opening_rou = row_opening["wdv"].iloc[0]
 			opening_liability = row_opening["closing_liability"].iloc[0]
 		else:
 			opening_rou = 0
 			opening_liability = 0
-
+		if lease_doc.termination_date:
+			if lease_doc.termination_date == edate:
+				edate = date(edate.year, 4, 30)
+				# frappe.msgprint(lease.name+"=edate"+str(edate)+str(lease_doc.termination_date)+" terminated_on"+str(date(edate.year,4,30)))
 		row_closing = df.loc[df["month_end_date"] == edate]
 		if len(row_closing) == 1:
 			closing_rou = row_closing["wdv"].iloc[0]
@@ -283,7 +289,7 @@ def execute(filters=None):
 		# 	depreciation_list = lease_df["depreciation"].tolist()
 
 		if opening_rou == 0:
-			if lease_doc.status != "Modified":
+			if not lease_doc.is_modified:
 				additions_rou_asset = df["wdv"][0]
 				additions_lease_lia = additions_rou_asset
 			else:
@@ -330,6 +336,7 @@ def execute(filters=None):
 		if lease_doc.type_of_asset == "Immovable":
 			data.append(
 				{
+					"lease_status": lease_doc.status,
 					"lease_id": lease.name,
 					"vendor": prop_doc.vendor,
 					"asset_description": prop_doc.address,
@@ -353,6 +360,7 @@ def execute(filters=None):
 		else:
 			data.append(
 				{
+					"lease_status": lease_doc.status,
 					"lease_id": lease.name,
 					"vendor": car_desc.vendor,
 					"asset_description": car_desc.employee_name,
@@ -375,6 +383,7 @@ def execute(filters=None):
 			)
 	data.append(
 		{
+			"lease_status": "",
 			"lease_id": "",
 			"vendor": "",
 			"asset_description": "",

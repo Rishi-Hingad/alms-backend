@@ -538,7 +538,21 @@ class LeaseManagement(Document):
 
 	def after_insert(self):
 		# Only run if this is a modification record
-		if self.is_modified and self.parent_lease:
+		if self.is_modified and self.parent_lease and self.previous_lease:
+			if self.parent_lease != self.previous_lease:
+				prev_doc = frappe.get_doc("Lease Management", self.previous_lease)
+				already_exists_prev = any(d.modified_lease == self.name for d in prev_doc.modifications)
+
+				if not already_exists_prev:
+					prev_doc.append(
+						"modifications",
+						{
+							"modified_lease": self.name,
+						},
+					)
+
+					prev_doc.save(ignore_permissions=True)
+
 			parent_doc = frappe.get_doc("Lease Management", self.parent_lease)
 			already_exists = any(d.modified_lease == self.name for d in parent_doc.modifications)
 

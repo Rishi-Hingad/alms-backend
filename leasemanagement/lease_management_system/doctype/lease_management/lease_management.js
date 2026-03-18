@@ -262,7 +262,7 @@ frappe.ui.form.on("Lease Management", {
 			(frappe.user.has_role("Vendor") || frappe.user.has_role("Accounts")) &&
 			!frappe.user.has_role("System Manager")
 		) {
-			if (frm.doc.status == "Terminated") {
+			if (frm.doc.status == "Terminated" || frm.doc.status == "Discarded") {
 				set_lease_fields_readonly(frm);
 			}
 		}
@@ -661,12 +661,6 @@ function set_lease_fields_readonly(frm) {
 		(frm.doc.status === "Discarded" && (is_accounts || is_vendor) && !is_sys_manager) ||
 		(frm.doc.status === "Terminated" && (is_accounts || is_vendor) && !is_sys_manager)
 	) {
-		// frm.fields.forEach(field => {
-		//     if (field.df.fieldname) {
-		//         frm.set_df_property(field.df.fieldname, "read_only", 1);
-		//     }
-		// });
-
 		// Disable Save
 		frm.disable_save();
 
@@ -688,30 +682,6 @@ function set_lease_fields_readonly(frm) {
 			}
 		});
 	}
-
-	// frm.set_df_property("type_of_asset", "read_only", 1);
-	// frm.set_df_property("company", "read_only", 1);
-	// frm.set_df_property("vendor", "read_only", 1);
-	// frm.set_df_property("property_description", "read_only", 1);
-	// frm.set_df_property("discounting_rate", "read_only", 1);
-	// frm.set_df_property("calculation_rate_type", "read_only", 1);
-	// frm.set_df_property("previous_wdv", "read_only", 1);
-	// frm.set_df_property("type_of_report", "read_only", 1);
-	// frm.set_df_property("agreement_start_date", "read_only", 1);
-	// frm.set_df_property("agreement_end_date", "read_only", 1);
-	// frm.set_df_property("status", "read_only", 1);
-	// frm.set_df_property("lease_period", "read_only", 1);
-	// frm.set_df_property("security_deposit", "read_only", 1);
-	// frm.set_df_property("security_deposit_amount", "read_only", 1);
-	// frm.set_df_property("monthly_rent", "read_only", 1);
-	// frm.set_df_property("agreement", "read_only", 1);
-	// frm.set_df_property("modification_reason", "read_only", 1);
-	// frm.set_df_property("termination_date", "read_only", 1);
-	// frm.set_df_property("termination_reason", "read_only", 1);
-	// frm.set_df_property("escalation", "read_only", 1);
-	// frm.set_df_property("additional_amounts", "read_only", 1);
-	// frm.set_df_property("modifications", "read_only", 1);
-	// frm.set_df_property("invoice_details", "read_only", 1);
 }
 
 function set_agreement_status(frm) {
