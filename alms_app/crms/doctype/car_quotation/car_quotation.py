@@ -349,13 +349,15 @@ def preview_deduction(quotation_id):
 @frappe.whitelist()
 def create_deduction_doc(quotation_id):
 
+    q = frappe.get_doc("Car Quotation", quotation_id)
     values = preview_deduction(quotation_id)
 
     doc = frappe.new_doc("Company and Employee Deduction")
 
     doc.finance_quotation_id = quotation_id
+    doc.employee_name = q.employee_details
 
-    # company values
+    # company
     doc.ex_showroom_amount = values["company_ex_showroom"]
     doc.financed_amount = values["company_financed_amount"]
     doc.emi_financing = values["company_emi_financing"]
@@ -367,17 +369,16 @@ def create_deduction_doc(quotation_id):
     doc.quarterly_payment = values["quarterly_payment"]
     doc.interim_payment = values["interim_payment"]
 
-    # employee values
-    doc.employee_ex_showroom = values["employee_ex_showroom"]
+    # employee
+    doc.employee_ex_showroom_amount_net_of_discount = values["employee_ex_showroom"]
     doc.employee_financed_amount = values["employee_financed_amount"]
     doc.employee_emi_financing = values["employee_emi_financing"]
     doc.employee_finance_emi_road_tax = values["employee_finance_emi_road_tax"]
     doc.employee_gst_and_cess = values["employee_gst_and_cess"]
-
     doc.employee_total_emi = values["employee_total_emi"]
     doc.employee_quarterly_payment = values["employee_quarterly_payment"]
     doc.employee_interim_payment = values["employee_interim_payment"]
 
     doc.insert(ignore_permissions=True)
 
-    return doc.name 
+    return doc.name

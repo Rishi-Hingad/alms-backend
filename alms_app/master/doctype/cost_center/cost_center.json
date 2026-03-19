@@ -1,0 +1,72 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2026-03-19 10:05:21.257706",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "cc_details_section",
+  "company_code",
+  "cost_center_code",
+  "column_break_czjn",
+  "cost_center_name",
+  "description"
+ ],
+ "fields": [
+  {
+   "fieldname": "cc_details_section",
+   "fieldtype": "Section Break",
+   "label": "CC Details"
+  },
+  {
+   "fieldname": "company_code",
+   "fieldtype": "Data",
+   "label": "Company Code"
+  },
+  {
+   "fieldname": "cost_center_name",
+   "fieldtype": "Data",
+   "label": "Cost Center Name"
+  },
+  {
+   "fieldname": "cost_center_code",
+   "fieldtype": "Data",
+   "label": "Cost Center Code"
+  },
+  {
+   "fieldname": "column_break_czjn",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "description",
+   "fieldtype": "Small Text",
+   "label": "Description"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2026-03-19 10:07:34.926793",
+ "modified_by": "Administrator",
+ "module": "master",
+ "name": "Cost Center",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}
