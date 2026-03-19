@@ -18,11 +18,6 @@
   "rc_book_received",
   "payment_done",
   "registration_done",
-  "car_delivery",
-  "delivery_date",
-  "contract_signed",
-  "contract_number",
-  "contract_start_date",
   "column_break_ybdw",
   "po_document",
   "proforma_invoice_document",
@@ -30,7 +25,17 @@
   "rc_book_document",
   "payment_document",
   "registration_document",
+  "delivery_details_section",
+  "car_delivery",
+  "delivery_date",
+  "column_break_euqj",
   "agreement_document",
+  "contract_details_section",
+  "contract_signed",
+  "contract_number",
+  "column_break_oshx",
+  "contract_start_date",
+  "contract_end_date",
   "contract_document"
  ],
  "fields": [
@@ -190,11 +195,34 @@
    "fieldname": "contract_number",
    "fieldtype": "Data",
    "label": "Contract Number"
+  },
+  {
+   "fieldname": "contract_end_date",
+   "fieldtype": "Date",
+   "label": "Contract End Date"
+  },
+  {
+   "fieldname": "contract_details_section",
+   "fieldtype": "Section Break",
+   "label": "Contract Details"
+  },
+  {
+   "fieldname": "column_break_oshx",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "delivery_details_section",
+   "fieldtype": "Section Break",
+   "label": "Delivery Details"
+  },
+  {
+   "fieldname": "column_break_euqj",
+   "fieldtype": "Column Break"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-03-06 15:51:23.980440",
+ "modified": "2026-03-10 17:01:49.641292",
  "modified_by": "Administrator",
  "module": "CRMS",
  "name": "Car Process",
