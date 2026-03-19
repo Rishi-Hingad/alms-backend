@@ -183,7 +183,7 @@ def execute(filters=None):
 			if n == total_days_of_month:
 				n_prior = n
 		if n_prior < total_days_of_month or n < total_days_of_month:
-			prev_mlp = mlp
+			prev_mlp = round(mlp, 3)
 			if not diff_annually:
 				(mlp, prev_mlp_escl, famt_prev_mlp1, prev_mlp, mrent, rate, famt) = get_mlp(
 					escalation,
@@ -236,15 +236,15 @@ def execute(filters=None):
 					if q_end.month == 3:
 						total_mlp += 0
 					else:
-						total_mlp += mlp
+						total_mlp += round(mlp, 3)
 				else:
-					total_mlp += mlp
+					total_mlp += round(mlp, 3)
 				if cnt == 1:
-					pv = mlp
+					pv = round(mlp, 3)
 					pv_arr.append(pv)
 				else:
-					pv = mlp / ((1 + daily_rate) ** ndays)
-					pv_arr.append(pv)
+					pv = round(mlp, 3) / ((1 + daily_rate) ** ndays)
+					pv_arr.append(round(pv, 3))
 
 				if prev_mlp_escl is None:
 					mlp = prev_mlp
@@ -279,13 +279,13 @@ def execute(filters=None):
 					sum_modified,
 				)
 				mlp = mlp_new
-				total_mlp += mlp
+				total_mlp += round(mlp, 3)
 				if cnt == 1:
-					pv = mlp
+					pv = round(mlp, 3)
 					pv_arr.append(pv)
 				else:
-					pv = mlp / ((1 + daily_rate) ** ndays)
-					pv_arr.append(pv)
+					pv = round(mlp, 3) / ((1 + daily_rate) ** ndays)
+					pv_arr.append(round(pv, 3))
 				if prev_mlp_escl is None:
 					mlp = prev_mlp
 				else:
@@ -344,18 +344,18 @@ def execute(filters=None):
 				if q_end.month == 3:
 					total_mlp += 0
 				else:
-					total_mlp += mlp
+					total_mlp += round(mlp, 3)
 			else:
-				total_mlp += mlp
+				total_mlp += round(mlp, 3)
 			if cnt == 1:
-				pv = mlp
+				pv = round(mlp, 3)
 				pv_arr.append(pv)
 			else:
-				pv = mlp / ((1 + daily_rate) ** ndays)
+				pv = round(mlp, 3) / ((1 + daily_rate) ** ndays)
 				if quarterly_report:
 					if q_end.month == 3:
 						pv = 0
-				pv_arr.append(pv)
+				pv_arr.append(round(pv, 3))
 			if (mrent == 0 and rate == 0 and famt == 0 and escalation) or quarterly_report or add_amount:
 				mlp = prev_mlp
 		total_pv += pv
@@ -519,13 +519,13 @@ def execute(filters=None):
 			"closing_liability": round(closing_liability, 3),
 		}
 	)
-
 	# Third loop final report generation
 	current_date3 = start_date
 	cnt2 = 0
 	famt_prev_mlp2 = 0
 	total_days_prior2 = 0
 	while current_date3 <= end_date:
+		# frappe.msgprint("current_date3="+str(current_date3.date()))
 		cnt2 += 1
 		if quarterly_report:
 			q_start, q_end = get_q_start_q_end(cnt2, current_date3, quarterly_months, end_date, sum_modified)
@@ -533,11 +533,6 @@ def execute(filters=None):
 				for child in doc.additional_amounts:
 					if child.start_date == q_start.date() and child.end_date != q_end.date():
 						q_end = datetime(child.end_date.year, child.end_date.month, child.end_date.day)
-			# if sum_modified is not None:
-			# 	sum_modified = datetime(sum_modified.year,sum_modified.month,sum_modified.day)
-			# 	if sum_modified.date() >=q_start.date() and sum_modified.date()<=q_end.date():
-			# 		sum_modified3=sum_modified - timedelta(days=1)
-			# 		q_end=datetime(sum_modified3.year,sum_modified3.month,sum_modified3.day)
 			quarterly_n = (q_end - q_start).days + 1
 			if (
 				q_end.month not in quarterly_months
@@ -671,8 +666,8 @@ def execute(filters=None):
 					"month_start_date": month_start.date(),
 					"month_end_date": month_end.date(),
 					"days_in_month": n,
-					"mlp": mlp2,
-					"pv": pv_arr[cnt2] if cnt2 < len(pv_arr) else "",
+					"mlp": round(mlp2, 3),
+					"pv": round(pv_arr[cnt2], 3) if cnt2 < len(pv_arr) else "",
 					"depreciation": round(depreciation, 3),
 					"wdv": round(wdv, 3),
 					"interest_cost": round(interest_cost, 3),
@@ -730,8 +725,8 @@ def execute(filters=None):
 					"month_start_date": month_start.date(),
 					"month_end_date": month_end.date(),
 					"days_in_month": n,
-					"mlp": mlp2,
-					"pv": pv_arr[cnt2] if cnt2 < len(pv_arr) else "",
+					"mlp": round(mlp2, 3),
+					"pv": round(pv_arr[cnt2], 3) if cnt2 < len(pv_arr) else "",
 					"depreciation": round(depreciation, 3),
 					"wdv": round(wdv, 3),
 					"interest_cost": round(interest_cost, 3),
@@ -823,8 +818,8 @@ def execute(filters=None):
 					"month_start_date": month_start.date(),
 					"month_end_date": month_end.date(),
 					"days_in_month": n,
-					"mlp": mlp2,
-					"pv": pv_arr[cnt2] if cnt2 < len(pv_arr) else "",
+					"mlp": round(mlp2, 3),
+					"pv": round(pv_arr[cnt2]) if cnt2 < len(pv_arr) else "",
 					"depreciation": round(depreciation, 3),
 					"wdv": round(wdv, 3),
 					"interest_cost": round(interest_cost, 3),

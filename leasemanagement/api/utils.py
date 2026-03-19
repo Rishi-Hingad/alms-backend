@@ -491,6 +491,9 @@ def advance_to_next_period(
 		base_month = 1 if is_dec else current_date.month + 1
 		return datetime(base_year, base_month, esc_bd_end_date.day) - relativedelta(days=1)
 
+	if quarterly_report and q_end is not None:
+		return _advance_quarterly(current_date, q_end, month_end, end_date, is_dec, modified_start)
+
 	if (
 		modified_start is not None
 		and current_date.date().month == modified_start.month
@@ -500,8 +503,6 @@ def advance_to_next_period(
 	):
 		modified_start = datetime(modified_start.year, modified_start.month, modified_start.day)
 		return datetime(modified_start.year, modified_start.month, modified_start.day)
-	if quarterly_report and q_end is not None:
-		return _advance_quarterly(current_date, q_end, month_end, end_date, is_dec, modified_start)
 
 	# Default monthly advance
 	if is_dec:
