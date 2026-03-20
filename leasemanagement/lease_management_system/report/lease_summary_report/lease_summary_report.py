@@ -24,7 +24,7 @@ def execute(filters=None):
 
 	data = []
 	columns = [
-		{"label": _("Status"), "fieldname": "lease_status", "fieldtype": "Data", "width": 100},
+		{"label": _("Status"), "fieldname": "lease_status", "fieldtype": "Data", "width": 150},
 		{"label": _("Lease"), "fieldname": "lease_id", "fieldtype": "Data", "width": 240},
 		{"label": _("Vendor"), "fieldname": "vendor", "fieldtype": "Data", "width": 120},
 		{
@@ -174,6 +174,7 @@ def execute(filters=None):
 		terminated_on = None
 		terminated = False
 		modified = False
+		# frappe.msgprint(str(lease_status)+"__"+str(lease_doc.is_modified)+lease.name)
 		if lease_status == "Discarded":
 			if lease_doc.modifications:
 				modified_start = frappe.db.get_value(
@@ -187,6 +188,7 @@ def execute(filters=None):
 			terminated_on = lease_doc.termination_date + relativedelta(days=1)
 			lease_doc.agreement_end_date = lease_doc.termination_date
 
+			# if lease_status=="Terminated" and lease_doc.is_modified==1:
 		msdate = date(int(fin_start_year), 4, 1)
 		# medate = date(int(fin_end_year), 3, 1)
 		medate = date(int(fin_end_year), 3, 31)
@@ -198,7 +200,7 @@ def execute(filters=None):
 		if terminated_on is not None:
 			if lease_doc.termination_date > msdate and lease_doc.termination_date <= medate:
 				terminated = True
-			# frappe.msgprint(lease.name+" modified="+str(modified)+" terminated="+str(terminated)+" "+str(lease_doc.termination_date>msdate)+" "+str(lease_doc.termination_date <= medate) +" "+str(medate))
+			# frappe.msgprint(str(modified_start)+"__"+str(lease_doc.is_modified)+lease.name+" modified="+str(modified_start)+" "+str(modified)+" terminated="+str(terminated)+" "+str(lease_doc.termination_date>msdate)+" "+str(lease_doc.termination_date <= medate) +" "+str(medate))
 		lease_end = None
 		if lease_doc.agreement_end_date:
 			lease_end = getdate(lease_doc.agreement_end_date)
@@ -311,14 +313,20 @@ def execute(filters=None):
 		if modified:
 			mod_rou = -(row["wdv"].iloc[0])
 			mod_lia = -(row["closing_liability"].iloc[0])
-		if lease_status == "Modified":
+		if (
+			lease_status == "Modified"
+			or (lease_status == "Terminated" and lease_doc.is_modified == 1)
+			or ("Discarded" and lease_doc.is_modified == 1)
+		):
 			if opening_rou == 0 and opening_liability == 0:
 				mod_rou = df["wdv"][0]
 				mod_lia = df["closing_liability"][0]
 		if terminated:
 			ter_rou = -(row["wdv"].iloc[0])
 			ter_lia = -(row["closing_liability"].iloc[0])
+		# frappe.msgprint(lease.name+" "+str(opening_rou)+" "+str(round(total_depreciation,2))+" "+str(closing_rou)+" "+str(additions_rou_asset)+" "+str(mod_rou)+ " "+str(ter_rou))
 		rou_check = opening_rou - total_depreciation - closing_rou + additions_rou_asset + mod_rou + ter_rou
+		# frappe.msgprint("roucheck="+str(round(opening_rou,2) - round(total_depreciation,2) - round(closing_rou,2) + round(additions_rou_asset,2) + round(mod_rou,2) + round(ter_rou,2)))
 		liability_check = (
 			opening_liability
 			+ total_interest_cost

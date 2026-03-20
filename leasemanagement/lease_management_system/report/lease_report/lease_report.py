@@ -241,10 +241,13 @@ def execute(filters=None):
 					total_mlp += round(mlp, 3)
 				if cnt == 1:
 					pv = round(mlp, 3)
+					# pv = mlp
 					pv_arr.append(pv)
 				else:
 					pv = round(mlp, 3) / ((1 + daily_rate) ** ndays)
+					# pv = mlp / ((1 + daily_rate) ** ndays)
 					pv_arr.append(round(pv, 3))
+					# pv_arr.append(pv)
 
 				if prev_mlp_escl is None:
 					mlp = prev_mlp
@@ -282,10 +285,13 @@ def execute(filters=None):
 				total_mlp += round(mlp, 3)
 				if cnt == 1:
 					pv = round(mlp, 3)
+					# pv = mlp
 					pv_arr.append(pv)
 				else:
 					pv = round(mlp, 3) / ((1 + daily_rate) ** ndays)
+					# pv = mlp / ((1 + daily_rate) ** ndays)
 					pv_arr.append(round(pv, 3))
+					# pv_arr.append(pv)
 				if prev_mlp_escl is None:
 					mlp = prev_mlp
 				else:
@@ -349,13 +355,16 @@ def execute(filters=None):
 				total_mlp += round(mlp, 3)
 			if cnt == 1:
 				pv = round(mlp, 3)
+				# pv = mlp
 				pv_arr.append(pv)
 			else:
 				pv = round(mlp, 3) / ((1 + daily_rate) ** ndays)
+				# pv = mlp/ ((1 + daily_rate) ** ndays)
 				if quarterly_report:
 					if q_end.month == 3:
 						pv = 0
 				pv_arr.append(round(pv, 3))
+				# pv_arr.append(pv)
 			if (mrent == 0 and rate == 0 and famt == 0 and escalation) or quarterly_report or add_amount:
 				mlp = prev_mlp
 		total_pv += pv
@@ -807,7 +816,7 @@ def execute(filters=None):
 					"month_end_date": q_end.date(),
 					"days_in_month": n,
 					"mlp": mlp2,
-					"pv": pv_arr[cnt2] if cnt2 < len(pv_arr) else "",
+					"pv": round(pv_arr[cnt2], 3) if cnt2 < len(pv_arr) else "",
 					"depreciation": round(depreciation, 3),
 					"wdv": round(wdv, 3),
 					"interest_cost": round(interest_cost, 3),
@@ -819,7 +828,7 @@ def execute(filters=None):
 					"month_end_date": month_end.date(),
 					"days_in_month": n,
 					"mlp": round(mlp2, 3),
-					"pv": round(pv_arr[cnt2]) if cnt2 < len(pv_arr) else "",
+					"pv": round(pv_arr[cnt2], 3) if cnt2 < len(pv_arr) else "",
 					"depreciation": round(depreciation, 3),
 					"wdv": round(wdv, 3),
 					"interest_cost": round(interest_cost, 3),

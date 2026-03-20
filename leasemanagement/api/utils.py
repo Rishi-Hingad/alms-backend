@@ -651,6 +651,8 @@ def get_sum_modified_mlp(
 			return mlp, total_days_prior
 		total_days_prior = total_days_prior + int((prior_q_end - prior_q_start).days + 1)
 		mlp = mlp * quarterly_n / total_days_prior
+		if q_end.month == 1:
+			mlp = 0
 	if d.date() == q_start.date():
 		if total_days_prior != 0:
 			mlp = mlp * quarterly_n / total_days_prior
