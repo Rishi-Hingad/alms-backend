@@ -18,11 +18,6 @@
   "rc_book_received",
   "payment_done",
   "registration_done",
-  "car_delivery",
-  "delivery_date",
-  "contract_signed",
-  "contract_number",
-  "contract_start_date",
   "column_break_ybdw",
   "po_document",
   "proforma_invoice_document",
@@ -30,7 +25,17 @@
   "rc_book_document",
   "payment_document",
   "registration_document",
+  "delivery_details_section",
+  "car_delivery",
+  "delivery_date",
+  "column_break_euqj",
   "agreement_document",
+  "contract_details_section",
+  "contract_signed",
+  "contract_number",
+  "column_break_oshx",
+  "contract_start_date",
+  "contract_end_date",
   "contract_document"
  ],
  "fields": [
@@ -123,53 +128,39 @@
    "fieldtype": "Column Break"
   },
   {
-   "depends_on": "eval:doc.po_received == \"Yes\"",
    "fieldname": "po_document",
    "fieldtype": "Attach",
-   "label": "PO Document",
-   "read_only": 1
+   "label": "PO Document"
   },
   {
-   "depends_on": "eval:doc.proforma_invoice_received == \"Yes\"\r\n",
    "fieldname": "proforma_invoice_document",
    "fieldtype": "Attach",
-   "label": "Proforma Invoice Document",
-   "read_only": 1
+   "label": "Proforma Invoice Document"
   },
   {
-   "depends_on": "eval.doc.insurance_copy_received == \"Yes\"",
    "fieldname": "insurance_document",
    "fieldtype": "Attach",
-   "label": "Insurance Copy Document",
-   "read_only": 1
+   "label": "Insurance Copy Document"
   },
   {
-   "depends_on": "eval.doc.rc_book_received == \"Yes\"",
    "fieldname": "rc_book_document",
    "fieldtype": "Attach",
-   "label": "RC Book Document",
-   "read_only": 1
+   "label": "RC Book Document"
   },
   {
-   "depends_on": "eval.doc.payment_done == \"Yes\"",
    "fieldname": "payment_document",
    "fieldtype": "Attach",
-   "label": "Payment Document",
-   "read_only": 1
+   "label": "Payment Document"
   },
   {
-   "depends_on": "eval.doc.registration_done == \"Yes\"",
    "fieldname": "registration_document",
    "fieldtype": "Attach",
-   "label": "Registration Document",
-   "read_only": 1
+   "label": "Registration Document"
   },
   {
-   "depends_on": "eval.doc.car_delivery == \"Yes\"",
    "fieldname": "agreement_document",
    "fieldtype": "Attach",
-   "label": "Agreement Document",
-   "read_only": 1
+   "label": "Agreement Document"
   },
   {
    "default": "No",
@@ -191,11 +182,9 @@
    "options": "Yes\nNo"
   },
   {
-   "depends_on": "eval.doc.contract_signed == \"Yes\"",
    "fieldname": "contract_document",
    "fieldtype": "Attach",
-   "label": "Contract Document",
-   "read_only": 1
+   "label": "Contract Document"
   },
   {
    "fieldname": "contract_start_date",
@@ -206,11 +195,34 @@
    "fieldname": "contract_number",
    "fieldtype": "Data",
    "label": "Contract Number"
+  },
+  {
+   "fieldname": "contract_end_date",
+   "fieldtype": "Date",
+   "label": "Contract End Date"
+  },
+  {
+   "fieldname": "contract_details_section",
+   "fieldtype": "Section Break",
+   "label": "Contract Details"
+  },
+  {
+   "fieldname": "column_break_oshx",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "delivery_details_section",
+   "fieldtype": "Section Break",
+   "label": "Delivery Details"
+  },
+  {
+   "fieldname": "column_break_euqj",
+   "fieldtype": "Column Break"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-02-18 18:15:51.444122",
+ "modified": "2026-03-10 17:01:49.641292",
  "modified_by": "Administrator",
  "module": "CRMS",
  "name": "Car Process",

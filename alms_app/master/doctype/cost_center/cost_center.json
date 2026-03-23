@@ -1,23 +1,22 @@
 {
  "actions": [],
- "allow_import": 1,
  "allow_rename": 1,
- "autoname": "field:company_name",
- "creation": "2025-05-29 10:04:28.207612",
+ "creation": "2026-03-19 10:05:21.257706",
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
-  "meril_entity_section",
+  "cc_details_section",
   "company_code",
-  "company_short_form",
-  "column_break_muuj",
-  "company_name"
+  "cost_center_code",
+  "column_break_czjn",
+  "cost_center_name",
+  "description"
  ],
  "fields": [
   {
-   "fieldname": "meril_entity_section",
+   "fieldname": "cc_details_section",
    "fieldtype": "Section Break",
-   "label": "Meril Entity"
+   "label": "CC Details"
   },
   {
    "fieldname": "company_code",
@@ -25,29 +24,32 @@
    "label": "Company Code"
   },
   {
-   "fieldname": "column_break_muuj",
+   "fieldname": "cost_center_name",
+   "fieldtype": "Data",
+   "label": "Cost Center Name"
+  },
+  {
+   "fieldname": "cost_center_code",
+   "fieldtype": "Data",
+   "label": "Cost Center Code"
+  },
+  {
+   "fieldname": "column_break_czjn",
    "fieldtype": "Column Break"
   },
   {
-   "fieldname": "company_name",
-   "fieldtype": "Data",
-   "label": "Company Name",
-   "unique": 1
-  },
-  {
-   "fieldname": "company_short_form",
-   "fieldtype": "Data",
-   "label": "Company Short Form"
+   "fieldname": "description",
+   "fieldtype": "Small Text",
+   "label": "Description"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-03-06 12:41:15.724947",
+ "modified": "2026-03-19 10:07:34.926793",
  "modified_by": "Administrator",
  "module": "master",
- "name": "Company Master",
- "naming_rule": "By fieldname",
+ "name": "Cost Center",
  "owner": "Administrator",
  "permissions": [
   {

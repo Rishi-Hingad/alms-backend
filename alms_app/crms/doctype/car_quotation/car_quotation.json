@@ -44,6 +44,7 @@
   "total_emi",
   "interim_payment",
   "quarterly_payment",
+  "approval_tab",
   "approval_fields_section",
   "finance_team_status",
   "finance_head_status",
@@ -282,14 +283,12 @@
   {
    "fieldname": "finance_team_action_by",
    "fieldtype": "Data",
-   "hidden": 1,
    "label": "Finance Team Action By",
    "read_only": 1
   },
   {
    "fieldname": "finance_head_action_by",
    "fieldtype": "Data",
-   "hidden": 1,
    "label": "Finance Head Action By",
    "read_only": 1
   },
@@ -312,11 +311,16 @@
    "fieldname": "accessories",
    "fieldtype": "Data",
    "label": "Accessories"
+  },
+  {
+   "fieldname": "approval_tab",
+   "fieldtype": "Tab Break",
+   "label": "Approval"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-10-07 15:39:14.226978",
+ "modified": "2026-03-13 15:14:28.402313",
  "modified_by": "Administrator",
  "module": "CRMS",
  "name": "Car Quotation",

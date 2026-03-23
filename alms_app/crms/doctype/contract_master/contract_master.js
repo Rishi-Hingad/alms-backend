@@ -1,10 +1,10 @@
 frappe.ui.form.on("Contract Master", {
 
-    refresh: function(frm) {
+    refresh: function (frm) {
 
         if (!frm.is_new()) {
 
-            frm.add_custom_button("Renew Contract", function() {
+            frm.add_custom_button("Renew Contract", function () {
 
                 // Validate existing data
                 if (!frm.doc.contract_start_date || !frm.doc.contract_end_date) {
@@ -45,15 +45,15 @@ frappe.ui.form.on("Contract Master", {
         }
     },
 
-    contract_start_date: function(frm) {
+    contract_start_date: function (frm) {
         frm.trigger("calculate_installments");
     },
 
-    contract_end_date: function(frm) {
+    contract_end_date: function (frm) {
         frm.trigger("calculate_installments");
     },
 
-    calculate_installments: function(frm) {
+    calculate_installments: function (frm) {
 
         if (!frm.doc.contract_start_date || !frm.doc.contract_end_date) {
             return;
@@ -70,8 +70,9 @@ frappe.ui.form.on("Contract Master", {
             return;
         }
 
-        // Clear existing rows
         frm.clear_table("installment_date");
+
+        let interval_months = frm.doc.vendor === "ALD" ? 1 : 3;
 
         let installment_count = 0;
         let current_start = new Date(start_date);
@@ -79,7 +80,7 @@ frappe.ui.form.on("Contract Master", {
         while (current_start <= end_date) {
 
             let current_end = new Date(current_start);
-            current_end.setMonth(current_end.getMonth() + 3);
+            current_end.setMonth(current_end.getMonth() + interval_months);
             current_end.setDate(current_end.getDate() - 1);
 
             if (current_end > end_date) {
@@ -87,13 +88,18 @@ frappe.ui.form.on("Contract Master", {
             }
 
             let row = frm.add_child("installment_date");
+
+            row.installment_no = installment_count + 1;
             row.installment_start_date = frappe.datetime.obj_to_str(current_start);
             row.installment_end_date = frappe.datetime.obj_to_str(current_end);
 
+            let due_date = new Date(current_start);
+            due_date.setDate(15);
+            row.due_date = frappe.datetime.obj_to_str(due_date);
+
             installment_count++;
 
-            // Move to next quarter
-            current_start.setMonth(current_start.getMonth() + 3);
+            current_start.setMonth(current_start.getMonth() + interval_months);
         }
 
         frm.refresh_field("installment_date");

@@ -29,6 +29,7 @@ function send_email(user, email_send_to, payload = null) {
         },
     });
 }
+
 function uploadfile(frm) {
     if (frm.doc.finance_team_status !== "Approved") {
 
@@ -463,5 +464,95 @@ frappe.ui.form.on('Car Quotation', {
             frm.save_or_update();
         }
     },
+});
 
+frappe.ui.form.on("Car Quotation", {
+
+    total_emi: function (frm) {
+
+        let total_emi = flt(frm.doc.total_emi);
+
+        if (!total_emi) {
+            frm.set_value("quarterly_payment", 0);
+            frm.set_value("interim_payment", 0);
+            return;
+        }
+
+        let quarterly_payment = Math.round(total_emi * 3);
+        let interim_payment = Math.round((quarterly_payment * 39) / 90);
+        
+        frm.set_value("quarterly_payment", quarterly_payment);
+        frm.set_value("interim_payment", interim_payment);
+    }
+
+});
+
+frappe.ui.form.on("Car Quotation", {
+    refresh(frm) {
+        if (frm.doc.status === "Approved") {
+            frm.add_custom_button("Generate Deduction", () => {
+
+                frappe.call({
+                    method: "alms_app.crms.doctype.car_quotation.car_quotation.preview_deduction",
+                    args: {
+                        quotation_id: frm.doc.name
+                    },
+                    callback(r) {
+
+                        if (!r.message) return;
+
+                        const data = r.message;
+
+                        let d = new frappe.ui.Dialog({
+                            title: "Quarterly Payment Preview",
+                            fields: [
+                                {
+                                    label: "Company Quarterly Payment",
+                                    fieldname: "quarterly_payment",
+                                    fieldtype: "Currency",
+                                    default: data.quarterly_payment,
+                                    read_only: 1
+                                },
+                                {
+                                    label: "Employee Quarterly Payment",
+                                    fieldname: "employee_quarterly_payment",
+                                    fieldtype: "Currency",
+                                    default: data.employee_quarterly_payment,
+                                    read_only: 1
+                                }
+                            ],
+                            primary_action_label: "Generate",
+                            primary_action() {
+
+                                frappe.call({
+                                    method: "alms_app.crms.doctype.car_quotation.car_quotation.create_deduction_doc",
+                                    args: {
+                                        quotation_id: frm.doc.name,
+                                        quarterly_payment: data.quarterly_payment,
+                                        employee_quarterly_payment: data.employee_quarterly_payment
+                                    },
+                                    callback(res) {
+
+                                        frappe.msgprint("Deduction created successfully");
+
+                                        frappe.set_route(
+                                            "Form",
+                                            "Company and Employee Deduction",
+                                            res.message
+                                        );
+
+                                    }
+                                });
+
+                                d.hide();
+                            }
+                        });
+
+                        d.show();
+                    }
+                });
+
+            });
+        }
+    }
 });

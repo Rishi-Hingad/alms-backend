@@ -179,3 +179,206 @@ def process_uploaded_file(file_url):
         frappe.log_error(frappe.get_traceback(), "File Processing Error")
         frappe.throw(f"An error occurred while processing the file: {str(e)}")
 
+import frappe
+
+@frappe.whitelist()
+def generate_deduction(quotation_id):
+
+    quotation = frappe.get_doc("Car Quotation", quotation_id)
+
+    doc = frappe.new_doc("Company and Employee Deduction")
+
+    doc.finance_quotation_id = quotation.name
+    doc.employee_details = quotation.employee_details
+    doc.finance_company = quotation.finance_company
+
+    # Company values
+    doc.quarterly_payment = quotation.quarterly_payment
+
+    # Employee values
+    doc.employee_quarterly_payment = quotation.employee_quarterly_payment
+
+    # copy other required calculation fields
+    doc.interest_rate = quotation.interest_rate
+    doc.tenure = quotation.tenure
+    doc.ex_showroom_amount_net_of_discount = quotation.ex_showroom_amount_net_of_discount
+    doc.registration_charges = quotation.registration_charges
+    doc.residual_value = quotation.residual_value
+
+    doc.insert(ignore_permissions=True)
+
+    return doc.name
+
+
+from frappe.utils import flt
+import math
+
+
+def pmt(rate, nper, pv, fv=0, when=1):
+    if rate == 0:
+        return -(pv + fv) / nper
+    return -(rate * (fv + pv * (1 + rate) ** nper)) / ((1 + rate * when) * ((1 + rate) ** nper - 1))
+
+
+@frappe.whitelist()
+def preview_deduction(quotation_id):
+
+    q = frappe.get_doc("Car Quotation", quotation_id)
+    employee = frappe.get_doc("Employee Master", q.employee_details)
+    
+    # ---- Company contribution logic (same as calculate_emi) ----
+
+    interest_rate = flt(q.interest_rate) / 100
+    tenure = flt(q.tenure)
+
+    registration = flt(q.registration_charges)
+    gst = flt(q.gst)
+
+    insurance = flt(q.insurance)
+    fms = flt(q.fleet_management_repairs_and_tyres)
+    assist = flt(q.get("24x7_assist"))
+    # assist = flt(97)
+    pickup = flt(q.pickup_and_drop)
+    relief = flt(q.std_relief_car_non_accdt)
+    monthly_rate = interest_rate / 12
+
+    company_ex_showroom_amount_net_of_discount = flt(employee.eligibility)
+    print("Company ex-showroom amount net of discount:", company_ex_showroom_amount_net_of_discount)
+
+    registration = flt(q.registration_charges)
+
+    # Company financed amount
+    financed_amount = company_ex_showroom_amount_net_of_discount + registration
+    print("Company financed amount:", financed_amount)
+
+    # Residual value calculation (53%)
+    residual_percent = flt(q.residual_value_percent) / 100
+    residual_amount = flt(q.residual_value)
+
+    pmt_val = pmt(monthly_rate, tenure, -financed_amount, residual_amount, 1)
+    print("PMT for company:", pmt_val)
+
+    gst_per_month = gst / tenure if tenure else 0
+
+    emi_financing = round(pmt_val - gst_per_month)
+    print("EMI financing for company:", emi_financing)
+
+    finance_emi_road_tax = round(emi_financing - (registration / tenure if tenure else 0))
+    print("Finance EMI road tax for company:", finance_emi_road_tax)
+
+    gst_and_cess = round(finance_emi_road_tax * 45 / 100)
+    print("GST and cess for company:", gst_and_cess)
+
+    gst_on_fms = round((insurance + fms + assist + pickup + relief) * 18 / 100)
+    print("GST on FMS for company:", gst_on_fms)
+    print("Insurance for company:", insurance)
+    print("FMS for company:", fms)
+    print("Assist for company:", assist)
+
+    total_emi1 = (
+        emi_financing
+        + gst_and_cess
+        + insurance
+        + fms
+        + assist
+        + pickup
+        + relief
+        + gst_on_fms
+    )
+
+    total_emi = round(total_emi1)
+    print("Total EMI for company:", total_emi)
+
+    quarterly_payment = math.ceil(total_emi * 3)
+    interim_payment = math.ceil(quarterly_payment * 39 / 90)
+
+    # ---- Employee contribution logic (same as calculate_employee_fields) ----
+
+    employee_ex_showroom_amount_net_of_discount = (flt(q.ex_showroom_amount_net_of_discount) - company_ex_showroom_amount_net_of_discount)
+
+    employee_financed_amount = math.ceil(employee_ex_showroom_amount_net_of_discount)
+
+    pmt_emp = pmt(monthly_rate, tenure, -employee_financed_amount, 0, 1)
+    print("PMT for employee:", pmt_emp)
+
+    employee_emi_financing = pmt_emp
+
+    employee_finance_emi_road_tax = employee_emi_financing
+    print("Finance EMI road tax for employee:", employee_finance_emi_road_tax)
+
+    employee_gst_and_cess = round(employee_finance_emi_road_tax * 45 / 100)
+    print("GST and cess for employee:", employee_gst_and_cess)
+
+    employee_total_emi = round(employee_emi_financing + employee_gst_and_cess)
+    print("Total EMI for employee:", employee_total_emi)
+
+    employee_quarterly_payment = math.ceil(employee_total_emi * 3)
+    employee_interim_payment = math.ceil(employee_quarterly_payment * 39 / 90)
+
+    # return {
+    #     "total_emi": total_emi,
+    #     "employee_total_emi": employee_total_emi,
+    #     "quarterly_payment": quarterly_payment,
+    #     "employee_quarterly_payment": employee_quarterly_payment,
+    #     "interim_payment": interim_payment,
+    #     "employee_interim_payment": employee_interim_payment
+    # }
+    return {
+        # company
+        "company_ex_showroom": company_ex_showroom_amount_net_of_discount,
+        "company_financed_amount": financed_amount,
+        "company_emi_financing": emi_financing,
+        "company_finance_emi_road_tax": finance_emi_road_tax,
+        "company_gst_and_cess": gst_and_cess,
+        "company_gst_on_fms": gst_on_fms,
+        "total_emi": total_emi,
+        "quarterly_payment": quarterly_payment,
+        "interim_payment": interim_payment,
+
+        # employee
+        "employee_ex_showroom": employee_ex_showroom_amount_net_of_discount,
+        "employee_financed_amount": employee_financed_amount,
+        "employee_emi_financing": employee_emi_financing,
+        "employee_finance_emi_road_tax": employee_finance_emi_road_tax,
+        "employee_gst_and_cess": employee_gst_and_cess,
+        "employee_total_emi": employee_total_emi,
+        "employee_quarterly_payment": employee_quarterly_payment,
+        "employee_interim_payment": employee_interim_payment
+    }
+
+@frappe.whitelist()
+def create_deduction_doc(quotation_id):
+
+    q = frappe.get_doc("Car Quotation", quotation_id)
+    values = preview_deduction(quotation_id)
+
+    doc = frappe.new_doc("Company and Employee Deduction")
+
+    doc.finance_quotation_id = quotation_id
+    doc.employee_name = q.employee_details
+
+    # company
+    doc.ex_showroom_amount = values["company_ex_showroom"]
+    doc.financed_amount = values["company_financed_amount"]
+    doc.emi_financing = values["company_emi_financing"]
+    doc.finance_emi_road_tax = values["company_finance_emi_road_tax"]
+    doc.gst_and_cess = values["company_gst_and_cess"]
+    doc.gst_on_fms = values["company_gst_on_fms"]
+
+    doc.total_emi = values["total_emi"]
+    doc.quarterly_payment = values["quarterly_payment"]
+    doc.interim_payment = values["interim_payment"]
+
+    # employee
+    doc.employee_ex_showroom_amount_net_of_discount = values["employee_ex_showroom"]
+    doc.employee_financed_amount = values["employee_financed_amount"]
+    doc.employee_emi_financing = values["employee_emi_financing"]
+    doc.employee_finance_emi_road_tax = values["employee_finance_emi_road_tax"]
+    doc.employee_gst_and_cess = values["employee_gst_and_cess"]
+    doc.employee_total_emi = values["employee_total_emi"]
+    doc.employee_quarterly_payment = values["employee_quarterly_payment"]
+    doc.employee_interim_payment = values["employee_interim_payment"]
+
+    doc.insert(ignore_permissions=True)
+
+    return doc.name

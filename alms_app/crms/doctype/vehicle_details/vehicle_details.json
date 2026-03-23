@@ -2,13 +2,13 @@
  "actions": [],
  "allow_import": 1,
  "allow_rename": 1,
- "autoname": "field:contract_number",
+ "autoname": "field:employee_code_and_name",
  "creation": "2025-05-29 09:52:58.352448",
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
+  "vehicle_details_tab",
   "vehicle_details_section",
-  "contract_number",
   "vendor_company",
   "company_name",
   "employee_code_and_name",
@@ -25,7 +25,14 @@
   "with_maintenance",
   "rc_received",
   "status",
-  "remarks"
+  "remarks",
+  "installement_details_tab",
+  "contract_details_section",
+  "contract_number",
+  "column_break_btoj",
+  "contract_document",
+  "installment_payment_status_section",
+  "installment_payment"
  ],
  "fields": [
   {
@@ -35,9 +42,9 @@
   },
   {
    "fieldname": "contract_number",
-   "fieldtype": "Data",
+   "fieldtype": "Link",
    "label": "Contract Number",
-   "unique": 1
+   "options": "Contract Master"
   },
   {
    "fieldname": "company_name",
@@ -113,7 +120,8 @@
    "fieldname": "employee_code_and_name",
    "fieldtype": "Link",
    "label": "Employee Code and Name",
-   "options": "Employee Master"
+   "options": "Employee Master",
+   "unique": 1
   },
   {
    "fieldname": "car_allotment_letter",
@@ -130,11 +138,48 @@
    "fieldtype": "Select",
    "label": "Vendor Company",
    "options": "ALD\nEasyAssets\nCompany Owned Vehicle"
+  },
+  {
+   "fieldname": "vehicle_details_tab",
+   "fieldtype": "Tab Break",
+   "label": "Vehicle Details"
+  },
+  {
+   "fieldname": "installement_details_tab",
+   "fieldtype": "Tab Break",
+   "label": "Installement Details"
+  },
+  {
+   "fieldname": "column_break_btoj",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fetch_from": "contract_number.upload_contract",
+   "fieldname": "contract_document",
+   "fieldtype": "Attach",
+   "label": "Contract Document"
+  },
+  {
+   "fieldname": "installment_payment_status_section",
+   "fieldtype": "Section Break",
+   "label": "Installment Payment Status"
+  },
+  {
+   "fieldname": "installment_payment",
+   "fieldtype": "Table",
+   "label": "Installment Payment",
+   "options": "Installment Payment Status"
+  },
+  {
+   "fieldname": "contract_details_section",
+   "fieldtype": "Section Break",
+   "label": "Contract Details"
   }
  ],
+ "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-09-02 11:53:55.769281",
+ "modified": "2026-03-10 16:05:59.196088",
  "modified_by": "Administrator",
  "module": "CRMS",
  "name": "Vehicle Details",
@@ -154,6 +199,7 @@
    "write": 1
   }
  ],
+ "row_format": "Dynamic",
  "sort_field": "modified",
  "sort_order": "DESC",
  "states": []
