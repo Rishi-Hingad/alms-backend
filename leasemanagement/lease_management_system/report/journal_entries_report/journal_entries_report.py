@@ -1,4 +1,4 @@
-# Copyright (c) 2025, Shradha_Siddhi and contributors
+# Copyright (c) 2026, Shradha_Siddhi and contributors
 # For license information, please see license.txt
 
 import math

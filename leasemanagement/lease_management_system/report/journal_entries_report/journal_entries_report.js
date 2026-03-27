@@ -1,7 +1,7 @@
-// Copyright (c) 2025, Shradha_Siddhi and contributors
+// Copyright (c) 2026, Shradha_Siddhi and contributors
 // For license information, please see license.txt
 
-frappe.query_reports["Lease Summary Entries Report"] = {
+frappe.query_reports["Journal Entries Report"] = {
 	filters: [
 		{
 			fieldname: "company_name",
