@@ -186,6 +186,9 @@ fixtures=[
 
 # include js, css files in header of desk.html
 # app_include_css = "/assets/alms_app/css/alms_app.css"
+app_include_css = [
+    "/assets/alms_app/css/custom.css"
+]
 # app_include_js = "/assets/alms_app/js/alms_app.js"
 
 # include js, css files in header of web template
@@ -313,6 +316,12 @@ app_include_js = [
 #         "on_submit": "alms_app.crms.web_form.car_indent_form.car_indent_form.send_email_to_reporting_head"
 #     }
 # }
+
+doc_events = {
+    "Invoice Batch": {
+        "on_update": "alms_app.crms.doctype.invoice_batch.invoice_batch.create_invoice_details_on_approval"
+    }
+}
 
 
 # Scheduled Tasks

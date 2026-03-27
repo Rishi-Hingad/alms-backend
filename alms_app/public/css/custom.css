@@ -1,0 +1,14 @@
+ .btn-approved {
+     background-color: darkgreen;
+     color: white;
+ }
+
+ .btn-rejected {
+     background-color: darkred;
+     color: white;
+ }
+
+ .btn-pending {
+     background-color: gray;
+     color: white;
+ }

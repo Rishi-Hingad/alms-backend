@@ -1,0 +1,291 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2026-03-09 14:11:42.004623",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "batch_details_section",
+  "vendor_name",
+  "column_break_dvoa",
+  "no_of_invoice",
+  "total_value_section",
+  "total_value_of_rental_charges",
+  "total_value_of_fleet_charges",
+  "column_break_okli",
+  "total_value_of_rto",
+  "total_value_of_insurance",
+  "combined_value_section",
+  "total_value_of_all",
+  "column_break_rlbp",
+  "total_value_of_company_contribution",
+  "total_value_of_employee_contribution",
+  "rows_section",
+  "rows",
+  "approval_details_section",
+  "finance_team_status",
+  "finance_team_user",
+  "finance_team_remarks",
+  "column_break_mkou",
+  "finance_head_status",
+  "finance_head_user",
+  "finance_head_remarks",
+  "column_break_weyo",
+  "hr_head_status",
+  "hr_head_user",
+  "hr_head_remarks",
+  "progress_details_tab",
+  "progress_details_section",
+  "excel_file",
+  "status",
+  "progress",
+  "invoice_created",
+  "column_break_otiz",
+  "total_rows",
+  "success_rows",
+  "failed_rows",
+  "failed_rows_section",
+  "failed_rows_table"
+ ],
+ "fields": [
+  {
+   "fieldname": "excel_file",
+   "fieldtype": "Attach",
+   "in_list_view": 1,
+   "label": "Excel File",
+   "reqd": 1
+  },
+  {
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "label": "Status",
+   "options": "Pending\nProcessing\nCompleted\nFailed"
+  },
+  {
+   "fieldname": "progress",
+   "fieldtype": "Percent",
+   "label": "Progress",
+   "read_only": 1
+  },
+  {
+   "fieldname": "total_rows",
+   "fieldtype": "Int",
+   "label": "Total Rows",
+   "read_only": 1
+  },
+  {
+   "fieldname": "success_rows",
+   "fieldtype": "Int",
+   "label": "Success Rows",
+   "read_only": 1
+  },
+  {
+   "fieldname": "failed_rows",
+   "fieldtype": "Int",
+   "label": "Failed Rows",
+   "read_only": 1
+  },
+  {
+   "fieldname": "rows_section",
+   "fieldtype": "Section Break",
+   "label": "Rows"
+  },
+  {
+   "fieldname": "rows",
+   "fieldtype": "Table",
+   "label": "Invoice Rows",
+   "options": "Invoice Import Row"
+  },
+  {
+   "fieldname": "progress_details_section",
+   "fieldtype": "Section Break",
+   "label": "Progress Details"
+  },
+  {
+   "fieldname": "failed_rows_section",
+   "fieldtype": "Section Break",
+   "label": "Failed Rows"
+  },
+  {
+   "fieldname": "failed_rows_table",
+   "fieldtype": "Table",
+   "label": "Failed Rows Table",
+   "options": "Invoice Import Row"
+  },
+  {
+   "fieldname": "progress_details_tab",
+   "fieldtype": "Tab Break",
+   "label": "Progress Details"
+  },
+  {
+   "fieldname": "batch_details_section",
+   "fieldtype": "Section Break",
+   "label": "Batch Details"
+  },
+  {
+   "fieldname": "no_of_invoice",
+   "fieldtype": "Data",
+   "label": "No. of Invoice (Excel Row Number)"
+  },
+  {
+   "fieldname": "vendor_name",
+   "fieldtype": "Select",
+   "label": "Vendor Name",
+   "options": "-Select-\nALD\nEazy Assets"
+  },
+  {
+   "fieldname": "column_break_dvoa",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "total_value_section",
+   "fieldtype": "Section Break",
+   "label": "Total Value"
+  },
+  {
+   "fieldname": "total_value_of_rental_charges",
+   "fieldtype": "Data",
+   "label": "Total Value of Rental Charges"
+  },
+  {
+   "fieldname": "total_value_of_fleet_charges",
+   "fieldtype": "Data",
+   "label": "Total Value of Fleet Charges"
+  },
+  {
+   "fieldname": "column_break_okli",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "total_value_of_rto",
+   "fieldtype": "Data",
+   "label": "Total Value of RTO"
+  },
+  {
+   "fieldname": "total_value_of_insurance",
+   "fieldtype": "Data",
+   "label": "Total Value of Insurance"
+  },
+  {
+   "fieldname": "combined_value_section",
+   "fieldtype": "Section Break",
+   "label": "Combined Value"
+  },
+  {
+   "fieldname": "total_value_of_all",
+   "fieldtype": "Data",
+   "label": "Total Value of all"
+  },
+  {
+   "fieldname": "column_break_rlbp",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "total_value_of_company_contribution",
+   "fieldtype": "Data",
+   "label": "Total Value of Company Contribution"
+  },
+  {
+   "fieldname": "total_value_of_employee_contribution",
+   "fieldtype": "Data",
+   "label": "Total Value of Employee Contribution"
+  },
+  {
+   "fieldname": "approval_details_section",
+   "fieldtype": "Section Break",
+   "label": "Approval Details"
+  },
+  {
+   "fieldname": "finance_team_user",
+   "fieldtype": "Data",
+   "label": "Finance Team User"
+  },
+  {
+   "fieldname": "column_break_mkou",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "finance_head_user",
+   "fieldtype": "Data",
+   "label": "Finance Head User"
+  },
+  {
+   "fieldname": "column_break_weyo",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "hr_head_user",
+   "fieldtype": "Data",
+   "label": "HR Head User"
+  },
+  {
+   "fieldname": "finance_team_status",
+   "fieldtype": "Select",
+   "label": "Finance Team Status",
+   "options": "Pending\nApproved\nRejected"
+  },
+  {
+   "fieldname": "finance_head_status",
+   "fieldtype": "Select",
+   "label": "Finance Head Status",
+   "options": "Pending\nApproved\nRejected"
+  },
+  {
+   "fieldname": "hr_head_status",
+   "fieldtype": "Select",
+   "label": "HR Head Status",
+   "options": "Pending\nApproved\nRejected"
+  },
+  {
+   "fieldname": "finance_team_remarks",
+   "fieldtype": "Data",
+   "label": "Finance Team Remarks"
+  },
+  {
+   "fieldname": "finance_head_remarks",
+   "fieldtype": "Data",
+   "label": "Finance Head Remarks"
+  },
+  {
+   "fieldname": "hr_head_remarks",
+   "fieldtype": "Data",
+   "label": "HR Head Remarks"
+  },
+  {
+   "default": "0",
+   "fieldname": "invoice_created",
+   "fieldtype": "Check",
+   "label": "Invoice Created (Individual)"
+  },
+  {
+   "fieldname": "column_break_otiz",
+   "fieldtype": "Column Break"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2026-03-27 08:50:08.631757",
+ "modified_by": "Administrator",
+ "module": "CRMS",
+ "name": "Invoice Batch",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

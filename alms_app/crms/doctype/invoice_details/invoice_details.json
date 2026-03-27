@@ -233,13 +233,13 @@
    "fieldname": "excel_batch_id",
    "fieldtype": "Link",
    "label": "Excel Batch ID",
-   "options": "Invoice Import"
+   "options": "Invoice Batch"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-03-14 17:06:19.615908",
+ "modified": "2026-03-24 09:41:09.449471",
  "modified_by": "Administrator",
  "module": "CRMS",
  "name": "Invoice Details",

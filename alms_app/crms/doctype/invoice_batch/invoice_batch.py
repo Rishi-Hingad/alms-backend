@@ -2,12 +2,13 @@
 from frappe.model.document import Document
 import frappe
 import pandas as pd
+from frappe.recorder import status
 from frappe.utils.file_manager import get_file
-from frappe.utils import getdate
+from frappe.utils import getdate, user
 from frappe import _
 import io
 
-class InvoiceImport(Document):
+class InvoiceBatch(Document):
     pass
 
 
@@ -230,7 +231,7 @@ def download_error_report(docname):
 
     df = pd.DataFrame(rows)
 
-    file_name = "invoice_import_errors.xlsx"
+    file_name = "invoice_batch_errors.xlsx"
 
     output = io.BytesIO()
     df.to_excel(output, index=False)
@@ -238,3 +239,145 @@ def download_error_report(docname):
     frappe.response["filename"] = file_name
     frappe.response["filecontent"] = output.getvalue()
     frappe.response["type"] = "binary"
+
+
+@frappe.whitelist()
+def update_approval_status(docname, role, action, remarks):
+
+    user = frappe.session.user
+    user_roles = frappe.get_roles(user)
+
+    def is_admin():
+        return user == "Administrator"
+    
+    def is_already_processed(status):
+        return status in ["Approved", "Rejected"]
+
+    doc = frappe.get_doc("Invoice Batch", docname)
+
+    # ---------------- FINANCE TEAM ---------------- #
+    if role == "finance_team":
+
+        if "Finance Team" not in user_roles and not is_admin():
+            frappe.throw("Not authorized for Finance Team action")
+
+        if is_already_processed(doc.finance_team_status):
+            frappe.throw("Finance Team already processed this")
+
+        doc.finance_team_status = action
+        doc.finance_team_remarks = remarks
+
+    # ---------------- FINANCE HEAD ---------------- #
+    elif role == "finance_head":
+
+        if "Finance Head" not in user_roles and not is_admin():
+            frappe.throw("Not authorized for Finance Head action")
+        
+        if is_already_processed(doc.finance_head_status):
+            frappe.throw("Finance Head already processed this")
+
+        if doc.finance_team_status != "Approved":
+            frappe.throw("Finance Team must approve first")
+
+        doc.finance_head_status = action
+        doc.finance_head_remarks = remarks
+
+    # ---------------- HR HEAD ---------------- #
+    elif role == "hr_head":
+
+        if "HR Head" not in user_roles and not is_admin():
+            frappe.throw("Not authorized for HR Head action")
+        
+        if is_already_processed(doc.hr_head_status):
+            frappe.throw("HR Head already processed this")
+
+        if doc.finance_head_status != "Approved":
+            frappe.throw("Finance Head must approve first")
+
+        doc.hr_head_status = action
+        doc.hr_head_remarks = remarks
+
+    else:
+        frappe.throw("Invalid role")
+
+    doc.save(ignore_permissions=True)
+    frappe.db.commit()
+
+    return "Updated"
+
+
+def create_invoice_details_on_approval(doc, method):
+
+    if doc.hr_head_status != "Approved":
+        return
+
+    # prevent duplicate execution
+    if doc.get("invoice_created"):
+        return
+
+    for row in doc.rows:
+
+        if row.status != "Success":
+            continue
+
+        # duplicate check again (safety net)
+        exists = frappe.db.exists(
+            "Invoice Details",
+            {
+                "contract_number": row.contract_number,
+                "installment_no": row.installment_no
+            }
+        )
+
+        if exists:
+            continue
+
+        inv = frappe.new_doc("Invoice Details")
+
+        inv.contract_number = row.contract_number
+        employee = frappe.db.get_value(
+            "Contract Master",
+            row.contract_number,
+            "employee_car_process_form"
+        )
+
+        if not employee:
+            frappe.log_error(
+                f"Employee not found for Contract {row.contract_number}",
+                "Invoice Creation Error"
+            )
+            continue
+
+        inv.employee_name = employee
+
+        inv.invoice_date_from = row.invoice_date_from
+        inv.invoice_date_to = row.invoice_date_to
+        inv.contract_end_date = row.contract_end_date
+
+        inv.vehicle_details = row.vehicle_details
+        inv.installment_no = row.installment_no
+        inv.no_of_billing_days = row.no_of_billing_days
+
+        inv.billing_date = row.billing_date
+
+        inv.invoice_no_rental = row.invoice_no_rental
+        inv.invoice_value_a = row.invoice_value_a
+
+        inv.invoice_no_fleet = row.invoice_no_fleet
+        inv.invoice_value_b = row.invoice_value_b
+
+        inv.invoice_no_road = row.invoice_no_road
+        inv.invoice_value_c = row.invoice_value_c
+
+        inv.invoice_no_insurance = row.invoice_no_insurance
+        inv.invoice_value_d = row.invoice_value_d
+
+        inv.total_invoice_value = row.total_invoice_value
+
+        inv.excel_batch_id = doc.name
+
+        inv.insert(ignore_permissions=True)
+
+    # mark so it doesn't run again
+    doc.invoice_created = 1
+    doc.save(ignore_permissions=True)
