@@ -5,60 +5,41 @@
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
-  "lease_agreements",
-  "month",
-  "amount",
-  "with_tax",
-  "tax",
-  "attachments"
+  "invoice_excel",
+  "invoice_rows",
+  "total_invoice_amount",
+  "payment_status"
  ],
  "fields": [
   {
-   "fieldname": "lease_agreements",
-   "fieldtype": "Table MultiSelect",
-   "label": "Lease Agreement's",
-   "options": "Lease Agreements",
+   "fieldname": "invoice_excel",
+   "fieldtype": "Attach",
+   "label": "Invoice Excel",
    "reqd": 1
   },
   {
-   "fieldname": "month",
+   "fieldname": "payment_status",
    "fieldtype": "Select",
-   "label": "Month",
-   "options": "\nJanuary\nFebruary\nMarch\nApril\nMay\nJune\nJuly\nAugust\nSeptember\nOctober\nNovember\nDecember",
-   "reqd": 1
+   "label": "Payment Status",
+   "options": "Unpaid\nPaid"
   },
   {
-   "fieldname": "amount",
+   "fieldname": "invoice_rows",
+   "fieldtype": "Table",
+   "label": "Invoice Rows",
+   "options": "Invoice Rows"
+  },
+  {
+   "fieldname": "total_invoice_amount",
    "fieldtype": "Float",
    "in_list_view": 1,
-   "label": "Amount",
-   "reqd": 1
-  },
-  {
-   "default": "0",
-   "fieldname": "with_tax",
-   "fieldtype": "Check",
-   "label": "With tax"
-  },
-  {
-   "default": "0",
-   "description": "(%)",
-   "fieldname": "tax",
-   "fieldtype": "Percent",
-   "label": "Tax"
-  },
-  {
-   "fieldname": "attachments",
-   "fieldtype": "Table",
-   "label": "Attachment's",
-   "options": "Attachments",
-   "reqd": 1
+   "label": "Total Invoice Amount"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-11-05 09:48:07.238706",
+ "modified": "2026-03-27 11:53:32.841148",
  "modified_by": "Administrator",
  "module": "Lease Management System",
  "name": "Invoice Details",

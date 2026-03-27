@@ -8,7 +8,85 @@ import frappe
 import pandas as pd
 from dateutil.relativedelta import relativedelta
 from frappe.desk.query_report import run
-from frappe.utils import add_days
+from frappe.utils import add_days, getdate
+
+
+@frappe.whitelist()
+def get_formatted_date(dt):
+	day = dt.day
+
+	# Suffix logic
+	if 4 <= day <= 20 or 24 <= day <= 30:
+		suffix = "th"
+	else:
+		suffix = ["st", "nd", "rd"][day % 10 - 1]
+
+	formatted_date = dt.strftime(f"%d{suffix} %B, %Y")
+	return formatted_date
+
+
+@frappe.whitelist()
+def get_financial_year():
+	today = getdate()
+
+	year = today.year
+	month = today.month
+
+	if month < 4:
+		return {"start_year": year - 1, "end_year": year}
+	else:
+		return {"start_year": year, "end_year": year + 1}
+
+
+@frappe.whitelist()
+def get_terminated_lease_data(terminated_leases):
+	cur_ter_gross_wdv_immovable = 0
+	cur_ter_gross_wdv_vehicle = 0
+	cur_ter_acc_deprec_immovable = 0
+	cur_ter_acc_deprec_vehicle = 0
+	for lease in terminated_leases:
+		lease_doc = frappe.get_doc("Lease Management", lease)
+		if lease_doc.calculation_rate_type == "Daily Rate":
+			lreport = "Lease Report"
+		else:
+			lreport = "Lease Report Monthly (With Escalation)"
+		terminated_on = lease_doc.termination_date
+		lease_report_result = run(lreport, filters={"docname": lease_doc.name, "sum_modified": None})
+		lease_report_rows = lease_report_result.get("result")
+		lease_report_df = pd.DataFrame(lease_report_rows)
+
+		ter_report_result = run(
+			lreport, filters={"docname": lease_doc.name, "sum_modified": terminated_on + timedelta(days=1)}
+		)
+		ter_report_rows = ter_report_result.get("result")
+		ter_report_df = pd.DataFrame(ter_report_rows)
+		ter_report_df["month_end_date"] = pd.to_datetime(ter_report_df["month_end_date"])
+		dates = ter_report_df["month_end_date"].dropna().dt.date.tolist()
+		for i in range(len(dates)):
+			if dates[i] >= lease_doc.agreement_start_date and dates[i] <= terminated_on:
+				# val = str(dates[i])
+				if lease_doc.type_of_asset == "Car":
+					cur_ter_acc_deprec_vehicle += round(ter_report_df.iloc[i + 1]["depreciation"], 3)
+				else:
+					cur_ter_acc_deprec_immovable += round(ter_report_df.iloc[i + 1]["depreciation"], 3)
+		if lease_doc.type_of_asset == "Car":
+			cur_ter_gross_wdv_vehicle += lease_report_df["wdv"][0]
+		else:
+			cur_ter_gross_wdv_immovable += lease_report_df["wdv"][0]
+	return (
+		cur_ter_acc_deprec_vehicle,
+		cur_ter_acc_deprec_immovable,
+		cur_ter_gross_wdv_vehicle,
+		cur_ter_gross_wdv_immovable,
+	)
+
+
+@frappe.whitelist()
+def auto_set_end_year(start_year):
+	if not start_year:
+		return None
+
+	return int(start_year) + 1
 
 
 @frappe.whitelist()
@@ -571,7 +649,7 @@ def get_prev_wdv_modification(
 			+ float(prev_closing_liability)
 		)
 
-	return prev_wdv
+	return round(prev_wdv, 3)
 
 
 def get_period_details(current_date, start_date, end_date, diff_annually, mid_diff_annually, modified_start):
@@ -651,10 +729,12 @@ def get_sum_modified_mlp(
 			return mlp, total_days_prior
 		total_days_prior = total_days_prior + int((prior_q_end - prior_q_start).days + 1)
 		mlp = mlp * quarterly_n / total_days_prior
+		if q_end.month == 1:
+			mlp = 0
 	if d.date() == q_start.date():
 		if total_days_prior != 0:
 			mlp = mlp * quarterly_n / total_days_prior
-	return mlp, total_days_prior
+	return round(mlp, 3), total_days_prior
 
 
 @frappe.whitelist()
