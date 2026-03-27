@@ -17,6 +17,7 @@
   "total_value_of_insurance",
   "combined_value_section",
   "total_value_of_all",
+  "invoice_attachment",
   "column_break_rlbp",
   "total_value_of_company_contribution",
   "total_value_of_employee_contribution",
@@ -260,12 +261,17 @@
   {
    "fieldname": "column_break_otiz",
    "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "invoice_attachment",
+   "fieldtype": "Attach",
+   "label": "Invoice Attachment"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-03-27 08:50:08.631757",
+ "modified": "2026-03-27 16:05:53.746976",
  "modified_by": "Administrator",
  "module": "CRMS",
  "name": "Invoice Batch",
