@@ -237,6 +237,7 @@ def preview_deduction(quotation_id):
     insurance = flt(q.insurance)
     fms = flt(q.fleet_management_repairs_and_tyres)
     assist = flt(q.get("24x7_assist"))
+    print("Value of 24x7 assist:",assist)
     # assist = flt(97)
     pickup = flt(q.pickup_and_drop)
     relief = flt(q.std_relief_car_non_accdt)
