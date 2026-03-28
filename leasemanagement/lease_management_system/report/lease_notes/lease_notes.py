@@ -20,8 +20,8 @@ def execute(filters=None):
 	if not company_name:
 		frappe.throw(translate("Please select a Company."))
 
-	fin_start_year = filters.get("fin_start_year")
-	fin_end_year = filters.get("fin_end_year")
+	fin_start_year = int(filters.get("fin_start_year"))
+	fin_end_year = int(filters.get("fin_end_year"))
 
 	if not fin_start_year or not fin_end_year:
 		frappe.throw(translate("Please Enter Financial Start Year"))
@@ -116,11 +116,16 @@ def execute(filters=None):
 	)
 	rows = cur_result.get("result")
 	df = pd.DataFrame(rows)
-
-	cur_depre_immovable = round(df.iloc[15]["debit"], 3)
-	cur_depre_vehicle = round(df.iloc[16]["debit"], 3)
-	cur_add_immovable = round(df.iloc[5]["debit"], 3)
-	cur_add_vehicle = round(df.iloc[6]["debit"], 3)
+	if not df.empty and len(df) > 15:
+		cur_depre_immovable = round(df.iloc[15]["debit"], 3)
+		cur_depre_vehicle = round(df.iloc[16]["debit"], 3)
+		cur_add_immovable = round(df.iloc[5]["debit"], 3)
+		cur_add_vehicle = round(df.iloc[6]["debit"], 3)
+	else:
+		cur_depre_immovable = 0
+		cur_depre_vehicle = 0
+		cur_add_immovable = 0
+		cur_add_vehicle = 0
 	# cur_ter_immovable = round(df.iloc[2]["credit"],3)
 	# cur_ter_vehicle = round(df.iloc[3]["credit"],3)
 	# frappe.msgprint(str(cur_depre))
@@ -134,17 +139,49 @@ def execute(filters=None):
 	)
 	prev_rows = prev_result.get("result")
 	prev_df = pd.DataFrame(prev_rows)
-	prev_depre_immovable = round(prev_df.iloc[15]["debit"], 3)
-	prev_depre_vehicle = round(prev_df.iloc[16]["debit"], 3)
-	prev_add_immovable = round(prev_df.iloc[5]["debit"], 3)
-	prev_add_vehicle = round(prev_df.iloc[6]["debit"], 3)
+	# frappe.msgprint("fin_start_year="+str(fin_start_year)+" "+str(get_prev_notes_record(company_name,fin_start_year)))
+	# prev_gross_immovable,prev_gross_vehicle,prev_acc_depre_immovable,prev_acc_depre_vehicle= get_prev_notes_record(company_name,fin_start_year)
+	if not prev_df.empty and len(prev_df) > 15:
+		prev_depre_immovable = round(prev_df.iloc[15]["debit"], 3)
+		prev_depre_vehicle = round(prev_df.iloc[16]["debit"], 3)
+		prev_add_immovable = round(prev_df.iloc[5]["debit"], 3)
+		prev_add_vehicle = round(prev_df.iloc[6]["debit"], 3)
+	else:
+		prev_depre_immovable = 0
+		prev_depre_vehicle = 0
+		prev_add_immovable = 0
+		prev_add_vehicle = 0
 	prev_gross_immovable = 0
 	prev_gross_vehicle = 0
+	prev_acc_depre_immovable = 0
+	prev_acc_depre_vehicle = 0
+	res = frappe.get_value(
+		"Previous Lease Note Details",
+		{"company": company_name, "financial_start_year": int(fin_start_year) - 1},
+		[
+			"gross_amount_immovable",
+			"accumulated_amortization_immovable",
+			"gross_amount_vehicle",
+			"accumulated_amortization_vehicle",
+		],
+		as_dict=True,
+	)
+	if res:
+		prev_gross_immovable = float(res.gross_amount_immovable)
+		prev_gross_vehicle = float(res.gross_amount_vehicle)
+		prev_acc_depre_immovable = float(res.accumulated_amortization_immovable)
+		prev_acc_depre_vehicle = float(res.accumulated_amortization_vehicle)
+	if filters.get("prev_gross_immovable"):
+		prev_gross_immovable = round(float(filters.get("prev_gross_immovable")), 3)
+	if filters.get("prev_gross_vehicle"):
+		prev_gross_vehicle = round(float(filters.get("prev_gross_vehicle")), 3)
+	if filters.get("prev_acc_depre_immovable"):
+		prev_acc_depre_immovable = round(float(filters.get("prev_acc_depre_immovable")), 3)
+	if filters.get("prev_acc_depre_vehicle"):
+		prev_acc_depre_vehicle = round(float(filters.get("prev_acc_depre_vehicle")), 3)
 	prev_gross_at_immovable = prev_gross_immovable + prev_add_immovable - prev_ter_gross_wdv_immovable
 	prev_gross_at_vehicle = prev_gross_vehicle + prev_add_vehicle - prev_ter_gross_wdv_vehicle
 	prev_gross_at_total = prev_gross_at_immovable + prev_gross_at_vehicle
-	prev_acc_depre_immovable = 0
-	prev_acc_depre_vehicle = 0
 	prev_acc_depre_upto_immovable = (
 		prev_acc_depre_immovable + prev_depre_immovable - prev_ter_acc_deprec_immovable
 	)

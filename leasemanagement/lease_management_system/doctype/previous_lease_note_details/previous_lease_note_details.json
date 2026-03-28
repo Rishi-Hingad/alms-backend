@@ -1,0 +1,93 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2026-03-28 11:09:29.960143",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "company",
+  "gross_amount_immovable",
+  "accumulated_amortization_immovable",
+  "column_break_ryic",
+  "financial_start_year",
+  "gross_amount_vehicle",
+  "accumulated_amortization_vehicle"
+ ],
+ "fields": [
+  {
+   "fieldname": "company",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Company",
+   "options": "Company Master",
+   "reqd": 1
+  },
+  {
+   "fieldname": "financial_start_year",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Financial Start Year",
+   "placeholder": "(YYYY)",
+   "reqd": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "gross_amount_immovable",
+   "fieldtype": "Float",
+   "label": "Gross Amount Immovable",
+   "precision": "3"
+  },
+  {
+   "default": "0",
+   "fieldname": "gross_amount_vehicle",
+   "fieldtype": "Float",
+   "label": "Gross Amount Vehicle",
+   "precision": "3"
+  },
+  {
+   "default": "0",
+   "fieldname": "accumulated_amortization_immovable",
+   "fieldtype": "Float",
+   "label": "Accumulated Amortization Immovable",
+   "precision": "3"
+  },
+  {
+   "fieldname": "column_break_ryic",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "accumulated_amortization_vehicle",
+   "fieldtype": "Float",
+   "label": "Accumulated Amortization Vehicle",
+   "precision": "3"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2026-03-28 12:43:33.442751",
+ "modified_by": "Administrator",
+ "module": "Lease Management System",
+ "name": "Previous Lease Note Details",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "rows_threshold_for_grid_search": 20,
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

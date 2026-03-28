@@ -44,6 +44,7 @@ def get_terminated_lease_data(terminated_leases):
 	cur_ter_gross_wdv_vehicle = 0
 	cur_ter_acc_deprec_immovable = 0
 	cur_ter_acc_deprec_vehicle = 0
+
 	for lease in terminated_leases:
 		lease_doc = frappe.get_doc("Lease Management", lease)
 		if lease_doc.calculation_rate_type == "Daily Rate":
@@ -79,6 +80,76 @@ def get_terminated_lease_data(terminated_leases):
 		cur_ter_gross_wdv_vehicle,
 		cur_ter_gross_wdv_immovable,
 	)
+
+
+@frappe.whitelist()
+def get_prev_notes_record(company_name, fin_start_year):
+	prev_gross_immovable = 0
+	prev_gross_vehicle = 0
+	prev_acc_depre_immovable = 0
+	prev_acc_depre_vehicle = 0
+	prev_journal_result = run(
+		"Lease Notes",
+		filters={
+			"company_name": company_name,
+			# "fin_start_year": int(fin_start_year) - 1,
+			# "fin_end_year": int(fin_start_year),
+			"fin_start_year": int(fin_start_year),
+			"fin_end_year": int(fin_start_year) + 1,
+		},
+	)
+	prev_journal_rows = prev_journal_result.get("result")
+	prev_journal_df = pd.DataFrame(prev_journal_rows)
+	if not prev_journal_df.empty and len(prev_journal_df) > 15:
+		prev_gross_immovable = float(prev_journal_df.iloc[7]["rou_immovable"])
+		prev_gross_vehicle = float(prev_journal_df.iloc[7]["rou_vehicle"])
+		prev_acc_depre_immovable = float(prev_journal_df.iloc[15]["rou_immovable"])
+		prev_acc_depre_vehicle = float(prev_journal_df.iloc[15]["rou_vehicle"])
+		# frappe.msgprint(str(prev_journal_df.iloc[15]["rou_immovable"]))
+	return {
+		"gross_immovable": prev_gross_immovable,
+		"gross_vehicle": prev_gross_vehicle,
+		"acc_depre_immovable": prev_acc_depre_immovable,
+		"acc_depre_vehicle": prev_acc_depre_vehicle,
+	}
+	# return prev_gross_immovable,prev_gross_vehicle,prev_acc_depre_immovable,prev_acc_depre_vehicle
+
+
+@frappe.whitelist()
+def upsert_previous_lease_details(company, financial_start_year, data):
+	import json
+
+	if isinstance(data, str):
+		data = json.loads(data)
+
+	doc_name = frappe.db.exists(
+		"Previous Lease Note Details", {"company": company, "financial_start_year": str(financial_start_year)}
+	)
+
+	if doc_name:
+		doc = frappe.get_doc("Previous Lease Note Details", doc_name)
+		doc.gross_amount_immovable = data.get("gross_immovable")
+		doc.gross_amount_vehicle = data.get("gross_vehicle")
+		doc.accumulated_amortization_immovable = data.get("acc_depre_immovable")
+		doc.accumulated_amortization_vehicle = data.get("acc_depre_vehicle")
+		doc.save()
+
+		return "updated"
+	else:
+		doc = frappe.get_doc(
+			{
+				"doctype": "Previous Lease Note Details",
+				"company": company,
+				"financial_start_year": str(financial_start_year),
+				"gross_amount_immovable": data.get("gross_immovable"),
+				"gross_amount_vehicle": data.get("gross_vehicle"),
+				"accumulated_amortization_immovable": data.get("acc_depre_immovable"),
+				"accumulated_amortization_vehicle": data.get("acc_depre_vehicle"),
+			}
+		)
+		doc.insert()
+
+		return "created"
 
 
 @frappe.whitelist()
