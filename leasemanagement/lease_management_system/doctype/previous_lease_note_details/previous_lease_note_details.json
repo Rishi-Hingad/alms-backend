@@ -7,11 +7,19 @@
  "field_order": [
   "company",
   "gross_amount_immovable",
+  "gross_additions_immovable",
+  "gross_disposals_immovable",
   "accumulated_amortization_immovable",
+  "accumulated_amortization_at_year_ended_immovable",
+  "accumulated_amortization_disposals_immovable",
   "column_break_ryic",
   "financial_start_year",
   "gross_amount_vehicle",
-  "accumulated_amortization_vehicle"
+  "gross_additions_vehicle",
+  "gross_disposals_vehicle",
+  "accumulated_amortization_vehicle",
+  "accumulated_amortization_at_year_ended_vehicle",
+  "accumulated_amortization_disposals_vehicle"
  ],
  "fields": [
   {
@@ -61,12 +69,68 @@
    "fieldtype": "Float",
    "label": "Accumulated Amortization Vehicle",
    "precision": "3"
+  },
+  {
+   "default": "0",
+   "fieldname": "gross_additions_immovable",
+   "fieldtype": "Float",
+   "label": "Gross Additions Immovable",
+   "precision": "3"
+  },
+  {
+   "default": "0",
+   "fieldname": "gross_additions_vehicle",
+   "fieldtype": "Float",
+   "label": "Gross Additions Vehicle",
+   "precision": "3"
+  },
+  {
+   "default": "0",
+   "fieldname": "gross_disposals_immovable",
+   "fieldtype": "Float",
+   "label": "Gross Disposals Immovable",
+   "precision": "3"
+  },
+  {
+   "default": "0",
+   "fieldname": "gross_disposals_vehicle",
+   "fieldtype": "Float",
+   "label": "Gross Disposals Vehicle",
+   "precision": "3"
+  },
+  {
+   "default": "0",
+   "fieldname": "accumulated_amortization_disposals_immovable",
+   "fieldtype": "Float",
+   "label": "Accumulated Amortization Disposals Immovable",
+   "precision": "3"
+  },
+  {
+   "default": "0",
+   "fieldname": "accumulated_amortization_disposals_vehicle",
+   "fieldtype": "Float",
+   "label": "Accumulated Amortization Disposals Vehicle",
+   "precision": "3"
+  },
+  {
+   "default": "0",
+   "fieldname": "accumulated_amortization_at_year_ended_immovable",
+   "fieldtype": "Float",
+   "label": "Accumulated Amortization At Year Ended Immovable",
+   "precision": "3"
+  },
+  {
+   "default": "0",
+   "fieldname": "accumulated_amortization_at_year_ended_vehicle",
+   "fieldtype": "Float",
+   "label": "Accumulated Amortization At Year Ended Vehicle",
+   "precision": "3"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-03-28 12:43:33.442751",
+ "modified": "2026-03-30 15:06:34.184005",
  "modified_by": "Administrator",
  "module": "Lease Management System",
  "name": "Previous Lease Note Details",
@@ -89,5 +153,6 @@
  "rows_threshold_for_grid_search": 20,
  "sort_field": "modified",
  "sort_order": "DESC",
- "states": []
+ "states": [],
+ "track_changes": 1
 }

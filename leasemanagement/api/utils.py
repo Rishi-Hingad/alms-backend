@@ -86,8 +86,16 @@ def get_terminated_lease_data(terminated_leases):
 def get_prev_notes_record(company_name, fin_start_year):
 	prev_gross_immovable = 0
 	prev_gross_vehicle = 0
+	prev_gross_add_immovable = 0
+	prev_gross_add_vehicle = 0
+	prev_gross_disposal_immovable = 0
+	prev_gross_disposal_vehicle = 0
 	prev_acc_depre_immovable = 0
 	prev_acc_depre_vehicle = 0
+	prev_acc_year_ended_immovable = 0
+	prev_acc_year_ended_vehicle = 0
+	prev_acc_disposal_immovable = 0
+	prev_acc_disposal_vehicle = 0
 	prev_journal_result = run(
 		"Lease Notes",
 		filters={
@@ -101,18 +109,66 @@ def get_prev_notes_record(company_name, fin_start_year):
 	prev_journal_rows = prev_journal_result.get("result")
 	prev_journal_df = pd.DataFrame(prev_journal_rows)
 	if not prev_journal_df.empty and len(prev_journal_df) > 15:
-		prev_gross_immovable = float(prev_journal_df.iloc[7]["rou_immovable"])
-		prev_gross_vehicle = float(prev_journal_df.iloc[7]["rou_vehicle"])
-		prev_acc_depre_immovable = float(prev_journal_df.iloc[15]["rou_immovable"])
-		prev_acc_depre_vehicle = float(prev_journal_df.iloc[15]["rou_vehicle"])
+		prev_gross_immovable = float(prev_journal_df.iloc[4]["rou_immovable"])
+		prev_gross_vehicle = float(prev_journal_df.iloc[4]["rou_vehicle"])
+		prev_gross_add_immovable = float(prev_journal_df.iloc[5]["rou_immovable"])
+		prev_gross_add_vehicle = float(prev_journal_df.iloc[5]["rou_vehicle"])
+		prev_gross_disposal_immovable = float(prev_journal_df.iloc[6]["rou_immovable"])
+		prev_gross_disposal_vehicle = float(prev_journal_df.iloc[6]["rou_vehicle"])
+		prev_acc_depre_immovable = float(prev_journal_df.iloc[12]["rou_immovable"])
+		prev_acc_depre_vehicle = float(prev_journal_df.iloc[12]["rou_vehicle"])
+		prev_acc_year_ended_immovable = float(prev_journal_df.iloc[13]["rou_immovable"])
+		prev_acc_year_ended_vehicle = float(prev_journal_df.iloc[13]["rou_vehicle"])
+		prev_acc_disposal_immovable = float(prev_journal_df.iloc[14]["rou_immovable"])
+		prev_acc_disposal_vehicle = float(prev_journal_df.iloc[14]["rou_vehicle"])
 		# frappe.msgprint(str(prev_journal_df.iloc[15]["rou_immovable"]))
 	return {
 		"gross_immovable": prev_gross_immovable,
 		"gross_vehicle": prev_gross_vehicle,
+		"gross_add_immovable": prev_gross_add_immovable,
+		"gross_add_vehicle": prev_gross_add_vehicle,
+		"gross_disposal_immovable": prev_gross_disposal_immovable,
+		"gross_disposal_vehicle": prev_gross_disposal_vehicle,
 		"acc_depre_immovable": prev_acc_depre_immovable,
 		"acc_depre_vehicle": prev_acc_depre_vehicle,
+		"acc_year_ended_immovable": prev_acc_year_ended_immovable,
+		"acc_year_ended_vehicle": prev_acc_year_ended_vehicle,
+		"acc_disposal_immovable": prev_acc_disposal_immovable,
+		"acc_disposal_vehicle": prev_acc_disposal_vehicle,
 	}
 	# return prev_gross_immovable,prev_gross_vehicle,prev_acc_depre_immovable,prev_acc_depre_vehicle
+
+
+@frappe.whitelist()
+def get_previous_lease_details(company, financial_start_year):
+	doc = frappe.db.exists(
+		"Previous Lease Note Details",
+		{
+			"company": company,
+			"financial_start_year": str(financial_start_year),
+		},
+	)
+
+	if doc:
+		doc = frappe.get_doc("Previous Lease Note Details", doc)
+
+		return {
+			"gross_immovable": doc.gross_amount_immovable,
+			"gross_vehicle": doc.gross_amount_vehicle,
+			"gross_add_immovable": doc.gross_additions_immovable,
+			"gross_add_vehicle": doc.gross_additions_vehicle,
+			"gross_disposal_immovable": doc.gross_disposals_immovable,
+			"gross_disposal_vehicle": doc.gross_disposals_vehicle,
+			"acc_depre_immovable": doc.accumulated_amortization_immovable,
+			"acc_depre_vehicle": doc.accumulated_amortization_vehicle,
+			"acc_year_ended_immovable": doc.accumulated_amortization_at_year_ended_immovable,
+			"acc_year_ended_vehicle": doc.accumulated_amortization_at_year_ended_vehicle,
+			"acc_disposal_immovable": doc.accumulated_amortization_disposals_immovable,
+			"acc_disposal_vehicle": doc.accumulated_amortization_disposals_vehicle,
+			"from_saved": 1,
+		}
+
+	return None
 
 
 @frappe.whitelist()
@@ -130,8 +186,16 @@ def upsert_previous_lease_details(company, financial_start_year, data):
 		doc = frappe.get_doc("Previous Lease Note Details", doc_name)
 		doc.gross_amount_immovable = data.get("gross_immovable")
 		doc.gross_amount_vehicle = data.get("gross_vehicle")
+		doc.gross_additions_immovable = data.get("gross_add_immovable")
+		doc.gross_additions_vehicle = data.get("gross_add_vehicle")
+		doc.gross_disposals_immovable = data.get("gross_disposal_immovable")
+		doc.gross_disposals_vehicle = data.get("gross_disposal_vehicle")
 		doc.accumulated_amortization_immovable = data.get("acc_depre_immovable")
 		doc.accumulated_amortization_vehicle = data.get("acc_depre_vehicle")
+		doc.accumulated_amortization_at_year_ended_immovable = data.get("acc_year_ended_immovable")
+		doc.accumulated_amortization_at_year_ended_vehicle = data.get("acc_year_ended_vehicle")
+		doc.accumulated_amortization_disposals_immovable = data.get("acc_disposal_immovable")
+		doc.accumulated_amortization_disposals_vehicle = data.get("acc_disposal_vehicle")
 		doc.save()
 
 		return "updated"
@@ -143,8 +207,16 @@ def upsert_previous_lease_details(company, financial_start_year, data):
 				"financial_start_year": str(financial_start_year),
 				"gross_amount_immovable": data.get("gross_immovable"),
 				"gross_amount_vehicle": data.get("gross_vehicle"),
+				"gross_additions_immovable": data.get("gross_add_immovable"),
+				"gross_additions_vehicle": data.get("gross_add_vehicle"),
+				"gross_disposals_immovable": data.get("gross_disposal_immovable"),
+				"gross_disposals_vehicle": data.get("gross_disposal_vehicle"),
 				"accumulated_amortization_immovable": data.get("acc_depre_immovable"),
 				"accumulated_amortization_vehicle": data.get("acc_depre_vehicle"),
+				"accumulated_amortization_at_year_ended_immovable": data.get("acc_year_ended_immovable"),
+				"accumulated_amortization_at_year_ended_vehicle": data.get("acc_year_ended_vehicle"),
+				"accumulated_amortization_disposals_immovable": data.get("acc_disposal_immovable"),
+				"accumulated_amortization_disposals_vehicle": data.get("acc_disposal_vehicle"),
 			}
 		)
 		doc.insert()

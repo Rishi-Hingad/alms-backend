@@ -5,7 +5,7 @@
    "label": "Recent Immovable Lease Rent"
   }
  ],
- "content": "[{\"id\":\"tE6Yba4cN9\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h3\\\">Account Dashboard</span>\",\"col\":12}},{\"id\":\"lfcM1XoeZz\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"D7oCLhh5CR\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Total Vendor's\",\"col\":3}},{\"id\":\"XZ3Emphpna\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Total Lease Agreement\",\"col\":3}},{\"id\":\"DMk1m6l4FD\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Total Ongoing Lease Agreement\",\"col\":3}},{\"id\":\"Vaho1-BSo2\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Total Expired Lease Agreement\",\"col\":3}},{\"id\":\"azygFqm047\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"SSbIbSYQ7l\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Immovable Current Lease Payment Amount\",\"col\":4}},{\"id\":\"bhwAySb7Nb\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Immovable Monthly Lease Payment Report\",\"col\":4}},{\"id\":\"uy9hB2yoYk\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Mismatch Invoice Amount Report\",\"col\":4}},{\"id\":\"nDH1QJEUcd\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"a_dotlxwGM\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Lease Summary Report\",\"col\":4}},{\"id\":\"KqCY4W3ynD\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Journal Entries\",\"col\":4}},{\"id\":\"hwDNv1NIEh\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Lease Notes\",\"col\":4}},{\"id\":\"W-pDBz3Gpc\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"zh90fhYYkn\",\"type\":\"quick_list\",\"data\":{\"quick_list_name\":\"Lease Agreement's\",\"col\":4}},{\"id\":\"70Lood7HkB\",\"type\":\"chart\",\"data\":{\"chart_name\":\"Recent Immovable Lease Rent\",\"col\":8}}]",
+ "content": "[{\"id\":\"tE6Yba4cN9\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h3\\\">Account Dashboard</span>\",\"col\":12}},{\"id\":\"lfcM1XoeZz\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"D7oCLhh5CR\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Total Vendor's\",\"col\":3}},{\"id\":\"XZ3Emphpna\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Total Lease Agreement\",\"col\":3}},{\"id\":\"MXRAJARF1y\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Total Immovable Lease's\",\"col\":3}},{\"id\":\"TLVod3iWLd\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Total Car Lease's\",\"col\":3}},{\"id\":\"DMk1m6l4FD\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Total Ongoing Lease Agreement\",\"col\":3}},{\"id\":\"rfGCZpjCCI\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Total Modified Lease's\",\"col\":3}},{\"id\":\"D52y8DyQ2G\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Total Discarded Lease's\",\"col\":3}},{\"id\":\"m970r_FDN9\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Total Terminated Lease's\",\"col\":3}},{\"id\":\"Vaho1-BSo2\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Total Expired Lease Agreement\",\"col\":3}},{\"id\":\"azygFqm047\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"SSbIbSYQ7l\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Immovable Current Lease Payment Amount\",\"col\":4}},{\"id\":\"bhwAySb7Nb\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Immovable Monthly Lease Payment Report\",\"col\":4}},{\"id\":\"uy9hB2yoYk\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Mismatch Invoice Amount Report\",\"col\":4}},{\"id\":\"nDH1QJEUcd\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"a_dotlxwGM\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Lease Summary Report\",\"col\":4}},{\"id\":\"KqCY4W3ynD\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Journal Entries\",\"col\":4}},{\"id\":\"hwDNv1NIEh\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Lease Notes\",\"col\":4}},{\"id\":\"W-pDBz3Gpc\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"zh90fhYYkn\",\"type\":\"quick_list\",\"data\":{\"quick_list_name\":\"Lease Agreement's\",\"col\":4}},{\"id\":\"70Lood7HkB\",\"type\":\"chart\",\"data\":{\"chart_name\":\"Recent Immovable Lease Rent\",\"col\":8}}]",
  "creation": "2025-09-04 10:42:48.359547",
  "custom_blocks": [],
  "docstatus": 0,
@@ -18,18 +18,38 @@
  "is_hidden": 0,
  "label": "Account Dashboard",
  "links": [],
- "modified": "2026-03-26 11:26:46.727478",
+ "modified": "2026-03-30 10:59:10.351776",
  "modified_by": "Administrator",
  "module": "Lease Management System",
  "name": "Account Dashboard",
  "number_cards": [
   {
+   "label": "Total Immovable Lease's",
+   "number_card_name": "Total Immovable Lease"
+  },
+  {
+   "label": "Total Car Lease's",
+   "number_card_name": "Total Car Lease"
+  },
+  {
+   "label": "Total Modified Lease's",
+   "number_card_name": "Total Modified Lease"
+  },
+  {
    "label": "Total Vendor's",
    "number_card_name": "Total Vendor's"
   },
   {
+   "label": "Total Discarded Lease's",
+   "number_card_name": "Total Discarded Lease"
+  },
+  {
    "label": "Total Lease Agreement",
    "number_card_name": "Total Lease Agreement"
+  },
+  {
+   "label": "Total Terminated Lease's",
+   "number_card_name": "Total Terminated Lease"
   },
   {
    "label": "Total Ongoing Lease Agreement",
