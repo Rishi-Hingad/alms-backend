@@ -10,7 +10,10 @@
   "employee_code",
   "invoice_from_date",
   "invoice_to_date",
-  "invoice_amount"
+  "invoice_amount",
+  "cost_center",
+  "company_contribution",
+  "employee_contribution"
  ],
  "fields": [
   {
@@ -37,20 +40,34 @@
    "fieldname": "invoice_amount",
    "fieldtype": "Currency",
    "label": "Invoice Amount"
+  },
+  {
+   "fieldname": "cost_center",
+   "fieldtype": "Data",
+   "label": "Cost Center"
+  },
+  {
+   "fieldname": "company_contribution",
+   "fieldtype": "Data",
+   "label": "Company Contribution"
+  },
+  {
+   "fieldname": "employee_contribution",
+   "fieldtype": "Data",
+   "label": "Employee Contribution"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2026-03-27 11:51:57.035375",
+ "modified": "2026-03-28 17:22:43.202867",
  "modified_by": "Administrator",
  "module": "Lease Management System",
  "name": "Invoice Rows",
  "owner": "Administrator",
  "permissions": [],
  "row_format": "Dynamic",
- "rows_threshold_for_grid_search": 20,
  "sort_field": "modified",
  "sort_order": "DESC",
  "states": []

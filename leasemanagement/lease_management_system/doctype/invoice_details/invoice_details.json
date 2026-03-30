@@ -5,18 +5,27 @@
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
-  "invoice_excel",
-  "invoice_rows",
-  "total_invoice_amount",
+  "vendor_name",
+  "column_break_pgcx",
+  "excel_file",
+  "section_break_ibxf",
+  "rows",
+  "section_break_ldkz",
+  "total_value_of_rental_charges",
+  "total_value_of_fleet_charges",
+  "column_break_xcwe",
+  "total_value_of_rto",
+  "total_value_of_insurance",
+  "section_break_xhlm",
+  "total_value_of_all",
+  "invoice_attachment",
+  "column_break_tohu",
+  "total_value_of_company_contribution",
+  "total_value_of_employee_contribution",
+  "section_break_kust",
   "payment_status"
  ],
  "fields": [
-  {
-   "fieldname": "invoice_excel",
-   "fieldtype": "Attach",
-   "label": "Invoice Excel",
-   "reqd": 1
-  },
   {
    "fieldname": "payment_status",
    "fieldtype": "Select",
@@ -24,22 +33,95 @@
    "options": "Unpaid\nPaid"
   },
   {
-   "fieldname": "invoice_rows",
+   "fieldname": "invoice_attachment",
+   "fieldtype": "Attach",
+   "label": "Invoice Attachment"
+  },
+  {
+   "fieldname": "section_break_ldkz",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "total_value_of_rental_charges",
+   "fieldtype": "Data",
+   "label": "Total Value of Rental Charges"
+  },
+  {
+   "fieldname": "total_value_of_rto",
+   "fieldtype": "Data",
+   "label": "Total Value of RTO"
+  },
+  {
+   "fieldname": "total_value_of_fleet_charges",
+   "fieldtype": "Data",
+   "label": "Total Value of Fleet Charges"
+  },
+  {
+   "fieldname": "column_break_xcwe",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "total_value_of_insurance",
+   "fieldtype": "Data",
+   "label": "Total Value of Insurance"
+  },
+  {
+   "fieldname": "section_break_xhlm",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "column_break_tohu",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "total_value_of_company_contribution",
+   "fieldtype": "Data",
+   "label": "Total Value of Company Contribution"
+  },
+  {
+   "fieldname": "section_break_kust",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "total_value_of_employee_contribution",
+   "fieldtype": "Data",
+   "label": "Total Value of Employee Contribution"
+  },
+  {
+   "fieldname": "column_break_pgcx",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "section_break_ibxf",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "vendor_name",
+   "fieldtype": "Data",
+   "label": "Vendor"
+  },
+  {
+   "fieldname": "excel_file",
+   "fieldtype": "Attach",
+   "label": "Invoice Excel"
+  },
+  {
+   "fieldname": "rows",
    "fieldtype": "Table",
    "label": "Invoice Rows",
    "options": "Invoice Rows"
   },
   {
-   "fieldname": "total_invoice_amount",
+   "fieldname": "total_value_of_all",
    "fieldtype": "Float",
    "in_list_view": 1,
-   "label": "Total Invoice Amount"
+   "label": "Total Value of Invoice Amount"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-03-27 11:53:32.841148",
+ "modified": "2026-03-30 12:59:02.060393",
  "modified_by": "Administrator",
  "module": "Lease Management System",
  "name": "Invoice Details",
