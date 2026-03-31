@@ -294,7 +294,7 @@
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-03-18 09:40:27.269918",
+ "modified": "2026-03-30 15:55:37.888006",
  "modified_by": "Administrator",
  "module": "Lease Management System",
  "name": "Lease Management",
@@ -385,5 +385,6 @@
  "row_format": "Dynamic",
  "sort_field": "modified",
  "sort_order": "DESC",
- "states": []
+ "states": [],
+ "track_changes": 1
 }
