@@ -257,6 +257,15 @@ frappe.ui.form.on("Lease Management", {
 				frm.doc.name
 			).hidden = 1;
 		}
+
+		if (
+			(frappe.user.has_role("Vendor") || frappe.user.has_role("Accounts")) &&
+			!frappe.user.has_role("System Manager")
+		) {
+			if (frm.doc.status == "Terminated" || frm.doc.status == "Discarded") {
+				set_lease_fields_readonly(frm);
+			}
+		}
 	},
 	refresh: function (frm) {
 		frm.page.set_indicator(__(frm.doc.status), get_status_color(frm.doc.status));
@@ -278,7 +287,6 @@ frappe.ui.form.on("Lease Management", {
 		// 		</span>`
 		// 	);
 		// }
-
 		if (
 			frappe.user.has_role("Vendor") &&
 			!frappe.user.has_role("System Manager") &&
@@ -641,6 +649,39 @@ function get_status_color(status) {
 	};
 
 	return status_colors[status] || "orange";
+}
+
+function set_lease_fields_readonly(frm) {
+	let is_accounts = frappe.user.has_role("Accounts");
+	let is_vendor = frappe.user.has_role("Vendor");
+	let is_sys_manager = frappe.user.has_role("System Manager");
+
+	// Apply restriction only if NOT System Manager
+	if (
+		(frm.doc.status === "Discarded" && (is_accounts || is_vendor) && !is_sys_manager) ||
+		(frm.doc.status === "Terminated" && (is_accounts || is_vendor) && !is_sys_manager)
+	) {
+		// Disable Save
+		frm.disable_save();
+
+		// Make all fields readonly
+		frm.fields.forEach((field) => {
+			if (field.df.fieldname) {
+				frm.set_df_property(field.df.fieldname, "read_only", 1);
+			}
+		});
+
+		// Disable child tables
+		frm.fields.forEach((field) => {
+			if (field.df.fieldtype === "Table") {
+				let grid = frm.get_field(field.df.fieldname).grid;
+
+				grid.wrapper.find(".grid-add-row").hide();
+				grid.wrapper.find(".grid-remove-rows").hide();
+				grid.wrapper.find(".grid-remove-all-rows").hide();
+			}
+		});
+	}
 }
 
 function set_agreement_status(frm) {

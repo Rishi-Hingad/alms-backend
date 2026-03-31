@@ -1,0 +1,74 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2026-03-27 11:49:46.152396",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "contract_number",
+  "employee_code",
+  "invoice_from_date",
+  "invoice_to_date",
+  "invoice_amount",
+  "cost_center",
+  "company_contribution",
+  "employee_contribution"
+ ],
+ "fields": [
+  {
+   "fieldname": "contract_number",
+   "fieldtype": "Data",
+   "label": "Contract Number"
+  },
+  {
+   "fieldname": "employee_code",
+   "fieldtype": "Data",
+   "label": "Employee Code"
+  },
+  {
+   "fieldname": "invoice_from_date",
+   "fieldtype": "Date",
+   "label": "Invoice From Date"
+  },
+  {
+   "fieldname": "invoice_to_date",
+   "fieldtype": "Date",
+   "label": "Invoice To Date"
+  },
+  {
+   "fieldname": "invoice_amount",
+   "fieldtype": "Currency",
+   "label": "Invoice Amount"
+  },
+  {
+   "fieldname": "cost_center",
+   "fieldtype": "Data",
+   "label": "Cost Center"
+  },
+  {
+   "fieldname": "company_contribution",
+   "fieldtype": "Data",
+   "label": "Company Contribution"
+  },
+  {
+   "fieldname": "employee_contribution",
+   "fieldtype": "Data",
+   "label": "Employee Contribution"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2026-03-28 17:22:43.202867",
+ "modified_by": "Administrator",
+ "module": "Lease Management System",
+ "name": "Invoice Rows",
+ "owner": "Administrator",
+ "permissions": [],
+ "row_format": "Dynamic",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}
