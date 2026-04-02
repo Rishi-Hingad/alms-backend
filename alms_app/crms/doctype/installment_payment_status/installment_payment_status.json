@@ -44,7 +44,7 @@
    "in_list_view": 1,
    "in_preview": 1,
    "label": "Installment Status",
-   "options": "Not Paid\nPaid"
+   "options": "-Select-\nNot Paid\nPaid"
   },
   {
    "fieldname": "installment_amount",
@@ -65,7 +65,7 @@
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2026-03-10 14:30:20.983521",
+ "modified": "2026-03-31 20:18:21.220505",
  "modified_by": "Administrator",
  "module": "CRMS",
  "name": "Installment Payment Status",

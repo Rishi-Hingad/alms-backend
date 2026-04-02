@@ -55,8 +55,8 @@
   {
    "fieldname": "company",
    "fieldtype": "Select",
-   "label": "Company",
-   "options": "Eazy Assets\nALD",
+   "label": "Company (Vendor)",
+   "options": "-Select-\nEazy Assets\nALD",
    "read_only": 1
   },
   {
@@ -222,7 +222,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-03-10 17:01:49.641292",
+ "modified": "2026-03-30 09:53:22.422533",
  "modified_by": "Administrator",
  "module": "CRMS",
  "name": "Car Process",

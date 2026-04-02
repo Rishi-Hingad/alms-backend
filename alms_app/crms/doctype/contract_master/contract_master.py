@@ -35,12 +35,17 @@ class ContractMaster(Document):
                 current_end = end_date
 
             due_date = getdate(current_start).replace(day=15)
+            start_fmt = current_start.strftime("%b-%y")
+            end_fmt = current_end.strftime("%b-%y")
+
+            month_value = start_fmt if start_fmt == end_fmt else f"{start_fmt} to {end_fmt}"
 
             self.append("installment_date", {
                 "installment_no": installment_count + 1,
                 "installment_start_date": current_start,
                 "installment_end_date": current_end,
-                "due_date": due_date
+                "due_date": due_date,
+                "month": month_value
             })
 
             installment_count += 1

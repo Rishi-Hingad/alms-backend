@@ -1,4 +1,7 @@
 # Copyright (c) 2026, Rishi Hingad
+from pydoc import doc
+
+from frappe import config
 from frappe.model.document import Document
 import frappe
 import pandas as pd
@@ -7,10 +10,24 @@ from frappe.utils.file_manager import get_file
 from frappe.utils import getdate, user
 from frappe import _
 import io
+from alms_app.api.send_to_leaseapp import send_to_leaseapp
 
 class InvoiceBatch(Document):
-    pass
 
+    def autoname(self):
+        from frappe.utils import now_datetime
+        from frappe.model.naming import make_autoname
+
+        now = now_datetime()
+
+        year = now.strftime("%Y")
+        month = now.strftime("%m")
+
+        vendor = (self.vendor_name or "NA").replace(" ", "")
+
+        prefix = f"IB-{vendor}-{year}-{month}-"
+
+        self.name = make_autoname(prefix + ".#####")
 
 # -----------------------------
 # Helpers
@@ -36,185 +53,301 @@ def get_total(row):
         + (row.invoice_value_d or 0)
     )
 
+VENDOR_CONFIG = {
 
-# Parse Excel
-@frappe.whitelist()
-def parse_excel(docname):
+    "Eazy Assets": {
+        "required_columns": [
+            "Contract No.", "Installment No.", "Billing Date"
+        ],
 
-    doc = frappe.get_doc("Invoice Import", docname)
+        "field_map": {
+            "contract_number": "Contract No.",
+            "employee_name": "Employee Name",
+            "vehicle_details": "Vehicle Details",
 
-    file_path = get_file(doc.excel_file)[1]
-    df = pd.read_excel(file_path)
+            "installment_no": "Installment No.",
+            "billing_date": "Billing Date",
 
-    doc.rows = []
+            "invoice_date_from": "Invoice date from",
+            "invoice_date_to": "Invoice date to",
 
-    required_columns = [
-        "Contract No.",
-        "Installment No.",
-        "Billing Date"
-    ]
+            "invoice_no_rental": "Rental Invoice No.",
+            "invoice_value_a": "Invoice Value ( A)",
 
-    for col in required_columns:
-        if col not in df.columns:
-            frappe.throw(f"Missing required column: {col}")
+            "invoice_no_fleet": "Fleet Invoice No",
+            "invoice_value_b": "Invoice Value ( B)",
 
-    for i, row in df.iterrows():
+            "invoice_no_road": "Road Invoice No.",
+            "invoice_value_c": "Invoice Value ( C)",
 
-        doc.append("rows", {
-            "row_number": i + 1,
+            "invoice_no_insurance": "Insurance Invoice No.",
+            "invoice_value_d": "Invoice Value ( D)",
+        },
 
-            "contract_number": row.get("Contract No."),
-            "employee_name": row.get("Employee Name"),
+        "has_insurance": True,
+        "use_billing_date": True,
+        "use_month_for_period": False
+    },
 
-            "invoice_date_from": row.get("Invoice date from"),
-            "invoice_date_to": row.get("Invoice date to"),
-            "contract_end_date": row.get("Contract End Date"),
+    "ALD": {
+        "required_columns": [
+            "Contract No.", "Inst. No.", "Month"
+        ],
 
-            "vehicle_details": row.get("Vehicle Details"),
+        "field_map": {
+            "contract_number": "Contract No.",
+            "employee_name": "Emp. Name",
+            "vehicle_details": "Vehicle Details",
+            "month": "Month",
 
-            "installment_no": row.get("Installment No."),
-            "no_of_billing_days": row.get("No of Billing Days"),
-            "billing_date": row.get("Billing Date"),
+            "installment_no": "Inst. No.",
 
-            "invoice_no_rental": row.get("Rental Invoice No."),
-            "invoice_value_a": clean_amount(row.get("Invoice Value ( A)")),
+            "invoice_no_rental": "Inv.No.",
+            "invoice_date_rental": "Inv.Date",
+            "invoice_value_a": "Inv.Value (A)",
 
-            "invoice_no_fleet": row.get("Fleet Invoice No"),
-            "invoice_value_b": clean_amount(row.get("Invoice Value ( B)")),
+            "invoice_no_fleet": "Inv.No.",
+            "invoice_date_fleet": "Inv.Date",
+            "invoice_value_b": "Inv.Value (B)",
 
-            "invoice_no_road": row.get("Road Invoice No."),
-            "invoice_value_c": clean_amount(row.get("Invoice Value ( C)")),
+            "invoice_no_road": "Inv.No.",
+            "invoice_date_road": "Inv.Date",
+            "invoice_value_c": "RTO ( C )",
+        },
 
-            "invoice_no_insurance": row.get("Insurance Invoice No."),
-            "invoice_value_d": clean_amount(row.get("Invoice Value ( D)")),
+        "has_insurance": False,
+        "use_billing_date": False,
+        "use_month_for_period": True
+    }
+}
 
-            "total_invoice_value": 0,
+def map_row(row, config):
+    mapped = {}
 
-            "status": "Pending"
-        })
+    for field, col in config["field_map"].items():
+        val = row.get(col)
 
-    doc.total_rows = len(doc.rows)
-    doc.save()
+        if "value" in field:
+            val = clean_amount(val)
 
-    return _("Excel parsed successfully")
+        mapped[field] = val
+
+    return mapped
+
+from frappe.utils import getdate
+
+def get_installment_dates(contract_number, installment_no, month=None):
+
+    children = frappe.get_all(
+        "Installment Details",
+        filters={"parent": contract_number},
+        fields=[
+            "installment_no",
+            "installment_start_date",
+            "installment_end_date",
+            "month"
+        ]
+    )
+
+    for row in children:
+
+        # match by installment_no
+        if str(row.installment_no) == str(installment_no):
+            return row.installment_start_date, row.installment_end_date
+
+        # match by month (properly)
+        if month and row.month:
+            try:
+                if getdate(row.month).month == getdate(month).month:
+                    return row.installment_start_date, row.installment_end_date
+            except:
+                pass
+
+    return None, None
 
 
-@frappe.whitelist()
-def process_rows(docname):
+def create_invoice_details_on_approval(doc, method):
+    print("Checking conditions for creating Invoice Details from Invoice Batch:", doc.name)
+    frappe.logger().info(f"Creating invoices for batch {doc.name}")
 
-    doc = frappe.get_doc("Invoice Import", docname)
+    if (doc.hr_head_status != "Approved" or doc.status != "Completed"):
+        return
+    
+    config = VENDOR_CONFIG.get(doc.vendor_name)
+    created_count = 0
 
-    total = len(doc.rows)
-    success = 0
-    failed = 0
+    for row in doc.rows:
 
-    for idx, row in enumerate(doc.rows, start=1):
-
-        if row.status == "Success":
+        if row.status != "Success":
             continue
 
-        try:
+        if frappe.db.exists("Invoice Details", {
+            "contract_number": row.contract_number,
+            "installment_no": row.installment_no
+        }):
+            continue
 
-            if not row.contract_number:
-                raise Exception("Contract Number missing")
+        inv = frappe.new_doc("Invoice Details")
 
-            if not frappe.db.exists("Contract Master", row.contract_number):
-                raise Exception(f"Contract {row.contract_number} not found")
+        for field in config["field_map"].keys():
+            if hasattr(row, field):
+                setattr(inv, field, getattr(row, field))
 
-            duplicate = frappe.db.exists(
-                "Invoice Details",
-                {
-                    "contract_number": row.contract_number,
-                    "installment_no": row.installment_no,
-                    "billing_date": clean_date(row.billing_date)
-                }
-            )
+        # ---- PERIOD FIX ---- #
+        if config.get("use_month_for_period"):
 
-            if duplicate:
-                raise Exception("Duplicate invoice exists")
-
-            employee = frappe.db.get_value(
-                "Contract Master",
+            start_date, end_date = get_installment_dates(
                 row.contract_number,
-                "employee_car_process_form"
+                row.installment_no,
+                getattr(row, "month", None)
             )
 
-            invoice = frappe.get_doc({
-                "doctype": "Invoice Details",
+            if not start_date or not end_date:
+                frappe.log_error(
+                    f"Installment dates missing for {row.contract_number}",
+                    "ALD Date Mapping Error"
+                )
+                continue
 
-                "contract_number": row.contract_number,
-                "employee_name": employee,
+            inv.invoice_date_from = start_date
+            inv.invoice_date_to = end_date
 
-                "invoice_date_from": clean_date(row.invoice_date_from),
-                "invoice_date_to": clean_date(row.invoice_date_to),
+            row.invoice_date_from = start_date
+            row.invoice_date_to = end_date
 
-                "billing_date": clean_date(row.billing_date),
-                "installment_no": row.installment_no,
+        else:
+            inv.invoice_date_from = row.invoice_date_from
+            inv.invoice_date_to = row.invoice_date_to
 
-                "vehicle_details": row.vehicle_details,
-
-                "invoice_no_rental": row.invoice_no_rental,
-                "invoice_value_a": clean_amount(row.invoice_value_a),
-
-                "invoice_no_fleet": row.invoice_no_fleet,
-                "invoice_value_b": clean_amount(row.invoice_value_b),
-
-                "invoice_no_road": row.invoice_no_road,
-                "invoice_value_c": clean_amount(row.invoice_value_c),
-
-                "invoice_no_insurance": row.invoice_no_insurance,
-                "invoice_value_d": clean_amount(row.invoice_value_d),
-            })
-
-            invoice.total_invoice_value = get_total(invoice)
-
-            invoice.insert(ignore_permissions=True)
-
-            row.invoice_document = invoice.name
-            row.status = "Success"
-            row.error_message = ""
-
-            success += 1
-
-        except Exception as e:
-
-            row.status = "Error"
-            row.error_message = str(e)
-
-            failed += 1
-
-        frappe.publish_progress(
-            percent=(idx / total) * 100,
-            title="Processing Invoices"
+        inv.employee_name = frappe.db.get_value(
+            "Contract Master",
+            row.contract_number,
+            "employee_car_process_form"
         )
 
-    doc.success_rows = success
-    doc.failed_rows = failed
+        inv.total_invoice_value = row.total_invoice_value
+        inv.excel_batch_id = doc.name
 
-    doc.save()
+        inv.insert(ignore_permissions=True)
+        created_count += 1
 
-    return _("Processing completed")
+    if any(r.status == "Success" for r in doc.rows):
+        doc.db_set("invoice_created", 1)
+
+    valid_rows = [ r for r in doc.rows if r.status == "Success" and r.contract_number and r.installment_no ]
+
+    if not valid_rows:
+        msg = f"No valid rows to send for {doc.name}"
+
+        frappe.logger().warning(msg)
+        doc.db_set("api_message", msg)
+
+        return
+
+    if not doc.lease_api_call:
+        try:
+            res = send_to_leaseapp(doc)
+            if res.get("status") == "Success":
+                doc.db_set("lease_api_call", 1)
+                doc.db_set("api_message", res.get("message") or "Success")
+                doc.db_set("api_log", res.get("log_name"))
+            else:
+                doc.db_set("api_message", "Retry failed. Check API Log.")
+
+        except Exception:
+            frappe.log_error(frappe.get_traceback(), "Lease API Failed")
 
 
 @frappe.whitelist()
 def retry_failed(docname):
 
-    doc = frappe.get_doc("Invoice Import", docname)
+    doc = frappe.get_doc("Invoice Batch", docname)
+    config = VENDOR_CONFIG.get(doc.vendor_name)
 
-    for row in doc.rows:
-        if row.status == "Error":
-            row.status = "Pending"
-            row.error_message = ""
+    success = 0
+    failed = 0
+
+    rows_to_remove = []
+
+    for frow in doc.failed_rows_table:
+
+        try:
+            if not frow.contract_number:
+                raise Exception("Contract Number missing")
+
+            if not frappe.db.exists("Contract Master", frow.contract_number):
+                raise Exception("Contract not found")
+
+            filters = {
+                "contract_number": frow.contract_number,
+                "installment_no": frow.installment_no
+            }
+
+            if config["use_billing_date"]:
+                filters["billing_date"] = clean_date(frow.billing_date)
+
+            # validate installment dates (if needed)
+            if config.get("use_month_for_period"):
+                start_date, end_date = get_installment_dates(
+                    frow.contract_number,
+                    frow.installment_no,
+                    getattr(frow, "month", None)
+                )
+
+                if not start_date or not end_date:
+                    raise Exception("Installment dates not found")
+
+            if frappe.db.exists("Invoice Details", filters):
+                raise Exception("Duplicate invoice exists")
+
+            employee = frappe.db.get_value(
+                "Contract Master",
+                frow.contract_number,
+                "employee_car_process_form"
+            )
+
+            doc.append("rows", {
+                **frow.as_dict(),
+                "status": "Success",
+            })
+
+            rows_to_remove.append(frow)
+            success += 1
+
+        except Exception as e:
+            frow.status = "Error"
+            frow.error_message = str(e)
+            failed += 1
+
+    for r in rows_to_remove:
+        doc.remove(r)
+
+    doc.success_rows += success
+    doc.failed_rows = len(doc.failed_rows_table)
+    doc.total_rows = doc.success_rows + doc.failed_rows
+
+    if doc.failed_rows == 0 and doc.total_rows > 0:
+        doc.status = "Completed"
+    elif doc.success_rows > 0:
+        doc.status = "Partially Completed"
+    else:
+        doc.status = "Failed"
 
     doc.save()
+    # trigger invoice creation if conditions met
+    create_invoice_details_on_approval(doc, None)
 
-    return process_rows(docname)
+    return {
+        "success": success,
+        "failed": failed,
+        "message": f"{success} Success, {failed} Failed"
+    }
 
 
 @frappe.whitelist()
 def download_error_report(docname):
 
-    doc = frappe.get_doc("Invoice Import", docname)
+    doc = frappe.get_doc("Invoice Batch", docname)
 
     rows = []
 
@@ -225,7 +358,7 @@ def download_error_report(docname):
                 "Row": r.row_number,
                 "Contract No": r.contract_number,
                 "Installment": r.installment_no,
-                "Billing Date": r.billing_date,
+                "Billing Date": r.billing_date if doc.vendor_name == "Eazy Assets" else "",
                 "Error": r.error_message
             })
 
@@ -242,16 +375,69 @@ def download_error_report(docname):
 
 
 @frappe.whitelist()
+def retry_lease_api(docname):
+
+    doc = frappe.get_doc("Invoice Batch", docname)
+
+    if doc.hr_head_status != "Approved":
+        frappe.throw("HR Head must approve first")
+
+    if doc.status != "Completed":
+        frappe.throw("Batch must be Completed")
+
+    if doc.lease_api_call and doc.api_log:
+        return {"message": "API already called successfully"}
+
+    valid_rows = [
+        r for r in doc.rows
+        if r.status == "Success" and r.contract_number and r.installment_no
+    ]
+
+    if not valid_rows:
+        msg = f"No valid rows to send for {doc.name}"
+        doc.db_set("api_message", msg)
+        return {"message": msg}
+
+    try:
+        res = send_to_leaseapp(doc)
+
+        doc.db_set("lease_api_call", 1)
+
+        if res.get("log_name"):
+            doc.db_set("api_log", res.get("log_name"))
+
+        if res.get("message"):
+            doc.db_set("api_message", res.get("message"))
+
+        return {
+            "message": res.get("message") or "API retried successfully",
+            "status": res.get("status")
+        }
+
+    except Exception:
+        error = frappe.get_traceback()
+
+        frappe.log_error(error, "Retry Lease API Failed")
+
+        doc.db_set("api_message", "Retry failed. Check API Log.")
+
+        return {"message": "Retry failed"}
+
+# *********************************************
+
+@frappe.whitelist()
 def update_approval_status(docname, role, action, remarks):
 
     user = frappe.session.user
     user_roles = frappe.get_roles(user)
 
+    signature = frappe.db.get_value("Employee Master", {"email_id": user}, "employee_signature") or user
+
     def is_admin():
         return user == "Administrator"
     
-    def is_already_processed(status):
-        return status in ["Approved", "Rejected"]
+    # def is_already_processed(status):
+    #     return status in ["Approved", "Rejected"]
 
     doc = frappe.get_doc("Invoice Batch", docname)
 
@@ -261,26 +447,35 @@ def update_approval_status(docname, role, action, remarks):
         if "Finance Team" not in user_roles and not is_admin():
             frappe.throw("Not authorized for Finance Team action")
 
-        if is_already_processed(doc.finance_team_status):
-            frappe.throw("Finance Team already processed this")
+        # if is_already_processed(doc.finance_team_status):
+        #     frappe.throw("Finance Team already processed this")
+        if doc.finance_head_status == "Approved":
+            frappe.throw("Cannot change Finance Team after Finance Head approval")
 
         doc.finance_team_status = action
+        doc.finance_team_user = user
         doc.finance_team_remarks = remarks
+        doc.finance_team_signature = signature
 
     # ---------------- FINANCE HEAD ---------------- #
     elif role == "finance_head":
 
         if "Finance Head" not in user_roles and not is_admin():
             frappe.throw("Not authorized for Finance Head action")
+            
+        if doc.hr_head_status == "Approved":
+            frappe.throw("Cannot change Finance Head after HR Head approval")
         
-        if is_already_processed(doc.finance_head_status):
-            frappe.throw("Finance Head already processed this")
+        # if is_already_processed(doc.finance_head_status):
+        #     frappe.throw("Finance Head already processed this")
 
         if doc.finance_team_status != "Approved":
             frappe.throw("Finance Team must approve first")
 
         doc.finance_head_status = action
+        doc.finance_head_user = user
         doc.finance_head_remarks = remarks
+        doc.finance_head_signature = signature
 
     # ---------------- HR HEAD ---------------- #
     elif role == "hr_head":
@@ -288,14 +483,16 @@ def update_approval_status(docname, role, action, remarks):
         if "HR Head" not in user_roles and not is_admin():
             frappe.throw("Not authorized for HR Head action")
         
-        if is_already_processed(doc.hr_head_status):
-            frappe.throw("HR Head already processed this")
+        # if is_already_processed(doc.hr_head_status):
+        #     frappe.throw("HR Head already processed this")
 
         if doc.finance_head_status != "Approved":
             frappe.throw("Finance Head must approve first")
 
         doc.hr_head_status = action
+        doc.hr_head_user = user
         doc.hr_head_remarks = remarks
+        doc.hr_head_signature = signature
 
     else:
         frappe.throw("Invalid role")
@@ -306,78 +503,22 @@ def update_approval_status(docname, role, action, remarks):
     return "Updated"
 
 
-def create_invoice_details_on_approval(doc, method):
+import frappe
+from frappe.utils.file_manager import get_file_path
+from frappe.utils import get_url
 
-    if doc.hr_head_status != "Approved":
-        return
+@frappe.whitelist()
+def get_file_preview_url(file_url):
+    file_doc = frappe.get_doc("File", {"file_url": file_url})
 
-    # prevent duplicate execution
-    if doc.get("invoice_created"):
-        return
+    if not file_doc:
+        frappe.throw("File not found")
 
-    for row in doc.rows:
+    # Permission check (important)
+    if file_doc.is_private:
+        return get_url("/api/method/frappe.utils.file_manager.download_file?file_url=" + file_doc.file_url)
+        # if not frappe.has_permission(file_doc.attached_to_doctype, "read", file_doc.attached_to_name):
+        #     frappe.throw("No permission")
 
-        if row.status != "Success":
-            continue
-
-        # duplicate check again (safety net)
-        exists = frappe.db.exists(
-            "Invoice Details",
-            {
-                "contract_number": row.contract_number,
-                "installment_no": row.installment_no
-            }
-        )
-
-        if exists:
-            continue
-
-        inv = frappe.new_doc("Invoice Details")
-
-        inv.contract_number = row.contract_number
-        employee = frappe.db.get_value(
-            "Contract Master",
-            row.contract_number,
-            "employee_car_process_form"
-        )
-
-        if not employee:
-            frappe.log_error(
-                f"Employee not found for Contract {row.contract_number}",
-                "Invoice Creation Error"
-            )
-            continue
-
-        inv.employee_name = employee
-
-        inv.invoice_date_from = row.invoice_date_from
-        inv.invoice_date_to = row.invoice_date_to
-        inv.contract_end_date = row.contract_end_date
-
-        inv.vehicle_details = row.vehicle_details
-        inv.installment_no = row.installment_no
-        inv.no_of_billing_days = row.no_of_billing_days
-
-        inv.billing_date = row.billing_date
-
-        inv.invoice_no_rental = row.invoice_no_rental
-        inv.invoice_value_a = row.invoice_value_a
-
-        inv.invoice_no_fleet = row.invoice_no_fleet
-        inv.invoice_value_b = row.invoice_value_b
-
-        inv.invoice_no_road = row.invoice_no_road
-        inv.invoice_value_c = row.invoice_value_c
-
-        inv.invoice_no_insurance = row.invoice_no_insurance
-        inv.invoice_value_d = row.invoice_value_d
-
-        inv.total_invoice_value = row.total_invoice_value
-
-        inv.excel_batch_id = doc.name
-
-        inv.insert(ignore_permissions=True)
-
-    # mark so it doesn't run again
-    doc.invoice_created = 1
-    doc.save(ignore_permissions=True)
+    # Convert to accessible URL
+    return get_url(file_doc.file_url)

@@ -1,14 +1,26 @@
- .btn-approved {
-     background-color: darkgreen;
-     color: white;
- }
+.btn-approved,
+.btn-approved:hover,
+.btn-approved:focus,
+.btn-approved:active {
+    background-color: darkgreen !important;
+    color: white !important;
+    border-color: darkgreen !important;
+}
 
- .btn-rejected {
-     background-color: darkred;
-     color: white;
- }
+.btn-rejected,
+.btn-rejected:hover,
+.btn-rejected:focus,
+.btn-rejected:active {
+    background-color: darkred !important;
+    color: white !important;
+    border-color: darkred !important;
+}
 
- .btn-pending {
-     background-color: gray;
-     color: white;
- }
+.btn-pending,
+.btn-pending:hover,
+.btn-pending:focus,
+.btn-pending:active {
+    background-color: gray !important;
+    color: white !important;
+    border-color: gray !important;
+}
