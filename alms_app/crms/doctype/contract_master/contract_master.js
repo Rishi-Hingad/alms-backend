@@ -73,9 +73,15 @@ frappe.ui.form.on("Contract Master", {
         frm.clear_table("installment_date");
 
         let interval_months = frm.doc.vendor === "ALD" ? 1 : 3;
-
         let installment_count = 0;
         let current_start = new Date(start_date);
+
+        let format_month = (date) => {
+            let d = new Date(date);
+            let month = d.toLocaleString('default', { month: 'short' });
+            let year = d.getFullYear().toString().slice(-2);
+            return `${month}-${year}`;
+        };
 
         while (current_start <= end_date) {
 
@@ -96,6 +102,13 @@ frappe.ui.form.on("Contract Master", {
             let due_date = new Date(current_start);
             due_date.setDate(15);
             row.due_date = frappe.datetime.obj_to_str(due_date);
+
+            let start_fmt = format_month(current_start);
+            let end_fmt = format_month(current_end);
+
+            row.month = (start_fmt === end_fmt)
+                ? start_fmt
+                : `${start_fmt} to ${end_fmt}`;
 
             installment_count++;
 

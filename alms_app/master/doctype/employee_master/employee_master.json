@@ -23,13 +23,16 @@
   "contact_number",
   "reporting_head",
   "status",
-  "eligibility_currency"
+  "eligibility_currency",
+  "signature_tab",
+  "signature_section",
+  "employee_signature"
  ],
  "fields": [
   {
    "fieldname": "employee_master_section",
    "fieldtype": "Section Break",
-   "label": "Employee Master"
+   "label": "Employee Details"
   },
   {
    "fieldname": "employee_name",
@@ -127,6 +130,21 @@
    "fieldtype": "Data",
    "label": "Cost Center",
    "options": "Cost Center"
+  },
+  {
+   "fieldname": "signature_tab",
+   "fieldtype": "Tab Break",
+   "label": "Signature"
+  },
+  {
+   "fieldname": "signature_section",
+   "fieldtype": "Section Break",
+   "label": "Signature"
+  },
+  {
+   "fieldname": "employee_signature",
+   "fieldtype": "Signature",
+   "label": "Employee Signature"
   }
  ],
  "index_web_pages_for_search": 1,
@@ -137,7 +155,7 @@
    "table_fieldname": "Employee Name"
   }
  ],
- "modified": "2026-03-19 10:11:07.182610",
+ "modified": "2026-03-28 17:30:26.159975",
  "modified_by": "Administrator",
  "module": "master",
  "name": "Employee Master",
