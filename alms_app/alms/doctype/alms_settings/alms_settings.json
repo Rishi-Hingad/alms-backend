@@ -8,7 +8,10 @@
   "smtp_server",
   "smtp_port",
   "smtp_user",
-  "smtp_password"
+  "smtp_password",
+  "column_break_iqhs",
+  "from_address",
+  "bcc_address"
  ],
  "fields": [
   {
@@ -30,13 +33,28 @@
    "fieldname": "smtp_port",
    "fieldtype": "Data",
    "label": "SMTP PORT"
+  },
+  {
+   "fieldname": "from_address",
+   "fieldtype": "Data",
+   "label": "From Address"
+  },
+  {
+   "fieldname": "column_break_iqhs",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "bcc_address",
+   "fieldtype": "Table",
+   "label": "Bcc Address",
+   "options": "BCC Recipients"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2025-04-22 14:33:35.508021",
+ "modified": "2026-04-02 23:05:57.438733",
  "modified_by": "Administrator",
  "module": "ALMS",
  "name": "ALMS Settings",

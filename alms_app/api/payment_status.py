@@ -1,6 +1,8 @@
 import frappe
 import json
 import traceback
+from alms_app.api.email_master import EmailMaster
+from alms_app.api.emailClass import EmailServices
 
 @frappe.whitelist(allow_guest=True)
 def update_payment_status():
@@ -32,6 +34,8 @@ def update_payment_status():
 
         # ---- CASCADE UPDATE (ADD HERE) ---- #
         cascade_logs, has_error = cascade_payment_update(doc, payment_status)
+        if not has_error:
+            send_payment_success_email(doc, cascade_logs)
 
         # ---- SUCCESS RESPONSE ---- #
         response = {
@@ -65,6 +69,7 @@ def update_payment_status():
         frappe.db.commit()
 
         frappe.throw(str(e))
+
 
 @frappe.whitelist(allow_guest=True)
 def cascade_payment_update(batch_doc, payment_status):
@@ -166,3 +171,53 @@ def cascade_payment_update(batch_doc, payment_status):
         has_error = True
 
     return logs, has_error
+
+
+def send_payment_success_email(doc, cascade_logs):
+    print("Preparing to send payment success email...")
+    try:
+
+        # ---- Fetch users ---- #
+        hr_emails = EmailMaster.hr_team_emails
+
+        finance_data = EmailMaster.get_finance_team()
+        finance_emails = finance_data.get("emails", [])
+
+        finance_head_emails = EmailMaster.finance_head_emails
+
+        # ---- Merge & dedupe ---- #
+        recipients = list(set(
+            hr_emails +
+            finance_emails +
+            finance_head_emails
+        ))
+
+        if not recipients:
+            frappe.log_error("No recipients found", "Payment Success Email")
+            return
+
+        # ---- Email Template ---- #
+        template = frappe.get_doc("Email Template", "Payment Status Success")
+        context = {
+            "doc": doc,
+            "logs": cascade_logs
+        }
+
+        subject = frappe.render_template(template.subject, context)
+        message = frappe.render_template(template.response_html, context)
+
+        # ---- Send Email ---- #
+        email_service = EmailServices()
+
+        success = email_service.send(
+            subject=subject,
+            recipient_email=recipients,
+            body=message,
+            bcc_list=["rishi@merillife.com"]
+        )
+
+        if not success:
+            frappe.log_error(f"Failed to send payment email for {doc.name}", "Email Error")
+
+    except Exception:
+        frappe.log_error(frappe.get_traceback(), "Payment Success Email Failed")

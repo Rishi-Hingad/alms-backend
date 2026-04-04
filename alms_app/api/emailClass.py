@@ -12,14 +12,33 @@ emailMaster = EmailMaster()
 
 
 class EmailServices:
+
+    def get_bcc_list(self, template_type="All"):
+        alms_settings = frappe.get_single("ALMS Settings")
+
+        bcc_list = []
+        template_type = (template_type or "").lower()
+
+        for row in alms_settings.bcc_address:
+            template = (row.email_template or "").lower()
+
+            if template == "all":
+                bcc_list.append(row.email_address)
+
+            elif template == template_type:
+                bcc_list.append(row.email_address)
+
+        return list(set(bcc_list))
+    
+
     def __init__(self):
         alms_settings = frappe.get_single("ALMS Settings")
         self.smtp_server = alms_settings.smtp_server
         self.smtp_port = alms_settings.smtp_port
         self.smtp_user = alms_settings.smtp_user
         self.smtp_password = alms_settings.smtp_password
-        self.from_address = "hr@merillife.com"
-        self.bcc_email = ["rishi.hingad@merillife.com","dhrumit.solanki@merillife.com","deepkumar.bhatt@merillife.com"]
+        self.from_address = alms_settings.from_address
+        # self.bcc_email = ["rishi.hingad@merillife.com","dhrumit.solanki@merillife.com","deepkumar.bhatt@merillife.com"]
         
 
     def _queue_email(self, subject, recipients, cc=None, bcc=None, content=None):
@@ -70,10 +89,12 @@ class EmailServices:
         except Exception as e:
             frappe.log_error(f"Failed to queue email: {str(e)}", "Email Queue Error")
 
-    def send(self,subject,recipient_email,body,cc_list=None):
+    def send(self,subject,recipient_email,body,cc_list=None,bcc_list=None):
         print("----Send Mail----")
         try:
-            bcc_list = self.bcc_email
+            # bcc_list = self.bcc_email
+            if bcc_list is None:
+                bcc_list = self.get_bcc_list()
             email_queue = self._queue_email(subject, recipient_email, cc_list, bcc_list, body)
             msg = EmailMessage()
             msg.set_content(body, subtype="html")
@@ -124,73 +145,90 @@ class EmailServices:
             return False
     
     #for Rejection 
-    def send_reject(self, subject,recipient_email,body,cc_list=None):
+    # def send_reject(self, subject,recipient_email,body,cc_list=None):
+    #     print("----------------sendng Reject Mail-------------")
+    #     try:
+    #         # bcc_list = self.bcc_email
+    #         bcc_list = self.get_bcc_list()
+    #         self._queue_email(subject, recipient_email, cc_list, bcc_list, body)
+    #         msg = EmailMessage()
+    #         msg.set_content(body, subtype="html")
+    #         msg["Subject"] = subject
+    #         msg["From"] = self.from_address
+    #         if isinstance(recipient_email, list):
+    #             msg["To"] = ", ".join(recipient_email)
+    #         else:
+    #             msg["To"] = recipient_email
+
+    #         if cc_list:
+    #             msg["Cc"] = ", ".join(cc_list)
+
+    #         if bcc_list:
+    #             msg["Bcc"] = ", ".join(bcc_list)
+            
+    #         with smtplib.SMTP(self.smtp_server, self.smtp_port) as server:
+    #             # server.set_debuglevel(1)
+    #             server.starttls()
+    #             server.login(self.smtp_user, self.smtp_password)
+    #             response = server.send_message(msg)
+    #             print("Email Sent Successfully!")
+    #         frappe.logger().info(f"✅ Email sent successfully to {msg['To']}")
+    #         return True
+
+    #     except smtplib.SMTPException as smtp_error:
+    #         frappe.log_error(f"SMTP error occurred: {smtp_error}", "Email Error")
+    #         return False
+    #     except Exception as e:
+    #         frappe.log_error(f"Failed to send email: {str(e)}", "Email Error")
+    #         return False
+    def send_reject(self, subject, recipient_email, body, cc_list=None):
         print("----------------sendng Reject Mail-------------")
-        try:
-            bcc_list = self.bcc_email
-            self._queue_email(subject, recipient_email, cc_list, bcc_list, body)
-            msg = EmailMessage()
-            msg.set_content(body, subtype="html")
-            msg["Subject"] = subject
-            msg["From"] = self.from_address
-            if isinstance(recipient_email, list):
-                msg["To"] = ", ".join(recipient_email)
-            else:
-                msg["To"] = recipient_email
+        return self.send(
+            subject=subject,
+            recipient_email=recipient_email,
+            body=body,
+            cc_list=cc_list
+        )   
 
-            if cc_list:
-                msg["Cc"] = ", ".join(cc_list)
-
-            if bcc_list:
-                msg["Bcc"] = ", ".join(bcc_list)
-            
-            with smtplib.SMTP(self.smtp_server, self.smtp_port) as server:
-                # server.set_debuglevel(1)
-                server.starttls()
-                server.login(self.smtp_user, self.smtp_password)
-                response = server.send_message(msg)
-                print("Email Sent Successfully!")
-            frappe.logger().info(f"✅ Email sent successfully to {msg['To']}")
-            return True
-
-        except smtplib.SMTPException as smtp_error:
-            frappe.log_error(f"SMTP error occurred: {smtp_error}", "Email Error")
-            return False
-        except Exception as e:
-            frappe.log_error(f"Failed to send email: {str(e)}", "Email Error")
-            return False
-
-    def send_quotations(self,subject,recipient_email,body, cc_list=None):
+    def send_quotations(self, subject, recipient_email, body, cc_list=None):
+        return self.send(
+            subject=subject,
+            recipient_email=recipient_email,
+            body=body,
+            cc_list=cc_list
+        )
+    # def send_quotations(self,subject,recipient_email,body, cc_list=None):
     
-        try:
-            bcc_list = self.bcc_email
-            msg = EmailMessage()
-            msg.set_content(body, subtype="html")
-            msg["Subject"] = subject
-            msg["From"] = self.from_address
-            if isinstance(recipient_email, list):
-                msg["To"] = ", ".join(recipient_email)
-            else:
-                msg["To"] = recipient_email
+    #     try:
+    #         # bcc_list = self.bcc_email
+    #         bcc_list = self.get_bcc_list()
+    #         msg = EmailMessage()
+    #         msg.set_content(body, subtype="html")
+    #         msg["Subject"] = subject
+    #         msg["From"] = self.from_address
+    #         if isinstance(recipient_email, list):
+    #             msg["To"] = ", ".join(recipient_email)
+    #         else:
+    #             msg["To"] = recipient_email
 
-            if cc_list:
-                msg["Cc"] = ", ".join(cc_list)
+    #         if cc_list:
+    #             msg["Cc"] = ", ".join(cc_list)
 
-            if bcc_list:
-                msg["Bcc"] = ", ".join(bcc_list)
+    #         if bcc_list:
+    #             msg["Bcc"] = ", ".join(bcc_list)
             
-            with smtplib.SMTP(self.smtp_server, self.smtp_port) as server:
-                # server.set_debuglevel(1)
-                server.starttls()
-                server.login(self.smtp_user, self.smtp_password)
-                response = server.send_message(msg)
-                print("Email Sent Successfully!")
+    #         with smtplib.SMTP(self.smtp_server, self.smtp_port) as server:
+    #             # server.set_debuglevel(1)
+    #             server.starttls()
+    #             server.login(self.smtp_user, self.smtp_password)
+    #             response = server.send_message(msg)
+    #             print("Email Sent Successfully!")
 
-        except smtplib.SMTPException as smtp_error:
-            frappe.throw(f"SMTP error occurred: {smtp_error}")
+    #     except smtplib.SMTPException as smtp_error:
+    #         frappe.throw(f"SMTP error occurred: {smtp_error}")
 
-        except Exception as e:
-            frappe.throw(f"Failed to send email: {str(e)}")
+    #     except Exception as e:
+    #         frappe.throw(f"Failed to send email: {str(e)}")
 
 
     # "-------------------------------------" User Acknowledgement Email "-------------------------------------"
@@ -248,8 +286,8 @@ class EmailServices:
         </body>
         </html>
         """
-
-        self.send(subject=subject, body=body, recipient_email=recipient_email)
+        bcc_list = self.get_bcc_list(template_type="Acknowledgement")
+        self.send(subject=subject, body=body, recipient_email=recipient_email, bcc_list=bcc_list)
         return body
 
     # "-------------------------------------" EMAIL BODY "-------------------------------------"

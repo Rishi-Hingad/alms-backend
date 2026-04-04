@@ -50,8 +50,13 @@
   "progress_details_tab",
   "progress_details_section",
   "excel_file",
+  "excel_uploaded_by",
   "status",
   "invoice_created",
+  "email_sent",
+  "email_sent_to_finance_head",
+  "email_sent_to_hr_head",
+  "email_sent_to_all",
   "column_break_otiz",
   "total_rows",
   "success_rows",
@@ -383,12 +388,42 @@
    "fieldtype": "Select",
    "label": "Payment Status",
    "options": "-Select-\nPaid\nNot Paid"
+  },
+  {
+   "default": "0",
+   "fieldname": "email_sent",
+   "fieldtype": "Check",
+   "label": "Email Sent to Finance 2"
+  },
+  {
+   "fieldname": "excel_uploaded_by",
+   "fieldtype": "Data",
+   "label": "Excel Uploaded By",
+   "read_only": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "email_sent_to_finance_head",
+   "fieldtype": "Check",
+   "label": "Email Sent to Finance Head"
+  },
+  {
+   "default": "0",
+   "fieldname": "email_sent_to_hr_head",
+   "fieldtype": "Check",
+   "label": "Email Sent to HR Head"
+  },
+  {
+   "default": "0",
+   "fieldname": "email_sent_to_all",
+   "fieldtype": "Check",
+   "label": "Email Sent to All"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-04-01 11:41:10.026357",
+ "modified": "2026-04-03 14:53:03.652990",
  "modified_by": "Administrator",
  "module": "CRMS",
  "name": "Invoice Batch",

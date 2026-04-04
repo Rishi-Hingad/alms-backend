@@ -34,7 +34,8 @@ frappe.listview_settings['Invoice Batch'] = {
                                 method: "alms_app.crms.doctype.invoice_details.invoice_details.upload_invoice_excel",
                                 args: {
                                     file_url: file.file_url,
-                                    vendor: values.vendor
+                                    vendor: values.vendor,
+                                    user_email: frappe.session.user
                                 },
                                 freeze: true,
                                 freeze_message: "Uploading Invoices...",

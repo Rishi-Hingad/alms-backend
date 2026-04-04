@@ -103,20 +103,20 @@ def make_link(doctype, name=None, label=None):
 
 
 @frappe.whitelist()
-def upload_invoice_excel(file_url, vendor):
+def upload_invoice_excel(file_url, vendor, user_email):
 
     if vendor == "Eazy Assets":
-        return process_eazy_assets(file_url, vendor)
+        return process_eazy_assets(file_url, vendor, user_email)
 
     elif vendor == "ALD":
-        return process_ald(file_url, vendor)
+        return process_ald(file_url, vendor, user_email)
 
     else:
         frappe.throw("Invalid Vendor Selected")
 
 
 @frappe.whitelist()
-def process_eazy_assets(file_url, vendor=None):
+def process_eazy_assets(file_url, vendor=None, user_email=None):
     print("Processing Eazy Assets Excel:", vendor)
 
     rows = read_xlsx_file_from_attached_file(file_url)
@@ -138,6 +138,7 @@ def process_eazy_assets(file_url, vendor=None):
     batch = frappe.new_doc("Invoice Batch")
     batch.vendor_name = vendor
     batch.excel_file = file_url
+    batch.excel_uploading_by = user_email
     batch.status = "Processing"
     batch.insert(ignore_permissions=True)
 
@@ -392,7 +393,7 @@ def process_eazy_assets(file_url, vendor=None):
 # ---------------- ALD PLACEHOLDER ---------------- #
 
 @frappe.whitelist()
-def process_ald(file_url, vendor=None):
+def process_ald(file_url, vendor=None, user_email=None):
     print("Processing ALD Excel:", vendor)
 
     rows = read_xlsx_file_from_attached_file(file_url)
@@ -417,6 +418,7 @@ def process_ald(file_url, vendor=None):
     batch = frappe.new_doc("Invoice Batch")
     batch.vendor_name = vendor
     batch.excel_file = file_url
+    batch.excel_uploading_by = user_email
     batch.status = "Processing"
     batch.insert(ignore_permissions=True)
 
