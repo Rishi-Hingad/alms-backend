@@ -7,8 +7,9 @@ import frappe
 import pandas as pd
 from frappe import _ as translate
 from frappe.desk.query_report import run
+from frappe.utils import getdate
 
-from leasemanagement.api.utils import get_formatted_date, get_terminated_lease_data
+from leasemanagement.api.utils import get_formatted_date, get_sd_amount, get_terminated_lease_data
 
 
 def execute(filters=None):
@@ -64,6 +65,8 @@ def execute(filters=None):
 	sum_df = pd.DataFrame(sum_rows)
 	cur_terminated_leases = []
 	prev_terminated_leases = []
+	# prev_sd_leases = []
+	cur_sd_leases = []
 	cur_ter_gross_wdv_immovable = 0
 	cur_ter_gross_wdv_vehicle = 0
 	cur_ter_acc_deprec_immovable = 0
@@ -77,6 +80,11 @@ def execute(filters=None):
 	prev_mod_wdv_immovable = 0
 	prev_mod_wdv_vehicle = 0
 	for _, row in sum_df.iterrows():
+		cur_security_deposit = frappe.get_value(
+			"Lease Management", {"name": row["lease_id"]}, "security_deposit"
+		)
+		if cur_security_deposit == "Paid":
+			cur_sd_leases.append(row["lease_id"])
 		if row["termination_rou"] != 0 and (
 			isinstance(row["termination_rou"], int) or isinstance(row["termination_rou"], float)
 		):
@@ -112,6 +120,11 @@ def execute(filters=None):
 	prev_sum_rows = prev_summary_result.get("result")
 	prev_sum_df = pd.DataFrame(prev_sum_rows)
 	for _, row in prev_sum_df.iterrows():
+		# prev_security_deposit = frappe.get_value(
+		# 	"Lease Management", {"name": row["lease_id"]}, "security_deposit"
+		# )
+		# if prev_security_deposit == "Paid":
+		# 	prev_sd_leases.append(row["lease_id"])
 		if row["termination_rou"] != 0 and (
 			isinstance(row["termination_rou"], int) or isinstance(row["termination_rou"], float)
 		):
@@ -158,6 +171,11 @@ def execute(filters=None):
 	# cur_ter_immovable = round(df.iloc[2]["credit"],3)
 	# cur_ter_vehicle = round(df.iloc[3]["credit"],3)
 	# frappe.msgprint(str(cur_depre))
+	# if len(cur_sd_leases)>0:
+	# 	report_data = run("Security Deposit Calculation",filters={"lease_id":cur_sd_leases[0]})
+	# 	rows = report_data.get("result", [])
+	# 	filtered = [row for row in rows if getdate(row.get("to_date")) == getdate("2025-03-31")]
+	# 	frappe.msgprint("filtered"+str(filtered))
 	prev_result = run(
 		"Journal Entries Report",
 		filters={
@@ -252,6 +270,21 @@ def execute(filters=None):
 	cur_acc_depre_upto_vehicle = prev_acc_depre_upto_vehicle + cur_depre_vehicle - cur_ter_acc_deprec_vehicle
 	cur_net_immovable = cur_gross_at_immovable - cur_acc_depre_upto_immovable
 	cur_net_vehicle = cur_gross_at_vehicle - cur_acc_depre_upto_vehicle
+
+	# sd_amount_prev_immovable, sd_amount_prev_vehicle = get_sd_amount(
+	# 	prev_sd_leases, int(fin_start_year) - 1, fin_start_year
+	# )
+	sd_amount_cur_immovable, sd_amount_cur_vehicle = get_sd_amount(
+		cur_sd_leases, fin_start_year, fin_end_year
+	)
+
+	cur_add_immovable += sd_amount_cur_immovable
+	cur_add_vehicle += sd_amount_cur_vehicle
+	# prev_add_immovable += sd_amount_prev_immovable
+	# prev_add_vehicle += sd_amount_prev_vehicle
+
+	# frappe.msgprint("cur_sd_leases="+str(cur_sd_leases)+" prev_sd_leases="+str(prev_sd_leases))
+	# frappe.msgprint("cur_sd_leases="+ str(cur_sd_leases)+ " sd_amount_cur="+ str(sd_amount_cur_immovable)+ " "+ str(sd_amount_cur_vehicle)+ " prev_sd_leases="+ str(prev_sd_leases)+ " sd_amount_prev="+ str(sd_amount_prev_immovable)+ " "+ str(sd_amount_prev_vehicle))
 
 	records = [
 		{

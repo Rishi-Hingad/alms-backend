@@ -39,6 +39,37 @@ def get_financial_year():
 
 
 @frappe.whitelist()
+def get_sd_amount(lease, fin_start_year, fin_end_year):
+	fstart = date(int(fin_start_year), 3, 31)
+	fend = date(int(fin_end_year), 3, 31)
+	sd_amount_immovable = 0
+	sd_amount_car = 0
+	# n=""
+	if len(lease) > 0:
+		for i in lease:
+			report_data = run("Security Deposit Calculation", filters={"lease_id": i})
+			rows = report_data.get("result", [])
+			# filtered = [row for row in rows if getdate(row.get("to_date")) == fend]
+			record1 = next((row for row in rows if getdate(row.get("to_date")) == fstart), None)
+			record2 = next((row for row in rows if getdate(row.get("to_date")) == fend), None)
+			if record1 is None:
+				opening_sd = 0
+			else:
+				opening_sd = record1["prepaid_lease"]
+			if record2 is None:
+				closing_sd = 0
+			else:
+				closing_sd = record2["prepaid_lease"]
+			type_of_asset = frappe.get_value("Lease Management", {"name": i}, "type_of_asset")
+			if type_of_asset == "Immovable":
+				sd_amount_immovable += round((closing_sd - opening_sd), 2)
+			else:
+				sd_amount_car += round((closing_sd - opening_sd), 2)
+			# n+= str(i)+" "+str(closing_sd)+" "+str(opening_sd)+" "+str(closing_sd-opening_sd)
+	return sd_amount_immovable, sd_amount_car
+
+
+@frappe.whitelist()
 def get_terminated_lease_data(terminated_leases):
 	cur_ter_gross_wdv_immovable = 0
 	cur_ter_gross_wdv_vehicle = 0

@@ -512,6 +512,17 @@ frappe.ui.form.on("Lease Management", {
 						);
 					}
 				});
+				if (frm.doc.security_deposit == "Paid") {
+					frm.add_custom_button(
+						__("Security Deposit Amortization"),
+						function () {
+							frappe.set_route("query-report", "Security Deposit Calculation", {
+								lease_id: frm.doc.name,
+							});
+						},
+						"Actions"
+					);
+				}
 			}
 			// if (frappe.user.has_role("Vendor") || frappe.user.has_role("Accounts")) {
 			// 	frm.add_custom_button(__("Go to Invoice Details"), function () {
