@@ -8,6 +8,9 @@ import frappe
 from frappe import _
 from alms_app.api.email_master import EmailMaster
 from urllib.parse import quote
+
+
+
 emailMaster = EmailMaster()
 
 
