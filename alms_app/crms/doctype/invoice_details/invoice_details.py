@@ -121,7 +121,8 @@ def process_eazy_assets(file_url, vendor=None, user_email=None):
 
     rows = read_xlsx_file_from_attached_file(file_url)
 
-    headers = [h.strip() for h in rows[0]]
+    # headers = [h.strip() for h in rows[0]]
+    headers = [str(h).strip().lower() if h else "" for h in rows[0]]
     data = rows[1:]
 
     created = 0
@@ -400,7 +401,8 @@ def process_ald(file_url, vendor=None, user_email=None):
     print("Rows read from Excel:", len(rows))
     print("Sample Row:", rows[0] if rows else "No data found")
 
-    headers = [h.strip() for h in rows[0]]
+    # headers = [h.strip() for h in rows[0]]
+    headers = [str(h).strip().lower() if h else "" for h in rows[0]]
     data = rows[1:]
 
     created = 0
