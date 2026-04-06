@@ -1,8 +1,7 @@
-// Copyright (c) 2025, Shradha_Siddhi and contributors
-// For license information, please see license.txt
-
-// frappe.ui.form.on("Invoice Details", {
-// 	refresh(frm) {
-
-// 	},
+// frappe.ui.form.on('Invoice Details', {
+//     refresh: function(frm) {
+//         frm.add_custom_button('Fetch Details', function() {
+//             frappe.msgprint('Button clicked');
+//         });
+//     }
 // });

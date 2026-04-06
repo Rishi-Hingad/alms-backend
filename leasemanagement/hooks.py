@@ -56,6 +56,9 @@ app_include_js = ["/assets/leasemanagement/js/invoice_dialog.js"]
 #         "on_login": "leasemanagement.lease_management_system.doctype.lease_management.lease_management.run_daily_update_on_login"
 #     }
 # }
+doc_events = {
+	"Invoice Details": {"on_update": "leasemanagement.api.invoice_payment_status.on_update_invoice"}
+}
 
 # include js in doctype views
 # doctype_js = {"doctype" : "public/js/doctype.js"}
