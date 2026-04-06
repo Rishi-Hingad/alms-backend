@@ -7,6 +7,8 @@ from datetime import date, datetime, timedelta
 import frappe
 from dateutil.relativedelta import relativedelta
 from frappe import _ as translate
+from frappe.desk.query_report import run
+from frappe.utils import getdate
 
 
 def execute(filters=None):
@@ -51,16 +53,71 @@ def execute(filters=None):
 	)
 	for lease in leases:
 		lease_doc = frappe.get_doc("Lease Management", lease.name)
-		timeline = lease_doc.get_lease_rent_timeline()
-		mdata = lease_doc.get_lease_monthly_data()
-		lease_data = mdata.get(current_month, 0)
-		# inv_attachment=lease_doc.get_invoice_attachments_with_dates()
-		if not lease_data and not isinstance(lease_data, list):
+		terminated_on = None
+		discarded_on = None
+		# timeline = lease_doc.get_lease_rent_timeline()
+		# mdata = lease_doc.get_lease_monthly_data()
+		# lease_data = mdata.get(current_month, 0)
+		# # inv_attachment=lease_doc.get_invoice_attachments_with_dates()
+		# if not lease_data and not isinstance(lease_data, list):
+		# 	continue
+		# else:
+		# 	ms_date = lease_data[0]
+		# 	me_date = lease_data[1]
+		# rent = timeline.get(current_month, 0)
+
+		if lease_doc.termination_date:
+			if (lease_doc.termination_date).strftime("%Y-%m") == current_month:
+				terminated_on = lease_doc.termination_date
+			if (lease_doc.termination_date).strftime("%Y-%m") < current_month:
+				continue
+		if lease_doc.status == "Discarded":
+			if lease_doc.modifications:
+				modified_start = frappe.db.get_value(
+					"Lease Management", lease_doc.modifications[0].modified_lease, "agreement_start_date"
+				)
+				temp = date(modified_start.year, modified_start.month, modified_start.day) - relativedelta(
+					days=1
+				)
+				if (temp).strftime("%Y-%m") == current_month:
+					discarded_on = temp
+				if (temp).strftime("%Y-%m") < current_month:
+					continue
+
+		report_data = run("Lease Report", filters={"docname": lease.name})
+
+		rows = report_data.get("result", [])
+
+		month_map = {
+			getdate(row.get("month_start_date")).strftime("%Y-%m"): {
+				"mlp": row.get("mlp"),
+				"month_start_date": getdate(row.get("month_start_date")),
+				"month_end_date": getdate(row.get("month_end_date")),
+			}
+			for row in rows
+			if row.get("month_start_date") and row.get("month_end_date") and row.get("mlp") is not None
+		}
+
+		lease_data = month_map.get(current_month)
+
+		if not lease_data:
 			continue
-		else:
-			ms_date = lease_data[0]
-			me_date = lease_data[1]
-		rent = timeline.get(current_month, 0)
+
+		ms_date = lease_data["month_start_date"]
+		me_date = lease_data["month_end_date"]
+		rent = lease_data["mlp"]
+
+		if terminated_on:
+			total_days = (lease_data["month_end_date"] - lease_data["month_start_date"]).days + 1
+			used_days = (terminated_on - ms_date).days + 1
+			me_date = terminated_on
+			rent = rent * (used_days / total_days)
+		if discarded_on:
+			total_days = (lease_data["month_end_date"] - lease_data["month_start_date"]).days + 1
+			used_days = (discarded_on - ms_date).days + 1
+			me_date = discarded_on
+			rent = rent * (used_days / total_days)
+
 		# inv_dates=[]
 		# for i in range(len(inv_attachment)):
 		#     record=inv_attachment[i]
