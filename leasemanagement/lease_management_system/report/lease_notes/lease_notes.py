@@ -66,7 +66,7 @@ def execute(filters=None):
 	cur_terminated_leases = []
 	prev_terminated_leases = []
 	# prev_sd_leases = []
-	cur_sd_leases = []
+	# cur_sd_leases = []
 	cur_ter_gross_wdv_immovable = 0
 	cur_ter_gross_wdv_vehicle = 0
 	cur_ter_acc_deprec_immovable = 0
@@ -80,11 +80,11 @@ def execute(filters=None):
 	prev_mod_wdv_immovable = 0
 	prev_mod_wdv_vehicle = 0
 	for _, row in sum_df.iterrows():
-		cur_security_deposit = frappe.get_value(
-			"Lease Management", {"name": row["lease_id"]}, "security_deposit"
-		)
-		if cur_security_deposit == "Paid":
-			cur_sd_leases.append(row["lease_id"])
+		# cur_security_deposit = frappe.get_value(
+		# 	"Lease Management", {"name": row["lease_id"]}, "security_deposit"
+		# )
+		# if cur_security_deposit == "Paid":
+		# 	cur_sd_leases.append(row["lease_id"])
 		if row["termination_rou"] != 0 and (
 			isinstance(row["termination_rou"], int) or isinstance(row["termination_rou"], float)
 		):
@@ -274,12 +274,12 @@ def execute(filters=None):
 	# sd_amount_prev_immovable, sd_amount_prev_vehicle = get_sd_amount(
 	# 	prev_sd_leases, int(fin_start_year) - 1, fin_start_year
 	# )
-	sd_amount_cur_immovable, sd_amount_cur_vehicle = get_sd_amount(
-		cur_sd_leases, fin_start_year, fin_end_year
-	)
+	# sd_amount_cur_immovable, sd_amount_cur_vehicle = get_sd_amount(
+	# 	cur_sd_leases, fin_start_year, fin_end_year
+	# )
 
-	cur_add_immovable += sd_amount_cur_immovable
-	cur_add_vehicle += sd_amount_cur_vehicle
+	# cur_add_immovable += sd_amount_cur_immovable
+	# cur_add_vehicle += sd_amount_cur_vehicle
 	# prev_add_immovable += sd_amount_prev_immovable
 	# prev_add_vehicle += sd_amount_prev_vehicle
 
