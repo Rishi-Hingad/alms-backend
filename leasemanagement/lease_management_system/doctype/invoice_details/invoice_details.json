@@ -6,8 +6,10 @@
  "engine": "InnoDB",
  "field_order": [
   "vendor_name",
+  "batch_name",
   "column_break_pgcx",
   "excel_file",
+  "batch_date",
   "section_break_ibxf",
   "rows",
   "section_break_ldkz",
@@ -116,12 +118,22 @@
    "fieldtype": "Float",
    "in_list_view": 1,
    "label": "Total Value of Invoice Amount"
+  },
+  {
+   "fieldname": "batch_date",
+   "fieldtype": "Date",
+   "label": "Batch Date"
+  },
+  {
+   "fieldname": "batch_name",
+   "fieldtype": "Data",
+   "label": "Batch Name"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-03-30 12:59:02.060393",
+ "modified": "2026-04-02 14:58:01.580550",
  "modified_by": "Administrator",
  "module": "Lease Management System",
  "name": "Invoice Details",

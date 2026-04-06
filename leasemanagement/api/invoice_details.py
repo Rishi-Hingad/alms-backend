@@ -86,6 +86,9 @@ def insert_invoice_batch_data():
 	if pdf_saved:
 		_attach_file_to_doc(pdf_saved, "Invoice Details", doc.name)
 
+	# validate lease
+	_link_invoice_to_lease(doc)
+
 	# ------------------------------------------------------------------
 	# 6. Return success response
 	# ------------------------------------------------------------------
@@ -144,3 +147,94 @@ def _attach_file_to_doc(file_doc, doctype: str, docname: str):
 		},
 	)
 	frappe.db.commit()
+
+
+# validations */
+def _link_invoice_to_lease(doc):
+	from frappe.utils import getdate
+
+	for child in doc.rows:
+		contract_no = child.contract_number
+		invoice_date = getdate(child.billing_date) if child.billing_date else None
+
+		# ----------------------------------------
+		# 1. Contract Number Check
+		# ----------------------------------------
+		car = frappe.db.get_value(
+			"Car Description Master",
+			{"contract_details": contract_no},
+			["name", "vendor", "company", "employee_code"],
+			as_dict=1,
+		)
+
+		car_company_code = frappe.db.get_value("Company Master", {"name": car.company}, "company_code")
+
+		if not car:
+			child.lease_status = "Contract Not Found"
+			continue
+
+		# ----------------------------------------
+		# 2. Company Match
+		# ----------------------------------------
+		if str(car_company_code) != str(child.company_code):
+			child.lease_status = "Company Mismatch"
+			continue
+
+		# ----------------------------------------
+		# 3. Employee Code Match
+		# ----------------------------------------
+		if str(car.employee_code) != str(child.employee_code):
+			child.lease_status = "Employee Mismatch"
+			continue
+
+		# ----------------------------------------
+		# 4. Find Lease Management
+		# ----------------------------------------
+		leases = frappe.get_all(
+			"Lease Management",
+			filters={"car_description": car.name, "vendor": car.vendor, "company": car.company},
+			fields=["name", "agreement_start_date", "agreement_end_date"],
+		)
+
+		if not leases:
+			child.lease_status = "Lease Not Found"
+			continue
+
+		matched = False
+
+		for lease in leases:
+			# ----------------------------------------
+			# 5. Date Validation
+			# ----------------------------------------
+			if invoice_date:
+				if not (lease.agreement_start_date <= invoice_date <= lease.agreement_end_date):
+					child.lease_status = "Date Out of Range"
+					continue
+
+			# ----------------------------------------
+			# 6. linking successful
+			# ----------------------------------------
+			lease_doc = frappe.get_doc("Lease Management", lease.name)
+
+			lease_doc.append(
+				"invoice_details",
+				{
+					"amount": child.invoice_amount,
+					"from_date": child.invoice_from_date,
+					"to_date": child.invoice_to_date,
+				},
+			)
+
+			lease_doc.save(ignore_permissions=True)
+
+			child.lease_reference = lease.name
+			child.lease_status = "Linked"
+
+			matched = True
+			break
+
+		if not matched and not child.lease_status:
+			child.lease_status = "Lease Not Found"
+
+	# Save updates
+	doc.save(ignore_permissions=True)

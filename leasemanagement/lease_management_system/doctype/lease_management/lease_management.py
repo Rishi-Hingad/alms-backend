@@ -499,8 +499,8 @@ class LeaseManagement(Document):
 		if self.is_modified == 1:
 			self.validate_modification_start_date()
 
-		if self.invoice_details and len(self.invoice_details) > 0:
-			self.validate_invoice_details()
+		# if self.invoice_details and len(self.invoice_details) > 0:
+		# 	self.validate_invoice_details()
 		for row in self.escalation:
 			# if row.escalation_type=='Per Annum' and not row.rate:
 			# 	frappe.throw("Rate Field Required in Escalation")
@@ -1132,55 +1132,55 @@ class LeaseManagement(Document):
 			current_date = date_increment(current_date, diff_annually, mid_diff_annually, esc_bd_end_date)
 		return monthly_data
 
-	def validate_invoice_details(self):
-		rent_timeline = self.get_lease_rent_timeline()
-		for row in self.invoice_details:
-			from_date = datetime.strptime(row.from_date, "%Y-%m-%d")
-			to_date = datetime.strptime(row.to_date, "%Y-%m-%d")
-			date_ranges = []
-			exp_rent = []
-			current = from_date
-			while current <= to_date:
-				start_date = current
-				_, last_day = monthrange(current.year, current.month)
-				end_date = datetime(current.year, current.month, last_day)
+	# def validate_invoice_details(self):
+	# 	rent_timeline = self.get_lease_rent_timeline()
+	# 	for row in self.invoice_details:
+	# 		from_date = datetime.strptime(row.from_date, "%Y-%m-%d")
+	# 		to_date = datetime.strptime(row.to_date, "%Y-%m-%d")
+	# 		date_ranges = []
+	# 		exp_rent = []
+	# 		current = from_date
+	# 		while current <= to_date:
+	# 			start_date = current
+	# 			_, last_day = monthrange(current.year, current.month)
+	# 			end_date = datetime(current.year, current.month, last_day)
 
-				if end_date > to_date:
-					end_date = to_date
+	# 			if end_date > to_date:
+	# 				end_date = to_date
 
-				date_ranges.append([start_date, end_date])
+	# 			date_ranges.append([start_date, end_date])
 
-				if current.month == 12:
-					current = current.replace(year=current.year + 1, month=1, day=1)
-				else:
-					current = current.replace(month=current.month + 1, day=1)
+	# 			if current.month == 12:
+	# 				current = current.replace(year=current.year + 1, month=1, day=1)
+	# 			else:
+	# 				current = current.replace(month=current.month + 1, day=1)
 
-			for i in range(len(date_ranges)):
-				dates = date_ranges[i]
-				start_date = dates[0]
-				end_date = dates[1]
-				inv_month = start_date.strftime("%Y-%m")
-				exp_rent.append(rent_timeline.get(inv_month))
+	# 		for i in range(len(date_ranges)):
+	# 			dates = date_ranges[i]
+	# 			start_date = dates[0]
+	# 			end_date = dates[1]
+	# 			inv_month = start_date.strftime("%Y-%m")
+	# 			exp_rent.append(rent_timeline.get(inv_month))
 
-			expected_rent = 0.0
-			for i in range(len(exp_rent)):
-				expected_rent += exp_rent[i]
-			if expected_rent is None:
-				row.is_mismatch = 1
-				continue
-			actual_amount = float(row.amount)
-			tax = float(row.tax)
-			if int(row.with_tax) == 1:
-				calc_amount = expected_rent + ((tax * expected_rent) / 100)
-				if round(calc_amount, 3) != round(actual_amount, 3):
-					row.is_mismatch = 1
-				else:
-					row.is_mismatch = 0
-			else:
-				if round(actual_amount, 3) != round(expected_rent, 3):
-					row.is_mismatch = 1
-				else:
-					row.is_mismatch = 0
+	# 		expected_rent = 0.0
+	# 		for i in range(len(exp_rent)):
+	# 			expected_rent += exp_rent[i]
+	# 		if expected_rent is None:
+	# 			row.is_mismatch = 1
+	# 			continue
+	# 		actual_amount = float(row.amount)
+	# 		tax = float(row.tax)
+	# 		if int(row.with_tax) == 1:
+	# 			calc_amount = expected_rent + ((tax * expected_rent) / 100)
+	# 			if round(calc_amount, 3) != round(actual_amount, 3):
+	# 				row.is_mismatch = 1
+	# 			else:
+	# 				row.is_mismatch = 0
+	# 		else:
+	# 			if round(actual_amount, 3) != round(expected_rent, 3):
+	# 				row.is_mismatch = 1
+	# 			else:
+	# 				row.is_mismatch = 0
 
 
 def get_permission_query_conditions(user):
