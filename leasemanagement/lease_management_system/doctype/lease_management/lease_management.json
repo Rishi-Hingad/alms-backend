@@ -72,10 +72,11 @@
   },
   {
    "fieldname": "security_deposit_amount",
-   "fieldtype": "Data",
+   "fieldtype": "Float",
    "label": "Security Deposit Amount",
    "mandatory_depends_on": "eval:doc.security_deposit=='Paid';",
-   "permlevel": 1
+   "permlevel": 1,
+   "precision": "2"
   },
   {
    "fieldname": "agreement",
@@ -294,7 +295,7 @@
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-03-30 15:55:37.888006",
+ "modified": "2026-04-06 16:56:48.477479",
  "modified_by": "Administrator",
  "module": "Lease Management System",
  "name": "Lease Management",
