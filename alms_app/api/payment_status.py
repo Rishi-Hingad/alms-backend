@@ -29,6 +29,9 @@ def update_payment_status():
 
         doc = frappe.get_doc("Invoice Batch", doctype_name)
 
+        if doc.hr_head_status != "Approved":
+            raise Exception("Cannot update payment status unless HR Head Approval is 'Approved'")
+
         # ---- UPDATE FIELD ---- #
         doc.db_set("payment_status", payment_status)
 
