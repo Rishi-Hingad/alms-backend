@@ -173,6 +173,8 @@ def process_eazy_assets(file_url, vendor=None, user_email=None):
         "invoice value ( d)": "invoice_value_d",
     }
 
+    company = None
+
     for idx, row in enumerate(data, start=1):
 
         row_dict = {
@@ -192,7 +194,8 @@ def process_eazy_assets(file_url, vendor=None, user_email=None):
             if "-" not in contract_number:
                 raise Exception(f"Invalid Contract Format: {contract_number}")
 
-            company = contract_number.split("-")[0].strip()
+            if not company:
+                company = contract_number.split("-")[0].strip()
 
             if not contract_number:
                 raise Exception("Contract number missing")
