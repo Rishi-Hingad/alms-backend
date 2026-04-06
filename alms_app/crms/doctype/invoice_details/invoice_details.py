@@ -101,6 +101,11 @@ def make_link(doctype, name=None, label=None):
 
     return f'<a href="{url}" target="_blank" style="color:#1f6feb; font-weight:500;">{label}</a>'
 
+def normalize(text):
+    if not text:
+        return ""
+    return str(text).strip().lower().replace(" ", "").replace(".", "")
+
 
 @frappe.whitelist()
 def upload_invoice_excel(file_url, vendor, user_email):
@@ -122,7 +127,8 @@ def process_eazy_assets(file_url, vendor=None, user_email=None):
     rows = read_xlsx_file_from_attached_file(file_url)
 
     # headers = [h.strip() for h in rows[0]]
-    headers = [str(h).strip().lower() if h else "" for h in rows[0]]
+    # headers = [str(h).strip().lower() if h else "" for h in rows[0]]
+    headers = [normalize(h) for h in rows[0]]
     data = rows[1:]
 
     created = 0
@@ -144,32 +150,34 @@ def process_eazy_assets(file_url, vendor=None, user_email=None):
     batch.insert(ignore_permissions=True)
 
     header_map = {
-        "Contract No.": "contract_number",
-        "Employee Name": "employee_name",
-        "Invoice date from": "invoice_date_from",
-        "Invoice date to": "invoice_date_to",
-        "Contract End Date": "contract_end_date",
-        "Vehicle Details": "vehicle_details",
-        "Installment No.": "installment_no",
-        "No of Billing Days": "no_of_billing_days",
-        "Billing Date": "billing_date",
+        "contract no.": "contract_number",
+        "employee name": "employee_name",
+        "invoice date from": "invoice_date_from",
+        "invoice date to": "invoice_date_to",
+        "contract end date": "contract_end_date",
+        "vehicle details": "vehicle_details",
+        "installment no.": "installment_no",
+        "no of billing days": "no_of_billing_days",
+        "billing date": "billing_date",
 
-        "Rental Invoice No.": "invoice_no_rental",
-        "Invoice Value ( A)": "invoice_value_a",
+        "rental invoice no.": "invoice_no_rental",
+        "invoice value ( a)": "invoice_value_a",
 
-        "Fleet Invoice No": "invoice_no_fleet",
-        "Invoice Value ( B)": "invoice_value_b",
+        "fleet invoice no": "invoice_no_fleet",
+        "invoice value ( b)": "invoice_value_b",
 
-        "Road Invoice No.": "invoice_no_road",
-        "Invoice Value ( C)": "invoice_value_c",
+        "road invoice no.": "invoice_no_road",
+        "invoice value ( c)": "invoice_value_c",
 
-        "Insurance Invoice No.": "invoice_no_insurance",
-        "Invoice Value ( D)": "invoice_value_d",
+        "insurance invoice no.": "invoice_no_insurance",
+        "invoice value ( d)": "invoice_value_d",
     }
 
     for idx, row in enumerate(data, start=1):
 
-        row_dict = dict(zip(headers, row))
+        row_dict = {
+            h: v for h, v in zip(headers, row) if h
+        }
 
         mapped = {}
         for excel_col, fieldname in header_map.items():
@@ -178,7 +186,9 @@ def process_eazy_assets(file_url, vendor=None, user_email=None):
         try:
             contract_number = mapped.get("contract_number")
 
-            # ---- Extract Company from Contract ---- #
+            if not contract_number:
+                raise Exception("Contract number missing")
+
             if "-" not in contract_number:
                 raise Exception(f"Invalid Contract Format: {contract_number}")
 
@@ -402,7 +412,8 @@ def process_ald(file_url, vendor=None, user_email=None):
     print("Sample Row:", rows[0] if rows else "No data found")
 
     # headers = [h.strip() for h in rows[0]]
-    headers = [str(h).strip().lower() if h else "" for h in rows[0]]
+    # headers = [str(h).strip().lower() if h else "" for h in rows[0]]
+    headers = [normalize(h) for h in rows[0]]
     data = rows[1:]
 
     created = 0
@@ -426,33 +437,36 @@ def process_ald(file_url, vendor=None, user_email=None):
 
     # ---- ALD HEADER MAP ---- #
     header_map = {
-        "Contract No.": "contract_number",
-        "Emp. Name": "employee_name",
-        "Vehicle Details": "vehicle_details",
-        "Inst. No.": "installment_no",
-        "Company": "company",
-        "Month": "month",
+        "contract no.": "contract_number",
+        "emp. name": "employee_name",
+        "vehicle details": "vehicle_details",
+        "inst. no.": "installment_no",
+        "company": "company",
+        "month": "month",
 
         # A - Rental
-        "Inv.No.": "invoice_no_rental",
-        "Inv.Date": "invoice_date_rental",
-        "Inv.Value (A)": "invoice_value_a",
+        "inv.no.": "invoice_no_rental",
+        "inv.date": "invoice_date_rental",
+        "inv.value (a)": "invoice_value_a",
 
         # B - Fleet
-        "Inv.No._1": "invoice_no_fleet",
-        "Inv.Date_1": "invoice_date_fleet",
-        "Inv.Value (B)": "invoice_value_b",
+        "inv.no._1": "invoice_no_fleet",
+        "inv.date_1": "invoice_date_fleet",
+        "inv.value (b)": "invoice_value_b",
 
         # C - RTO
-        "Inv.No._2": "invoice_no_road",
-        "Inv.Date_2": "invoice_date_road",
-        "RTO ( C )": "invoice_value_c",
+        "inv.no._2": "invoice_no_road",
+        "inv.date_2": "invoice_date_road",
+        "rto ( c )": "invoice_value_c",
     }
+
     company = None
 
     for idx, row in enumerate(data, start=1):
 
-        row_dict = dict(zip(headers, row))
+        row_dict = {
+            h: v for h, v in zip(headers, row) if h
+        }
 
         mapped = {}
         for excel_col, fieldname in header_map.items():
@@ -460,6 +474,13 @@ def process_ald(file_url, vendor=None, user_email=None):
 
         try:
             contract_number = mapped.get("contract_number")
+
+            if not contract_number:
+                raise Exception("Contract number missing")
+
+            if "-" not in contract_number:
+                raise Exception(f"Invalid Contract Format: {contract_number}")
+            
             row_company = mapped.get("company")
 
             if not company and row_company:
