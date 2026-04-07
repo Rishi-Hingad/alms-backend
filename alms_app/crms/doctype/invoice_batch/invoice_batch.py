@@ -287,6 +287,19 @@ def create_invoice_details_on_approval(doc, method):
             continue
 
         inv = frappe.new_doc("Invoice Details")
+        inv.vendor_name = doc.vendor_name
+
+        # Contract data (single DB hit)
+        contract_data = frappe.db.get_value(
+            "Contract Master",
+            row.contract_number,
+            ["employee_car_process_form", "contract_end_date"],
+            as_dict=True
+        )
+
+        if contract_data:
+            inv.employee_name = contract_data.employee_car_process_form
+            inv.contract_end_date = contract_data.contract_end_date
 
         for field in config["field_map"].keys():
             if hasattr(row, field):
@@ -325,7 +338,11 @@ def create_invoice_details_on_approval(doc, method):
         )
 
         inv.total_invoice_value = row.total_invoice_value
+        inv.company_contribution = row.company_contribution
+        inv.employee_contribution = row.employee_contribution
         inv.excel_batch_id = doc.name
+        inv.excel_uploaded_by = doc.excel_uploaded_by
+        inv.excel_uploaded_on = doc.creation
 
         inv.insert(ignore_permissions=True)
         created_count += 1
@@ -521,6 +538,7 @@ def retry_lease_api(docname):
         doc.db_set("api_message", "Retry failed. Check API Log.")
 
         return {"message": "Retry failed"}
+
 
 # *********************************************
 

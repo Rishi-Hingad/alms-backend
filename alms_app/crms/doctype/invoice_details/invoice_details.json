@@ -37,7 +37,7 @@
   "invoice_value_b",
   "road_tax_and_regis_charges_section",
   "invoice_no_road",
-  "invoice_date_rto",
+  "invoice_date_road",
   "column_break_kzsq",
   "invoice_value_c",
   "insurance_charges_section",
@@ -259,21 +259,21 @@
    "label": "Invoice Date"
   },
   {
-   "fieldname": "invoice_date_rto",
-   "fieldtype": "Date",
-   "label": "Invoice Date"
-  },
-  {
    "fieldname": "payment_status",
    "fieldtype": "Select",
    "label": "Payment Status",
    "options": "-Select-\nPaid\nNot Paid"
+  },
+  {
+   "fieldname": "invoice_date_road",
+   "fieldtype": "Date",
+   "label": "Invoice Date"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-04-01 18:19:46.570711",
+ "modified": "2026-04-07 16:14:03.092688",
  "modified_by": "Administrator",
  "module": "CRMS",
  "name": "Invoice Details",

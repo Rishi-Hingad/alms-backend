@@ -1,6 +1,7 @@
 {
  "actions": [],
  "allow_rename": 1,
+ "autoname": "format:Log-{invoice_batch_doc}",
  "creation": "2026-03-29 23:16:52.726693",
  "doctype": "DocType",
  "engine": "InnoDB",
@@ -120,10 +121,11 @@
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-04-02 10:06:24.939569",
+ "modified": "2026-04-07 14:40:29.975761",
  "modified_by": "Administrator",
  "module": "CRMS",
  "name": "API Log",
+ "naming_rule": "Expression",
  "owner": "Administrator",
  "permissions": [
   {
