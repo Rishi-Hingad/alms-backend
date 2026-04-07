@@ -1,3 +1,4 @@
+from apps.alms_app.alms_app.alms.doctype.alms_settings import alms_settings
 import frappe
 import smtplib
 from email.message import EmailMessage
@@ -97,6 +98,8 @@ def _send_email_with_cc_bcc_attachments(subject, body, to_emails, cc_emails=None
     bcc_emails = bcc_emails or []
     
     email_settings = _get_email_account_settings()
+    alms_settings = frappe.get_single("ALMS Settings")
+    from_address = alms_settings.from_address or email_settings['email_id']
     
     site_config_bcc = frappe.conf.get("bcc_email") or []
     if isinstance(site_config_bcc, str):
@@ -110,7 +113,7 @@ def _send_email_with_cc_bcc_attachments(subject, body, to_emails, cc_emails=None
     if attachments:
         msg = MIMEMultipart()
         msg["Subject"] = subject
-        msg["From"] = formataddr((email_settings['sender_name'], email_settings['email_id']))
+        msg["From"] = formataddr((email_settings['sender_name'], from_address))
         msg["To"] = ", ".join(to_emails)
        
         if cc_emails:
@@ -126,7 +129,7 @@ def _send_email_with_cc_bcc_attachments(subject, body, to_emails, cc_emails=None
         # Use EmailMessage for simple emails without attachments
         msg = EmailMessage()
         msg["Subject"] = subject
-        msg["From"] = formataddr((email_settings['sender_name'], email_settings['email_id']))
+        msg["From"] = formataddr((email_settings['sender_name'], from_address))
         msg["To"] = ", ".join(to_emails)
        
         if cc_emails:
@@ -168,7 +171,7 @@ def _send_email_with_cc_bcc_attachments(subject, body, to_emails, cc_emails=None
         
         with server:
             server.login(email_settings['email_id'], email_settings['password'])
-            server.send_message(msg, to_addrs=all_recipients)
+            server.send_message(msg, from_addr=from_address, to_addrs=all_recipients)
             email_sent_successfully = True
             
         frappe.logger("debug").info(f"Email sent successfully to {len(all_recipients)} recipients")
