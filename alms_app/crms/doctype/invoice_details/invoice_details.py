@@ -1,13 +1,9 @@
-# Copyright (c) 2026, Rishi Hingad and contributors
-# For license information, please see license.txt
-
-from os import link
+# Copyright (c) 2026, Rishi Hingad
 
 import frappe
 from frappe.model.document import Document
 from frappe.utils.xlsxutils import read_xlsx_file_from_attached_file
-from frappe.utils import getdate
-from frappe.utils import today
+from frappe.utils import getdate, today
 
 
 class InvoiceDetails(Document):
@@ -48,7 +44,6 @@ class InvoiceDetails(Document):
                 f"Invoice dates do not match installment dates for installment {self.installment_no}"
             )
 
-        # prevent duplicate linking
         if matched_row.invoice_id and matched_row.invoice_id != self.name:
             frappe.throw(
                 f"Installment {self.installment_no} already linked with {matched_row.invoice_id}"
@@ -61,86 +56,100 @@ class InvoiceDetails(Document):
             self.name
         )
 
-        frappe.msgprint(f"Linked invoice {self.name} to installment {matched_row.installment_no}")
+
+# ---------------- COMMON HELPERS ---------------- #
 
 def clean_amount(val):
     if not val:
         return 0
     return float(str(val).replace(",", "").strip())
 
+
 def clean_date(val):
     if not val:
         return None
     return getdate(val)
 
-def validate(self):
-
-    duplicate = frappe.db.exists(
-        "Invoice Details",
-        {
-            "contract_number": self.contract_number,
-            "installment_no": self.installment_no,
-            "name": ["!=", self.name]
-        }
-    )
-
-    if duplicate:
-        frappe.throw(
-            f"Installment {self.installment_no} already invoiced for Contract {self.contract_number}"
-        )
-
-def make_link(doctype, name=None, label=None):
-    route = doctype.replace(" ", "-").lower()
-
-    if name:
-        url = f"/app/{route}/{name}"
-    else:
-        url = f"/app/{route}"
-
-    label = label or f"Open {doctype}"
-
-    return f'<a href="{url}" target="_blank" style="color:#1f6feb; font-weight:500;">{label}</a>'
 
 def normalize(text):
     if not text:
         return ""
-    return str(text).strip().lower().replace(" ", "").replace(".", "")
+    return (
+        str(text)
+        .strip()
+        .lower()
+        .replace(" ", "")
+        .replace(".", "")
+        .replace("(", "")
+        .replace(")", "")
+        .replace("_", "")
+    )
 
+
+def make_link(doctype, name=None, label=None):
+    route = doctype.replace(" ", "-").lower()
+    url = f"/app/{route}/{name}" if name else f"/app/{route}"
+    label = label or f"Open {doctype}"
+    return f'<a href="{url}" target="_blank">{label}</a>'
+
+
+# ---------------- EXCEL MAPPING ---------------- #
+
+def get_excel_mapping(vendor):
+    doc = frappe.get_doc("Excel Mapper", vendor)
+
+    mapping = []
+
+    for row in doc.excel_row_mapper:
+        if not row.field_column:
+            continue
+
+        mapping.append({
+            "fieldname": row.field_column,
+            "index": row.column_index,
+            "normalized_key": normalize(row.excel_column)
+        })
+
+    return mapping
+
+
+# ---------------- MAIN ENTRY ---------------- #
 
 @frappe.whitelist()
 def upload_invoice_excel(file_url, vendor, user_email):
-
-    if vendor == "Eazy Assets":
-        return process_eazy_assets(file_url, vendor, user_email)
-
-    elif vendor == "ALD":
-        return process_ald(file_url, vendor, user_email)
-
-    else:
-        frappe.throw("Invalid Vendor Selected")
+    return process_invoice(file_url, vendor, user_email)
 
 
-@frappe.whitelist()
-def process_eazy_assets(file_url, vendor=None, user_email=None):
-    print("Processing Eazy Assets Excel:", vendor)
-
+# ---------------- CORE ENGINE ---------------- #
+def process_invoice(file_url, vendor, user_email):
     rows = read_xlsx_file_from_attached_file(file_url)
+    if not rows or not rows[0]:
+        frappe.throw("Excel file is empty or invalid")
 
-    # headers = [h.strip() for h in rows[0]]
-    # headers = [str(h).strip().lower() if h else "" for h in rows[0]]
-    headers = [normalize(h) for h in rows[0]]
+    # ---------------- HEADERS ---------------- #
+    headers_raw = [str(h).strip() if h else f"col_{i}" for i, h in enumerate(rows[0])]
+    headers_norm = []
+    header_count = {}
+    for h in headers_raw:
+        key = normalize(h)
+        if key in header_count:
+            header_count[key] += 1
+            key = f"{key}_{header_count[key]}"
+        else:
+            header_count[key] = 0
+        headers_norm.append(key)
+
     data = rows[1:]
+    header_map = get_excel_mapping(vendor)
 
-    created = 0
-    failed_count = 0
-    total_a = 0
-    total_b = 0
-    total_c = 0
-    total_d = 0
-    total_employee_contribution = 0
-    total_company_contribution = 0
+    # ---------------- INIT ---------------- #
+    created = failed = 0
+    valid_count = 0
+    company = None
 
-    valid_invoice_count = 0
+    total_value_all = 0
+    total_company_contrib = 0
+    total_employee_contrib = 0
 
     batch = frappe.new_doc("Invoice Batch")
     batch.vendor_name = vendor
@@ -149,529 +158,145 @@ def process_eazy_assets(file_url, vendor=None, user_email=None):
     batch.status = "Processing"
     batch.insert(ignore_permissions=True)
 
-    header_map = {
-        "contract no.": "contract_number",
-        "employee name": "employee_name",
-        "invoice date from": "invoice_date_from",
-        "invoice date to": "invoice_date_to",
-        "contract end date": "contract_end_date",
-        "vehicle details": "vehicle_details",
-        "installment no.": "installment_no",
-        "no of billing days": "no_of_billing_days",
-        "billing date": "billing_date",
-
-        "rental invoice no.": "invoice_no_rental",
-        "invoice value ( a)": "invoice_value_a",
-
-        "fleet invoice no": "invoice_no_fleet",
-        "invoice value ( b)": "invoice_value_b",
-
-        "road invoice no.": "invoice_no_road",
-        "invoice value ( c)": "invoice_value_c",
-
-        "insurance invoice no.": "invoice_no_insurance",
-        "invoice value ( d)": "invoice_value_d",
-    }
-
-    company = None
-
+    # ---------------- PROCESS ROWS ---------------- #
     for idx, row in enumerate(data, start=1):
-
-        row_dict = {
-            h: v for h, v in zip(headers, row) if h
-        }
-
+        row_dict = dict(zip(headers_norm, row))
         mapped = {}
-        for excel_col, fieldname in header_map.items():
-            mapped[fieldname] = row_dict.get(excel_col)
+
+        # Map Excel columns to child fields
+        for m in header_map:
+            fieldname = m.get("fieldname")
+            col_idx = m.get("index")
+            key = m.get("normalized_key")
+            value = None
+            if col_idx is not None and col_idx < len(row):
+                value = row[col_idx]
+            if value is None:
+                value = row_dict.get(key)
+            mapped[fieldname] = value
+
+        # Initialize calculation variables
+        total_invoice_value = 0
+        company_contribution = 0
+        employee_contribution = 0
 
         try:
+            # ---------------- VALIDATIONS ---------------- #
             contract_number = mapped.get("contract_number")
-
-            if not contract_number:
-                raise Exception("Contract number missing")
-
-            if "-" not in contract_number:
-                raise Exception(f"Invalid Contract Format: {contract_number}")
+            if not contract_number or "-" not in str(contract_number):
+                raise Exception(f"Invalid contract: {contract_number}")
 
             if not company:
                 company = contract_number.split("-")[0].strip()
 
-            if not contract_number:
-                raise Exception("Contract number missing")
-
             if not frappe.db.exists("Contract Master", contract_number):
-                raise Exception(f"Contract {contract_number} does not exist")
+                raise Exception(f"Contract not found: {contract_number}")
 
-            installment_no = mapped.get("installment_no")
-
+            installment_no = str(mapped.get("installment_no") or "").strip()
             if not installment_no:
                 raise Exception("Installment number missing")
 
-            installment_no = str(installment_no).strip()
+            if frappe.db.exists("Invoice Details", {"contract_number": contract_number, "installment_no": installment_no}):
+                raise Exception(f"Duplicate invoice for {contract_number} - {installment_no}")
 
-            duplicate = frappe.db.exists(
-                "Invoice Details",
-                {
-                    "contract_number": contract_number,
-                    "installment_no": installment_no
-                }
-            )
-
-            if duplicate:
-                raise Exception(
-                    f"Invoice already exists for Contract {contract_number} Installment {installment_no}"
-                )
-
-            employee_name = frappe.db.get_value(
-                "Contract Master",
-                contract_number,
-                "employee_car_process_form"
-            )
+            employee_name = frappe.db.get_value("Contract Master", contract_number, "employee_car_process_form")
             if not employee_name:
-                raise Exception(f"Employee not linked to Contract {contract_number}")
+                raise Exception(f"Employee not linked to {contract_number}")
 
-            # ---- Clean values ---- #
-            invoice_value_a = clean_amount(mapped.get("invoice_value_a"))
-            invoice_value_b = clean_amount(mapped.get("invoice_value_b"))
-            invoice_value_c = clean_amount(mapped.get("invoice_value_c"))
-            invoice_value_d = clean_amount(mapped.get("invoice_value_d"))
+            # ---------------- AMOUNTS ---------------- #
+            a = float(clean_amount(mapped.get("invoice_value_a")))
+            b = float(clean_amount(mapped.get("invoice_value_b")))
+            c = float(clean_amount(mapped.get("invoice_value_c")))
+            d = float(clean_amount(mapped.get("invoice_value_d")))
+            total_invoice_value = a + b + c + d
+            print(f"Row {idx} amounts: A={a}, B={b}, C={c}, D={d}, Total={total_invoice_value}")
 
-            total = (
-                invoice_value_a +
-                invoice_value_b +
-                invoice_value_c +
-                invoice_value_d
-            )
-
-            # ---- Fetch Cost Center ---- #
-            cost_center = frappe.db.get_value(
-                "Employee Master",
-                {"name": employee_name},
-                "cost_center"
-            )
-            print("Cost Center ee:", cost_center)
-            print("Employee Name ee:", employee_name)
+            # ---------------- COST CENTER ---------------- #
+            cost_center = frappe.db.get_value("Employee Master", employee_name, "cost_center")
             if not cost_center:
-                # raise Exception(f"Cost Center not found for Employee {employee_name}")
-                link = make_link("Employee Master", employee_name, "Open Employee")
-                raise Exception(f"Cost Center not found for Employee {employee_name}. {link}")
+                raise Exception("Missing cost center")
 
-            # ---- Default values ---- #
-            employee_contribution = 0
-            company_contribution = 0
-            remarks = ""
-
-            # ---- Fetch Deduction ---- #
+            # ---------------- CONTRIBUTIONS ---------------- #
             deduction = frappe.db.get_value(
                 "Company and Employee Deduction",
                 {"employee_name": employee_name},
-                [
-                    "finance_team_status",
-                    "finance_head_status",
-                    "quarterly_payment",
-                    "employee_quarterly_payment"
-                ],
+                ["finance_team_status", "finance_head_status", "quarterly_payment", "employee_quarterly_payment"],
                 as_dict=True,
                 order_by="creation desc"
             )
 
             if not deduction:
-                # raise Exception("Deduction record not found")
-                link = make_link("Car Quotation", contract_number, "Open Car Quotation")
-                raise Exception(f"Deduction record not found. {link}")
-            
-            if deduction.finance_team_status != "Approved":
-                raise Exception("Deduction not approved by Finance Team")
+                raise Exception("Deduction missing")
+            if deduction.finance_team_status != "Approved" or deduction.finance_head_status != "Approved":
+                raise Exception("Deduction not approved")
 
-            if deduction.finance_head_status != "Approved":
-                raise Exception("Deduction not approved by Finance Head")
+            company_contribution = float(deduction.quarterly_payment or 0)
+            employee_contribution = float(deduction.employee_quarterly_payment or 0)
+            print(f"Row {idx} contributions: Company={company_contribution}, Employee={employee_contribution}")
 
-            # Only if approved
-            company_contribution = deduction.quarterly_payment or 0
-            employee_contribution = deduction.employee_quarterly_payment or 0
-
-            total_a += invoice_value_a
-            total_b += invoice_value_b
-            total_c += invoice_value_c
-            total_d += invoice_value_d
-
-            valid_invoice_count += 1
-
-            # ---- Add to totals ---- #
-            total_company_contribution += company_contribution
-            total_employee_contribution += employee_contribution
-
-            created += 1
-
-            # ---- STORE IN BATCH (SUCCESS) ---- #
+            # ---------------- APPEND CHILD ROW ---------------- #
             batch.append("rows", {
                 "row_number": idx,
-
                 "contract_number": contract_number,
                 "employee_name": employee_name,
-                "vehicle_details": mapped.get("vehicle_details"),
-                "company": company,
-
-                "invoice_date_from": clean_date(mapped.get("invoice_date_from")),
-                "invoice_date_to": clean_date(mapped.get("invoice_date_to")),
-                "contract_end_date": clean_date(mapped.get("contract_end_date")),
-
                 "installment_no": installment_no,
-                "no_of_billing_days": mapped.get("no_of_billing_days"),
-                "billing_date": clean_date(mapped.get("billing_date")),
-
-                "invoice_no_rental": mapped.get("invoice_no_rental"),
-                "invoice_value_a": invoice_value_a,
-
-                "invoice_no_fleet": mapped.get("invoice_no_fleet"),
-                "invoice_value_b": invoice_value_b,
-
-                "invoice_no_road": mapped.get("invoice_no_road"),
-                "invoice_value_c": invoice_value_c,
-
-                "invoice_no_insurance": mapped.get("invoice_no_insurance"),
-                "invoice_value_d": invoice_value_d,
-
-                "total_invoice_value": total,
+                "total_invoice_value": total_invoice_value,
                 "cost_center": cost_center,
-                "employee_contribution": employee_contribution,
                 "company_contribution": company_contribution,
-                # "error_message": remarks,
-
+                "employee_contribution": employee_contribution,
                 "status": "Success"
             })
 
+            # accumulate totals for parent
+            total_value_all += total_invoice_value
+            total_company_contrib += company_contribution
+            total_employee_contrib += employee_contribution
+
+            valid_count += 1
+            created += 1
+
+        # ---------------- HANDLE FAILED ROW ---------------- #
         except Exception as e:
+            failed += 1
+            print(f"Row {idx} failed: {e}")
 
-            failed_count += 1
+            # Get all valid fields from child doctype
+            child_meta = frappe.get_meta("Invoice Import Row")
+            valid_fields = {df.fieldname for df in child_meta.fields}
 
-            # ---- STORE IN BATCH (ALL ROWS) ---- #
-            # batch.append("rows", {
-            #     "row_number": idx,
-            #     "contract_number": mapped.get("contract_number"),
-            #     "installment_no": mapped.get("installment_no"),
-            #     "status": "Failed",
-            #     "error_message": str(e)
-            # })
+            # Base failed row with mapped fields that exist in child
+            failed_row = {"row_number": idx, "status": "Failed", "error_message": str(e)}
+            for k, v in mapped.items():
+                if k in valid_fields:
+                    failed_row[k] = v
 
-            # ---- STORE IN FAILED TABLE ---- #
-            failed_row = {
-                "row_number": idx,
-                "status": "Failed",
-                "error_message": str(e)
-            }
+            # Add calculated fields even if not in mapped
+            failed_row.update({
+                "total_invoice_value": total_invoice_value,
+                "company_contribution": company_contribution,
+                "employee_contribution": employee_contribution,
+                "cost_center": mapped.get("cost_center") or ""
+            })
 
-            # dump all mapped fields
-            for key, value in mapped.items():
-                failed_row[key] = value
-
+            # Append to failed_rows_table
             batch.append("failed_rows_table", failed_row)
 
-    # ---- FINALIZE BATCH ---- #
-    batch.success_rows = created
-    batch.failed_rows = failed_count
-    batch.total_rows = created + failed_count
+    # ---------------- FINALIZE PARENT ---------------- #
+    print(f"Final totals: Total Invoice={total_value_all}, Company Contribution={total_company_contrib}, Employee Contribution={total_employee_contrib}")
 
-    batch.status = "Failed" if failed_count else "Completed"
+    batch.success_rows = created
+    batch.failed_rows = failed
+    batch.total_rows = created + failed
+    batch.status = "Failed" if failed else "Completed"
     batch.batch_date = today()
     batch.company = company
+    batch.no_of_invoice = valid_count
 
-
-    batch.no_of_invoice = valid_invoice_count
-
-    batch.total_value_of_rental_charges = total_a
-    batch.total_value_of_fleet_charges = total_b
-    batch.total_value_of_rto = total_c
-    batch.total_value_of_insurance = total_d
-
-    batch.total_value_of_all = (
-        total_a + total_b + total_c + total_d
-    )
-
-    # Optional (if you have logic later)
-    batch.total_value_of_company_contribution = total_company_contribution
-    batch.total_value_of_employee_contribution = total_employee_contribution
+    batch.total_value_of_all = total_value_all
+    batch.total_value_of_company_contribution = total_company_contrib
+    batch.total_value_of_employee_contribution = total_employee_contrib
 
     batch.save()
     frappe.db.commit()
 
-    msg = f"{created} invoices created successfully"
-
-    if failed_count:
-        msg += f"<br>{failed_count} failed rows logged in Batch: <b>{batch.name}</b>"
-
-    return msg
-
-
-# ---------------- ALD PLACEHOLDER ---------------- #
-
-@frappe.whitelist()
-def process_ald(file_url, vendor=None, user_email=None):
-    print("Processing ALD Excel:", vendor)
-
-    rows = read_xlsx_file_from_attached_file(file_url)
-    print("Rows read from Excel:", len(rows))
-    print("Sample Row:", rows[0] if rows else "No data found")
-
-    # headers = [h.strip() for h in rows[0]]
-    # headers = [str(h).strip().lower() if h else "" for h in rows[0]]
-    headers = [normalize(h) for h in rows[0]]
-    data = rows[1:]
-
-    created = 0
-    failed_count = 0
-
-    total_a = 0
-    total_b = 0
-    total_c = 0
-
-    total_employee_contribution = 0
-    total_company_contribution = 0
-
-    valid_invoice_count = 0
-
-    batch = frappe.new_doc("Invoice Batch")
-    batch.vendor_name = vendor
-    batch.excel_file = file_url
-    batch.excel_uploading_by = user_email
-    batch.status = "Processing"
-    batch.insert(ignore_permissions=True)
-
-    # ---- ALD HEADER MAP ---- #
-    header_map = {
-        "contract no.": "contract_number",
-        "emp. name": "employee_name",
-        "vehicle details": "vehicle_details",
-        "inst. no.": "installment_no",
-        "company": "company",
-        "month": "month",
-
-        # A - Rental
-        "inv.no.": "invoice_no_rental",
-        "inv.date": "invoice_date_rental",
-        "inv.value (a)": "invoice_value_a",
-
-        # B - Fleet
-        "inv.no._1": "invoice_no_fleet",
-        "inv.date_1": "invoice_date_fleet",
-        "inv.value (b)": "invoice_value_b",
-
-        # C - RTO
-        "inv.no._2": "invoice_no_road",
-        "inv.date_2": "invoice_date_road",
-        "rto ( c )": "invoice_value_c",
-    }
-
-    company = None
-
-    for idx, row in enumerate(data, start=1):
-
-        row_dict = {
-            h: v for h, v in zip(headers, row) if h
-        }
-
-        mapped = {}
-        for excel_col, fieldname in header_map.items():
-            mapped[fieldname] = row_dict.get(excel_col)
-
-        try:
-            contract_number = mapped.get("contract_number")
-
-            if not contract_number:
-                raise Exception("Contract number missing")
-
-            if "-" not in contract_number:
-                raise Exception(f"Invalid Contract Format: {contract_number}")
-            
-            row_company = mapped.get("company")
-
-            if not company and row_company:
-                company = row_company
-
-            if not contract_number:
-                raise Exception("Contract number missing")
-
-            if not frappe.db.exists("Contract Master", contract_number):
-                # raise Exception(f"Contract {contract_number} does not exist")
-                link = make_link("Contract Master", None, "Create Contract")
-                raise Exception(f"Contract {contract_number} does not exist. {link}")
-
-            installment_no = mapped.get("Inst. No.")
-
-            if not installment_no:
-                raise Exception("Installment number missing")
-
-            installment_no = str(installment_no).strip()
-
-            duplicate = frappe.db.exists(
-                "Invoice Details",
-                {
-                    "contract_number": contract_number,
-                    "installment_no": installment_no
-                }
-            )
-
-            if duplicate:
-                # raise Exception(
-                #     f"Invoice already exists for Contract {contract_number} Installment {installment_no}"
-                # )
-                link = make_link("Invoice Details", None, "View Invoices")
-                raise Exception(
-                    f"Invoice already exists for Contract {contract_number} Installment {installment_no}. {link}"
-                )
-
-            # ---- Employee from Contract ---- #
-            employee_name = frappe.db.get_value(
-                "Contract Master",
-                contract_number,
-                "employee_car_process_form"
-            )
-
-            if not employee_name:
-                raise Exception(f"Employee not linked to Contract {contract_number}")
-
-            # ---- Clean Values ---- #
-            invoice_value_a = clean_amount(mapped.get("invoice_value_a"))
-            invoice_value_b = clean_amount(mapped.get("invoice_value_b"))
-            invoice_value_c = clean_amount(mapped.get("invoice_value_c"))
-
-            total = invoice_value_a + invoice_value_b + invoice_value_c
-
-            # ---- Cost Center ---- #
-            cost_center = frappe.db.get_value(
-                "Employee Master",
-                employee_name,
-                "cost_center"
-            )
-            print("Cost Center:", cost_center)
-            print("Employee Name:", employee_name)
-
-            if not cost_center:
-                # raise Exception(f"Cost Center not found for Employee {employee_name}")
-                link = make_link("Employee Master", employee_name, "Open Employee")
-                raise Exception(f"Cost Center not found for Employee {employee_name}. {link}")
-
-            # ---- Contributions ---- #
-            employee_contribution = 0
-            company_contribution = 0
-
-            deduction = frappe.db.get_value(
-                "Company and Employee Deduction",
-                {"employee_name": employee_name},
-                [
-                    "finance_team_status",
-                    "finance_head_status",
-                    "quarterly_payment",
-                    "employee_quarterly_payment"
-                ],
-                as_dict=True,
-                order_by="creation desc"
-            )
-
-            if not deduction:
-                # raise Exception("Deduction record not found")
-                link = make_link("car-quotation")
-                raise Exception(f"Deduction record not found. {link}")
-
-            if deduction.finance_team_status != "Approved":
-                raise Exception("Deduction not approved by Finance Team")
-
-            if deduction.finance_head_status != "Approved":
-                raise Exception("Deduction not approved by Finance Head")
-
-            company_contribution = deduction.quarterly_payment or 0
-            employee_contribution = deduction.employee_quarterly_payment or 0
-
-            # ---- Totals ---- #
-            total_a += invoice_value_a
-            total_b += invoice_value_b
-            total_c += invoice_value_c
-
-            total_company_contribution += company_contribution
-            total_employee_contribution += employee_contribution
-
-            valid_invoice_count += 1
-            created += 1
-
-            # ---- STORE SUCCESS ---- #
-            batch.append("rows", {
-                "row_number": idx,
-
-                "contract_number": contract_number,
-                "employee_name": employee_name,
-                "vehicle_details": mapped.get("vehicle_details"),
-
-                "installment_no": installment_no,
-                "month": clean_date(mapped.get("month")),
-
-                "invoice_no_rental": mapped.get("invoice_no_rental"),
-                "invoice_value_a": invoice_value_a,
-
-                "invoice_no_fleet": mapped.get("invoice_no_fleet"),
-                "invoice_value_b": invoice_value_b,
-
-                "invoice_no_road": mapped.get("invoice_no_road"),
-                "invoice_value_c": invoice_value_c,
-
-                "total_invoice_value": total,
-                "cost_center": cost_center,
-                "employee_contribution": employee_contribution,
-                "company_contribution": company_contribution,
-
-                "status": "Success"
-            })
-
-        except Exception as e:
-
-            failed_count += 1
-
-            # batch.append("rows", {
-            #     "row_number": idx,
-            #     "contract_number": mapped.get("contract_number"),
-            #     "installment_no": mapped.get("installment_no"),
-            #     "status": "Failed",
-            #     "error_message": str(e)
-            # })
-
-            failed_row = {
-                "row_number": idx,
-                "status": "Failed",
-                "error_message": str(e)
-            }
-
-            # dump all mapped fields
-            for key, value in mapped.items():
-                failed_row[key] = value
-
-            batch.append("failed_rows_table", failed_row)
-
-    # ---- FINALIZE ---- #
-    batch.success_rows = created
-    batch.failed_rows = failed_count
-    batch.total_rows = created + failed_count
-
-    batch.status = "Failed" if failed_count else "Completed"
-    batch.batch_date = today()
-    batch.company = company
-
-    batch.no_of_invoice = valid_invoice_count
-
-    batch.total_value_of_rental_charges = total_a
-    batch.total_value_of_fleet_charges = total_b
-    batch.total_value_of_rto = total_c
-
-    batch.total_value_of_all = total_a + total_b + total_c
-
-    batch.total_value_of_company_contribution = total_company_contribution
-    batch.total_value_of_employee_contribution = total_employee_contribution
-
-    batch.save()
-    frappe.db.commit()
-
-    msg = f"{created} invoices created successfully"
-
-    if failed_count:
-        msg += f"<br>{failed_count} failed rows logged in Batch: <b>{batch.name}</b>"
-
-    return msg
+    return f"{created} success, {failed} failed"
