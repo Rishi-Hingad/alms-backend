@@ -21,6 +21,7 @@
   "lease_period",
   "security_deposit",
   "security_deposit_amount",
+  "security_deposit_amount_new",
   "monthly_rent",
   "agreement",
   "column_break_rjjx",
@@ -72,11 +73,10 @@
   },
   {
    "fieldname": "security_deposit_amount",
-   "fieldtype": "Float",
+   "fieldtype": "Data",
    "label": "Security Deposit Amount",
    "mandatory_depends_on": "eval:doc.security_deposit=='Paid';",
-   "permlevel": 1,
-   "precision": "2"
+   "permlevel": 1
   },
   {
    "fieldname": "agreement",
@@ -290,12 +290,18 @@
    "fieldtype": "Small Text",
    "label": "Termination Reason",
    "mandatory_depends_on": "eval:doc.status==\"Terminated\";"
+  },
+  {
+   "fieldname": "security_deposit_amount_new",
+   "fieldtype": "Float",
+   "label": "Security Deposit Amount New",
+   "precision": "2"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-04-06 16:56:48.477479",
+ "modified": "2026-04-07 11:27:51.250694",
  "modified_by": "Administrator",
  "module": "Lease Management System",
  "name": "Lease Management",
