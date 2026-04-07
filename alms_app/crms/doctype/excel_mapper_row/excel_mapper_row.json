@@ -69,15 +69,14 @@
    "fieldtype": "Int",
    "in_list_view": 1,
    "in_preview": 1,
-   "label": "Column Index",
-   "read_only": 1
+   "label": "Column Index"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2026-04-07 10:20:33.719743",
+ "modified": "2026-04-07 12:08:19.416100",
  "modified_by": "Administrator",
  "module": "CRMS",
  "name": "Excel Mapper Row",

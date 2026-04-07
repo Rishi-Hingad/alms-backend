@@ -8,11 +8,11 @@ import frappe
 from frappe import _
 from alms_app.api.email_master import EmailMaster
 from urllib.parse import quote
+from alms_app.newutils.custom_sendmail import custom_sendmail
 
 
 
 emailMaster = EmailMaster()
-
 
 class EmailServices:
 
@@ -97,64 +97,91 @@ class EmailServices:
             frappe.log_error(f"Failed to queue email: {str(e)}", "Email Queue Error")
 
         return email_queue
-
-    def send(self,subject,recipient_email,body,cc_list=None,bcc_list=None):
-        print("----Send Mail----")
+    
+    def send(self, subject, recipient_email, body, cc_list=None, bcc_list=None):
+        print("----Send Mail (Using Custom Sendmail)----")
+        
         try:
-            # bcc_list = self.bcc_email
             if bcc_list is None:
                 bcc_list = self.get_bcc_list()
-            email_queue = self._queue_email(subject, recipient_email, cc_list, bcc_list, body)
-            msg = EmailMessage()
-            msg.set_content(body, subtype="html")
-            subject = (subject or "").strip()
-            if not subject:
-                subject = "Notification"
-            msg["Subject"] = subject
-            msg["From"] = self.from_address
-            if isinstance(recipient_email, list):
-                msg["To"] = ", ".join(recipient_email)
-            else:
-                msg["To"] = recipient_email
 
-            if cc_list:
-                msg["Cc"] = ", ".join(cc_list)
+            # Normalize recipients
+            if isinstance(recipient_email, str):
+                recipient_email = [recipient_email]
 
-            if bcc_list:
-                msg["Bcc"] = ", ".join(bcc_list)
-            print("-----BCC List---->",bcc_list)
-            
-            with smtplib.SMTP(self.smtp_server, self.smtp_port) as server:
-                # server.set_debuglevel(1)
-                server.starttls()
-                server.login(self.smtp_user, self.smtp_password)
-                response = server.send_message(msg)
-                print("SMTP Response:", response)
-                print("Email Sent Successfully!")
-            if email_queue:
-                email_queue.db_set("status", "Sent", update_modified=False)
-                frappe.db.commit()
+            custom_sendmail(
+                recipients=recipient_email,
+                subject=subject,
+                message=body,
+                cc=cc_list,
+                bcc=bcc_list,
+                now=True
+            )
 
-                recipients = frappe.get_all(
-                    "Email Queue Recipient",
-                    filters={"parent": email_queue.name},
-                    pluck="name"
-                )
-                for r in recipients:
-                    frappe.db.set_value("Email Queue Recipient", r, "status", "Sent")
-
-                frappe.db.commit()
-                print(f"Email Queue {email_queue.name} updated to Sent")
-
-            frappe.logger().info(f"✅ Email sent successfully to {msg['To']}")
+            frappe.logger().info(f"✅ Email sent via custom_sendmail to {recipient_email}")
             return True
-        
-        except smtplib.SMTPException as smtp_error:
-            frappe.log_error(f"SMTP error occurred: {smtp_error}", "Email Error")
-            return False
+
         except Exception as e:
             frappe.log_error(f"Failed to send email: {str(e)}", "Email Error")
             return False
+
+    # def send(self,subject,recipient_email,body,cc_list=None,bcc_list=None):
+    #     print("----Send Mail----")
+    #     try:
+    #         # bcc_list = self.bcc_email
+    #         if bcc_list is None:
+    #             bcc_list = self.get_bcc_list()
+    #         email_queue = self._queue_email(subject, recipient_email, cc_list, bcc_list, body)
+    #         msg = EmailMessage()
+    #         msg.set_content(body, subtype="html")
+    #         subject = (subject or "").strip()
+    #         if not subject:
+    #             subject = "Notification"
+    #         msg["Subject"] = subject
+    #         msg["From"] = self.from_address
+    #         if isinstance(recipient_email, list):
+    #             msg["To"] = ", ".join(recipient_email)
+    #         else:
+    #             msg["To"] = recipient_email
+
+    #         if cc_list:
+    #             msg["Cc"] = ", ".join(cc_list)
+
+    #         if bcc_list:
+    #             msg["Bcc"] = ", ".join(bcc_list)
+    #         print("-----BCC List---->",bcc_list)
+            
+    #         with smtplib.SMTP(self.smtp_server, self.smtp_port) as server:
+    #             # server.set_debuglevel(1)
+    #             server.starttls()
+    #             server.login(self.smtp_user, self.smtp_password)
+    #             response = server.send_message(msg)
+    #             print("SMTP Response:", response)
+    #             print("Email Sent Successfully!")
+    #         if email_queue:
+    #             email_queue.db_set("status", "Sent", update_modified=False)
+    #             frappe.db.commit()
+
+    #             recipients = frappe.get_all(
+    #                 "Email Queue Recipient",
+    #                 filters={"parent": email_queue.name},
+    #                 pluck="name"
+    #             )
+    #             for r in recipients:
+    #                 frappe.db.set_value("Email Queue Recipient", r, "status", "Sent")
+
+    #             frappe.db.commit()
+    #             print(f"Email Queue {email_queue.name} updated to Sent")
+
+    #         frappe.logger().info(f"✅ Email sent successfully to {msg['To']}")
+    #         return True
+        
+    #     except smtplib.SMTPException as smtp_error:
+    #         frappe.log_error(f"SMTP error occurred: {smtp_error}", "Email Error")
+    #         return False
+    #     except Exception as e:
+    #         frappe.log_error(f"Failed to send email: {str(e)}", "Email Error")
+    #         return False
     
     #for Rejection 
     # def send_reject(self, subject,recipient_email,body,cc_list=None):

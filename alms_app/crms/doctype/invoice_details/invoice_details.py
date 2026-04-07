@@ -122,6 +122,7 @@ def upload_invoice_excel(file_url, vendor, user_email):
 
 # ---------------- CORE ENGINE ---------------- #
 def process_invoice(file_url, vendor, user_email):
+    print(f"Processing invoice upload for vendor: {vendor} by user: {user_email}")
     rows = read_xlsx_file_from_attached_file(file_url)
     if not rows or not rows[0]:
         frappe.throw("Excel file is empty or invalid")
@@ -150,6 +151,10 @@ def process_invoice(file_url, vendor, user_email):
     total_value_all = 0
     total_company_contrib = 0
     total_employee_contrib = 0
+    total_rental = 0
+    total_fleet = 0
+    total_rto = 0
+    total_insurance = 0
 
     batch = frappe.new_doc("Invoice Batch")
     batch.vendor_name = vendor
@@ -168,11 +173,15 @@ def process_invoice(file_url, vendor, user_email):
             fieldname = m.get("fieldname")
             col_idx = m.get("index")
             key = m.get("normalized_key")
+
             value = None
-            if col_idx is not None and col_idx < len(row):
-                value = row[col_idx]
-            if value is None:
-                value = row_dict.get(key)
+            
+            if col_idx is not None:
+                try:
+                    value = row[col_idx]
+                except IndexError:
+                    value = None
+
             mapped[fieldname] = value
 
         # Initialize calculation variables
@@ -182,15 +191,43 @@ def process_invoice(file_url, vendor, user_email):
 
         try:
             # ---------------- VALIDATIONS ---------------- #
-            contract_number = mapped.get("contract_number")
-            if not contract_number or "-" not in str(contract_number):
+            contract_number = str(mapped.get("contract_number") or "").strip()
+            print(f"Row {idx} raw contract: {contract_number}")
+
+            if not contract_number:
                 raise Exception(f"Invalid contract: {contract_number}")
 
-            if not company:
-                company = contract_number.split("-")[0].strip()
+            # Vendor-aware contract resolution
+            if vendor == "ALD":
+                contract_doc = frappe.db.get_value(
+                    "Contract Master",
+                    {
+                        "vendor": vendor,
+                        "name": contract_number
+                    },
+                    ["name", "company"],
+                    as_dict=True
+                )
 
-            if not frappe.db.exists("Contract Master", contract_number):
-                raise Exception(f"Contract not found: {contract_number}")
+                if not contract_doc:
+                    raise Exception(f"Contract not found: {contract_number}")
+
+                # replace with actual doc name (like ABC-60857)
+                contract_number = contract_doc.name
+
+                if not company:
+                    company = contract_doc.company
+
+            else:
+                # For vendors like Eazy Assets
+                if "-" not in contract_number:
+                    raise Exception(f"Invalid contract: {contract_number}")
+
+                if not company:
+                    company = contract_number.split("-")[0].strip()
+
+                if not frappe.db.exists("Contract Master", contract_number):
+                    raise Exception(f"Contract not found: {contract_number}")
 
             installment_no = str(mapped.get("installment_no") or "").strip()
             if not installment_no:
@@ -208,6 +245,10 @@ def process_invoice(file_url, vendor, user_email):
             b = float(clean_amount(mapped.get("invoice_value_b")))
             c = float(clean_amount(mapped.get("invoice_value_c")))
             d = float(clean_amount(mapped.get("invoice_value_d")))
+            total_rental += a
+            total_fleet += b
+            total_rto += c
+            total_insurance += d
             total_invoice_value = a + b + c + d
             print(f"Row {idx} amounts: A={a}, B={b}, C={c}, D={d}, Total={total_invoice_value}")
 
@@ -235,17 +276,31 @@ def process_invoice(file_url, vendor, user_email):
             print(f"Row {idx} contributions: Company={company_contribution}, Employee={employee_contribution}")
 
             # ---------------- APPEND CHILD ROW ---------------- #
-            batch.append("rows", {
+            child_meta = frappe.get_meta("Invoice Import Row")
+            valid_fields = {df.fieldname for df in child_meta.fields}
+
+            success_row = {
                 "row_number": idx,
+                "status": "Success"
+            }
+
+            # include all mapped fields
+            for k, v in mapped.items():
+                if k in valid_fields:
+                    success_row[k] = v
+
+            # override / add system fields
+            success_row.update({
                 "contract_number": contract_number,
                 "employee_name": employee_name,
                 "installment_no": installment_no,
                 "total_invoice_value": total_invoice_value,
                 "cost_center": cost_center,
                 "company_contribution": company_contribution,
-                "employee_contribution": employee_contribution,
-                "status": "Success"
+                "employee_contribution": employee_contribution
             })
+
+            batch.append("rows", success_row)
 
             # accumulate totals for parent
             total_value_all += total_invoice_value
@@ -293,9 +348,12 @@ def process_invoice(file_url, vendor, user_email):
     batch.no_of_invoice = valid_count
 
     batch.total_value_of_all = total_value_all
+    batch.total_value_of_rental_charges = total_rental
+    batch.total_value_of_fleet_charges = total_fleet
+    batch.total_value_of_rto = total_rto
+    batch.total_value_of_insurance = total_insurance
     batch.total_value_of_company_contribution = total_company_contrib
     batch.total_value_of_employee_contribution = total_employee_contrib
-
     batch.save()
     frappe.db.commit()
 
