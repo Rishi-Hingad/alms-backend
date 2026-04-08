@@ -6,10 +6,10 @@
  "editable_grid": 1,
  "engine": "InnoDB",
  "field_order": [
-  "month",
   "from_date",
   "to_date",
   "amount",
+  "month",
   "with_tax",
   "tax",
   "manage_attachments",
@@ -21,6 +21,7 @@
   {
    "fieldname": "month",
    "fieldtype": "Select",
+   "hidden": 1,
    "in_list_view": 1,
    "label": "Month",
    "options": "\nJanuary\nFebruary\nMarch\nApril\nMay\nJune\nJuly\nAugust\nSeptember\nOctober\nNovember\nDecember"
@@ -56,6 +57,7 @@
    "default": "0",
    "fieldname": "with_tax",
    "fieldtype": "Check",
+   "hidden": 1,
    "label": "With Tax"
   },
   {
@@ -63,18 +65,21 @@
    "description": "(%)",
    "fieldname": "tax",
    "fieldtype": "Percent",
+   "hidden": 1,
    "label": "Tax"
   },
   {
    "default": "Unpaid",
    "fieldname": "payment_status",
    "fieldtype": "Select",
+   "hidden": 1,
    "label": "Payment Status",
    "options": "Unpaid\nPaid"
   },
   {
    "fieldname": "manage_attachments",
    "fieldtype": "Button",
+   "hidden": 1,
    "label": "Attachments"
   },
   {
@@ -90,7 +95,7 @@
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2025-09-15 12:06:03.397371",
+ "modified": "2026-04-08 15:11:52.689952",
  "modified_by": "Administrator",
  "module": "Lease Management System",
  "name": "Invoice Documents",

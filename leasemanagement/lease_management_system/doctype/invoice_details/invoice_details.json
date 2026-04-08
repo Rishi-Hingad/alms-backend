@@ -8,8 +8,11 @@
   "vendor_name",
   "batch_name",
   "column_break_pgcx",
-  "excel_file",
+  "company",
   "batch_date",
+  "column_break_txtk",
+  "excel_file",
+  "invoice_attachment",
   "section_break_ibxf",
   "rows",
   "section_break_ldkz",
@@ -20,7 +23,6 @@
   "total_value_of_insurance",
   "section_break_xhlm",
   "total_value_of_all",
-  "invoice_attachment",
   "column_break_tohu",
   "total_value_of_company_contribution",
   "total_value_of_employee_contribution",
@@ -128,12 +130,21 @@
    "fieldname": "batch_name",
    "fieldtype": "Data",
    "label": "Batch Name"
+  },
+  {
+   "fieldname": "company",
+   "fieldtype": "Data",
+   "label": "Company"
+  },
+  {
+   "fieldname": "column_break_txtk",
+   "fieldtype": "Column Break"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-04-02 14:58:01.580550",
+ "modified": "2026-04-08 15:13:22.491850",
  "modified_by": "Administrator",
  "module": "Lease Management System",
  "name": "Invoice Details",
