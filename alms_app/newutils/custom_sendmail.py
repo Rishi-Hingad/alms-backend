@@ -1,4 +1,3 @@
-from apps.alms_app.alms_app.alms.doctype.alms_settings import alms_settings
 import frappe
 import smtplib
 from email.message import EmailMessage
