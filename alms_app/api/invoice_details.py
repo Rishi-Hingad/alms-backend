@@ -41,8 +41,13 @@ def get_invoice_batch_details(batch_date=None, vendor_name=None, name=None):
         )
 
         if not batch_names:
-            response = []
-            
+            message = f"No Invoice Batch available for this particular {batch_date}."
+
+            response = {
+                "message": message,
+                "data": []
+            }
+
             log.response_data = json.dumps(response)
             log.status_code = 200
             log.status = "Success"
