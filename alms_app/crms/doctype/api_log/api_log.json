@@ -1,16 +1,15 @@
 {
  "actions": [],
  "allow_rename": 1,
- "autoname": "format:Log-{invoice_batch_doc}",
  "creation": "2026-03-29 23:16:52.726693",
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
   "details_section",
   "api_url",
-  "invoice_batch_doc",
-  "column_break_twrp",
   "api_method",
+  "column_break_twrp",
+  "invoice_batch_doc",
   "api_body_section",
   "api_json_body",
   "response_info_section",
@@ -121,11 +120,11 @@
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-04-07 14:40:29.975761",
+ "modified": "2026-04-10 11:26:16.455310",
  "modified_by": "Administrator",
  "module": "CRMS",
  "name": "API Log",
- "naming_rule": "Expression",
+ "naming_rule": "By script",
  "owner": "Administrator",
  "permissions": [
   {
