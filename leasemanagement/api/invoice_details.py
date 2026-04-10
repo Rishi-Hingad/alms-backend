@@ -34,6 +34,9 @@ def insert_invoice_batch_data():
 
 	required_fields = {
 		"vendor_name": "Vendor Name",
+		"company": "Company",
+		"batch_name": "Batch Name",
+		"batch_date": "Batch Date",
 		"total_value_of_rental_charges": "Total Rental Charges",
 		"total_value_of_fleet_charges": "Total Fleet Charges",
 		"total_value_of_rto": "Total RTO",
@@ -56,7 +59,9 @@ def insert_invoice_batch_data():
 		frappe.throw(f"Missing required fields: {', '.join(missing_fields)}", frappe.ValidationError)
 
 	vendor_name = form.get("vendor_name", "")
-	# return vendor_name
+	company = form.get("company", "")
+	batch_name = form.get("name", "")
+	batch_date = form.get("batch_date", "")
 	total_rental = form.get("total_value_of_rental_charges", "")
 	total_fleet = form.get("total_value_of_fleet_charges", "")
 	total_rto = form.get("total_value_of_rto", "")
@@ -92,6 +97,9 @@ def insert_invoice_batch_data():
 	doc = frappe.new_doc("Invoice Details")
 
 	doc.vendor_name = vendor_name
+	doc.company = company
+	doc.batch_name = batch_name
+	doc.batch_date = batch_date
 	doc.excel_file = excel_saved.file_url
 	doc.invoice_attachment = pdf_saved.file_url if pdf_saved else None
 	doc.total_value_of_rental_charges = total_rental
@@ -133,7 +141,7 @@ def insert_invoice_batch_data():
 	# 6. Return success response
 	# ------------------------------------------------------------------
 	return {
-		"message": "Invoice Details created successfully",
+		"message": "Invoice Details Created Successfully",
 		"invoice_name": doc.name,
 		"excel_file_url": excel_saved.file_url,
 		"invoice_attachment_url": pdf_saved.file_url if pdf_saved else None,
@@ -151,6 +159,7 @@ def map_invoice_row(row):
 	return {
 		"contract_number": row.get("contract_number"),
 		"company": row.get("company"),
+		"company_code": "",
 		# "employee_code": row.get("employee_name"),  # ⚠️ confirm this mapping
 		"employee_code": "",
 		"cost_center": row.get("cost_center"),

@@ -31,7 +31,7 @@ def fetch_invoice(batch_date):
 		# data = {
 		# 	"message": [
 		# 		{
-		# 			"name": "BATCH-990",
+		# 			"name": "BATCH-New-01",
 		# 			"batch_date": "2026-05-01",
 		# 			"vendor_name": "PQR Vendor",
 		# 			"company": "PQR Pvt Ltd",
@@ -184,6 +184,26 @@ def _upsert_invoice_batch(batch):
 	total_all = float(batch.get("total_value_of_all", 0) or 0)
 	rows = batch.get("rows", [])
 
+	excel_file_url = None
+	invoice_attach_url = None
+
+	excel_data = batch.get("excel_file")  # {"file_name": "...", "content": "<base64>"}
+	pdf_data = batch.get("invoice_attachment")  # same structure or null
+
+	if excel_data and excel_data.get("content"):
+		excel_file_url = _save_base64_file(
+			file_name=excel_data["file_name"],
+			b64_content=excel_data["content"],
+			doctype="Invoice Details",
+		)
+
+	if pdf_data and pdf_data.get("content"):
+		invoice_attach_url = _save_base64_file(
+			file_name=pdf_data["file_name"],
+			b64_content=pdf_data["content"],
+			doctype="Invoice Details",
+		)
+
 	# ------------------------------------------------------------------
 	# Step 2: Check if record already exists
 	# ------------------------------------------------------------------
@@ -215,6 +235,12 @@ def _upsert_invoice_batch(batch):
 		doc.total_value_of_company_contribution = total_co
 		doc.total_value_of_employee_contribution = total_emp
 
+		# Attach files if decoded successfully
+		if excel_file_url:
+			doc.excel_file = excel_file_url
+		if invoice_attach_url:
+			doc.invoice_attachment = invoice_attach_url
+
 		for row in rows:
 			doc.append("rows", map_invoice_row(row))
 
@@ -222,6 +248,12 @@ def _upsert_invoice_batch(batch):
 
 		doc.insert(ignore_permissions=True)
 		frappe.db.commit()
+
+		# Link file records to the new doc
+		if excel_file_url:
+			_relink_file_to_doc(excel_file_url, "Invoice Details", doc.name)
+		if invoice_attach_url:
+			_relink_file_to_doc(invoice_attach_url, "Invoice Details", doc.name)
 
 		# Run lease linking (same as your existing flow)
 		_link_invoice_to_lease(doc)
@@ -285,3 +317,44 @@ def _fill_missing_dates(doc):
 		if (invoice_from is None or invoice_to is None) and billing:
 			child.invoice_from_date = billing
 			child.invoice_to_date = billing + relativedelta(day=31)
+
+
+def _save_base64_file(file_name: str, b64_content: str, doctype: str, is_private: int = 1):
+	"""
+	Decode a base64 string and save it as a Frappe File doc.
+	Returns the file_url on success, or None on failure.
+	"""
+	import base64
+
+	try:
+		content = base64.b64decode(b64_content)
+	except Exception:
+		frappe.log_error(title=f"Base64 decode failed for {file_name}", message=frappe.get_traceback())
+		return None
+
+	file_doc = frappe.new_doc("File")
+	file_doc.file_name = file_name
+	file_doc.is_private = is_private
+	file_doc.attached_to_doctype = doctype
+	file_doc.attached_to_name = "temp"  # re-linked after parent doc is saved
+	file_doc.content = content
+	file_doc.save(ignore_permissions=True)
+
+	return file_doc.file_url
+
+
+def _relink_file_to_doc(file_url: str, doctype: str, docname: str):
+	"""
+	After the parent doc is inserted, point the File record at it.
+	"""
+	file_name = frappe.db.get_value("File", {"file_url": file_url}, "name")
+	if file_name:
+		frappe.db.set_value(
+			"File",
+			file_name,
+			{
+				"attached_to_doctype": doctype,
+				"attached_to_name": str(docname),
+			},
+		)
+		frappe.db.commit()

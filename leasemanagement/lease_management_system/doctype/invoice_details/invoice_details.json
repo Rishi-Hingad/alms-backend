@@ -5,6 +5,9 @@
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
+  "section_break_xogk",
+  "invoice_name",
+  "section_break_jlmt",
   "vendor_name",
   "batch_name",
   "column_break_pgcx",
@@ -139,12 +142,26 @@
   {
    "fieldname": "column_break_txtk",
    "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "section_break_jlmt",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "section_break_xogk",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "invoice_name",
+   "fieldtype": "Data",
+   "label": "Invoice Name",
+   "read_only": 1
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-04-08 15:13:22.491850",
+ "modified": "2026-04-10 12:52:19.867166",
  "modified_by": "Administrator",
  "module": "Lease Management System",
  "name": "Invoice Details",
