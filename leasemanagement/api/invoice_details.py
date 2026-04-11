@@ -7,7 +7,7 @@ from frappe.utils import getdate
 from frappe.utils.file_manager import save_file
 
 
-@frappe.whitelist(allow_guest=True)
+@frappe.whitelist()
 def insert_invoice_batch_data():
 	# ------------------------------------------------------------------
 	# 1. Read uploaded files from multipart form

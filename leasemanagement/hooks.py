@@ -50,6 +50,13 @@ app_include_js = ["/assets/leasemanagement/js/invoice_dialog.js"]
 #         "leasemanagement.lease_management_system.doctype.lease_management.lease_management.daily_lease_status_update"
 #     ]
 # }
+scheduler_events = {
+	"cron": {
+		"0 0 * * *": [  # Runs at 12:00 AM daily
+			"leasemanagement.api.fetch_invoice_details.run_daily_invoice_fetch"
+		]
+	}
+}
 
 # doc_events = {
 #     "User": {

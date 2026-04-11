@@ -26,8 +26,6 @@ class InvoiceDetails(Document):
 
 		self.name = make_autoname(prefix + ".###")
 
-		self.invoice_name = self.name
-
 	def validate(self):
 		parent_code = self.name
 

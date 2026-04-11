@@ -1,7 +1,7 @@
 import frappe
 import requests
 from dateutil.relativedelta import relativedelta
-from frappe.utils import getdate
+from frappe.utils import getdate, nowdate
 
 from leasemanagement.api.invoice_details import _link_invoice_to_lease, map_invoice_row
 
@@ -358,3 +358,15 @@ def _relink_file_to_doc(file_url: str, doctype: str, docname: str):
 			},
 		)
 		frappe.db.commit()
+
+
+def run_daily_invoice_fetch():
+	"""
+	Scheduler entry point — runs daily at midnight
+	"""
+	try:
+		batch_date = nowdate()  # YYYY-MM-DD (current date)
+		fetch_invoice(batch_date)
+
+	except Exception:
+		frappe.log_error("Daily Invoice Scheduler Failed", frappe.get_traceback())
