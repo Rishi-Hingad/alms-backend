@@ -22,6 +22,12 @@ def management(current_frappe_user):
         return designation_record.designation
     else:
         return None
+
+@frappe.whitelist()
+def check_purchase_form_exists(employee_name):
+    return frappe.db.exists("Purchase Team Form", {
+        "employee_name": employee_name
+    })
     
 @frappe.whitelist()
 def daily_pending_indent_email_reminder():
