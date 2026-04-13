@@ -1500,6 +1500,8 @@ class EmailServices:
         """
         print("---------HIT-----")
         selected_vendors = {v.lower().strip() for v in payload.get("email_send_to", [])}
+        print("-------------------------------[PAYLOAD]----------------------", payload)
+        print("-------------------------------[VENDORS SELECTED]----------------------", selected_vendors)
         email_phase = payload.get("email_phase")
 
         # Fetch vendors and forms
@@ -1511,7 +1513,8 @@ class EmailServices:
         sent_this_run = set()  # Track emails sent in this function call
 
         # Determine if "All" was selected
-        send_to_all = len(selected_vendors) == len(all_vendors)
+        # send_to_all = len(selected_vendors) == len(all_vendors)
+        send_to_all = payload.get("send_to_all")
 
         # If All was selected and already sent, skip everything
         if send_to_all and car_purchase_form.email_sent_to_all:
@@ -1519,7 +1522,7 @@ class EmailServices:
             return
 
         for vendor in all_vendors:
-            vendor_name = (vendor.company_name or "").strip()
+            vendor_name = (vendor.name or "").strip()
             vendor_name_lower = vendor_name.lower()
             email = (vendor.contact_email or "").strip()
 
@@ -1569,31 +1572,27 @@ class EmailServices:
             emails_sent.append(f"<li>{vendor_name} &lt;{email}&gt;</li>")
             sent_this_run.add(vendor_name_lower)
 
-            # Immediately update persistent flags to prevent duplicates
-            if send_to_all:
-                car_purchase_form.email_sent_to_all = 1
-            elif vendor_name_lower == "ald":
-                car_purchase_form.email_sent_to_ald = 1
-            elif vendor_name_lower == "eazy assets":
-                car_purchase_form.email_sent_to_eazy_assets = 1
+        # Immediately update persistent flags to prevent duplicates
+        if send_to_all:
+            car_purchase_form.email_sent_to_all = 1
+        elif vendor_name_lower == "ald":
+            car_purchase_form.email_sent_to_ald = 1
+        elif vendor_name_lower == "eazy assets":
+            car_purchase_form.email_sent_to_eazy_assets = 1
 
-            car_purchase_form.save(ignore_permissions=True)
-            frappe.db.commit()
+        car_purchase_form.save(ignore_permissions=True)
+        frappe.db.commit()
 
         if emails_sent:
-            frappe.msgprint(f"<b>Emails sent successfully to:</b><ul>{''.join(emails_sent)}</ul>")
+            return {
+                "status": "success",
+                "message": f"Emails sent successfully to: {', '.join([v for v in selected_vendors])}"
+            }
         else:
-            frappe.msgprint("No matching vendors found or emails already sent.")
-
-
-
-
-
-
-
-
-
-
+            return {
+                "status": "info",
+                "message": "No matching vendors found or emails already sent."
+            }
 
 
     # "-------------------------------------" EMAIL BODY COMPANY SELECTION EMAILS "-------------------------------------"

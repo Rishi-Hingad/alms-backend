@@ -3,7 +3,11 @@ from alms_app.api.emailClass import EmailServices
 import json
 import traceback
 
+
+
 Email = EmailServices()
+
+
 @frappe.whitelist(allow_guest=True)
 def email_sender(name, email_send_to=None, car_indent_form_name=None, payload=None):
     try:
@@ -46,7 +50,7 @@ def email_sender(name, email_send_to=None, car_indent_form_name=None, payload=No
             Email.acknowledgement_email(user,"Purchase Department","Finance Department")
             
         elif email_send_to == "FinanceHead To Quotation Company":
-            Email.for_car_quotation_ALD_EazyAssets_Xyz(user,payload)
+            return Email.for_car_quotation_ALD_EazyAssets_Xyz(user,payload)
             
         elif email_send_to =="FinanceTeam To FinanceHead":
             Email.for_finance_team_to_finance_head(user) 
