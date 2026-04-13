@@ -47,7 +47,7 @@ function promptAction(label) {
 ================================ */
 
 function buildStatusButtons(frm, role) {
-    frm.clear_custom_buttons();
+    // frm.clear_custom_buttons();
 
     const config = [
         {
@@ -73,9 +73,9 @@ function buildStatusButtons(frm, role) {
     ];
 
     const permissions = {
-        "Purchase": ["purchase_team_status"],
-        "Purchase Head": ["purchase_head_status"],
-        "Administrator": ["purchase_team_status", "purchase_head_status"]
+        "purchase": ["purchase_team_status"],
+        "purchase head": ["purchase_head_status"],
+        "administrator": ["purchase_team_status", "purchase_head_status"]
     };
 
     config.forEach(stage => {
@@ -91,7 +91,7 @@ function buildStatusButtons(frm, role) {
                 }
 
                 if (
-                    role !== "Administrator" &&
+                    role !== "administrator" &&
                     stage.depends_on &&
                     frm.doc[stage.depends_on] !== "Approved"
                 ) {
@@ -242,7 +242,7 @@ async function openQuotationDialog(frm) {
 ================================ */
 
 function addVendorButton(frm, role) {
-    if (!["Finance", "Administrator"].includes(role)) return;
+    if (!["finance", "administrator"].includes(role)) return;
 
     const isApproved =
         frm.doc.purchase_team_status === "Approved" &&
@@ -379,14 +379,28 @@ function addVendorButton(frm, role) {
 /* ================================
    🔹 MAIN UI ENTRY
 ================================ */
+function applyAdminOverrides(frm, role) {
+    if (role === "administrator") {
+        frm.set_df_property("purchase_team_status", "read_only", false);
+        frm.set_df_property("purchase_head_status", "read_only", false);
+
+        frm.set_df_property("purchase_team_remarks", "read_only", false);
+        frm.set_df_property("purchase_head_remarks", "read_only", false);
+    }
+}
 
 async function updateUI(frm) {
+
     const r = await getUserDesignation();
-    const role = r.message;
+    const role = (r.message || "").trim().toLowerCase();
+    frm.clear_custom_buttons();
+
+
+    applyAdminOverrides(frm, role);
 
     buildStatusButtons(frm, role);
 
-    if (["Finance", "Administrator", "Finance Head"].includes(role)) {
+    if (["finance", "administrator", "finance head"].includes(role)) {
         frm.add_custom_button("Compare Quotations", () => openQuotationDialog(frm));
     }
 
