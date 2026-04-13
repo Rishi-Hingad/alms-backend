@@ -90,7 +90,11 @@ function buildStatusButtons(frm, role) {
                     return;
                 }
 
-                if (stage.depends_on && frm.doc[stage.depends_on] !== "Approved") {
+                if (
+                    role !== "Administrator" &&
+                    stage.depends_on &&
+                    frm.doc[stage.depends_on] !== "Approved"
+                ) {
                     frappe.msgprint("Previous stage must be approved first.");
                     return;
                 }
@@ -281,13 +285,9 @@ function addVendorButton(frm, role) {
             primary_action_label: "Send Email",
             primary_action: async (values) => {
 
-                let selected = [];
-
-                if (values.select_all) {
-                    selected = res.map(v => v.name);
-                } else {
-                    selected = values.vendors || [];
-                }
+                let selected = values.select_all
+                    ? res.map(v => v.name)
+                    : (values.vendors || []);
 
                 if (!selected.length) {
                     frappe.msgprint("Select at least one vendor.");
@@ -298,6 +298,18 @@ function addVendorButton(frm, role) {
                 btn.prop("disabled", true).html("Sending...");
 
                 try {
+                    frappe.show_alert({
+                        message: "Saving document...",
+                        indicator: "blue"
+                    });
+
+                    await frm.save();
+
+                    frappe.show_alert({
+                        message: "Sending emails...",
+                        indicator: "orange"
+                    });
+
                     await sendEmailSafe(
                         frm.doc.name,
                         "FinanceHead To Quotation Company",
@@ -306,13 +318,27 @@ function addVendorButton(frm, role) {
                             send_to_all: values.select_all ? 1 : 0
                         }
                     );
-                    await frm.save();
-                    frappe.msgprint("Emails sent successfully.");
+
+                    frappe.show_alert({
+                        message: "Emails sent successfully",
+                        indicator: "green"
+                    });
+
                     dialog.hide();
-                    updateUI(frm);
+
+                    await frm.reload_doc();
 
                 } catch (e) {
-                    frappe.msgprint("Failed to send emails.");
+
+                    console.error(e);
+
+                    frappe.msgprint({
+                        title: "Error",
+                        indicator: "red",
+                        message: "Something failed while sending emails."
+                    });
+
+                } finally {
                     btn.prop("disabled", false).text("Send Email");
                 }
             }
