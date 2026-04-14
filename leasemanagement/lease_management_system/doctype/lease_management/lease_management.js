@@ -539,28 +539,28 @@ frappe.ui.form.on("Lease Management", {
 		//         frappe.validated = false;  // prevent save
 		//     }
 		// }
-		const invoice_rows = frm.doc.invoice_details || [];
-		const attachments = frm.doc.invoice_attachments || [];
+		// const invoice_rows = frm.doc.invoice_details || [];
+		// const attachments = frm.doc.invoice_attachments || [];
 		let escalation = frm.doc.escalation || [];
 
-		for (let i = 0; i < invoice_rows.length; i++) {
-			const row = invoice_rows[i];
+		// for (let i = 0; i < invoice_rows.length; i++) {
+		// 	const row = invoice_rows[i];
 
-			// Match based on custom_row_id (mapped via your button logic)
-			const matching_attachments = attachments.filter(
-				(att) => att.invoice_row === row.custom_row_id
-			);
+		// 	// Match based on custom_row_id (mapped via your button logic)
+		// 	const matching_attachments = attachments.filter(
+		// 		(att) => att.invoice_row === row.custom_row_id
+		// 	);
 
-			if (matching_attachments.length === 0) {
-				frappe.throw(
-					`Please add at least one attachment for the invoice row ${
-						i + 1
-					} (${frappe.datetime.str_to_user(
-						row.from_date
-					)} - ${frappe.datetime.str_to_user(row.to_date)}).`
-				);
-			}
-		}
+		// 	if (matching_attachments.length === 0) {
+		// 		frappe.throw(
+		// 			`Please add at least one attachment for the invoice row ${
+		// 				i + 1
+		// 			} (${frappe.datetime.str_to_user(
+		// 				row.from_date
+		// 			)} - ${frappe.datetime.str_to_user(row.to_date)}).`
+		// 		);
+		// 	}
+		// }
 		// if (escalation.length === 0) return;
 
 		let consecutivePerAnnum = 0;
