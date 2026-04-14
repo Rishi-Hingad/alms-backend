@@ -3,6 +3,7 @@ frappe.ready(function () {
     const employeeDetails = params.get("employee_details");
 
     if (!employeeDetails) return;
+    add_upload_button();
 
     frappe.call({
         method: "alms_app.crms.web_form.vendor_assets_quotation.vendor_assets_quotation.get_vendor_quotation",
@@ -55,3 +56,72 @@ frappe.ready(function () {
         }
     });
 });
+
+function add_upload_button() {
+    const interval = setInterval(() => {
+
+        const form = $("form:visible").first();
+
+        if (form.length) {
+            clearInterval(interval);
+
+            // Prevent duplicate
+            if ($("#upload-excel-btn").length) return;
+
+            const btn = $(`
+                <div id="upload-excel-btn" style="margin-bottom: 15px;">
+                    <button class="btn btn-primary" type="button">
+                        Upload Quotation in Excel format
+                    </button>
+                </div>
+            `);
+
+            form.prepend(btn);
+
+            btn.on("click", function () {
+                open_excel_uploader();
+            });
+
+            console.log("✅ Button successfully added to form");
+        }
+
+    }, 500);
+}
+
+function open_excel_uploader() {
+    new frappe.ui.FileUploader({
+        allow_multiple: false,
+        as_dataurl: false,
+        restrictions: {
+            allowed_file_types: ['.xls', '.xlsx']
+        },
+        on_success: function(file) {
+            console.log("Uploaded File:", file);
+
+            // file.file_url is what you need
+            process_excel(file.file_url);
+        }
+    });
+}
+
+
+function process_excel(file_url) {
+    frappe.call({
+        method: "alms_app.api.car_quotation.process_vendor_excel",
+        args: {
+            file_url: file_url
+        },
+        callback: function (r) {
+            if (r.message) {
+                frappe.msgprint({
+                    title: "Success",
+                    indicator: "green",
+                    message: "Excel processed successfully!"
+                });
+
+                // Optional: auto-fill form after upload
+                // location.reload();
+            }
+        }
+    });
+}

@@ -1,42 +1,3 @@
-# import frappe
-
-# def get_context(context):
-#     return context
-
-
-# @frappe.whitelist(allow_guest=True)
-# def get_vendor_quotation(employee_details):
-#     """
-#     Fetch Purchase Team Form.quotation_document
-#     and update Car Quotation.revised_quotation_vendor
-#     """
-#     file_url = frappe.db.get_value(
-# 		"Purchase Team Form",
-# 		employee_details,   # docname
-# 		"revised_quotation_attachment_need_to_be_done"
-# 	)
-
-
-#     if not file_url:
-#         return None
-
-#     # --- Update Car Quotation also ---
-#     car_quotation_name = frappe.db.get_value(
-#         "Car Quotation",
-#         {"employee_details": employee_details},
-#         "name"
-#     )
-#     if car_quotation_name:
-#         frappe.db.set_value(
-#             "Car Quotation",
-#             car_quotation_name,
-#             "revised_quotation_vendor",
-#             file_url
-#         )
-#         frappe.db.commit()
-
-#     return frappe.utils.get_url(file_url)
-
 import frappe
 import shutil
 
@@ -71,6 +32,7 @@ def get_vendor_quotation(employee_details):
         return None
 
     record = doc[0]
+    print(record)
 
     mapped = {
         "financed_amount": record.get("revised_financed_amount") or 0,
