@@ -419,7 +419,14 @@ frappe.ui.form.on("Purchase Team Form", {
 
     onload(frm) {
         frm.set_df_property("status", "read_only", true);
-    }
+    },
+    kilometers_per_year: calculateTotals,
+    tenure_in_years: calculateTotals,
+    revised_ex_show_room_price: calculateTotals,
+    revised_tcs: calculateTotals,
+    revised_discount: calculateTotals,
+    revised_accessories: calculateTotals,
+    revised_registration_charges: calculateTotals
 });
 
 /* ================================
