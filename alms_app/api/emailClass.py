@@ -1108,7 +1108,7 @@ class EmailServices:
     
     #reject deduction
     def for_reject_deduction_by_finance_head(self,user,payload):
-        recipient_email = emailMaster.finance_team_email
+        recipient_email = emailMaster.finance_team_emails
         print("accounts email---->",recipient_email)
         form = frappe.get_doc("Company and Employee Deduction",user.name)
         print("deduction done +++++++++++++++++++++++++++++++++++++++++")
@@ -1220,7 +1220,9 @@ class EmailServices:
         self.send(subject,recipient_email,body)
        
     def for_finance_fill_quotation_acknowledgement(self, user,regards=""):
-        recipient_email = emailMaster.finance_team_email
+        print("inside finance acknowledgement email function------------------")
+        recipient_email = emailMaster.finance_team_emails
+        print("Finance team email---->",recipient_email)
         subject = f"""Car Quotation Form Fiiled by {regards}"""
         
         
@@ -1703,7 +1705,7 @@ class EmailServices:
         recipient_email=vendor.contact_email
         subject=f"""{vendor.company_name} Car Quotation Rejected by Finance Head"""
         remarks_by="finance_head_remarks"
-        cc_list=[emailMaster.finance_head2_email, emailMaster.finance_team_email]
+        cc_list=[emailMaster.finance_head2_email, emailMaster.finance_team_emails]
 
         content = f"""
         Dear {vendor.company_name},
