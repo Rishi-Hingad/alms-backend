@@ -13,12 +13,13 @@ def on_update_invoice(doc, method):
 	if doc.payment_status == "Paid" and old_status != "Paid":
 		payload = {"doctype_name": doc.batch_name, "payment_status": doc.payment_status}
 		try:
-			API_KEY = "aa73190b237609d"
-			API_SECRET = "f4fd964e0ffabd7"
+			api_key = frappe.conf.car_leasing_api_key
+			api_secret = frappe.conf.car_leasing_api_secret
+			api_url = frappe.conf.car_leasing_payment_api_base_url
 			response = requests.post(
-				"https://carleasing-dev.bilakhiagroup.com/api/method/alms_app.api.payment_status.update_payment_status",
+				api_url,
 				json=payload,
-				headers={"Authorization": f"token {API_KEY}:{API_SECRET}"},
+				headers={"Authorization": f"token {api_key}:{api_secret}"},
 				timeout=10,
 			)
 			if response.status_code != 200:

@@ -13,13 +13,14 @@ def fetch_invoice(batch_date):
 	payload = {"batch_date": batch_date}
 
 	try:
-		API_KEY = "aa73190b237609d"
-		API_SECRET = "f4fd964e0ffabd7"
+		api_key = frappe.conf.car_leasing_api_key
+		api_secret = frappe.conf.car_leasing_api_secret
+		api_url = frappe.conf.car_leasing_invoice_batch_api_base_url
 
 		response = requests.post(
-			"https://carleasing-dev.bilakhiagroup.com/api/method/alms_app.api.invoice_details.get_invoice_batch_details",
+			api_url,
 			json=payload,
-			headers={"Authorization": f"token {API_KEY}:{API_SECRET}"},
+			headers={"Authorization": f"token {api_key}:{api_secret}"},
 			timeout=15,
 		)
 
@@ -149,7 +150,15 @@ def fetch_invoice(batch_date):
 		# 	]
 		# }
 		# data = {"message":[]}
-		batches = data.get("message", [])
+		# batches = data.get("message", [])
+		message = data.get("message")
+
+		# If API returned error message (string)
+		if isinstance(message, str):
+			return {"status": "Ok", "message": message, "results": []}
+
+		# If it's valid data (list)
+		batches = message if isinstance(message, list) else []
 
 		if not batches:
 			return {"status": "Ok", "message": "No Batches returned for this date.", "results": []}
