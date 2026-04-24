@@ -18,7 +18,7 @@
  "is_hidden": 0,
  "label": "Account Dashboard",
  "links": [],
- "modified": "2026-04-04 11:18:06.579153",
+ "modified": "2026-04-24 10:48:00.275175",
  "modified_by": "Administrator",
  "module": "Lease Management System",
  "name": "Account Dashboard",
@@ -77,9 +77,12 @@
  "roles": [
   {
    "role": "Accounts"
+  },
+  {
+   "role": "System Manager"
   }
  ],
- "sequence_id": 7.0,
+ "sequence_id": 1.0,
  "shortcuts": [
   {
    "color": "Grey",

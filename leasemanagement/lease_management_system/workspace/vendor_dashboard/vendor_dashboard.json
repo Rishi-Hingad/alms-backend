@@ -12,7 +12,7 @@
  "is_hidden": 0,
  "label": "Vendor Dashboard",
  "links": [],
- "modified": "2025-11-04 15:16:44.417982",
+ "modified": "2026-04-24 10:48:01.371114",
  "modified_by": "Administrator",
  "module": "Lease Management System",
  "name": "Vendor Dashboard",
@@ -55,7 +55,7 @@
    "role": "Vendor"
   }
  ],
- "sequence_id": 28.0,
+ "sequence_id": 7.0,
  "shortcuts": [
   {
    "color": "Grey",
