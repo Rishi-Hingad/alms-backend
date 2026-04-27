@@ -1,6 +1,9 @@
+from alms_app.api.emailClass import EmailServices
 import frappe
 from frappe.model.document import Document
 from frappe import _
+
+Email = EmailServices()
 
 class CarIndentForm(Document):    
     def validate(self):
@@ -13,6 +16,9 @@ class CarIndentForm(Document):
         self.net_ex_room_price = self.ex_showroom_price - self.discount + self.tcs
 
         self.financed_amount = self.net_ex_room_price + self.registration_charges + self.accessories
+    
+    def after_insert(self):
+        Email.for_employee_to_reporting(self.employee_code, self.name)
 
 @frappe.whitelist(allow_guest=True)
 def management(current_frappe_user):
@@ -68,12 +74,6 @@ def get_email_by_designation(designation):
     # Assuming you have Employee or User records tagged by designation
     user = frappe.db.get_value("User", {"designation": designation, "enabled": 1}, "email")
     return user
-
-
-
-
-
-
 
 @frappe.whitelist()
 def can_view_car_indent_list():

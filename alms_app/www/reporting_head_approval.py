@@ -1,5 +1,6 @@
 import frappe
 from frappe.utils import now, get_datetime
+from frappe import _
 
 @frappe.whitelist(allow_guest=True)
 def get_car_indent_data(indent_form_id):
@@ -52,7 +53,7 @@ def get_car_indent_data(indent_form_id):
             }
         
         # Check approval status
-        approval_status = getattr(form_data, 'approval_status', 'Pending')
+        approval_status = getattr(form_data, 'reporting_head_approval', 'Pending')
         is_approved = approval_status in ['Approved', 'Rejected']
         
         # Prepare response data
@@ -74,9 +75,9 @@ def get_car_indent_data(indent_form_id):
                 "company_name": user.company,
                 "designation": user.designation,
                 "eligibility": str(user.eligibility),
-                "approval_status": approval_status,
+                "reporting_head_approval": approval_status,
+                "reporting_head_remarks": getattr(form_data, 'reporting_head_remarks', ''),
                 "is_approved": is_approved,
-                "approval_remarks": getattr(form_data, 'approval_remarks', ''),
                 "approved_by": getattr(form_data, 'approved_by', ''),
                 "approval_date": str(getattr(form_data, 'approval_date', '')) if getattr(form_data, 'approval_date', '') else ''
             }
@@ -99,10 +100,6 @@ def get_car_indent_data(indent_form_id):
             "message": f"An error occurred: {str(e)}"
         }
     
-import frappe
-from frappe.utils import now, get_datetime
-from frappe import _
-
 def get_context(context):
     """
     Enhanced context with aggressive cache prevention for production

@@ -358,3 +358,13 @@ function checkAndSendEmail(frm) {
     });
     console.log("API method for send mail to repoarting head is successfully called!!!!!!!!!!!")
 }
+
+frappe.ui.form.on("Car Indent Form", {
+    refresh: function (frm) {
+        if (frappe.session.user !== "Administrator") {
+            frm.set_df_property("approval_token", "hidden", 1);
+        } else {
+            frm.set_df_property("approval_token", "hidden", 0);
+        }
+    }
+});

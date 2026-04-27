@@ -19,4 +19,4 @@ class PurchaseTeamForm(Document):
 
 		self.revised_net_ex_showroom_price = self.revised_ex_show_room_price - self.revised_discount + self.revised_tcs
 
-		self.revisedd_financed_amount = self.revised_net_ex_showroom_price + self.revised_registration_charges + self.revised_accessories
+		self.revised_financed_amount = self.revised_net_ex_showroom_price + self.revised_registration_charges + self.revised_accessories

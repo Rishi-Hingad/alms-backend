@@ -123,17 +123,8 @@ frappe.ready(function () {
                             }, 2000);
                             reject("Already exists");
                         } else {
-                            frappe.call({
-                                method: "alms_app.crms.web_form.car_indent_form_employee.car_indent_form_employee.send_email_to_reporting_head",
-                                args: { doc: employeeCode },
-                                callback: function () {
-                                    resolve();
-                                },
-                                error: function () {
-                                    frappe.throw("Error sending car indent email.");
-                                    reject("Email error");
-                                }
-                            });
+                            // ✅ Just allow save
+                            resolve();
                         }
                     },
                     error: function () {
