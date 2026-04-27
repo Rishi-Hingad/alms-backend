@@ -1,4 +1,4 @@
-console.log("✅ car_indent_form.js loaded");
+console.log("✅ car_indent_form.js loaded-----");
 
 frappe.ready(function () {
     function getEmployeeCodeFromURL() {

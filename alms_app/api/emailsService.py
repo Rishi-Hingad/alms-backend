@@ -1,12 +1,11 @@
+from pydoc import doc
 import frappe
 from alms_app.api.emailClass import EmailServices
 import json
 import traceback
-
-
+from frappe import _
 
 Email = EmailServices()
-
 
 @frappe.whitelist(allow_guest=True)
 def email_sender(name, email_send_to=None, car_indent_form_name=None, payload=None):
@@ -50,7 +49,7 @@ def email_sender(name, email_send_to=None, car_indent_form_name=None, payload=No
             Email.acknowledgement_email(user,"Purchase Department","Finance Department")
             
         elif email_send_to == "FinanceHead To Quotation Company":
-            return Email.for_car_quotation_ALD_EazyAssets_Xyz(user,payload)
+            return Email.for_car_quotation(user,payload)
             
         elif email_send_to =="FinanceTeam To FinanceHead":
             Email.for_finance_team_to_finance_head(user) 
@@ -115,68 +114,3 @@ def email_sender(name, email_send_to=None, car_indent_form_name=None, payload=No
         # print(f"------------[Error:{e}]---------------")
         return {"status": "error","message":str(e)}
 
-@frappe.whitelist(allow_guest=True)
-def approve_car_indent_by_reporting(indent_form, remarks):
-    try: 
-        user = frappe.get_doc("Employee Master", indent_form)
-        i_form = frappe.get_doc("Car Indent Form", indent_form)
-        
-        i_form.reporting_head_approval = "Approved"
-        i_form.reporting_head_remarks = remarks
-        i_form.db_update()
-        frappe.db.commit()
-
-       
-        print("approve_car_indent_by_reporting ja rha hai +++++++++++++++++++++++")
-        Email.for_reporting_to_hr_team(user) 
-        
-        # Redirect on success
-        frappe.local.response["type"] = "redirect"
-        frappe.local.response["location"] = "/approved"
-        print("llllllllllllllllllllllllllllllllllllllllllllllll")
-    
-    except Exception as e:
-        error_message = str(e)
-        print("Error occurred:", error_message)
-        print("Exception type:", type(e))
-        print("Full Traceback:\n", traceback.format_exc())
-        
-        # Log the error for debugging
-        frappe.log_error(f"Error approving form: {error_message}", "Car Indent Approval Error")
-
-        frappe.local.response["type"] = "redirect"
-        frappe.local.response["location"] = "/somethingwrong"
-        return
-    
-@frappe.whitelist(allow_guest=True)
-def reject_car_indent_by_reporting(indent_form, remarks):
-    try: 
-        user = frappe.get_doc("Employee Master", indent_form)
-        i_form = frappe.get_doc("Car Indent Form", indent_form)
-        
-        i_form.reporting_head_approval = "Rejected"
-        i_form.reporting_head_remarks = remarks
-        i_form.db_update()
-        frappe.db.commit()
-
-       
-        print("approve_car_indent_by_reporting ja rha hai +++++++++++++++++++++++")
-        Email.for_reject_by_reporting(user) 
-        
-        # Redirect on success
-        frappe.local.response["type"] = "redirect"
-        frappe.local.response["location"] = "/approved"
-        print("llllllllllllllllllllllllllllllllllllllllllllllll")
-    
-    except Exception as e:
-        error_message = str(e)
-        print("Error occurred:", error_message)
-        print("Exception type:", type(e))
-        print("Full Traceback:\n", traceback.format_exc())
-        
-        # Log the error for debugging
-        frappe.log_error(f"Error approving form: {error_message}", "Car Indent Approval Error")
-
-        frappe.local.response["type"] = "redirect"
-        frappe.local.response["location"] = "/somethingwrong"
-        return

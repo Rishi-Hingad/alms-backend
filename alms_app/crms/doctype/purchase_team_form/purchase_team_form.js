@@ -14,7 +14,7 @@ function getUserDesignation() {
 function sendEmailSafe(name, type, payload = {}) {
     return frappe.call({
         method: "alms_app.api.emailsService.email_sender",
-        args: {
+        args: { 
             name,
             email_send_to: type,
             payload
