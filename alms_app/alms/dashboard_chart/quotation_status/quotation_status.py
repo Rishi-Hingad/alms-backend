@@ -19,7 +19,7 @@ def get_finance_company_status_chart():
             {
                 "name": "Eazy Assets",
                 "values": [0, 0],  # Default values for Approved and Rejected
-                "color": "#0000FF"  # Blue color for Easy Assets
+                "color": "#0000FF"  # Blue color for Eazy Assets
             },
             {
                 "name": "ALD",

@@ -55,7 +55,7 @@
    "label": "Company",
    "max_length": 0,
    "max_value": 0,
-   "options": "Easy Assets\nALD\nXYZ",
+   "options": "Eazy Assets\nALD\nXYZ",
    "precision": "",
    "read_only": 0,
    "reqd": 0,

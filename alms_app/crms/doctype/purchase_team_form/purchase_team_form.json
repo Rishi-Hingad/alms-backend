@@ -50,7 +50,11 @@
   "email_notifications_section",
   "email_sent_to_all",
   "email_sent_to_ald",
-  "email_sent_to_eazy_assets"
+  "email_sent_to_eazy_assets",
+  "quotation_details_section",
+  "no_of_quotations",
+  "column_break_hhpm",
+  "all_quotations_ref_no"
  ],
  "fields": [
   {
@@ -81,6 +85,7 @@
    "fieldtype": "Column Break"
   },
   {
+   "default": "Pending",
    "fieldname": "status",
    "fieldtype": "Select",
    "label": "Status",
@@ -301,6 +306,26 @@
    "fieldname": "email_notifications_section",
    "fieldtype": "Section Break",
    "label": "Email Notifications"
+  },
+  {
+   "fieldname": "quotation_details_section",
+   "fieldtype": "Section Break",
+   "label": "Quotation Details"
+  },
+  {
+   "fieldname": "no_of_quotations",
+   "fieldtype": "Data",
+   "label": "No. of Quotations"
+  },
+  {
+   "fieldname": "column_break_hhpm",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "all_quotations_ref_no",
+   "fieldtype": "Link",
+   "label": "All Quotations Ref No.",
+   "options": "Selected Vendor"
   }
  ],
  "index_web_pages_for_search": 1,
@@ -314,7 +339,7 @@
    "link_fieldname": "employee_details"
   }
  ],
- "modified": "2026-04-11 18:20:25.371004",
+ "modified": "2026-04-29 10:25:42.169773",
  "modified_by": "Administrator",
  "module": "CRMS",
  "name": "Purchase Team Form",

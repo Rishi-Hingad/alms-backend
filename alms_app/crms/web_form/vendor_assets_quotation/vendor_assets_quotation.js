@@ -1,60 +1,96 @@
 frappe.ready(function () {
+
     const params = new URLSearchParams(window.location.search);
     const employeeDetails = params.get("employee_details");
+    const quotationId = params.get("quotation_id");
+    const isRevised = params.get("is_revised");
+
+    const lockedFields = new Set([
+        "revised_financed_amount",
+        "location",
+        "total_kilometers",
+        "make",
+        "revised_accessories",
+        "revised_discount",
+        "revised_registration_charges",
+        "revised_ex_show_room_price",
+        "revised_net_ex_showroom_price",
+        "tenure_in_years"
+    ]);
 
     if (!employeeDetails) return;
+
     add_upload_button();
 
+    let recordData = null;
+    let formReady = false;
+
+    // fetch data
     frappe.call({
         method: "alms_app.crms.web_form.vendor_assets_quotation.vendor_assets_quotation.get_vendor_quotation",
-        args: { employee_details: employeeDetails },
+        args: {
+            employee_details: employeeDetails,
+            quotation_id: quotationId
+        },
         callback: function (r) {
             if (!r.message) return;
 
-            const record = r.message;
+            recordData = r.message;
 
-            const fieldMap = {
-                "financed_amount": "financed_amount",
-                "location": "location",
-                "total_kms": "total_kms",
-                "variant": "variant",
-                "accessories": "accessories",
-                "discount_excluding_gst": "discount_excluding_gst",
-                "registration_charges": "registration_charges",
-                "ex_showroom_amount": "ex_showroom_amount",
-                "ex_showroom_amount_net_of_discount": "ex_showroom_amount_net_of_discount",
-                "tenure_in_years": "tenure",
-            };
-
-            Object.keys(fieldMap).forEach(key => {
-                const value = record[key] !== undefined ? record[key] : 0;
-                frappe.web_form.set_value(fieldMap[key], value);
-
-                const field = frappe.web_form.get_field(fieldMap[key]);
-                if (field && field.$input) field.$input.prop("readonly", true);
-            });
-
-            if (record.revised_quotation_vendor) {
-                const fieldname = "revised_quotation_vendor";
-                const file_url = record.revised_quotation_vendor;
-                const file_name = record.revised_quotation_vendor_name;
-
-                frappe.web_form.set_value(fieldname, file_url);
-
-                const field = frappe.web_form.get_field(fieldname);
-                if (field) {
-                    field.df.read_only = 1;
-                    field.refresh();
-
-                    if (field.$wrapper) {
-                        field.$wrapper.empty();
-                        const link = $(`<a href="${file_url}" target="_blank">${file_name}</a>`);
-                        field.$wrapper.append(link);
-                    }
-                }
-            }
+            tryFill();
         }
     });
+
+    // hook web form load safely
+    $(document).on("form-rendered", function () {
+        formReady = true;
+        tryFill();
+    });
+
+    // fallback (because Frappe is inconsistent here)
+    setTimeout(() => {
+        formReady = true;
+        tryFill();
+    }, 1500);
+
+    function tryFill() {
+
+        if (!formReady || !recordData) return;
+
+        Object.keys(recordData).forEach(key => {
+
+            const field = frappe.web_form.get_field(key);
+            if (!field) return;
+
+            const value = recordData[key];
+
+            // set value
+            frappe.web_form.set_value(key, value);
+
+            // lock only specific fields
+            if (lockedFields.has(key)) {
+
+                if (field.$input) {
+                    field.$input.prop("readonly", true);
+                }
+
+                if (field.$wrapper) {
+                    field.$wrapper.css({
+                        "pointer-events": "none",
+                        "opacity": "0.85"
+                    });
+                }
+            }
+        });
+
+        // file field
+        if (recordData.revised_quotation_vendor) {
+            frappe.web_form.set_value(
+                "revised_quotation_vendor",
+                recordData.revised_quotation_vendor
+            );
+        }
+    }
 });
 
 function add_upload_button() {
@@ -95,7 +131,7 @@ function open_excel_uploader() {
         restrictions: {
             allowed_file_types: ['.xls', '.xlsx']
         },
-        on_success: function(file) {
+        on_success: function (file) {
             console.log("Uploaded File:", file);
 
             // file.file_url is what you need
@@ -125,3 +161,22 @@ function process_excel(file_url) {
         }
     });
 }
+
+frappe.web_form.after_save = function () {
+
+    const doc = frappe.web_form.doc;
+
+    const params = new URLSearchParams(window.location.search);
+    const isRevised = params.get("is_revised");
+
+    const email_phase = isRevised == "1" ? "Revised" : "Initial";
+
+    console.log("Vendor submitted quotation:", doc.name, "Phase:", email_phase);
+
+    send_email(
+        doc.name,
+        doc.finance_company,
+        doc.finance_company,
+        email_phase
+    );
+};

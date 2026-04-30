@@ -18,6 +18,7 @@ emailMaster = EmailMaster()
 class EmailServices:
 
     def get_bcc_list(self, template_type="All"):
+        print("Getting BCC list for template type:", template_type)
         alms_settings = frappe.get_single("ALMS Settings")
 
         bcc_list = []
@@ -136,12 +137,13 @@ class EmailServices:
             cc_list=cc_list
         )   
 
-    def send_quotations(self, subject, recipient_email, body, cc_list=None):
+    def send_quotations(self, subject, recipient_email, body, cc_list=None, bcc_list=None):
         return self.send(
             subject=subject,
             recipient_email=recipient_email,
             body=body,
-            cc_list=cc_list
+            cc_list=cc_list,
+            bcc_list=bcc_list
         )
     # def send_quotations(self,subject,recipient_email,body, cc_list=None):
     
@@ -331,102 +333,6 @@ class EmailServices:
         print("EXIT BODY FUNCTION")
         return body
     
-    def create_email_body_quot(self, form, revised_form,  quot_form,  user, subject,  content, updated_by, remarks_by,  regards=None, link=None):
-        if not link:
-            link = f"{frappe.utils.get_url()}/login#login"
-        user_eligibility = user.eligibility
-        remark_text = getattr(quot_form, remarks_by, None)
-        print("+++++++++++++++++++++++++remark text found")
-        # changed here, eligibility
-        body = f"""
-        <html>
-        <head>
-            <style>
-                body {{ font-family: Arial, sans-serif; margin: 20px; }}
-                h2 {{ color: #4CAF50; }}
-                p {{ font-size: 16px; }}
-                .button {{
-                    background-color: #4CAF50;
-                    color: white;
-                    padding: 10px 20px;
-                    text-align: center;
-                    text-decoration: none;
-                    display: inline-block;
-                    font-size: 16px;
-                    border-radius: 5px;
-                    margin-top: 20px;
-                }}
-               
-            </style>
-        </head>
-        <body>
-            <h2>{subject}</h2>
-            <p>{content}</p>     
-            <table border="1" cellpadding="5" cellspacing="0">
-           
-            <tbody>
-                <tr>
-                    <td>Company Name</td>
-                    <td>{user.company}</td>
-                </tr>
-                <tr>
-                    <td>Requestor Name</td>
-                    <td>{user.employee_name}</td>
-                </tr>
-                <tr>
-                    <td>Designation</td>
-                    <td>{user.designation}</td>
-                    
-                </tr>
-                <tr>
-                    <td>Vehicle Make & Model</td>
-                    <td>{form.make} - {form.model}</td>
-                </tr>
-                <tr>
-                    <td>Eligibility</td>
-                    <td>{user.eligibility}</td>
-                </tr>
-                <tr>
-                    <td>Net Ex-Showroom Price</td>
-                    <td>{form.net_ex_showroom_price}</td>
-                </tr>
-                <tr>
-                    <td>Revised Financed Amount</td>
-                    <td>{revised_form.revised_financed_amount}</td>
-                </tr>
-                <tr>
-                    <td>EMI (Financing)</td>
-                    <td>{quot_form.emi_financing}</td>
-                </tr>
-                <tr>
-                    <td>Total EMI</td>
-                    <td>{quot_form.total_emi}</td>
-                </tr>
-                
-                <tr>
-                    <td>Remarks</td>
-                    <td>{remark_text}</td>
-                </tr>
-                
-                <tr>
-                    <td>Updated by</td>
-                    <td>{updated_by}</td>
-                </tr>
-                
-            </tbody>
-        </table>
-        
-            <p>
-                <a href={link} class="button"> Login Here </a>
-            </p>
-            <p>If you have any questions, feel free to reach out to us.<a href="mailto:meriltraveldesk@merillife.com">(meriltraveldesk@merillife.com)</a></p>      
-                
-            <p>Best regards,</p>
-            <p>{regards}</p>
-        </body>
-        </html>
-        """
-        return body
 
     def create_email_body_deduction(self,form, revised_form, user,subject, content, updated_by, remarks_by, regards=None, link=f"{frappe.utils.get_url()}/login#login"): 
         remark_text = getattr(revised_form, remarks_by, None)
@@ -891,29 +797,70 @@ class EmailServices:
         # print(body)
         self.send(subject=subject, body=body, recipient_email=recipient_emails)
     
+    def for_finance_head_to_finance_team(self, user, quotation_id):
+
+        recipients = emailMaster.finance_team_emails
+
+        subject = f"Quotation Approved by Finance Head - {quotation_id}"
+
+        body = f"""
+        Quotation {quotation_id} has been approved by Finance Head.
+
+        Please proceed with deduction generation.
+
+        Regards,
+        Finance Head
+        """
+
+        self.send(
+            subject=subject,
+            recipient_email=recipients,
+            body=body,
+            bcc_list=self.get_bcc_list()
+        )
+    
     def for_finance_team_to_finance_head_payload(self, user, payload):
-        print("FInacne Team to Finance Head Payload",payload)
+
+        print("Finance Team to Finance Head Payload", payload)
+        print("Finance Team to Finance Head Payload", user)
 
         recipient_emails = emailMaster.finance_head_emails
-        print("FOR FH TO FT pyload-----",recipient_emails,"+++++++++++++++",recipient_emails)
-        subject = "Car Rental Form Approved by Finance Team"
-        regards ="Finance Team"
-        form = frappe.get_doc("Car Indent Form",user.name)
-        print("form done++++++++++++++++++++++++++++++++++")
-        revised_form = frappe.get_doc("Purchase Team Form",user.name)
-        print("purchase form done +++++++++++++++++++++++++++++++++++++++++")
+
         quot_form = frappe.get_doc("Car Quotation", payload["quotation_id"])
-        print("quot form done +++++++++++++++++++++++++++++++++++++++++", quot_form)
-        updated_by = emailMaster.finance_team
-        remarks_by="finance_team_remarks" #to change here  // finance team remarks // need another form car quotation // to add new fields in email body
-        content = f"""
-        Dear Sir/Madam,
-        <br><br>The Finance Team has approved the car rental form for {user.employee_name}.
-        <br>{updated_by} have approved the request for the activity mentioned below:
-        """
-        body = self.create_email_body_quot(form,revised_form,quot_form,user,subject, content,updated_by,remarks_by,regards) 
-        # print(body)
-        self.send(subject=subject, body=body, recipient_email=recipient_emails)
+        form = frappe.get_doc("Car Indent Form", quot_form.employee_details)
+        revised_form = frappe.get_doc("Purchase Team Form", quot_form.employee_details)
+
+        finance_company = quot_form.finance_company
+        action_by = quot_form.finance_team_action_by
+
+        context = {
+            "company": user.company,
+            "employee_name": user.employee_name,
+            "designation": user.designation,
+            "vehicle": f"{form.make} - {form.model}",
+            "eligibility": user.eligibility,
+            "ex_showroom": form.net_ex_showroom_price,
+            "revised_amount": revised_form.revised_financed_amount,
+            "emi_finance": quot_form.emi_financing,
+            "total_emi": quot_form.total_emi,
+            "remarks": getattr(quot_form, "finance_team_remarks", "-"),
+            "finance_company": finance_company,
+            "action_by": action_by,
+            "link": f"{frappe.utils.get_url()}/login#login",
+            "regards": "Finance Team"
+        }
+
+        template = frappe.get_doc("Email Template", "Car Quotation Finance Team to Finance Head Approval")
+        subject = frappe.render_template(template.subject, context)
+        body = frappe.render_template(template.response_html, context)
+        print("Sending email now...")
+
+        self.send(
+            subject=subject,
+            body=body,
+            recipient_email=recipient_emails,
+            bcc_list=self.get_bcc_list()
+        )
 
     def for_finance_head_to_accounts_team(self, user):
         recipient_email = emailMaster.accounts_team_email
@@ -1098,63 +1045,50 @@ class EmailServices:
         form = frappe.get_doc("Purchase Team Form",user.name)
         body = self.create_reject_email_body(form,subject,content,remarks_by)
         self.send(subject,recipient_email,body)
+
        
-    def for_finance_fill_quotation_acknowledgement(self, user,regards=""):
-        print("inside finance acknowledgement email function------------------")
+    def for_finance_fill_quotation_acknowledgement(self, user, payload):
+
         recipient_email = emailMaster.finance_team_emails
-        print("Finance team email---->",recipient_email)
-        subject = f"""Car Quotation Form Fiiled by {regards}"""
-        
-        
-        body = f"""
-        <html>
-        <head>
-            <style>
-                body {{
-                    font-family: Arial, sans-serif;
-                    margin: 20px;
-                    line-height: 1.6;
-                }}
-                h2 {{
-                    color: #4CAF50;
-                    text-align: center;
-                }}
-                p {{
-                    font-size: 16px;
-                    margin-bottom: 20px;
-                }}
-                .content {{
-                    border: 1px solid #dddddd;
-                    border-radius: 8px;
-                    padding: 20px;
-                }}
-                .footer {{
-                    margin-top: 30px;
-                    font-size: 14px;
-                    color: #555;
-                }}
-            </style>
-        </head>
-        <body>
-            <h2>Acknowledgement of Car Allocation Request</h2>
-            <div class="content">
-                <p>Dear Finance Teams,</p>
-                <p>
-                    The Quotation form has been submitted by {regards} for {user.employee_name} .
-                    Please log in to your dashboard to review the form and proceed with the next steps.
-                </p>
-                <p>Best regards,</p>
-                <p><strong>{regards}</strong></p>
-            </div>
-            <div class="footer">
-                <p>This is an automated email. Please do not reply to this email.</p>
-            </div>
-        </body>
-        </html>
-        """
-        
-        self.send(subject=subject, body=body, recipient_email=recipient_email)
-        
+        vendors = payload.get("vendors", [])
+        email_phase = payload.get("email_phase") or "Initial"
+
+        print("🔥 ACK EMAIL →", vendors, email_phase)
+
+        form = frappe.get_doc("Car Indent Form", user.name)
+        purchase_form = frappe.get_doc("Purchase Team Form", user.name)
+
+        template_name = (
+            "Revised Finance Quotation Acknowledgement"
+            if email_phase == "Revised"
+            else "Finance Quotation Acknowledgement"
+        )
+
+        template = frappe.get_doc("Email Template", template_name)
+        for vendor in vendors:
+            context = {
+                "employee_name": user.employee_name,
+                "company": user.company,
+                "designation": user.designation,
+                "vehicle": f"{form.make} - {form.model}",
+                "eligibility": user.eligibility,
+                "finance_amount": purchase_form.revised_financed_amount,
+                "remarks": getattr(form, "finance_remarks", "No remarks"),
+                "updated_by": vendor,
+                "regards": vendor,
+                "link": f"{frappe.utils.get_url()}/app"
+            }
+
+            subject = frappe.render_template(template.subject, context)
+            body = frappe.render_template(template.response_html, context)
+
+            self.send(
+                subject=subject,
+                recipient_email=recipient_email,
+                body=body,
+                bcc_list=self.get_bcc_list()
+            )
+
 
     def get_vendor_email_body(self, vendor_name, user, form, link, email_phase=None):
 
@@ -1182,9 +1116,11 @@ class EmailServices:
 
     def for_car_quotation(self, user, payload):
 
+        print("Preparing to send car quotation emails with payload:", payload)
         selected_vendors = {v.lower().strip() for v in payload.get("email_send_to", [])}
         send_to_all = payload.get("send_to_all")
         email_phase = payload.get("email_phase") or "Initial"
+        quotation_id = payload.get("quotation_id")
 
         all_vendors = frappe.get_all(
             "Vendor Master",
@@ -1209,7 +1145,8 @@ class EmailServices:
                 continue
 
             # FIXED UNIQUE KEY (phase-aware)
-            unique_key = f"{user.name}|{vendor_name}|quotation_request|{email_phase}"
+            # unique_key = f"{user.name}|{vendor_name}|quotation_request|{email_phase}"
+            unique_key = f"{quotation_id}|{vendor_name}|{email_phase}"
 
             try:
                 log = frappe.get_doc({
@@ -1237,6 +1174,10 @@ class EmailServices:
                     f"employee_details={user.name}"
                 )
 
+                # ONLY append for revised
+                if email_phase == "Revised" and quotation_id:
+                    link += f"&quotation_id={quotation_id}&is_revised=1"
+
                 # Get template response
                 email_content = self.get_vendor_email_body(
                     vendor_name,
@@ -1254,7 +1195,8 @@ class EmailServices:
                 self.send_quotations(
                     subject=subject,
                     body=body,
-                    recipient_email=email
+                    recipient_email=email,
+                    bcc_list=self.get_bcc_list()
                 )
 
                 log.status = "Sent"
@@ -1278,11 +1220,11 @@ class EmailServices:
 
         sent_vendors_lower = {v.lower() for v in emails_sent}
 
-        if "ald" in sent_vendors_lower:
-            car_purchase_form.email_sent_to_ald = 1
-
-        if "eazy assets" in sent_vendors_lower:
-            car_purchase_form.email_sent_to_eazy_assets = 1
+        for vendor in emails_sent:
+            fieldname = f"email_sent_to_{vendor.lower().replace(' ', '_')}"
+            
+            if hasattr(car_purchase_form, fieldname):
+                setattr(car_purchase_form, fieldname, 1)
 
         all_vendor_names = {
             (v.name or "").strip().lower()
@@ -1395,6 +1337,7 @@ class EmailServices:
         return body
       
     def for_selected_compny_process(self,quotation_id):
+        print("Selected Company Process Quotation ID:", quotation_id)
         car_quot_form = frappe.get_doc("Car Quotation",quotation_id)  
         user = frappe.get_doc("Employee Master",car_quot_form.employee_details)  
         form_link = f"{frappe.utils.get_url()}/car-purchase-form/new?quotation_form={quotation_id}&user={user.name}&company={car_quot_form.finance_company}"
@@ -1404,7 +1347,7 @@ class EmailServices:
         self.send(subject=subject, body=body, recipient_email=vendor.contact_email)
 
     # rejection for car quotation
-    def for_reject_finance_head_to_vendor(self,quotation_id):
+    def for_reject_finance_head_to_finance_team(self,quotation_id):
         car_quot_form = frappe.get_doc("Car Quotation",quotation_id)  #ismei se milega finance company
         vendor =frappe.get_doc("Vendor Master",car_quot_form.finance_company) #this is vendor details recipient humara
         user = frappe.get_doc("Employee Master",car_quot_form.employee_details)  #yaha se milega employee, jiska sirf naam chahiye
