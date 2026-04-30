@@ -1,7 +1,7 @@
 let by_button = false;
 
 /* ================================
-   🔹 COMMON HELPERS
+ COMMON HELPERS
 ================================ */
 
 function getUserDesignation() {
@@ -14,7 +14,7 @@ function getUserDesignation() {
 function sendEmailSafe(name, type, payload = {}) {
     return frappe.call({
         method: "alms_app.api.emailsService.email_sender",
-        args: { 
+        args: {
             name,
             email_send_to: type,
             payload
@@ -43,7 +43,7 @@ function promptAction(label) {
 }
 
 /* ================================
-   🔹 STATUS BUTTON ENGINE
+ STATUS BUTTON ENGINE
 ================================ */
 
 function buildStatusButtons(frm, role) {
@@ -107,11 +107,9 @@ function buildStatusButtons(frm, role) {
                     frm.set_value(stage.field, values.action);
                     frm.set_value(stage.remarks, values.remarks);
 
-                    if (stage.field === "purchase_head_status") {
-                        frm.set_value("status", values.action);
+                    if (frm.is_dirty()) {
+                        await frm.save();
                     }
-
-                    await frm.save();
 
                     await sendEmailSafe(
                         frm.doc.name,
@@ -148,97 +146,7 @@ function styleButton(btn, status, canEdit) {
 }
 
 /* ================================
-   🔹 QUOTATION MODULE
-================================ */
-
-async function openQuotationDialog(frm) {
-    const res = await frappe.call({
-        method: "frappe.client.get_list",
-        args: {
-            doctype: "Car Quotation",
-            filters: { employee_details: frm.doc.name },
-            fields: ["name", "finance_company", "status"]
-        }
-    });
-
-    const data = res.message;
-    if (!data.length) {
-        frappe.msgprint("No quotations found.");
-        return;
-    }
-
-    let html = data.map(q => `
-        <div style="margin:10px;">
-            <b>${q.finance_company}</b>
-            <button class="btn btn-success btn-sm approve" data-id="${q.name}">✔</button>
-            <button class="btn btn-danger btn-sm reject" data-id="${q.name}">✖</button>
-        </div>
-    `).join("");
-
-    const d = new frappe.ui.Dialog({
-        title: "Compare Quotations",
-        fields: [{ fieldtype: "HTML", options: html }]
-    });
-
-    d.show();
-
-    d.$wrapper.on("click", ".approve", async function () {
-        const id = $(this).data("id");
-
-        const { remarks } = await new Promise(resolve => {
-            frappe.prompt([{ fieldname: "remarks", fieldtype: "Data", reqd: 1 }], resolve);
-        });
-
-        await frappe.call({
-            method: "frappe.client.set_value",
-            args: {
-                doctype: "Car Quotation",
-                name: id,
-                fieldname: {
-                    status: "Approved",
-                    finance_team_remarks: remarks
-                }
-            }
-        });
-
-        await sendEmailSafe(frm.doc.name, "FinanceTeam To FinanceHead Payload", {
-            quotation_id: id
-        });
-
-        frappe.msgprint("Approved");
-        d.hide();
-    });
-
-    d.$wrapper.on("click", ".reject", async function () {
-        const id = $(this).data("id");
-
-        const { remarks } = await new Promise(resolve => {
-            frappe.prompt([{ fieldname: "remarks", fieldtype: "Data", reqd: 1 }], resolve);
-        });
-
-        await frappe.call({
-            method: "frappe.client.set_value",
-            args: {
-                doctype: "Car Quotation",
-                name: id,
-                fieldname: {
-                    status: "Rejected",
-                    finance_team_remarks: remarks
-                }
-            }
-        });
-
-        await sendEmailSafe(frm.doc.name, "Reject FinanceTeam to Vendor", {
-            quotation_id: id
-        });
-
-        frappe.msgprint("Rejected");
-        d.hide();
-    });
-}
-
-/* ================================
-   🔹 VENDOR EMAIL MODULE
+ VENDOR EMAIL MODULE
 ================================ */
 
 function addVendorButton(frm, role) {
@@ -248,7 +156,15 @@ function addVendorButton(frm, role) {
         frm.doc.purchase_team_status === "Approved" &&
         frm.doc.purchase_head_status === "Approved";
 
+    const alreadySent = frm.doc.email_sent_to_all === 1;
+
     const btn = frm.add_custom_button("Select Vendors", async () => {
+
+        // Hard stop if disabled state somehow bypassed
+        if (alreadySent) {
+            frappe.msgprint("Emails already sent to all vendors.");
+            return;
+        }
 
         if (!isApproved) {
             frappe.msgprint("Approval required.");
@@ -284,10 +200,12 @@ function addVendorButton(frm, role) {
             ],
             primary_action_label: "Send Email",
             primary_action: async (values) => {
+                console.log("STEP 1: Button clicked");
 
                 let selected = values.select_all
                     ? res.map(v => v.name)
                     : (values.vendors || []);
+                console.log("STEP 2: Selected vendors", selected);
 
                 if (!selected.length) {
                     frappe.msgprint("Select at least one vendor.");
@@ -298,26 +216,32 @@ function addVendorButton(frm, role) {
                 btn.prop("disabled", true).html("Sending...");
 
                 try {
-                    frappe.show_alert({
-                        message: "Saving document...",
-                        indicator: "blue"
+                    console.log("STEP 3: Before save");
+
+                    if (frm.is_dirty()) {
+                        await frm.save();
+                    }
+
+                    console.log("STEP 4: After save");
+
+                    console.log("STEP 5: Calling API");
+
+                    console.log("PAYLOAD:", {
+                        name: frm.doc.name,
+                        email_send_to: selected
                     });
 
-                    await frm.save();
-
-                    frappe.show_alert({
-                        message: "Sending emails...",
-                        indicator: "orange"
-                    });
-
-                    await sendEmailSafe(
+                    const response = await sendEmailSafe(
                         frm.doc.name,
                         "FinanceHead To Quotation Company",
                         {
                             email_send_to: selected,
-                            send_to_all: values.select_all ? 1 : 0
+                            send_to_all: values.select_all ? 1 : 0,
+                            email_phase: "Initial",
                         }
                     );
+
+                    console.log("STEP 6: API RESPONSE", response);
 
                     frappe.show_alert({
                         message: "Emails sent successfully",
@@ -325,11 +249,9 @@ function addVendorButton(frm, role) {
                     });
 
                     dialog.hide();
-
                     await frm.reload_doc();
 
                 } catch (e) {
-
                     console.error(e);
 
                     frappe.msgprint({
@@ -345,48 +267,71 @@ function addVendorButton(frm, role) {
         });
 
         dialog.show();
-        /* ================================
-        🔹 TOGGLE LOGIC (THE MAGIC)
-        ================================ */
 
+        // Toggle logic
         const selectAllField = dialog.fields_dict.select_all;
         const vendorField = dialog.fields_dict.vendors;
 
-        // listen for change
         selectAllField.$input.on("change", function () {
-
             const isChecked = dialog.get_value("select_all");
 
             if (isChecked) {
-                // Hide vendor list
                 $(vendorField.wrapper).closest('.frappe-control').hide();
 
-                // Clear selection (important)
-                dialog.set_value("vendors", []);
+                vendorField.df.options.forEach(opt => {
+                    opt.checked = false;
+                });
+
+                vendorField.refresh();
+
             } else {
-                // Show vendor list again
                 $(vendorField.wrapper).closest('.frappe-control').show();
             }
         });
     });
 
-    btn.css({
-        "background-color": isApproved ? "darkgreen" : "gray",
-        "color": "white"
-    });
+    // Styling logic
+    if (alreadySent) {
+        btn.css({
+            "background-color": "#6c757d",
+            "color": "white",
+            "cursor": "not-allowed",
+            "opacity": "0.6"
+        });
+
+        btn.off("click");
+    } else {
+        btn.css({
+            "background-color": isApproved ? "darkgreen" : "gray",
+            "color": "white"
+        });
+    }
+
+    // Badge (this is the visible audit signal)
+    if (alreadySent) {
+        frm.dashboard.add_indicator(
+            "Emails already sent to all vendors",
+            "green"
+        );
+    }
 }
 
 /* ================================
-   🔹 MAIN UI ENTRY
+ MAIN UI ENTRY
 ================================ */
 function applyAdminOverrides(frm, role) {
-    if (role === "administrator") {
+    const isAdmin = role === "administrator";
+
+    if (isAdmin) {
         frm.set_df_property("purchase_team_status", "read_only", false);
         frm.set_df_property("purchase_head_status", "read_only", false);
 
         frm.set_df_property("purchase_team_remarks", "read_only", false);
         frm.set_df_property("purchase_head_remarks", "read_only", false);
     }
+
+    frm.set_df_property("no_of_quotations", "read_only", isAdmin ? 0 : 1);
+    frm.set_df_property("all_quotations_ref_no", "read_only", isAdmin ? 0 : 1);
 }
 
 async function updateUI(frm) {
@@ -400,15 +345,11 @@ async function updateUI(frm) {
 
     buildStatusButtons(frm, role);
 
-    if (["finance", "administrator", "finance head"].includes(role)) {
-        frm.add_custom_button("Compare Quotations", () => openQuotationDialog(frm));
-    }
-
     addVendorButton(frm, role);
 }
 
 /* ================================
-   🔹 FORM EVENTS
+ FORM EVENTS
 ================================ */
 
 frappe.ui.form.on("Purchase Team Form", {
@@ -430,7 +371,7 @@ frappe.ui.form.on("Purchase Team Form", {
 });
 
 /* ================================
-   🔹 CALCULATIONS
+ CALCULATIONS
 ================================ */
 
 function calculateTotals(frm) {

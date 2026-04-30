@@ -5,60 +5,97 @@ def get_context(context):
     return context
 
 @frappe.whitelist(allow_guest=True)
-def get_vendor_quotation(employee_details):
-    
-    fields_to_fetch = [
-        "revised_financed_amount",
-        "location",
-        "total_kilometers",
-        "make",
-        "revised_accessories",
-        "revised_discount",
-        "revised_registration_charges",
-        "revised_ex_show_room_price",
-        "revised_net_ex_showroom_price",
-        "revised_quotation_attachment_need_to_be_done",
-        "tenure_in_years"
-    ]
+def get_vendor_quotation(employee_details=None, quotation_id=None):
 
-    doc = frappe.get_all(
-        "Purchase Team Form",
-        filters={"name": employee_details},
-        fields=fields_to_fetch,
-        limit_page_length=1
-    )
+    def serialize(doc):
+        return {
+            # identity
+            "name": doc.name,
+            "finance_company": doc.finance_company,
+            "employee_details": doc.employee_details,
+            "quote": doc.quote,
 
-    if not doc:
-        return None
+            # vehicle
+            "location": doc.location,
+            "total_kms": doc.total_kms,
+            "variant": doc.variant,
 
-    record = doc[0]
-    print(record)
+            # pricing
+            "ex_showroom_amount": doc.ex_showroom_amount,
+            "ex_showroom_amount_net_of_discount": doc.ex_showroom_amount_net_of_discount,
+            "accessories": doc.accessories,
+            "discount_excluding_gst": doc.discount_excluding_gst,
+            "registration_charges": doc.registration_charges,
+            "financed_amount": doc.financed_amount,
+            "base_price_excluding_gst": doc.base_price_excluding_gst,
+            "gst": doc.gst,
+            "base_price_less_discounts": doc.base_price_less_discounts,
+            "total_discount": doc.total_discount,
+            "24x7_assist": doc.get("24x7_assist"),
 
-    mapped = {
-        "financed_amount": record.get("revised_financed_amount") or 0,
-        "location": record.get("location") or "",
-        "total_kms": record.get("total_kilometers") or 0,
-        "variant": record.get("make") or "",
-        "accessories": record.get("revised_accessories") or 0,
-        "discount_excluding_gst": record.get("revised_discount") or 0,
-        "registration_charges": record.get("revised_registration_charges") or 0,
-        "ex_showroom_amount": record.get("revised_ex_show_room_price") or 0,
-        "ex_showroom_amount_net_of_discount": record.get("revised_net_ex_showroom_price") or 0,
-        "revised_quotation_attachment_need_to_be_done": record.get("revised_quotation_attachment_need_to_be_done"),
-        "tenure_in_years": record.get("tenure_in_years") or 0
-    }
+            # financial config
+            "interest_rate": doc.interest_rate,
+            "tenure": doc.tenure,
+            "residual_value_percent": doc.residual_value_percent,
+            "residual_value": doc.residual_value,
 
-    file_path = record.get("revised_quotation_attachment_need_to_be_done")
-    if file_path:
-        file_name = file_path.split("/")[-1]
-        if file_path.startswith("/private/files"):
-            private_path = frappe.get_site_path("private", "files", file_name)
-            public_path = frappe.get_site_path("public", "files", file_name)
-            shutil.copy(private_path, public_path)
-            file_path = f"/files/{file_name}"
+            # EMI engine output
+            "emi_financing": doc.emi_financing,
+            "finance_emi_road_tax": doc.finance_emi_road_tax,
+            "gst_and_cess": doc.gst_and_cess,
+            "insurance": doc.insurance,
+            "fleet_management_repairs_and_tyres": doc.fleet_management_repairs_and_tyres,
+            "assist_24x7": doc.get("24x7_assist"),
+            "pickup_and_drop": doc.pickup_and_drop,
+            "std_relief_car_non_accdt": doc.std_relief_car_non_accdt,
+            "gst_on_fms": doc.gst_on_fms,
 
-        mapped["revised_quotation_vendor"] = file_path
-        mapped["revised_quotation_vendor_name"] = file_name
-        mapped["revised_quotation_vendor_url"] = frappe.utils.get_url(file_path)
+            # totals
+            "total_emi": doc.total_emi,
 
-    return mapped
+            # attachment
+            "revised_quotation_vendor": doc.revised_quotation_vendor
+        }
+
+    # CASE 1: revised flow → Car Quotation is source
+    if quotation_id:
+        doc = frappe.get_doc("Car Quotation", quotation_id)
+        return serialize(doc)
+
+    # CASE 2: normal flow → Purchase Form fallback
+    if employee_details:
+        doc = frappe.get_all(
+            "Purchase Team Form",
+            filters={"name": employee_details},
+            fields=[
+                "revised_financed_amount",
+                "location",
+                "total_kilometers",
+                "make",
+                "revised_accessories",
+                "revised_discount",
+                "revised_registration_charges",
+                "revised_ex_show_room_price",
+                "revised_net_ex_showroom_price",
+                "tenure_in_years"
+            ],
+            limit_page_length=1
+        )
+
+        if not doc:
+            return None
+
+        r = doc[0]
+
+        return {
+            "financed_amount": r.revised_financed_amount,
+            "location": r.location,
+            "total_kms": r.total_kilometers,
+            "variant": r.make,
+            "accessories": r.revised_accessories,
+            "discount_excluding_gst": r.revised_discount,
+            "registration_charges": r.revised_registration_charges,
+            "ex_showroom_amount": r.revised_ex_show_room_price,
+            "ex_showroom_amount_net_of_discount": r.revised_net_ex_showroom_price,
+            "tenure": r.tenure_in_years
+        }

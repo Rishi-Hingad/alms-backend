@@ -45,16 +45,21 @@
   "interim_payment",
   "quarterly_payment",
   "approval_tab",
-  "approval_fields_section",
-  "finance_team_status",
-  "finance_head_status",
+  "quotation_details_section",
+  "status",
   "revised_modify_quotation_id",
   "quotation_status",
-  "status",
-  "column_break_rxya",
+  "column_break_zxbj",
+  "root_quotation",
+  "parent_quotation",
+  "version_number",
+  "approval_fields_section",
+  "finance_team_status",
   "finance_team_remarks",
-  "finance_head_remarks",
   "finance_team_action_by",
+  "column_break_rxya",
+  "finance_head_status",
+  "finance_head_remarks",
   "finance_head_action_by"
  ],
  "fields": [
@@ -67,7 +72,7 @@
    "fieldname": "finance_company",
    "fieldtype": "Select",
    "label": "Finance Company",
-   "options": "-Select-\nEazy Assets\nALD"
+   "options": "-Select-\nEazy Assets\nALD\nXYZ"
   },
   {
    "fieldname": "employee_details",
@@ -214,6 +219,7 @@
    "label": "Total EMI"
   },
   {
+   "default": "Pending",
    "fieldname": "finance_team_status",
    "fieldtype": "Select",
    "label": "Finance Team Status",
@@ -269,10 +275,11 @@
    "options": "Car Indent Form"
   },
   {
+   "default": "New",
    "fieldname": "quotation_status",
    "fieldtype": "Select",
    "label": "Quotation Status",
-   "options": "Modified\nRevised"
+   "options": "New\nRevised"
   },
   {
    "fieldname": "revised_modify_quotation_id",
@@ -316,6 +323,32 @@
    "fieldname": "approval_tab",
    "fieldtype": "Tab Break",
    "label": "Approval"
+  },
+  {
+   "fieldname": "quotation_details_section",
+   "fieldtype": "Section Break",
+   "label": "Quotation Details"
+  },
+  {
+   "fieldname": "column_break_zxbj",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "root_quotation",
+   "fieldtype": "Link",
+   "label": "Root Quotation",
+   "options": "Car Quotation"
+  },
+  {
+   "fieldname": "parent_quotation",
+   "fieldtype": "Link",
+   "label": "Parent Quotation",
+   "options": "Car Quotation"
+  },
+  {
+   "fieldname": "version_number",
+   "fieldtype": "Int",
+   "label": "Version"
   }
  ],
  "index_web_pages_for_search": 1,
@@ -325,7 +358,7 @@
    "link_fieldname": "finance_quotation_id"
   }
  ],
- "modified": "2026-03-23 12:23:25.833059",
+ "modified": "2026-04-29 14:58:08.102727",
  "modified_by": "Administrator",
  "module": "CRMS",
  "name": "Car Quotation",

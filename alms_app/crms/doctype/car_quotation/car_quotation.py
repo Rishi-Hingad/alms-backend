@@ -5,8 +5,80 @@ import pandas as pd
 from frappe.utils.file_manager import save_file
 import xlrd
 from alms_app.api.emailsService import email_sender
+from frappe.utils import flt
+import math
 
 class CarQuotation(Document):
+
+    def on_update(self):
+        if self.status == "Pending":
+            handle_no_approved_case(self)
+
+    def before_insert(self):
+        # CASE 1: NEW quotation (root)
+        if self.quotation_status == "New":
+            self.root_quotation = self.name
+            self.version_number = 1
+
+        # CASE 2: REVISED quotation
+        elif self.quotation_status == "Revised":
+
+            if not self.revised_modify_quotation_id:
+                frappe.throw("Missing base quotation")
+
+            parent = frappe.get_doc("Car Quotation", self.revised_modify_quotation_id)
+
+            # Root stays same
+            self.root_quotation = parent.root_quotation or parent.name
+
+            # Parent linkage
+            self.parent_quotation = parent.name
+
+            # Version increment
+            self.version_number = (parent.version_number or 1) + 1
+
+            # Naming logic
+            self.name = f"{self.root_quotation}-v{self.version_number}"
+
+    def validate(self):
+        self.sync_status()
+        self.calculate_quarterly_payment()
+    
+    def calculate_quarterly_payment(self):
+        total_emi = flt(self.total_emi)
+
+        if total_emi < 0:
+            frappe.throw("Total EMI cannot be negative")
+
+        self.quarterly_payment = total_emi * 4
+
+    def sync_status(self):
+        ft = (self.finance_team_status or "").strip().lower()
+        fh = (self.finance_head_status or "").strip().lower()
+
+        # Normalize
+        if ft in ["", "-select-"]:
+            self.finance_team_status = "Pending"
+            ft = "pending"
+
+        if fh in ["", "-select-"]:
+            self.finance_head_status = "Pending"
+            fh = "pending"
+
+        # ===== STATUS LOGIC =====
+        if ft == "rejected" or fh == "rejected":
+            self.status = "Rejected"
+
+        elif ft == "approved" and fh == "approved":
+            self.status = "Approved"
+
+            # enforce only one approved
+            reject_other_quotations(self)
+
+        else:
+            self.status = "Pending"
+
+
     def after_insert(self):
         try:
             employee_details = self.employee_details
@@ -15,51 +87,112 @@ class CarQuotation(Document):
 
             if not employee_details or not finance_company or not ref_no:
                 frappe.log_error("Missing required values in CarQuotation", "CarQuotation Error")
-                return
-
-            # Step 1: Check if Selected Vendor exists
-            selected_vendor = frappe.db.get_value(
-                "Selected Vendor",
-                {"employee_details": employee_details},
-                "name"
-            )
-
-            if selected_vendor:
-                doc = frappe.get_doc("Selected Vendor", selected_vendor)
-
-                # Check duplicate
-                exists = any(
-                    row.finance_company == finance_company and row.ref_no == ref_no
-                    for row in doc.selected_finance_company
+            else:
+                # Step 1: Check if Selected Vendor exists
+                selected_vendor = frappe.db.get_value(
+                    "Selected Vendor",
+                    {"employee_details": employee_details},
+                    "name"
                 )
 
-                if not exists:
-                    doc.append("selected_finance_company", {
-                        "finance_company": finance_company,
-                        "ref_no": ref_no
-                    })
-                    doc.save(ignore_permissions=True)
+                if selected_vendor:
+                    doc = frappe.get_doc("Selected Vendor", selected_vendor)
 
-            else:
-                # Create new Selected Vendor
-                doc = frappe.get_doc({
-                    "doctype": "Selected Vendor",
-                    "employee_details": employee_details,
-                    "selected_finance_company": [
-                        {
+                    # Check duplicate
+                    exists = any(
+                        row.finance_company == finance_company and row.ref_no == ref_no
+                        for row in doc.selected_finance_company
+                    )
+
+                    if not exists:
+                        doc.append("selected_finance_company", {
                             "finance_company": finance_company,
                             "ref_no": ref_no
-                        }
-                    ]
-                })
-                doc.insert(ignore_permissions=True)
+                        })
+                        doc.save(ignore_permissions=True)
 
-            # Step 2: Send Email
-            email_sender(employee_details, finance_company)
+                else:
+                    # Create new Selected Vendor
+                    doc = frappe.get_doc({
+                        "doctype": "Selected Vendor",
+                        "employee_details": employee_details,
+                        "selected_finance_company": [
+                            {
+                                "finance_company": finance_company,
+                                "ref_no": ref_no
+                            }
+                        ]
+                    })
+                    doc.insert(ignore_permissions=True)
 
         except Exception as e:
             frappe.log_error(frappe.get_traceback(), "CarQuotation after_insert Error")
-    
+        
+        try:
+            email_sender(
+                name=self.employee_details,
+                email_send_to="Finance Fill Quotation Acknowledgement",
+                payload={
+                    "vendors": [self.finance_company],
+                    "email_phase": "Revised" if self.quotation_status == "Revised" else "Initial"
+                }
+            )
+        except Exception:
+            frappe.log_error(frappe.get_traceback(), "ACK EMAIL FAILED")
+
+        
+
+def restore_other_quotations(doc):
+    others = frappe.get_all(
+        "Car Quotation",
+        filters={
+            "employee_details": doc.employee_details,
+            "name": ["!=", doc.name]
+        },
+        pluck="name"
+    )
+
+    for q in others:
+        q_doc = frappe.get_doc("Car Quotation", q)
+
+        if q_doc.status != "Rejected":
+            continue
+
+        q_doc.finance_team_status = "Pending"
+        q_doc.finance_head_status = "Pending"
+        q_doc.status = "Pending"
+
+        q_doc.save(ignore_permissions=True)
+
+def handle_no_approved_case(doc):
+    approved_exists = frappe.db.exists(
+        "Car Quotation",
+        {
+            "employee_details": doc.employee_details,
+            "status": "Approved"
+        }
+    )
+
+    if not approved_exists:
+        others = frappe.get_all(
+            "Car Quotation",
+            filters={
+                "employee_details": doc.employee_details
+            },
+            pluck="name"
+        )
+
+        for q in others:
+            q_doc = frappe.get_doc("Car Quotation", q)
+
+            if q_doc.status == "Rejected":
+                q_doc.finance_team_status = "Pending"
+                q_doc.finance_head_status = "Pending"
+                q_doc.status = "Pending"
+
+                q_doc.save(ignore_permissions=True)
+
+
 @frappe.whitelist()
 def process_uploaded_file(file_url):
     if not file_url:
@@ -69,10 +202,6 @@ def process_uploaded_file(file_url):
         file_doc = frappe.get_doc("File", {"file_url": file_url})
         file_path = file_doc.get_full_path()
 
-        # if file_path.endswith(".xlsx") or file_path.endswith(".xls"):
-        #     data_frame = pd.read_excel(file_path)
-        # elif file_path.endswith(".csv"):
-        #     data_frame = pd.read_csv(file_path)
         if file_path.endswith(".xlsx"):
             data_frame = pd.read_excel(file_path, engine='openpyxl')
         elif file_path.endswith(".xls"):
@@ -129,7 +258,6 @@ def process_uploaded_file(file_url):
         frappe.log_error(frappe.get_traceback(), "File Processing Error")
         frappe.throw(f"An error occurred while processing the file: {str(e)}")
 
-import frappe
 
 @frappe.whitelist()
 def generate_deduction(quotation_id):
@@ -158,10 +286,6 @@ def generate_deduction(quotation_id):
     doc.insert(ignore_permissions=True)
 
     return doc.name
-
-
-from frappe.utils import flt
-import math
 
 
 def pmt(rate, nper, pv, fv=0, when=1):
@@ -266,14 +390,6 @@ def preview_deduction(quotation_id):
     employee_quarterly_payment = math.ceil(employee_total_emi * 3)
     employee_interim_payment = math.ceil(employee_quarterly_payment * 39 / 90)
 
-    # return {
-    #     "total_emi": total_emi,
-    #     "employee_total_emi": employee_total_emi,
-    #     "quarterly_payment": quarterly_payment,
-    #     "employee_quarterly_payment": employee_quarterly_payment,
-    #     "interim_payment": interim_payment,
-    #     "employee_interim_payment": employee_interim_payment
-    # }
     return {
         # company
         "company_ex_showroom": company_ex_showroom_amount_net_of_discount,
@@ -333,3 +449,229 @@ def create_deduction_doc(quotation_id):
     doc.insert(ignore_permissions=True)
 
     return doc.name
+
+
+@frappe.whitelist()
+def process_workflow(quotation_id, action, remarks=None):
+    """
+    Central workflow handler
+    Handles:
+    - Role validation
+    - Status updates
+    - Email triggers
+    - Duplicate protection
+    """
+
+    user = frappe.session.user
+
+    # Get role from your existing method
+    role = frappe.get_attr(
+        "alms_app.crms.doctype.car_indent_form.car_indent_form.management"
+    )(current_frappe_user=user)
+
+    role = (role or "").lower()
+    print(f"User: {user}, Role: {role}, Action: {action}")
+
+    doc = frappe.get_doc("Car Quotation", quotation_id)
+
+    if action == "Approved":
+
+        existing = frappe.db.exists(
+            "Car Quotation",
+            {
+                "employee_details": doc.employee_details,
+                "status": "Approved",
+                "name": ["!=", doc.name]  # exclude current record
+            }
+        )
+
+        if existing:
+            frappe.throw("Quotation already approved for this Purchase Form")
+
+    email_type = None
+
+    # ============================
+    # NORMALIZE ADMIN ROLE
+    # ============================
+    if role == "administrator":
+        if doc.finance_team_status in ["", None, "Pending"]:
+            role = "finance team"
+
+        elif doc.finance_team_status == "Approved":
+            role = "finance head"
+
+        elif doc.finance_team_status == "Rejected":
+            frappe.throw("Finance Team has already rejected this quotation")
+
+    # Prevent double action
+    if role == "finance team" and doc.finance_team_status in ["Approved", "Rejected"]:
+        frappe.throw("Finance Team already acted on this quotation")
+
+    if role == "finance head" and doc.finance_head_status in ["Approved", "Rejected"]:
+        frappe.throw("Finance Head already acted on this quotation")
+
+    # Dependency check
+    if role == "finance head" and doc.finance_team_status != "Approved":
+        frappe.throw("Finance Team must approve first")
+
+    # ============================
+    # FINANCE TEAM
+    # ============================
+    if role == "finance team":
+
+        doc.finance_team_status = action
+        doc.finance_team_remarks = remarks
+        doc.finance_team_action_by = user
+
+        if action == "Approved":
+            email_type = "FinanceTeam To FinanceHead Payload"
+        else:
+            email_type = "Reject FinanceTeam to Vendor"
+
+    # ============================
+    # FINANCE HEAD
+    # ============================
+    elif role == "finance head":
+
+        doc.finance_head_status = action
+        doc.finance_head_remarks = remarks
+        doc.finance_head_action_by = user
+
+        if action == "Approved":
+            email_type = "FinanceHead To AccountsTeam"
+
+            # Reject all other quotations
+            reject_other_quotations(doc)
+
+        else:
+            email_type = "Reject FinanceHead to FinanceTeam"
+
+    else:
+        frappe.throw(f"Not allowed. Role: {role}")
+
+    # update_final_status(doc)
+    doc.sync_status()
+    doc.save(ignore_permissions=True)
+    handle_no_approved_case(doc)
+
+    # ============================
+    # EMAIL (ONLY ONCE HERE)
+    # ============================
+    if email_type:
+        frappe.logger().info(f"EMAIL TRIGGER → {email_type}")
+        email_sender(
+            name=doc.employee_details,
+            email_send_to=email_type,
+            payload={
+                "quotation_id": doc.name
+            }
+        )
+
+    return {"status": "success"}
+
+
+def reject_other_quotations(doc):
+    others = frappe.get_all(
+        "Car Quotation",
+        filters={
+            "employee_details": doc.employee_details,
+            "name": ["!=", doc.name]
+        },
+        pluck="name"
+    )
+
+    for q in others:
+        q_doc = frappe.get_doc("Car Quotation", q)
+
+        if q_doc.status == "Rejected":
+            continue
+
+        q_doc.finance_team_status = "Rejected"
+        q_doc.finance_head_status = "Rejected"
+
+        q_doc.status = "Rejected"
+
+        q_doc.save(ignore_permissions=True)
+
+@frappe.whitelist()
+@frappe.validate_and_sanitize_search_inputs
+def get_available_purchase_forms(doctype, txt, searchfield, start, page_len, filters):
+
+    # Step 1: Approved Purchase Forms
+    purchase_forms = frappe.get_all(
+        "Purchase Team Form",
+        filters={"status": "Approved"},
+        pluck="name"
+    )
+
+    # Step 2: Already used (Approved quotation exists)
+    used_forms = frappe.get_all(
+        "Car Quotation",
+        filters={"status": "Approved"},
+        pluck="employee_details"
+    )
+
+    # Step 3: Remove used ones
+    available = list(set(purchase_forms) - set(used_forms))
+
+    # Step 4: Apply search filter (VERY IMPORTANT for typing in link field)
+    if txt:
+        available = [pf for pf in available if txt.lower() in pf.lower()]
+
+    # Step 5: Return as list of tuples (Frappe expects this)
+    return [(pf,) for pf in available[start:start + page_len]]
+
+
+def update_final_status(doc):
+    ft = (doc.finance_team_status or "").strip().lower()
+    fh = (doc.finance_head_status or "").strip().lower()
+
+    # Normalize values
+    pending_values = ["", "-select-", "pending"]
+
+    # Rejection overrides everything
+    if ft == "rejected" or fh == "rejected":
+        doc.status = "Rejected"
+        return
+
+    # Fully approved
+    if ft == "approved" and fh == "approved":
+        doc.status = "Approved"
+        return
+
+    # Everything else
+    doc.status = "Pending"
+
+
+@frappe.whitelist()
+def get_quotation_timeline(root_id):
+
+    quotations = frappe.get_all(
+        "Car Quotation",
+        filters={"root_quotation": root_id},
+        fields=[
+            "name",
+            "parent_quotation",
+            "version_number",
+            "status",
+            "finance_company",
+            "creation"
+        ],
+        order_by="version_number asc"
+    )
+
+    return quotations
+
+@frappe.whitelist()
+def create_revised_quotation(old_id):
+
+    old = frappe.get_doc("Car Quotation", old_id)
+
+    new_doc = frappe.copy_doc(old)
+
+    new_doc.quotation_status = "Revised"
+    new_doc.revised_modify_quotation_id = old.name
+
+    new_doc.insert(ignore_permissions=True)
+
+    return new_doc.name

@@ -15,7 +15,7 @@ def email_sender(name, email_send_to=None, car_indent_form_name=None, payload=No
 
         user = frappe.get_doc("Employee Master",name)
         print("------------[email sender name]------------------:",user)
-        print("------------[email sender name]------------------:",email_send_to)
+        print("------------[email send to]------------------:",email_send_to)
         print("------------[payload]------------------:", payload)
         
         if email_send_to =="To Employee":
@@ -47,7 +47,8 @@ def email_sender(name, email_send_to=None, car_indent_form_name=None, payload=No
         elif email_send_to =="PurchaseHead To FinanceTeam":
             Email.for_purchase_head_to_finance_team(user) 
             Email.acknowledgement_email(user,"Purchase Department","Finance Department")
-            
+
+        # From Purchase Team Form to Vendor (By Finance Team)  
         elif email_send_to == "FinanceHead To Quotation Company":
             return Email.for_car_quotation(user,payload)
             
@@ -57,17 +58,22 @@ def email_sender(name, email_send_to=None, car_indent_form_name=None, payload=No
         elif email_send_to =="FinanceTeam To FinanceHead Payload":
             Email.for_finance_team_to_finance_head_payload(user,payload) 
             
-        elif email_send_to =="FinanceHead To AccountsTeam":# FinanceHead To Vendors also
-            # print("------------[PAYLOAD Quoatation ID]------------------:",payload)
+        elif email_send_to == "FinanceHead To AccountsTeam":
+
+            quotation_id = payload.get("quotation_id") if payload else None
+
+            if quotation_id:
+                # Send to selected company process
+                Email.for_selected_compny_process(quotation_id=quotation_id)
+            
             Email.for_finance_head_to_accounts_team(user)
-            if payload.get("quotation_id"):
-                Email.for_selected_compny_process(quotation_id=payload.get("quotation_id"))
-            else:
-                frappe.msgprint("Something Wrong!, Try Again")
+            Email.for_finance_head_to_finance_team(user, quotation_id)
             Email.acknowledgement_email(user,"Finance Department","Final Approval")  #change to congratualate mail,  finance head to employee
             
-        elif email_send_to in ["Eazy Assets","ALD"]:
-            Email.for_finance_fill_quotation_acknowledgement(user,email_send_to)
+        # From Vendor to Finance Team (By Vendor)
+        elif email_send_to == "Finance Fill Quotation Acknowledgement":
+            return Email.for_finance_fill_quotation_acknowledgement(user, payload)
+            
             # negative track starts here
         elif email_send_to == "Deduction Finance Team To Finance Head":
             Email.for_deduction_finance_to_finance_head(user,payload)
@@ -97,9 +103,9 @@ def email_sender(name, email_send_to=None, car_indent_form_name=None, payload=No
         elif email_send_to=="Reject PurchaseTeam to HR":
             Email.for_reject_by_purchase_team(user) 
 
-        elif email_send_to== "Reject FinanceHead to Vendor":
+        elif email_send_to== "Reject FinanceHead to FinanceTeam": #update the function
             if payload.get("quotation_id"):
-                Email.for_reject_finance_head_to_vendor(quotation_id=payload.get("quotation_id"))
+                Email.for_reject_finance_head_to_finance_team(quotation_id=payload.get("quotation_id"))
             else:
                 frappe.msgprint("Something Wrong!, Try Again!!!")
 
