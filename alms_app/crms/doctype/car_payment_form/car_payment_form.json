@@ -22,9 +22,9 @@
   },
   {
    "fieldname": "company",
-   "fieldtype": "Select",
+   "fieldtype": "Link",
    "label": "Company",
-   "options": "Eazy Assets\nALD"
+   "options": "Vendor Master"
   },
   {
    "fieldname": "quotation_form",
@@ -41,6 +41,7 @@
    "options": "Yes\nNo"
   },
   {
+   "depends_on": "eval:doc.payment_done == \"Yes\"",
    "fieldname": "payment_document",
    "fieldtype": "Attach",
    "label": "Payment Document"
@@ -52,7 +53,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-02-17 18:08:10.504837",
+ "modified": "2026-05-01 10:00:29.509807",
  "modified_by": "Administrator",
  "module": "CRMS",
  "name": "Car Payment Form",

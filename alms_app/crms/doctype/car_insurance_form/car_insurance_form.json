@@ -22,9 +22,9 @@
   },
   {
    "fieldname": "company",
-   "fieldtype": "Select",
+   "fieldtype": "Link",
    "label": "Company",
-   "options": "Eazy Assets\nALD"
+   "options": "Vendor Master"
   },
   {
    "fieldname": "quotation_form",
@@ -34,12 +34,14 @@
    "unique": 1
   },
   {
+   "default": "No",
    "fieldname": "insurance_copy_received",
    "fieldtype": "Select",
    "label": "Insurance Copy Received ",
    "options": "Yes\nNo"
   },
   {
+   "depends_on": "eval:doc.insurance_copy_received == \"Yes\"",
    "fieldname": "insurance_copy_document",
    "fieldtype": "Attach",
    "label": "Insurance Copy Document"
@@ -51,7 +53,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-02-17 18:08:25.461540",
+ "modified": "2026-05-01 09:54:56.593698",
  "modified_by": "Administrator",
  "module": "CRMS",
  "name": "Car Insurance Form",
