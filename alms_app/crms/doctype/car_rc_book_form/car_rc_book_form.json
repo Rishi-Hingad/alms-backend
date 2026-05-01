@@ -21,9 +21,9 @@
   },
   {
    "fieldname": "company",
-   "fieldtype": "Select",
+   "fieldtype": "Link",
    "label": "Company",
-   "options": "Eazy Assets\nALD"
+   "options": "Vendor Master"
   },
   {
    "fieldname": "quotation_form",
@@ -39,6 +39,7 @@
    "options": "Yes\nNo"
   },
   {
+   "depends_on": "eval:doc.rc_book_received == \"Yes\"",
    "fieldname": "rc_book_document",
    "fieldtype": "Attach",
    "label": "RC Book Document"
@@ -50,7 +51,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-02-17 18:08:39.695105",
+ "modified": "2026-05-01 10:01:26.421562",
  "modified_by": "Administrator",
  "module": "CRMS",
  "name": "Car RC Book Form",

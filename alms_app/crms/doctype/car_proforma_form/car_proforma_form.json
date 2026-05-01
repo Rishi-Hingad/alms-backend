@@ -22,9 +22,9 @@
   },
   {
    "fieldname": "company",
-   "fieldtype": "Select",
+   "fieldtype": "Link",
    "label": "Company",
-   "options": "Eazy Assets\nALD"
+   "options": "Vendor Master"
   },
   {
    "fieldname": "quotation_form",
@@ -41,6 +41,7 @@
    "options": "Yes\nNo"
   },
   {
+   "depends_on": "eval:doc.proforma_invoice_received == \"Yes\"",
    "fieldname": "proforma_invoice_document",
    "fieldtype": "Attach",
    "label": "Proforma Invoice Document"
@@ -52,7 +53,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-02-17 18:07:38.066935",
+ "modified": "2026-05-01 09:55:35.410842",
  "modified_by": "Administrator",
  "module": "CRMS",
  "name": "Car Proforma Form",
