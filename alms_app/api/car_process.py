@@ -105,7 +105,7 @@ def acknowledgement_email_for_employee(user, form_name, link):
         subject=subject,
         body=body,
         recipient_email=user.email_id,
-        bcc_list=emailer.get_bcc_list()
+        bcc_list=emailer.get_bcc_list(template_type="Acknowledgement")
     )
 
 def acknowledgement_email_for_finance(user, form_name, company):
@@ -113,6 +113,7 @@ def acknowledgement_email_for_finance(user, form_name, company):
     email_master = EmailMaster()
 
     recipient_emails = email_master.finance_team_emails
+    finance_names = email_master.finance_team_names
 
     if not recipient_emails:
         frappe.log_error("No Finance Team emails found", "Email Error")
@@ -130,7 +131,7 @@ def acknowledgement_email_for_finance(user, form_name, company):
         "form_name": form_name,
         "company": company,
         "link": link,
-        "finance_team": ", ".join(email_master.finance_team_names)
+        "finance_team": ", ".join(finance_names) if finance_names else "Finance Team"
     }
 
     subject = frappe.render_template(template.subject, context)
@@ -139,7 +140,8 @@ def acknowledgement_email_for_finance(user, form_name, company):
     emailer.send(
         subject=subject,
         body=body,
-        recipient_email="imran.shaikh@merillife.com"
+        recipient_email=recipient_emails,
+        bcc_list=emailer.get_bcc_list(template_type="Acknowledgement")
     )
 
 
@@ -218,17 +220,19 @@ def car_form_fill():
                 "document_field": "agreement_document",
                 "status_field": "car_delivery",
                 "date_field": "delivery_date",
-                "next_route": "car-contract-form",
-                "next_label": "Car Contract Form"
-            },
-            "Car Contract Form": {
-                "document_field": "contract_document",
-                "status_field": "contract_signed",
-                "date_field": "contract_start_date",
-                "contract_field": "contract_number",
                 "next_route": None,
                 "next_label": None
-            }
+                # "next_route": "car-contract-form",
+                # "next_label": "Car Contract Form"
+            },
+            # "Car Contract Form": {
+            #     "document_field": "contract_document",
+            #     "status_field": "contract_signed",
+            #     "date_field": "contract_start_date",
+            #     "contract_field": "contract_number",
+            #     "next_route": None,
+            #     "next_label": None
+            # }
         }
 
         if form_name not in FORM_CONFIG:
@@ -288,7 +292,6 @@ def car_form_fill():
         acknowledgement_email_for_finance(user_doc, form_name, company)
 
         # Send Next Stage Email (if exists)
-        print("Config for next stage:", config)
         if config.get("next_route"):
             next_link = (
                 f"{frappe.utils.get_url()}/"

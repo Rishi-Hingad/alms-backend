@@ -1,6 +1,7 @@
 {
  "actions": [],
  "allow_rename": 1,
+ "autoname": "format:{quotation_form}-{###}",
  "creation": "2025-03-01 12:32:06.722826",
  "doctype": "DocType",
  "engine": "InnoDB",
@@ -59,10 +60,11 @@
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-05-01 10:02:18.748120",
+ "modified": "2026-05-02 10:30:07.164930",
  "modified_by": "Administrator",
  "module": "CRMS",
  "name": "Car Delivery Form",
+ "naming_rule": "Expression",
  "owner": "Administrator",
  "permissions": [
   {
