@@ -1,7 +1,7 @@
 {
  "actions": [],
  "allow_rename": 1,
- "autoname": "field:quotation_form",
+ "autoname": "format:{quotation_form}-{###}",
  "creation": "2025-02-10 15:00:48.507045",
  "doctype": "DocType",
  "engine": "InnoDB",
@@ -53,11 +53,11 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-05-01 09:55:35.410842",
+ "modified": "2026-05-02 10:30:17.086001",
  "modified_by": "Administrator",
  "module": "CRMS",
  "name": "Car Proforma Form",
- "naming_rule": "By fieldname",
+ "naming_rule": "Expression",
  "owner": "Administrator",
  "permissions": [
   {
