@@ -1,0 +1,176 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2025-11-06 15:51:40.474867",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "current_approver_details_section",
+  "action",
+  "status",
+  "remarks",
+  "column_break_viex",
+  "current_stage",
+  "next_stage",
+  "approved_by",
+  "approver_user",
+  "action_at",
+  "next_approver_details_section",
+  "next_approver",
+  "next_approver_role",
+  "assigned_at",
+  "column_break_gkyp",
+  "next_approver_user",
+  "next_approver_team",
+  "escalation_details_section",
+  "escalation_matrix",
+  "next_escalation_approver",
+  "column_break_dlko",
+  "next_escalation_time",
+  "next_escalation_approver_role"
+ ],
+ "fields": [
+  {
+   "fieldname": "action",
+   "fieldtype": "Select",
+   "label": "Action",
+   "options": "\nApproved\nRejected"
+  },
+  {
+   "fieldname": "status",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Status"
+  },
+  {
+   "fieldname": "column_break_viex",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "current_stage",
+   "fieldtype": "Int",
+   "in_list_view": 1,
+   "label": "Current Stage"
+  },
+  {
+   "fieldname": "next_stage",
+   "fieldtype": "Int",
+   "in_list_view": 1,
+   "label": "Next Stage"
+  },
+  {
+   "fieldname": "approved_by",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Approved By",
+   "options": "Employee"
+  },
+  {
+   "fieldname": "next_approver",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Next Approver",
+   "options": "Employee"
+  },
+  {
+   "fieldname": "next_approver_user",
+   "fieldtype": "Read Only",
+   "label": "Next Approver User"
+  },
+  {
+   "fieldname": "approver_user",
+   "fieldtype": "Read Only",
+   "label": "Approver User"
+  },
+  {
+   "fieldname": "next_approver_role",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Next Approver Role",
+   "options": "Role"
+  },
+  {
+   "fieldname": "remarks",
+   "fieldtype": "Small Text",
+   "label": "Remarks"
+  },
+  {
+   "fieldname": "next_escalation_time",
+   "fieldtype": "Datetime",
+   "label": "Next Escalation Time"
+  },
+  {
+   "fieldname": "next_escalation_approver",
+   "fieldtype": "Link",
+   "label": "Next Escalation Approver",
+   "options": "Employee"
+  },
+  {
+   "fieldname": "next_escalation_approver_role",
+   "fieldtype": "Link",
+   "label": "Next Escalation Approver Role",
+   "options": "Role"
+  },
+  {
+   "fieldname": "escalation_matrix",
+   "fieldtype": "Link",
+   "label": "Escalation Matrix",
+   "options": "Escalation Matrix"
+  },
+  {
+   "fieldname": "next_approver_team",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Next Approver Team",
+   "options": "Team Master"
+  },
+  {
+   "fieldname": "current_approver_details_section",
+   "fieldtype": "Section Break",
+   "label": "Current Approver Details"
+  },
+  {
+   "fieldname": "next_approver_details_section",
+   "fieldtype": "Section Break",
+   "label": "Next Approver Details"
+  },
+  {
+   "fieldname": "column_break_gkyp",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "escalation_details_section",
+   "fieldtype": "Section Break",
+   "label": "Escalation Details"
+  },
+  {
+   "fieldname": "column_break_dlko",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "action_at",
+   "fieldtype": "Datetime",
+   "label": "Action At"
+  },
+  {
+   "fieldname": "assigned_at",
+   "fieldtype": "Datetime",
+   "label": "Assigned At"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2026-04-22 10:30:43.974087",
+ "modified_by": "Administrator",
+ "module": "Approval",
+ "name": "Approval Entry Details",
+ "owner": "Administrator",
+ "permissions": [],
+ "row_format": "Dynamic",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}
