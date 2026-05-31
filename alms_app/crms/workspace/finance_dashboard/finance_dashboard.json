@@ -27,7 +27,7 @@
  "is_hidden": 0,
  "label": "Finance Dashboard",
  "links": [],
- "modified": "2026-05-18 11:18:46.542825",
+ "modified": "2026-05-21 12:09:37.967684",
  "modified_by": "Administrator",
  "module": "CRMS",
  "name": "Finance Dashboard",
@@ -74,9 +74,19 @@
  "public": 1,
  "quick_lists": [
   {
+   "document_type": "Car Quotation",
+   "label": "XYZ Quotations",
+   "quick_list_filter": "[[\"Car Quotation\",\"finance_company\",\"=\",\"XYZ\",false],[\"Car Quotation\",\"status\",\"in\",[\"Approved\",\"Pending\",null],false]]"
+  },
+  {
    "document_type": "Car Process",
    "label": "Car Onboards Forms",
    "quick_list_filter": "[]"
+  },
+  {
+   "document_type": "Car Quotation",
+   "label": "Easy Assets Quotation",
+   "quick_list_filter": "[[\"Car Quotation\",\"finance_company\",\"=\",\"Eazy Assets\",false],[\"Car Quotation\",\"status\",\"in\",[\"Pending\",\"Approved\",null],false]]"
   },
   {
    "document_type": "Purchase Team Form",
@@ -85,18 +95,8 @@
   },
   {
    "document_type": "Car Quotation",
-   "label": "Easy Assets Quotation",
-   "quick_list_filter": "[[\"Car Quotation\",\"finance_company\",\"=\",\"Easy Assets\",false],[\"Car Quotation\",\"status\",\"in\",[\"Pending\",\"Approved\",null],false]]"
-  },
-  {
-   "document_type": "Car Quotation",
    "label": "ALD Quotations",
    "quick_list_filter": "[[\"Car Quotation\",\"finance_company\",\"=\",\"ALD\",false],[\"Car Quotation\",\"status\",\"in\",[\"Approved\",\"Pending\",null],false]]"
-  },
-  {
-   "document_type": "Car Quotation",
-   "label": "XYZ Quotations",
-   "quick_list_filter": "[[\"Car Quotation\",\"finance_company\",\"=\",\"XYZ\",false],[\"Car Quotation\",\"status\",\"in\",[\"Approved\",\"Pending\",null],false]]"
   }
  ],
  "roles": [

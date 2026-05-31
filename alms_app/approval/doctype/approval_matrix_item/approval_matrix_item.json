@@ -1,0 +1,163 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2024-05-11 13:28:05.527977",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "general_section",
+  "approval_stage",
+  "approver_type",
+  "from_hierarchy",
+  "send_email",
+  "email_template",
+  "column_break_ffup",
+  "approval_stage_name",
+  "employee",
+  "role",
+  "user",
+  "team",
+  "escalation_tab_section",
+  "is_escalation",
+  "fallback_role",
+  "allow_manual_ride",
+  "column_break_xubk",
+  "escalation_ref"
+ ],
+ "fields": [
+  {
+   "columns": 1,
+   "fieldname": "approval_stage",
+   "fieldtype": "Int",
+   "in_list_view": 1,
+   "label": "Approval Level"
+  },
+  {
+   "columns": 2,
+   "fieldname": "approval_stage_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Approval Stage Name"
+  },
+  {
+   "columns": 1,
+   "fieldname": "approver_type",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Approver Type",
+   "options": "\nRole\nUser\nTeam",
+   "reqd": 1
+  },
+  {
+   "columns": 1,
+   "depends_on": "eval:doc.approver_type === \"Role\"",
+   "fieldname": "role",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Role",
+   "options": "Role"
+  },
+  {
+   "columns": 2,
+   "fieldname": "user",
+   "fieldtype": "Read Only",
+   "in_list_view": 1,
+   "label": "User"
+  },
+  {
+   "columns": 1,
+   "default": "0",
+   "fieldname": "from_hierarchy",
+   "fieldtype": "Check",
+   "label": "From Hierarchy"
+  },
+  {
+   "fieldname": "column_break_ffup",
+   "fieldtype": "Column Break"
+  },
+  {
+   "columns": 2,
+   "depends_on": "eval:doc.approver_type === \"User\"",
+   "fieldname": "employee",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Employee",
+   "options": "Employee"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_escalation",
+   "fieldtype": "Check",
+   "label": "Is Escalation Allowed?"
+  },
+  {
+   "fieldname": "escalation_ref",
+   "fieldtype": "Link",
+   "label": "Escalation Ref",
+   "options": "Escalation Matrix"
+  },
+  {
+   "default": "0",
+   "fieldname": "allow_manual_ride",
+   "fieldtype": "Check",
+   "label": "Allow Manual Ride"
+  },
+  {
+   "fieldname": "fallback_role",
+   "fieldtype": "Link",
+   "label": "Fallback Role",
+   "options": "Role"
+  },
+  {
+   "default": "0",
+   "fieldname": "send_email",
+   "fieldtype": "Check",
+   "label": "Send Email"
+  },
+  {
+   "depends_on": "eval:doc.send_email === 1",
+   "fieldname": "email_template",
+   "fieldtype": "Link",
+   "label": "Email Template",
+   "mandatory_depends_on": "eval:doc.send_email === 1",
+   "options": "Email Template"
+  },
+  {
+   "fieldname": "general_section",
+   "fieldtype": "Section Break",
+   "label": "General"
+  },
+  {
+   "fieldname": "escalation_tab_section",
+   "fieldtype": "Section Break",
+   "label": "Escalation Tab"
+  },
+  {
+   "fieldname": "column_break_xubk",
+   "fieldtype": "Column Break"
+  },
+  {
+   "depends_on": "eval:doc.approver_type === \"Team\"",
+   "fieldname": "team",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Team",
+   "options": "Team Master"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2026-04-23 16:23:16.462173",
+ "modified_by": "Administrator",
+ "module": "Approval",
+ "name": "Approval Matrix Item",
+ "owner": "Administrator",
+ "permissions": [],
+ "row_format": "Dynamic",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}
