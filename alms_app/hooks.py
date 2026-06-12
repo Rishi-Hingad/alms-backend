@@ -60,7 +60,7 @@ fixtures=[
 #     "dt": "Car Indent Form"
 #   },
 #   {
-#     "dt": "Employee Master"
+#     "dt": "Employee"
 #   },
 #   {
 #     "dt": "Employee Department"
@@ -195,7 +195,8 @@ app_include_css = [
 # web_include_css = "/assets/alms_app/css/alms_app.css"
 # web_include_js = "/assets/alms_app/js/alms_app.js"
 app_include_js = [
-    "/assets/alms_app/js/alms_listview_handler.js"
+    "/assets/alms_app/js/alms_listview_handler.js",
+    "/assets/alms_app/js/approval_ui.js"
 ]
 
 # include custom scss in every website theme (without file extension ".scss")
@@ -321,8 +322,15 @@ app_include_js = [
 # }
 
 doc_events = {
+    "*": {
+        "on_update": "alms_app.approval.approval_router.trigger_approval_if_matrix_exists",
+        "on_submit": "alms_app.approval.approval_router.trigger_approval_if_matrix_exists"
+    },
     "Invoice Batch": {
-        "on_update": "alms_app.crms.doctype.invoice_batch.invoice_batch.create_invoice_details_on_approval"
+        "on_update": [
+            "alms_app.crms.doctype.invoice_batch.invoice_batch.create_invoice_details_on_approval",
+            "alms_app.approval.approval_router.trigger_approval_if_matrix_exists"
+        ]
     }
 }
 

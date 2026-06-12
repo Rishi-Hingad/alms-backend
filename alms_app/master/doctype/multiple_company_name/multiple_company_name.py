@@ -1,9 +1,9 @@
-# Copyright (c) 2024, Harsh and contributors
+# Copyright (c) 2025, Blue Phoenix and contributors
 # For license information, please see license.txt
 
 # import frappe
 from frappe.model.document import Document
 
 
-class EmployeeMaster(Document):
+class MultipleCompanyName(Document):
 	pass

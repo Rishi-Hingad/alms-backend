@@ -68,7 +68,11 @@
   "status",
   "column_break_lpns",
   "finance_team_remarks",
-  "finance_head_remarks"
+  "finance_head_remarks",
+  "is_submitted",
+  "approval_initiated",
+  "approval_entry",
+  "approval_trail_html"
  ],
  "fields": [
   {
@@ -343,7 +347,7 @@
    "fieldname": "employee_name",
    "fieldtype": "Link",
    "label": "Employee Name",
-   "options": "Employee Master",
+   "options": "Employee",
    "unique": 1
   },
   {
@@ -379,35 +383,69 @@
   {
    "fieldname": "finance_team_remarks",
    "fieldtype": "Data",
-   "label": "Finance Team Remarks"
+   "label": "Finance Team Remarks",
+   "read_only": 1
   },
   {
    "fieldname": "finance_head_remarks",
    "fieldtype": "Data",
-   "label": "Finance Head Remarks"
+   "label": "Finance Head Remarks",
+   "read_only": 1
   },
   {
    "fieldname": "finance_team_status",
    "fieldtype": "Select",
    "label": "Finance Team Status",
-   "options": "Pending\nApproved\nRejected"
+   "options": "Pending\nApproved\nRejected",
+   "read_only": 1
   },
   {
    "fieldname": "finance_head_status",
    "fieldtype": "Select",
    "label": "Finance Head Status",
-   "options": "Pending\nApproved\nRejected"
+   "options": "Pending\nApproved\nRejected",
+   "read_only": 1
   },
   {
    "fieldname": "status",
    "fieldtype": "Select",
    "label": "Status",
-   "options": "Pending\nApproved\nRejected"
+   "options": "Pending\nApproved\nRejected",
+   "read_only": 1
   },
   {
    "fieldname": "approval_tab",
    "fieldtype": "Tab Break",
    "label": "Approval"
+  },
+  {
+   "fieldname": "is_submitted",
+   "fieldtype": "Check",
+   "label": "Is Submitted",
+   "default": "0",
+   "read_only": 1,
+   "hidden": 1
+  },
+  {
+   "fieldname": "approval_initiated",
+   "fieldtype": "Check",
+   "label": "Approval Initiated",
+   "default": "0",
+   "read_only": 1,
+   "hidden": 1
+  },
+  {
+   "fieldname": "approval_entry",
+   "fieldtype": "Link",
+   "label": "Approval Entry",
+   "options": "Approval Entry",
+   "read_only": 1,
+   "hidden": 1
+  },
+  {
+   "fieldname": "approval_trail_html",
+   "fieldtype": "HTML",
+   "label": "Approval Trail"
   }
  ],
  "index_web_pages_for_search": 1,
@@ -428,6 +466,30 @@
    "read": 1,
    "report": 1,
    "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Finance Team",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Finance Head",
    "share": 1,
    "write": 1
   }

@@ -91,7 +91,7 @@
    "fieldname": "employee_name",
    "fieldtype": "Link",
    "label": "Employee Name",
-   "options": "Employee Master",
+   "options": "Employee",
    "unique": 1
   },
   {

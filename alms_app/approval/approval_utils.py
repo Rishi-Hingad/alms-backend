@@ -1,6 +1,6 @@
 import frappe
 from frappe import _
-from vms.approval.approval_router import get_role_based_approver
+from alms_app.approval.approval_router import get_role_based_approver
 
 
 def _norm_approval_stage(val):
@@ -20,20 +20,26 @@ def _entry_row_display_stage(row):
     status = (getattr(row, "status", None) or "").strip()
     if status == "Pending":
         n = _norm_approval_stage(getattr(row, "next_stage", None))
-        if n is not None and n > 0:
+        if n is not None and n >= 0:
             return n
-        return _norm_approval_stage(getattr(row, "current_stage", None))
+        n = _norm_approval_stage(getattr(row, "current_stage", None))
+        if n is not None and n >= 0:
+            return n
+        return None
     n = _norm_approval_stage(getattr(row, "current_stage", None))
-    if n is not None and n > 0:
+    if n is not None and n >= 0:
         return n
-    return _norm_approval_stage(getattr(row, "next_stage", None))
+    n = _norm_approval_stage(getattr(row, "next_stage", None))
+    if n is not None and n >= 0:
+        return n
+    return None
 
 
 def _employee_people(employee_id):
     if not employee_id:
         return []
-    names = frappe.db.get_value("Employee", employee_id, "full_name") or ""
-    emails = frappe.db.get_value("Employee", employee_id, "user_id") or ""
+    names = frappe.db.get_value("Employee", employee_id, "employee_name") or ""
+    emails = frappe.db.get_value("Employee", employee_id, "company_email") or ""
     return [
         {
             "employee_id": employee_id,
@@ -60,6 +66,7 @@ def _pending_row_superseded(approval_entry_list, idx, stage, approval_row):
 
 @frappe.whitelist(allow_guest=False)
 def get_approval_trail(doctype, docname):
+    # print("Inside get_approval_trail")
     try:
         approval_trail = []
         approval_entries = frappe.get_all(
@@ -78,7 +85,11 @@ def get_approval_trail(doctype, docname):
         next_approval_stage = None
 
         for approval_entry in approval_entries:
-            doc = frappe.get_doc("Approval Entry", approval_entry)
+            frappe.flags.ignore_permissions = True
+            try:
+                doc = frappe.get_doc("Approval Entry", approval_entry)
+            finally:
+                frappe.flags.ignore_permissions = False
 
             approval_matrix_items = frappe.get_all(
                 "Approval Matrix Item",
@@ -124,13 +135,8 @@ def get_approval_trail(doctype, docname):
                 if dt:
                     action_line = f"{'Approved' if approval_row.status == 'Approved' else 'Rejected'} On: {frappe.utils.format_datetime(dt, 'dd-MM-YYYY HH:mm:ss')}"
                
-                # Concrete approver is enough; avoid repeating matrix role (e.g. HOD)
-                if getattr(approval_row, "approved_by", None):
-                    role_out_ar = None
-                    team_out_ar = None
-                else:
-                    role_out_ar = matrix_row.get("role")
-                    team_out_ar = matrix_row.get("team")
+                role_out_ar = matrix_row.get("role")
+                team_out_ar = matrix_row.get("team")
                 approval_trail.append({
                     "label": label,
                     "variant": variant,
@@ -161,27 +167,27 @@ def get_approval_trail(doctype, docname):
                         role_out = None
                         team_out = None
                     elif next_role:
-                        next_people = {
+                        next_people = [{
                             "employee_id": next_role,
                             "full_name": next_role or "",
                             "email": "",
-                        }
+                        }]
                         role_out = next_role
                         team_out = None
                     elif next_team:
-                        next_people = {
+                        next_people = [{
                             "employee_id": next_team,
                             "full_name": next_team or "",
                             "email": "",
-                        }
+                        }]
                         role_out = None
                         team_out = next_team
                     else:
-                        next_people = {
+                        next_people = [{
                             "employee_id": next_matrix_row.get("employee"),
                             "full_name": next_matrix_row.get("employee") or "",
                             "email": "",
-                        }
+                        }]
                         role_out = next_matrix_row.get("role")
                         team_out = next_matrix_row.get("team")
 
@@ -206,27 +212,27 @@ def get_approval_trail(doctype, docname):
                     role_out = None
                     team_out = None
                 elif next_role:
-                    people = {
+                    people = [{
                         "employee_id": next_role,
                         "full_name": next_role or "",
                         "email": "",
-                    }
+                    }]
                     role_out = next_role
                     team_out = None
                 elif next_team:
-                    people = {
+                    people = [{
                         "employee_id": next_team,
                         "full_name": next_team or "",
                         "email": "",
-                    }
+                    }]
                     role_out = None
                     team_out = next_team
                 else:
-                    people = {
+                    people = [{
                         "employee_id": matrix_row.get("employee"),
                         "full_name": matrix_row.get("employee") or "",
                         "email": "",
-                    }
+                    }]
                     role_out = matrix_row.get("role")
                     team_out = matrix_row.get("team")
                 approval_trail.append({
@@ -275,18 +281,30 @@ def get_approval_trail(doctype, docname):
             if employee:
                 people = _employee_people(employee)
             elif role:
-                owner = frappe.get_value(doctype,docname,"owner")
-                owner = frappe.get_value("Employee",{"user_id":owner},"name")
+                owner = frappe.db.get_value(doctype, docname, "owner")
+                emp = ""
+                if frappe.db.has_column(doctype, "employee_code"):
+                    emp = frappe.db.get_value(doctype, docname, "employee_code")
+                elif frappe.db.has_column(doctype, "employee"):
+                    emp = frappe.db.get_value(doctype, docname, "employee")
                 
-                employee = get_role_based_approver(
+                owner_emp = emp
+                if not owner_emp:
+                    owner_emp = frappe.db.get_value("Employee", {"user_id": owner, "status": "Active"}, "name")
+                
+                approver_dict = get_role_based_approver(
                     role,
-                    owner
+                    owner_emp
                 )
-                people = [{
-                    "employee_id": employee,
-                    "full_name": employee,
-                    "email": frappe.get_value("Employee",employee,"user_id"),
-                }]
+                if approver_dict:
+                    employee = approver_dict.get("employee")
+                    people = [{
+                        "employee_id": employee,
+                        "full_name": frappe.db.get_value("Employee", employee, "employee_name") or employee,
+                        "email": approver_dict.get("user") or frappe.db.get_value("Employee", employee, "company_email"),
+                    }]
+                else:
+                    people = []
             elif team:
                 people =[{
                     "employee_id": f"{team} Team",
@@ -302,12 +320,14 @@ def get_approval_trail(doctype, docname):
                 "team": matrix_row.get("team"),
                 "stage": stage,
             })
+        # print("Returning approval_trail:", approval_trail)
         
         return {
             "status": "success",
             "data": approval_trail
         }
     except Exception as e:
-        frappe.log_error(frappe.get_traceback(), "Get Approval Trail Error")
-        frappe.local.response["http_status_code"] = 500
-        return {"status": "error", "message": _("Internal server error: {0}").format(str(e))}
+        import traceback
+        traceback.print_exc()
+        # frappe.log_error(message=str(e), title="Get Approval Trail Error")
+        return {"status": "error", "message": f"Internal server error: {str(e)}"}

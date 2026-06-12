@@ -176,7 +176,7 @@ def car_form_fill():
         if not all([user, company, quotation_id, form_name]):
             return {"status": "error", "message": "Missing required fields"}
 
-        user_doc = frappe.get_doc("Employee Master", user)
+        user_doc = frappe.get_doc("Employee", user)
 
         # Configuration Mapping
         FORM_CONFIG = {

@@ -2,14 +2,10 @@ frappe.listview_settings["Car Quotation"] = {
 
     onload: async function (listview) {
 
-        const r = await frappe.call({
-            method: "alms_app.crms.doctype.car_indent_form.car_indent_form.management",
-            args: {
-                current_frappe_user: frappe.session.user
-            }
-        });
-
-        const role = (r.message || "").toLowerCase();
+        let role = "";
+        if (frappe.user_roles.includes("Administrator")) role = "administrator";
+        else if (frappe.user_roles.includes("Finance Head")) role = "finance head";
+        else if (frappe.user_roles.includes("Finance Team") || frappe.user_roles.includes("Finance")) role = "finance";
 
         if (["finance", "administrator", "finance head"].includes(role)) {
 
@@ -44,7 +40,8 @@ frappe.listview_settings["Car Quotation"] = {
                                     "total_kms", "interest_rate", "ex_showroom_amount",
                                     "accessories", "total_discount",
                                     "ex_showroom_amount_net_of_discount",
-                                    "registration_charges", "financed_amount", "total_emi", "variant"
+                                    "registration_charges", "financed_amount", "total_emi", "variant",
+                                    "finance_team_status", "finance_head_status", "finance_team_remarks", "finance_head_remarks"
                                 ]
                             }
                         });
@@ -56,7 +53,7 @@ frappe.listview_settings["Car Quotation"] = {
                             return;
                         }
 
-                        openQuotationDialog(data, role, purchaseForm);
+                        openQuotationDialog(data, role, purchaseForm, listview);
                     },
                     "Select Purchase Form",
                     "Proceed"
@@ -92,7 +89,7 @@ function formatPercent(val) {
 /* ================================
  MAIN DIALOG
 ================================ */
-function openQuotationDialog(data, role, purchaseForm) {
+function openQuotationDialog(data, role, purchaseForm, listview) {
 
     let rankedData = rankVendors([...data]);
     let best = rankedData[0];
@@ -116,7 +113,11 @@ function openQuotationDialog(data, role, purchaseForm) {
         { label: "Net Amount", key: "ex_showroom_amount_net_of_discount" },
         { label: "Registration", key: "registration_charges" },
         { label: "Financed Amount", key: "financed_amount" },
-        { label: "Total EMI", key: "total_emi" }
+        { label: "Total EMI", key: "total_emi" },
+        { label: "Finance Team Status", key: "finance_team_status" },
+        { label: "Finance Team Remarks", key: "finance_team_remarks" },
+        { label: "Finance Head Status", key: "finance_head_status" },
+        { label: "Finance Head Remarks", key: "finance_head_remarks" }
     ];
 
     /* ================================
@@ -134,9 +135,9 @@ function openQuotationDialog(data, role, purchaseForm) {
                 <tr style="background:#f1f5f9;">
                     <!-- FIELD COLUMN -->
                     <th style="
-                        min-width:130px;
-                        max-width:130px;
-                        width:130px;
+                        min-width:180px;
+                        max-width:180px;
+                        width:180px;
                         background:#e2e8f0;
                         position:sticky;
                         left:0;
@@ -173,8 +174,8 @@ function openQuotationDialog(data, role, purchaseForm) {
                             position:sticky;
                             left:0;
                             z-index:1;
-                            width:130px;
-                            max-width:130px;
+                            width:180px;
+                            max-width:180px;
                             white-space:nowrap;
                         ">
                             ${f.label}
@@ -284,6 +285,7 @@ function openQuotationDialog(data, role, purchaseForm) {
 
             frappe.msgprint(`${action} successful`);
             d.hide();
+            if (listview) listview.refresh();
 
         } catch (e) {
             console.error(e);

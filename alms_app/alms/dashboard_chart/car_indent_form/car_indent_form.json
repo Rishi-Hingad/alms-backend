@@ -29,5 +29,43 @@
  "type": "Bar",
  "use_report_chart": 0,
  "value_based_on": "",
- "y_axis": []
+ "y_axis": [],
+ "fields": [
+  {
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "label": "Status",
+   "options": "Pending\nApproved\nRejected",
+   "default": "Pending"
+  },
+  {
+   "fieldname": "is_submitted",
+   "fieldtype": "Check",
+   "label": "Is Submitted",
+   "default": "0",
+   "read_only": 1,
+   "hidden": 1
+  },
+  {
+   "fieldname": "approval_initiated",
+   "fieldtype": "Check",
+   "label": "Approval Initiated",
+   "default": "0",
+   "read_only": 1,
+   "hidden": 1
+  },
+  {
+   "fieldname": "approval_entry",
+   "fieldtype": "Link",
+   "label": "Approval Entry",
+   "options": "Approval Entry",
+   "read_only": 1,
+   "hidden": 1
+  },
+  {
+   "fieldname": "approval_trail_html",
+   "fieldtype": "HTML",
+   "label": "Approval Trail"
+  }
+ ]
 }

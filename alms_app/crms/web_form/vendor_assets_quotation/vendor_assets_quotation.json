@@ -21,7 +21,7 @@
  "list_columns": [],
  "login_required": 0,
  "max_attachment_size": 24,
- "modified": "2026-05-01 15:13:46.976396",
+ "modified": "2026-06-10 16:43:57.127611",
  "modified_by": "Administrator",
  "module": "CRMS",
  "name": "vendor-assets-quotation",
@@ -151,7 +151,7 @@
    "max_value": 0,
    "precision": "",
    "read_only": 0,
-   "reqd": 1,
+   "reqd": 0,
    "show_in_filter": 0
   },
   {
@@ -159,7 +159,7 @@
    "fieldname": "interest_rate",
    "fieldtype": "Data",
    "hidden": 0,
-   "label": "Interest Rate",
+   "label": "Interest Rate (In %)",
    "max_length": 0,
    "max_value": 0,
    "precision": "",
@@ -198,7 +198,7 @@
    "fieldname": "gst",
    "fieldtype": "Data",
    "hidden": 0,
-   "label": "GST",
+   "label": "GST (In Amount)",
    "max_length": 0,
    "max_value": 0,
    "precision": "",
@@ -316,7 +316,7 @@
    "fieldname": "residual_value_percent",
    "fieldtype": "Data",
    "hidden": 0,
-   "label": "Residual Value Percent",
+   "label": "Residual Value (In %)",
    "max_length": 0,
    "max_value": 0,
    "precision": "",
@@ -478,6 +478,19 @@
    "precision": "",
    "read_only": 0,
    "reqd": 1,
+   "show_in_filter": 0
+  },
+  {
+   "allow_read_on_all_link_options": 0,
+   "fieldname": "submission_datetime",
+   "fieldtype": "Datetime",
+   "hidden": 1,
+   "label": "Submission Date and Time",
+   "max_length": 0,
+   "max_value": 0,
+   "precision": "",
+   "read_only": 1,
+   "reqd": 0,
    "show_in_filter": 0
   }
  ]

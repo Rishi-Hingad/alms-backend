@@ -25,7 +25,7 @@ async function loadData(CONFIG) {
     try {
         UI.showLoading();
 
-        const result = await fetchIndentData(CONFIG.baseUrl, CONFIG.requestId);
+        const result = await fetchIndentData(CONFIG.baseUrl, CONFIG.requestId, CONFIG.token);
         const payload = result.message;
         if (!payload.success) throw new Error(payload.message || "Failed");
 
@@ -54,6 +54,9 @@ function bindEvents(CONFIG) {
 
     document.getElementById("rejectBtn")
         ?.addEventListener("click", () => handleReject(CONFIG));
+
+    document.getElementById("revokeBtn")
+        ?.addEventListener("click", () => handleRevokeReject(CONFIG));
 }
 
 
@@ -82,7 +85,9 @@ async function handleApprove(CONFIG) {
 
         UI.showFormSuccess("Approved successfully ✅");
 
-        loadData(CONFIG);
+        setTimeout(() => {
+            window.location.href = "/approved";
+        }, 1000);
 
     } catch (err) {
         UI.showFormError(err.message);
@@ -117,6 +122,46 @@ async function handleReject(CONFIG) {
         UI.showFormSuccess("Rejected successfully ❌");
 
         loadData(CONFIG);
+
+    } catch (err) {
+        UI.showFormError(err.message);
+    } finally {
+        UI.setLoadingState(false);
+    }
+}
+
+async function handleRevokeReject(CONFIG) {
+
+    const remarks = UI.getRemarks();
+
+    if (!UI.validateRemarks(remarks)) return;
+    if (document.getElementById("revokeBtn").disabled) return;
+
+    if (!confirm("Are you sure you want to revoke your previous approval and reject this request? This will restart the approval process from the beginning.")) {
+        return;
+    }
+
+    try {
+        UI.setLoadingState(true);
+
+        const res = await processIndent(
+            CONFIG.baseUrl,
+            CONFIG.requestId,
+            remarks,
+            CONFIG.token,
+            "revoke_reject"
+        );
+
+        if (res.status === "no_change") {
+            UI.showFormError(res.message);
+            return;
+        }
+
+        UI.showFormSuccess("Revoked and Rejected successfully ❌");
+
+        setTimeout(() => {
+            window.location.href = "/rejected";
+        }, 1000);
 
     } catch (err) {
         UI.showFormError(err.message);

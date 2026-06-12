@@ -54,7 +54,15 @@
   "quotation_details_section",
   "no_of_quotations",
   "column_break_hhpm",
-  "all_quotations_ref_no"
+  "all_quotations_ref_no",
+  "approval_timline_tab",
+  "approval_section",
+  "is_submitted",
+  "approval_initiated",
+  "approval_entry",
+  "approval_token",
+  "trail_section",
+  "approval_trail_html"
  ],
  "fields": [
   {
@@ -261,8 +269,9 @@
   },
   {
    "fieldname": "revised_make",
-   "fieldtype": "Data",
-   "label": "Revised Make"
+   "fieldtype": "Link",
+   "label": "Revised Make",
+   "options": "Car Make Master"
   },
   {
    "fieldname": "revised_color",
@@ -326,6 +335,56 @@
    "fieldtype": "Link",
    "label": "All Quotations Ref No.",
    "options": "Selected Vendor"
+  },
+  {
+   "fieldname": "approval_timline_tab",
+   "fieldtype": "Tab Break",
+   "label": "Approval Timline"
+  },
+  {
+   "fieldname": "approval_section",
+   "fieldtype": "Section Break",
+   "label": "Approval"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_submitted",
+   "fieldtype": "Check",
+   "hidden": 1,
+   "label": "Is Submitted",
+   "read_only": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "approval_initiated",
+   "fieldtype": "Check",
+   "hidden": 1,
+   "label": "Approval Initiated",
+   "read_only": 1
+  },
+  {
+   "fieldname": "approval_entry",
+   "fieldtype": "Link",
+   "hidden": 1,
+   "label": "Approval Entry",
+   "options": "Approval Entry",
+   "read_only": 1
+  },
+  {
+   "fieldname": "approval_token",
+   "fieldtype": "Data",
+   "hidden": 1,
+   "label": "Approval Token"
+  },
+  {
+   "fieldname": "trail_section",
+   "fieldtype": "Section Break",
+   "label": "Trail"
+  },
+  {
+   "fieldname": "approval_trail_html",
+   "fieldtype": "HTML",
+   "label": "Approval Trail"
   }
  ],
  "index_web_pages_for_search": 1,
@@ -339,7 +398,7 @@
    "link_fieldname": "employee_details"
   }
  ],
- "modified": "2026-04-29 10:25:42.169773",
+ "modified": "2026-06-05 14:59:03.073299",
  "modified_by": "Administrator",
  "module": "CRMS",
  "name": "Purchase Team Form",

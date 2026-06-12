@@ -68,7 +68,11 @@
   "lease_api_call",
   "api_message",
   "column_break_zecw",
-  "api_log_name"
+  "api_log_name",
+  "is_submitted",
+  "approval_initiated",
+  "approval_entry",
+  "approval_trail_html"
  ],
  "fields": [
   {
@@ -418,6 +422,35 @@
    "fieldname": "email_sent_to_all",
    "fieldtype": "Check",
    "label": "Email Sent to All"
+  },
+  {
+   "fieldname": "is_submitted",
+   "fieldtype": "Check",
+   "label": "Is Submitted",
+   "default": "0",
+   "read_only": 1,
+   "hidden": 1
+  },
+  {
+   "fieldname": "approval_initiated",
+   "fieldtype": "Check",
+   "label": "Approval Initiated",
+   "default": "0",
+   "read_only": 1,
+   "hidden": 1
+  },
+  {
+   "fieldname": "approval_entry",
+   "fieldtype": "Link",
+   "label": "Approval Entry",
+   "options": "Approval Entry",
+   "read_only": 1,
+   "hidden": 1
+  },
+  {
+   "fieldname": "approval_trail_html",
+   "fieldtype": "HTML",
+   "label": "Approval Trail"
   }
  ],
  "grid_page_length": 50,

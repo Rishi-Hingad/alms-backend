@@ -48,7 +48,7 @@
    "fieldname": "user",
    "fieldtype": "Link",
    "label": "User",
-   "options": "Employee Master",
+   "options": "Employee",
    "read_only": 1,
    "unique": 1
   },

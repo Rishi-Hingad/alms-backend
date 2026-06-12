@@ -4,12 +4,7 @@ let by_button = false;
  COMMON HELPERS
 ================================ */
 
-function getUserDesignation() {
-    return frappe.call({
-        method: "alms_app.crms.doctype.car_indent_form.car_indent_form.management",
-        args: { current_frappe_user: frappe.session.user }
-    });
-}
+
 
 function sendEmailSafe(name, type, payload = {}) {
     return frappe.call({
@@ -22,139 +17,16 @@ function sendEmailSafe(name, type, payload = {}) {
     });
 }
 
-function promptAction(label) {
-    return new Promise(resolve => {
-        frappe.prompt([
-            {
-                fieldname: 'action',
-                label: `Action for ${label}`,
-                fieldtype: 'Select',
-                options: ['Approved', 'Rejected'],
-                reqd: 1
-            },
-            {
-                fieldname: 'remarks',
-                label: `Remarks`,
-                fieldtype: 'Data',
-                reqd: 1
-            }
-        ], resolve, 'Action Required', 'Submit');
-    });
-}
 
-/* ================================
- STATUS BUTTON ENGINE
-================================ */
-
-function buildStatusButtons(frm, role) {
-    // frm.clear_custom_buttons();
-
-    const config = [
-        {
-            label: "Purchase Team",
-            field: "purchase_team_status",
-            remarks: "purchase_team_remarks",
-            depends_on: null,
-            email: {
-                Approved: "PurchaseTeam To PurchaseHead",
-                Rejected: "Reject PurchaseTeam to HR"
-            }
-        },
-        {
-            label: "Purchase Head",
-            field: "purchase_head_status",
-            remarks: "purchase_head_remarks",
-            depends_on: "purchase_team_status",
-            email: {
-                Approved: "PurchaseHead To FinanceTeam",
-                Rejected: "Reject PurchaseHead to PurchaseTeam"
-            }
-        }
-    ];
-
-    const permissions = {
-        "purchase": ["purchase_team_status"],
-        "purchase head": ["purchase_head_status"],
-        "administrator": ["purchase_team_status", "purchase_head_status"]
-    };
-
-    config.forEach(stage => {
-        const status = frm.doc[stage.field] || "Pending";
-        const canEdit = permissions[role]?.includes(stage.field);
-
-        const btn = frm.add_custom_button(
-            `${stage.label}: ${status}`,
-            async () => {
-                if (!canEdit) {
-                    frappe.msgprint("Read only access.");
-                    return;
-                }
-
-                if (
-                    role !== "administrator" &&
-                    stage.depends_on &&
-                    frm.doc[stage.depends_on] !== "Approved"
-                ) {
-                    frappe.msgprint("Previous stage must be approved first.");
-                    return;
-                }
-
-                by_button = true;
-
-                try {
-                    const values = await promptAction(stage.label);
-
-                    frm.set_value(stage.field, values.action);
-                    frm.set_value(stage.remarks, values.remarks);
-
-                    if (frm.is_dirty()) {
-                        await frm.save();
-                    }
-
-                    await sendEmailSafe(
-                        frm.doc.name,
-                        stage.email[values.action]
-                    );
-
-                    updateUI(frm);
-
-                } finally {
-                    by_button = false;
-                }
-            }
-        );
-
-        styleButton(btn, status, canEdit);
-    });
-}
-
-function styleButton(btn, status, canEdit) {
-    const colors = {
-        Approved: "darkgreen",
-        Rejected: "darkred",
-        Pending: "gray"
-    };
-
-    btn.css({
-        "background-color": colors[status],
-        "color": "white",
-        "cursor": canEdit ? "pointer" : "not-allowed",
-        "opacity": canEdit ? 1 : 0.6
-    });
-
-    if (!canEdit) btn.off("click");
-}
 
 /* ================================
  VENDOR EMAIL MODULE
 ================================ */
 
 function addVendorButton(frm, role) {
-    if (!["finance", "administrator"].includes(role)) return;
+    if (!["finance team", "finance", "administrator"].includes(role)) return;
 
-    const isApproved =
-        frm.doc.purchase_team_status === "Approved" &&
-        frm.doc.purchase_head_status === "Approved";
+    const isApproved = frm.doc.status === "Approved";
 
     const alreadySent = frm.doc.email_sent_to_all === 1;
 
@@ -218,7 +90,7 @@ function addVendorButton(frm, role) {
                 try {
                     console.log("STEP 3: Before save");
 
-                    if (frm.is_dirty()) {
+                    if (frm.is_dirty() && frm.perm[0] && frm.perm[0].write) {
                         await frm.save();
                     }
 
@@ -322,29 +194,18 @@ function addVendorButton(frm, role) {
 function applyAdminOverrides(frm, role) {
     const isAdmin = role === "administrator";
 
-    if (isAdmin) {
-        frm.set_df_property("purchase_team_status", "read_only", false);
-        frm.set_df_property("purchase_head_status", "read_only", false);
-
-        frm.set_df_property("purchase_team_remarks", "read_only", false);
-        frm.set_df_property("purchase_head_remarks", "read_only", false);
-    }
-
     frm.set_df_property("no_of_quotations", "read_only", isAdmin ? 0 : 1);
     frm.set_df_property("all_quotations_ref_no", "read_only", isAdmin ? 0 : 1);
 }
 
 async function updateUI(frm) {
-
-    const r = await getUserDesignation();
-    const role = (r.message || "").trim().toLowerCase();
+    let role = "";
+    if (frappe.user_roles.includes("Administrator")) role = "administrator";
+    else if (frappe.user_roles.includes("Finance Team")) role = "finance team";
+    else if (frappe.user_roles.includes("Finance")) role = "finance";
     frm.clear_custom_buttons();
 
-
     applyAdminOverrides(frm, role);
-
-    buildStatusButtons(frm, role);
-
     addVendorButton(frm, role);
 }
 
@@ -356,10 +217,45 @@ frappe.ui.form.on("Purchase Team Form", {
     refresh(frm) {
         updateUI(frm);
         calculateTotals(frm);
+        if (window.setup_approval_ui) {
+            window.setup_approval_ui(frm);
+        }
+
+        let is_admin = frappe.user_roles.includes("Administrator");
+        let legacy_status = {
+            'purchase_team_status': 'purchase_team_remarks',
+            'purchase_head_status': 'purchase_head_remarks',
+            'status': 'status'
+        };
+        for (let [status_f, remark_f] of Object.entries(legacy_status)) {
+            let val = frm.doc[status_f];
+            let hidden = !is_admin && (val !== 'Approved' && val !== 'Rejected');
+            frm.set_df_property(status_f, 'hidden', hidden);
+            frm.set_df_property(remark_f, 'hidden', hidden);
+        }
     },
 
     onload(frm) {
         frm.set_df_property("status", "read_only", true);
+
+        let legacy_fields = [
+            'purchase_team_status', 'purchase_team_remarks',
+            'purchase_head_status', 'purchase_head_remarks', 'status'
+        ];
+        legacy_fields.forEach(f => frm.set_df_property(f, 'read_only', 1));
+        
+        let is_admin = frappe.user_roles.includes("Administrator");
+        if (is_admin) {
+            frm.set_df_property("is_submitted", "hidden", 0);
+            frm.set_df_property("approval_initiated", "hidden", 0);
+            frm.set_df_property("approval_entry", "hidden", 0);
+        }
+    },
+    
+    validate(frm) {
+        if (!frm.doc.is_submitted) {
+            frm.set_value("is_submitted", 1);
+        }
     },
     kilometers_per_year: calculateTotals,
     tenure_in_years: calculateTotals,

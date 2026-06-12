@@ -37,8 +37,7 @@
   {
    "fieldname": "from_address",
    "fieldtype": "Data",
-   "label": "From Address",
-   "read_only": 1
+   "label": "From Address"
   },
   {
    "fieldname": "column_break_iqhs",
@@ -55,7 +54,7 @@
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2026-05-21 11:56:03.902328",
+ "modified": "2026-06-02 09:23:36.129764",
  "modified_by": "Administrator",
  "module": "ALMS",
  "name": "ALMS Settings",

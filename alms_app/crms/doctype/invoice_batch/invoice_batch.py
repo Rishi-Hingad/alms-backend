@@ -36,98 +36,25 @@ class InvoiceBatch(Document):
 
         self.name = make_autoname(prefix + ".#####")
 
+    def before_insert(self):
+        self.is_submitted = 1
+
+    def after_insert(self):
+        try:
+            from alms_app.approval.approval_router import trigger_approval_if_matrix_exists
+            trigger_approval_if_matrix_exists(self)
+        except Exception as e:
+            frappe.log_error(str(e), "trigger_approval_if_matrix_exists fallback")
+
     def on_update(self):
-        if self.status == "Completed" and not self.email_sent:
-            send_completed_email(self)
-            self.db_set("email_sent", 1)
+        try:
+            from alms_app.approval.approval_router import trigger_approval_if_matrix_exists
+            trigger_approval_if_matrix_exists(self)
+        except Exception as e:
+            frappe.log_error(str(e), "trigger_approval_if_matrix_exists fallback")
 
 
-def get_finance_team_2_users():
-    users = frappe.get_all(
-        "Management Team",
-        filters={"designation": "Finance2"},
-        fields=["email_id"]
-    )
 
-    emails = list({u.email_id.strip() for u in users if u.email_id})
-
-    if not emails:
-        frappe.log_error("No Finance2 emails found in Management Team")
-
-    return emails
-
-def send_completed_email(doc):
-
-    recipients = get_finance_team_2_users()
-
-    if not recipients:
-        frappe.log_error("No users found for Finance Team 2")
-        return
-
-    template = frappe.get_doc("Email Template", "Invoice Batch Completed")  
-
-    subject = frappe.render_template(template.subject, {"doc": doc})
-    message = frappe.render_template(template.response_html, {"doc": doc})
-
-    #Use your custom email service
-    email_service = EmailServices()
-
-    success = email_service.send(
-        subject=subject,
-        recipient_email=recipients,
-        body=message,
-        bcc_list=email_service.get_bcc_list("All")
-    )
-
-    if not success:
-        frappe.log_error(f"Failed to send email for {doc.name}", "Invoice Batch Email Error")
-
-def get_users_by_designation(designation):
-    users = frappe.get_all(
-        "Management Team",
-        filters={"designation": designation},
-        fields=["email_id"]
-    )
-
-    emails = list({u.email_id.strip() for u in users if u.email_id})
-
-    if not emails:
-        frappe.log_error(f"No {designation} emails found in Management Team")
-
-    return emails
-
-def send_approval_email(doc, recipients, template_name):
-
-    if not recipients:
-        frappe.log_error("No recipients found", "Approval Email Error")
-        return
-
-    template = frappe.get_doc("Email Template", template_name)
-
-    subject_rendered = frappe.render_template(template.subject, {"doc": doc})
-    message = frappe.render_template(template.response_html, {"doc": doc})
-
-    email_service = EmailServices()
-
-    success = email_service.send(
-        subject=subject_rendered,
-        recipient_email=recipients,
-        body=message
-    )
-
-    if not success:
-        frappe.log_error(f"Failed to send email for {doc.name}", "Approval Email Error")
-
-def get_uploader_email(doc):
-    uploader = doc.excel_uploaded_by
-
-    if not uploader:
-        return None
-
-    if "@" in uploader:
-        return uploader
-
-    return frappe.db.get_value("User", uploader, "email")
 
 # -----------------------------
 # Helpers
@@ -540,146 +467,7 @@ def retry_lease_api(docname):
         return {"message": "Retry failed"}
 
 
-# *********************************************
 
-@frappe.whitelist()
-def update_approval_status(docname, role, action, remarks):
-
-    user = frappe.session.user
-    user_roles = frappe.get_roles(user)
-
-    signature = frappe.db.get_value(
-        "Employee Master", {"email_id": user}, "employee_signature"
-    ) or user
-
-    def is_admin():
-        return user == "Administrator"
-
-    doc = frappe.get_doc("Invoice Batch", docname)
-
-    # --- Previous States (IMPORTANT) ---
-    prev_finance_team_status = doc.finance_team_status
-    prev_finance_head_status = doc.finance_head_status
-    prev_hr_head_status = doc.hr_head_status
-
-    # =====================================================
-    # ROLE HANDLING
-    # =====================================================
-
-    if role == "finance_team":
-
-        if "Finance Team" not in user_roles and not is_admin():
-            frappe.throw("Not authorized for Finance Team action")
-
-        if doc.finance_head_status == "Approved":
-            frappe.throw("Cannot change Finance Team after Finance Head approval")
-
-        doc.finance_team_status = action
-        doc.finance_team_user = user
-        doc.finance_team_remarks = remarks
-        doc.finance_team_signature = signature
-
-    elif role == "finance_head":
-
-        if "Finance Head" not in user_roles and not is_admin():
-            frappe.throw("Not authorized for Finance Head action")
-
-        if doc.hr_head_status == "Approved":
-            frappe.throw("Cannot change Finance Head after HR Head approval")
-
-        if doc.finance_team_status != "Approved":
-            frappe.throw("Finance Team must approve first")
-
-        doc.finance_head_status = action
-        doc.finance_head_user = user
-        doc.finance_head_remarks = remarks
-        doc.finance_head_signature = signature
-
-    elif role == "hr_head":
-
-        if "HR Head" not in user_roles and not is_admin():
-            frappe.throw("Not authorized for HR Head action")
-
-        if doc.finance_head_status != "Approved":
-            frappe.throw("Finance Head must approve first")
-
-        doc.hr_head_status = action
-        doc.hr_head_user = user
-        doc.hr_head_remarks = remarks
-        doc.hr_head_signature = signature
-
-    else:
-        frappe.throw("Invalid role")
-
-    # Save once (no manual commit needed)
-    doc.save(ignore_permissions=True)
-
-    # =====================================================
-    # EMAIL LOGIC (IDEMPOTENT)
-    # =====================================================
-
-    role_map = InvoiceBatch.ROLE_TO_DESIGNATION
-
-    # -------- Finance Team → Finance Head --------
-    if (
-        role == "finance_team"
-        and action == "Approved"
-        and prev_finance_team_status != "Approved"
-        and not doc.email_sent_to_finance_head
-    ):
-        recipients = get_users_by_designation(role_map["finance_head"])
-
-        send_approval_email(
-            doc,
-            recipients,
-            template_name="Finance Team Approved"
-        )
-
-        doc.db_set("email_sent_to_finance_head", 1)
-
-    # -------- Finance Head → HR Head --------
-    elif (
-        role == "finance_head"
-        and action == "Approved"
-        and prev_finance_head_status != "Approved"
-        and not doc.email_sent_to_hr_head
-    ):
-        recipients = get_users_by_designation(role_map["hr_head"])
-
-        send_approval_email(
-            doc,
-            recipients,
-            template_name="Finance Head Approved"
-        )
-
-        doc.db_set("email_sent_to_hr_head", 1)
-
-    # -------- HR Head → Final Broadcast --------
-    elif (
-        role == "hr_head"
-        and action == "Approved"
-        and prev_hr_head_status != "Approved"
-        and not doc.email_sent_to_all
-    ):
-        finance_team = get_users_by_designation(role_map["finance_team"])
-        finance_head = get_users_by_designation(role_map["finance_head"])
-        uploader = get_uploader_email(doc)
-
-        recipients = list(set(
-            finance_team +
-            finance_head +
-            ([uploader] if uploader else [])
-        ))
-
-        send_approval_email(
-            doc,
-            recipients,
-            template_name="HR Head Approved"
-        )
-
-        doc.db_set("email_sent_to_all", 1)
-
-    return "Updated"
 
 
 @frappe.whitelist()

@@ -159,78 +159,7 @@ function setValuesInField(frm, data) {
  STATUS BUTTONS (CLEAN VERSION)
 ================================ */
 function updateStatus(frm) {
-
     frm.clear_custom_buttons();
-
-    frappe.call({
-        method: "alms_app.crms.doctype.car_indent_form.car_indent_form.management",
-        args: {
-            current_frappe_user: frappe.session.user
-        },
-        callback: function (r) {
-
-            const role = r.message;
-
-            const stages = [
-                { label: "Finance Team", field: "finance_team_status" },
-                { label: "Finance Head", field: "finance_head_status" }
-            ];
-
-            if (!["Finance", "Finance Head", "Administrator"].includes(role)) return;
-
-            stages.forEach(stage => {
-
-                const status = frm.doc[stage.field] || "Pending";
-
-                const btn = frm.add_custom_button(`${stage.label}: ${status}`, async () => {
-
-                    const { action, remarks } = await new Promise(resolve => {
-                        frappe.prompt([
-                            {
-                                fieldname: 'action',
-                                label: 'Action',
-                                fieldtype: 'Select',
-                                options: ['Approved', 'Rejected'],
-                                reqd: 1
-                            },
-                            {
-                                fieldname: 'remarks',
-                                label: 'Remarks',
-                                fieldtype: 'Data',
-                                reqd: 1
-                            }
-                        ], resolve);
-                    });
-
-                    await frappe.call({
-                        method: "alms_app.crms.doctype.car_quotation.car_quotation.process_workflow",
-                        args: {
-                            quotation_id: frm.doc.name,
-                            action: action,
-                            remarks: remarks
-                        }
-                    });
-
-                    frappe.msgprint("Action completed");
-                    frm.reload_doc();
-
-                });
-
-                const colorMap = {
-                    Approved: "green",
-                    Rejected: "red",
-                    Pending: "gray"
-                };
-
-                btn.css({
-                    "background-color": colorMap[status] || "gray",
-                    "color": "white"
-                });
-
-            });
-
-        }
-    });
 }
 
 
@@ -238,34 +167,7 @@ function updateStatus(frm) {
  FIELD ACCESS CONTROL
 ================================ */
 function toggleFieldStatus(frm) {
-
-    frappe.call({
-        method: "alms_app.crms.doctype.car_indent_form.car_indent_form.management",
-        args: {
-            current_frappe_user: frappe.session.user
-        },
-        callback: function (r) {
-
-            const role = r.message;
-
-            Object.keys(frm.fields_dict).forEach(fieldname => {
-
-                let read_only = 1;
-
-                if (role === "Administrator") {
-                    read_only = 0;
-                } else if (role === "Finance" && fieldname === "finance_team_status") {
-                    read_only = 0;
-                } else if (role === "Finance Head" && fieldname === "finance_head_status") {
-                    read_only = 0;
-                }
-
-                frm.set_df_property(fieldname, "read_only", read_only);
-
-            });
-
-        }
-    });
+    // Rely on generic Frappe field permissions or standard logic.
 }
 
 
@@ -283,9 +185,11 @@ frappe.ui.form.on('Car Quotation', {
         frm.set_df_property("status", "read_only", true);
 
         frm.clear_custom_buttons();
+        
+        if (typeof setup_approval_ui === "function") {
+            setup_approval_ui(frm);
+        }
 
-        updateStatus(frm);
-        toggleFieldStatus(frm);
         uploadfile(frm);
         addDeductionButton(frm);
     }
@@ -324,29 +228,24 @@ frappe.ui.form.on("Car Quotation", {
 
 function addDeductionButton(frm) {
 
-    frappe.call({
-        method: "alms_app.crms.doctype.car_indent_form.car_indent_form.management",
-        args: {
-            current_frappe_user: frappe.session.user
-        },
-        callback: function (r) {
+    let role = "";
+    if (frappe.user_roles.includes("Administrator")) role = "Administrator";
+    else if (frappe.user_roles.includes("Finance Head")) role = "Finance Head";
+    else if (frappe.user_roles.includes("Finance Team") || frappe.user_roles.includes("Finance")) role = "Finance";
 
-            const role = r.message;
-            console.log("User Role:", role);
-            const isFinanceUser = ["Finance", "Administrator"].includes(role);
+    console.log("User Role:", role);
+    const isFinanceUser = ["Finance", "Administrator"].includes(role);
 
             // Show button after Finance Team approval
             if (
                 isFinanceUser &&
-                frm.doc.finance_team_status === "Approved"
+                frm.doc.status === "Approved"
             ) {
 
                 frm.add_custom_button("Generate Deduction", () => {
                     openDeductionDialog(frm, role);
                 });
             }
-        }
-    });
 }
 
 function openDeductionDialog(frm, role) {
@@ -360,8 +259,7 @@ function openDeductionDialog(frm, role) {
 
             if (!r.message) return;
 
-            const isFinanceHeadApproved =
-                frm.doc.finance_head_status === "Approved";
+            const isFinanceHeadApproved = frm.doc.status === "Approved";
 
             let d = new frappe.ui.Dialog({
                 title: "Quarterly Payment Preview",

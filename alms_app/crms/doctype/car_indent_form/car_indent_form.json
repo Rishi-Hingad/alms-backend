@@ -31,6 +31,7 @@
   "tcs",
   "registration_charges",
   "finance_amount",
+  "default_currency",
   "column_break_jycd",
   "discount",
   "net_ex_showroom_price",
@@ -41,16 +42,21 @@
   "hr_approval",
   "travel_desk_approval",
   "hr_head_approval",
-  "status",
   "column_break_ebpq",
   "reporting_head_remarks",
-  "travel_desk_remarks",
   "hr_remarks",
+  "travel_desk_remarks",
   "hr_head_remarks",
-  "default_currency",
-  "token_tab",
+  "approval_timline_tab",
+  "approval_section",
+  "status",
+  "is_submitted",
+  "approval_initiated",
+  "column_break_tfyd",
+  "approval_entry",
   "approval_token",
-  "approval_logs"
+  "trail_section",
+  "approval_trail_html"
  ],
  "fields": [
   {
@@ -62,7 +68,7 @@
    "fieldname": "employee_code",
    "fieldtype": "Link",
    "label": "Employee Code",
-   "options": "Employee Master"
+   "options": "Employee"
   },
   {
    "fetch_from": "employee_code.department",
@@ -71,13 +77,13 @@
    "label": "Department"
   },
   {
-   "fetch_from": "employee_code.contact_number",
+   "fetch_from": "employee_code.cell_number",
    "fieldname": "contact_number",
    "fieldtype": "Data",
    "label": "Contact Number"
   },
   {
-   "fetch_from": "employee_code.location",
+   "fetch_from": "employee_code.branch",
    "fieldname": "location",
    "fieldtype": "Data",
    "label": "Location"
@@ -122,7 +128,6 @@
    "label": "Designation"
   },
   {
-   "fetch_from": "employee_code.eligibility",
    "fieldname": "eligibility",
    "fieldtype": "Currency",
    "in_list_view": 1,
@@ -130,7 +135,7 @@
    "reqd": 1
   },
   {
-   "fetch_from": "employee_code.email_id",
+   "fetch_from": "employee_code.company_email",
    "fieldname": "email_id",
    "fieldtype": "Data",
    "label": "E-mail ID"
@@ -232,14 +237,12 @@
   {
    "fieldname": "travel_desk_approval",
    "fieldtype": "Select",
-   "hidden": 1,
    "label": "Travel Desk Approval",
    "options": "Pending\nApproved\nRejected"
   },
   {
    "fieldname": "travel_desk_remarks",
    "fieldtype": "Data",
-   "hidden": 1,
    "label": "Travel Desk Remarks"
   },
   {
@@ -285,20 +288,58 @@
    "options": "Currency"
   },
   {
-   "fieldname": "token_tab",
-   "fieldtype": "Tab Break",
-   "label": "Token"
+   "default": "0",
+   "fieldname": "is_submitted",
+   "fieldtype": "Check",
+   "hidden": 1,
+   "label": "Is Submitted",
+   "read_only": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "approval_initiated",
+   "fieldtype": "Check",
+   "hidden": 1,
+   "label": "Approval Initiated",
+   "read_only": 1
+  },
+  {
+   "fieldname": "approval_entry",
+   "fieldtype": "Link",
+   "hidden": 1,
+   "label": "Approval Entry",
+   "options": "Approval Entry",
+   "read_only": 1
+  },
+  {
+   "fieldname": "approval_trail_html",
+   "fieldtype": "HTML",
+   "label": "Approval Trail"
   },
   {
    "fieldname": "approval_token",
    "fieldtype": "Data",
+   "hidden": 1,
    "label": "Approval Token"
   },
   {
-   "fieldname": "approval_logs",
-   "fieldtype": "Table",
-   "label": "Approval Logs",
-   "options": "Car Indent Approval Log"
+   "fieldname": "approval_timline_tab",
+   "fieldtype": "Tab Break",
+   "label": "Approval Timline"
+  },
+  {
+   "fieldname": "approval_section",
+   "fieldtype": "Section Break",
+   "label": "Approval"
+  },
+  {
+   "fieldname": "column_break_tfyd",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "trail_section",
+   "fieldtype": "Section Break",
+   "label": "Trail"
   }
  ],
  "index_web_pages_for_search": 1,
@@ -308,7 +349,7 @@
    "link_fieldname": "employee_name"
   }
  ],
- "modified": "2026-04-27 14:18:42.950401",
+ "modified": "2026-06-08 09:24:18.331249",
  "modified_by": "Administrator",
  "module": "CRMS",
  "name": "Car Indent Form",

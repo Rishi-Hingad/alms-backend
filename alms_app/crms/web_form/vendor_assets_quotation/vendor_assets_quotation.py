@@ -77,7 +77,8 @@ def get_vendor_quotation(employee_details=None, quotation_id=None):
                 "revised_registration_charges",
                 "revised_ex_show_room_price",
                 "revised_net_ex_showroom_price",
-                "tenure_in_years"
+                "tenure_in_years",
+                "revised_quotation_attachment_need_to_be_done"
             ],
             limit_page_length=1
         )
@@ -97,5 +98,6 @@ def get_vendor_quotation(employee_details=None, quotation_id=None):
             "registration_charges": r.revised_registration_charges,
             "ex_showroom_amount": r.revised_ex_show_room_price,
             "ex_showroom_amount_net_of_discount": r.revised_net_ex_showroom_price,
-            "tenure": r.tenure_in_years
+            "tenure": r.tenure_in_years,
+            "revised_quotation_vendor": r.revised_quotation_attachment_need_to_be_done
         }

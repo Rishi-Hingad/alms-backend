@@ -3,7 +3,7 @@ from frappe.utils import now, get_datetime
 from frappe import _
 
 @frappe.whitelist(allow_guest=True)
-def get_car_indent_data(indent_form_id):
+def get_car_indent_data(indent_form_id, token=None):
     """
     API endpoint to get fresh car indent form data without caching
     """
@@ -24,7 +24,7 @@ def get_car_indent_data(indent_form_id):
             try:
                 # Try to find by employee name
                 employee_name = indent_form_id
-                emp = frappe.get_doc("Employee Master", employee_name)
+                emp = frappe.get_doc("Employee", employee_name)
                 forms = frappe.get_all(
                     "Car Indent Form",
                     filters={"employee_code": emp.name},
@@ -35,27 +35,54 @@ def get_car_indent_data(indent_form_id):
                 if not forms:
                     return {
                         "success": False,
-                        "message": f"No Car Indent Form found for {emp.employee_name}"
+                        "message": f"No Car Indent Form found for {emp.get('employee_name') or emp.get('full_name')}"
                     }
                 form_data = frappe.get_doc("Car Indent Form", forms[0].name)
             except frappe.DoesNotExistError:
                 return {
                     "success": False,
-                    "message": f"No Employee Master or Car Indent Form found with ID: {indent_form_id}"
+                    "message": f"No Employee or Car Indent Form found with ID: {indent_form_id}"
                 }
         
         try:
-            user = frappe.get_doc("Employee Master", form_data.employee_code)
+            user = frappe.get_doc("Employee", form_data.employee_code)
         except frappe.DoesNotExistError:
             return {
                 "success": False,
-                "message": f"Employee Master not found for employee code: {form_data.employee_code}"
+                "message": f"Employee not found for employee code: {form_data.employee_code}"
             }
         
-        # Check approval status
-        approval_status = getattr(form_data, 'reporting_head_approval', 'Pending')
-        is_approved = approval_status in ['Approved', 'Rejected']
+        # Check approval status using Approval Engine
+        from alms_app.approval.approval_router import get_approval_status, can_approve
         
+        entry_name = getattr(form_data, 'approval_entry', None)
+        if entry_name:
+            status_text, remarks = get_approval_status(entry_name)
+            approval_status = status_text if status_text else "Pending"
+            current_remarks = remarks
+        else:
+            approval_status = "Pending"
+            current_remarks = getattr(form_data, 'reporting_head_remarks', '')
+
+        is_approved = 'Approved' in approval_status or 'Rejected' in approval_status
+        
+        # If a token is provided and matches, allow them to approve
+        db_token = frappe.db.get_value("Car Indent Form", form_data.name, "approval_token")
+        if token and db_token and token == db_token:
+            user_can_approve = True
+        else:
+            user_can_approve = can_approve("Car Indent Form", form_data.name)
+        
+        # Determine if the user associated with this token has previously approved
+        has_previously_approved = False
+        if entry_name:
+            entry = frappe.get_doc("Approval Entry", entry_name)
+            reporting_head_email = frappe.db.get_value("Employee", user.reporting_head, "user_id")
+            for row in getattr(entry, "approval_entry", []):
+                if row.action == "Approved" and row.approver_user == reporting_head_email:
+                    has_previously_approved = True
+                    break
+
         # Prepare response data
         current_time = now()
         page_id = f"{form_data.name}_{get_datetime().strftime('%Y%m%d_%H%M%S_%f')}"
@@ -66,7 +93,7 @@ def get_car_indent_data(indent_form_id):
                 "id": form_data.name,
                 "page_id": page_id,
                 "timestamp": current_time,
-                "employee_name": user.employee_name,
+                "employee_name": user.name,
                 "employee_email": form_data.email_id,
                 "reporting_head_name": form_data.employee_reporting,
                 "vehicle_make_model": f"{form_data.make}-{form_data.model}",
@@ -76,8 +103,10 @@ def get_car_indent_data(indent_form_id):
                 "designation": user.designation,
                 "eligibility": str(user.eligibility),
                 "reporting_head_approval": approval_status,
-                "reporting_head_remarks": getattr(form_data, 'reporting_head_remarks', ''),
+                "reporting_head_remarks": current_remarks,
                 "is_approved": is_approved,
+                "user_can_approve": user_can_approve,
+                "has_previously_approved": has_previously_approved,
                 "approved_by": getattr(form_data, 'approved_by', ''),
                 "approval_date": str(getattr(form_data, 'approval_date', '')) if getattr(form_data, 'approval_date', '') else ''
             }
@@ -178,7 +207,7 @@ def validate_and_get_context(context):
         except frappe.DoesNotExistError:
             # Try to find by employee name as fallback
             try:
-                emp = frappe.get_doc("Employee Master", record_id)
+                emp = frappe.get_doc("Employee", record_id)
                 forms = frappe.get_all(
                     "Car Indent Form",
                     filters={"employee_code": emp.name},

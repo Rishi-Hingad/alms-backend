@@ -120,9 +120,9 @@ def get_invoice_batch_details(batch_date=None, vendor_name=None, name=None):
 
                     employee = contract_doc.get("employee_car_process_form")
 
-                    if employee and frappe.db.exists("Employee Master", employee):
+                    if employee and frappe.db.exists("Employee", employee):
                         employee_code = frappe.db.get_value(
-                            "Employee Master",
+                            "Employee",
                             employee,
                             "employee_code"
                         )

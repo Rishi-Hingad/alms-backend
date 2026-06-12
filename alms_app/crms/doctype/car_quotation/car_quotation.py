@@ -7,14 +7,26 @@ import xlrd
 from alms_app.api.emailsService import email_sender
 from frappe.utils import flt
 import math
+from frappe.utils import now_datetime
+from alms_app.approval.approval_router import trigger_approval_if_matrix_exists
+from alms_app.approval.approval_router import process_approval_action
+
+
 
 class CarQuotation(Document):
 
-    def on_update(self):
-        if self.status == "Pending":
-            handle_no_approved_case(self)
-
     def before_insert(self):
+        # Auto-submit to start approval matrix instantly
+        self.is_submitted = 1
+
+        self.submission_datetime = now_datetime()
+        
+        # Populate car_indent_form_id if not present
+        if self.employee_details and not self.car_indent_form_id:
+            cif = frappe.get_all("Car Indent Form", filters={"employee_code": self.employee_details}, pluck="name", limit=1)
+            if cif:
+                self.car_indent_form_id = cif[0]
+
         # CASE 1: NEW quotation (root)
         if self.quotation_status == "New":
             self.root_quotation = self.name
@@ -39,6 +51,13 @@ class CarQuotation(Document):
 
             # Naming logic
             self.name = f"{self.root_quotation}-v{self.version_number}"
+
+    def on_update(self):
+        is_active = self.status == "Approved" or (self.finance_team_status == "Approved" and self.status != "Rejected")
+        if is_active:
+            reject_other_quotations(self)
+        else:
+            handle_no_approved_case(self)
 
     def validate(self):
         self.sync_status()
@@ -165,32 +184,41 @@ def restore_other_quotations(doc):
         q_doc.save(ignore_permissions=True)
 
 def handle_no_approved_case(doc):
-    approved_exists = frappe.db.exists(
+    all_quotations = frappe.get_all(
         "Car Quotation",
-        {
-            "employee_details": doc.employee_details,
-            "status": "Approved"
-        }
+        filters={"employee_details": doc.employee_details},
+        fields=["name", "status", "finance_team_status"]
     )
 
-    if not approved_exists:
-        others = frappe.get_all(
-            "Car Quotation",
-            filters={
-                "employee_details": doc.employee_details
-            },
-            pluck="name"
-        )
+    has_active = False
+    for q in all_quotations:
+        if q.status == "Approved" or (q.finance_team_status == "Approved" and q.status != "Rejected"):
+            has_active = True
+            break
 
-        for q in others:
-            q_doc = frappe.get_doc("Car Quotation", q)
-
-            if q_doc.status == "Rejected":
-                q_doc.finance_team_status = "Pending"
-                q_doc.finance_head_status = "Pending"
-                q_doc.status = "Pending"
-
-                q_doc.save(ignore_permissions=True)
+    if not has_active:
+        for q in all_quotations:
+            if q.status == "Rejected":
+                if q.name == doc.name:
+                    frappe.db.set_value("Car Quotation", doc.name, {
+                        "finance_team_status": "Pending",
+                        "finance_head_status": "Pending",
+                        "status": "Pending"
+                    }, update_modified=False)
+                    doc.finance_team_status = "Pending"
+                    doc.finance_head_status = "Pending"
+                    doc.status = "Pending"
+                    
+                    try:
+                        trigger_approval_if_matrix_exists(doc)
+                    except Exception as e:
+                        frappe.log_error(str(e), "trigger_approval_if_matrix_exists fallback")
+                else:
+                    q_doc = frappe.get_doc("Car Quotation", q.name)
+                    q_doc.finance_team_status = "Pending"
+                    q_doc.finance_head_status = "Pending"
+                    q_doc.status = "Pending"
+                    q_doc.save(ignore_permissions=True)
 
 
 @frappe.whitelist()
@@ -298,7 +326,7 @@ def pmt(rate, nper, pv, fv=0, when=1):
 def preview_deduction(quotation_id):
 
     q = frappe.get_doc("Car Quotation", quotation_id)
-    employee = frappe.get_doc("Employee Master", q.employee_details)
+    employee = frappe.get_doc("Employee", q.employee_details)
     
     # ---- Company contribution logic (same as calculate_emi) ----
 
@@ -450,126 +478,6 @@ def create_deduction_doc(quotation_id):
 
     return doc.name
 
-
-@frappe.whitelist()
-def process_workflow(quotation_id, action, remarks=None):
-    """
-    Central workflow handler
-    Handles:
-    - Role validation
-    - Status updates
-    - Email triggers
-    - Duplicate protection
-    """
-
-    user = frappe.session.user
-
-    # Get role from your existing method
-    role = frappe.get_attr(
-        "alms_app.crms.doctype.car_indent_form.car_indent_form.management"
-    )(current_frappe_user=user)
-
-    role = (role or "").lower()
-    print(f"User: {user}, Role: {role}, Action: {action}")
-
-    doc = frappe.get_doc("Car Quotation", quotation_id)
-
-    if action == "Approved":
-
-        existing = frappe.db.exists(
-            "Car Quotation",
-            {
-                "employee_details": doc.employee_details,
-                "status": "Approved",
-                "name": ["!=", doc.name]  # exclude current record
-            }
-        )
-
-        if existing:
-            frappe.throw("Quotation already approved for this Purchase Form")
-
-    email_type = None
-
-    # ============================
-    # NORMALIZE ADMIN ROLE
-    # ============================
-    if role == "administrator":
-        if doc.finance_team_status in ["", None, "Pending"]:
-            role = "finance team"
-
-        elif doc.finance_team_status == "Approved":
-            role = "finance head"
-
-        elif doc.finance_team_status == "Rejected":
-            frappe.throw("Finance Team has already rejected this quotation")
-
-    # Prevent double action
-    if role == "finance team" and doc.finance_team_status in ["Approved", "Rejected"]:
-        frappe.throw("Finance Team already acted on this quotation")
-
-    if role == "finance head" and doc.finance_head_status in ["Approved", "Rejected"]:
-        frappe.throw("Finance Head already acted on this quotation")
-
-    # Dependency check
-    if role == "finance head" and doc.finance_team_status != "Approved":
-        frappe.throw("Finance Team must approve first")
-
-    # ============================
-    # FINANCE TEAM
-    # ============================
-    if role == "finance team":
-
-        doc.finance_team_status = action
-        doc.finance_team_remarks = remarks
-        doc.finance_team_action_by = user
-
-        if action == "Approved":
-            email_type = "FinanceTeam To FinanceHead Payload"
-        else:
-            email_type = "Reject FinanceTeam to Vendor"
-
-    # ============================
-    # FINANCE HEAD
-    # ============================
-    elif role == "finance head":
-
-        doc.finance_head_status = action
-        doc.finance_head_remarks = remarks
-        doc.finance_head_action_by = user
-
-        if action == "Approved":
-            email_type = "FinanceHead To AccountsTeam"
-
-            # Reject all other quotations
-            reject_other_quotations(doc)
-
-        else:
-            email_type = "Reject FinanceHead to FinanceTeam"
-
-    else:
-        frappe.throw(f"Not allowed. Role: {role}")
-
-    # update_final_status(doc)
-    doc.sync_status()
-    doc.save(ignore_permissions=True)
-    handle_no_approved_case(doc)
-
-    # ============================
-    # EMAIL (ONLY ONCE HERE)
-    # ============================
-    if email_type:
-        frappe.logger().info(f"EMAIL TRIGGER → {email_type}")
-        email_sender(
-            name=doc.employee_details,
-            email_send_to=email_type,
-            payload={
-                "quotation_id": doc.name
-            }
-        )
-
-    return {"status": "success"}
-
-
 def reject_other_quotations(doc):
     others = frappe.get_all(
         "Car Quotation",
@@ -586,12 +494,26 @@ def reject_other_quotations(doc):
         if q_doc.status == "Rejected":
             continue
 
-        q_doc.finance_team_status = "Rejected"
-        q_doc.finance_head_status = "Rejected"
+        # Formally reject via approval matrix so the ledger is closed properly
+        try:
+            from alms_app.approval.approval_router import process_approval_action
+            original_user = frappe.session.user
+            frappe.set_user("Administrator") # Auto-reject as system
+            try:
+                process_approval_action("Car Quotation", q_doc.name, "Reject", f"Auto-rejected because quotation {doc.name} was approved.")
+            except Exception as e:
+                frappe.log_error(str(e), "Auto-reject matrix fallback")
+            finally:
+                frappe.set_user(original_user)
+        except Exception:
+            pass
 
-        q_doc.status = "Rejected"
+        # Fallback to ensure all statuses are explicitly rejected
+        q_doc.db_set("status", "Rejected", update_modified=False)
+        q_doc.db_set("finance_team_status", "Rejected", update_modified=False)
+        q_doc.db_set("finance_head_status", "Rejected", update_modified=False)
 
-        q_doc.save(ignore_permissions=True)
+
 
 @frappe.whitelist()
 @frappe.validate_and_sanitize_search_inputs
@@ -620,27 +542,6 @@ def get_available_purchase_forms(doctype, txt, searchfield, start, page_len, fil
 
     # Step 5: Return as list of tuples (Frappe expects this)
     return [(pf,) for pf in available[start:start + page_len]]
-
-
-def update_final_status(doc):
-    ft = (doc.finance_team_status or "").strip().lower()
-    fh = (doc.finance_head_status or "").strip().lower()
-
-    # Normalize values
-    pending_values = ["", "-select-", "pending"]
-
-    # Rejection overrides everything
-    if ft == "rejected" or fh == "rejected":
-        doc.status = "Rejected"
-        return
-
-    # Fully approved
-    if ft == "approved" and fh == "approved":
-        doc.status = "Approved"
-        return
-
-    # Everything else
-    doc.status = "Pending"
 
 
 @frappe.whitelist()
@@ -675,3 +576,51 @@ def create_revised_quotation(old_id):
     new_doc.insert(ignore_permissions=True)
 
     return new_doc.name
+
+@frappe.whitelist()
+def process_workflow(quotation_id, action, remarks=""):
+    # First update the legacy status fields based on current user role (Finance Team or Finance Head)
+    doc = frappe.get_doc("Car Quotation", quotation_id)
+    
+    role = ""
+    if "Administrator" in frappe.get_roles():
+        role = "Administrator"
+    elif "Finance Head" in frappe.get_roles():
+        role = "Finance Head"
+    elif "Finance Team" in frappe.get_roles() or "Finance" in frappe.get_roles():
+        role = "Finance"
+
+    if role == "Finance":
+        doc.finance_team_status = action
+        doc.finance_team_remarks = remarks
+        doc.finance_team_action_by = frappe.session.user
+    elif role == "Finance Head" or role == "Administrator":
+        doc.finance_head_status = action
+        doc.finance_head_remarks = remarks
+        doc.finance_head_action_by = frappe.session.user
+        if not doc.finance_team_status or doc.finance_team_status == "Pending":
+            doc.finance_team_status = action
+            doc.finance_team_remarks = remarks
+            doc.finance_team_action_by = frappe.session.user
+            
+    doc.save(ignore_permissions=True)
+
+    # Then process through standard approval router
+    try:
+        
+        router_action = "Approve" if action == "Approved" else "Reject" if action == "Rejected" else action
+        
+        result = process_approval_action("Car Quotation", quotation_id, router_action, remarks)
+        
+        if action == "Approved" and doc.finance_head_status == "Approved":
+            email_sender(
+                name=doc.employee_details,
+                email_send_to="FinanceHead To All",
+                payload={"quotation_id": quotation_id}
+            )
+            
+        return result
+    except Exception as e:
+        frappe.log_error(frappe.get_traceback(), "process_workflow fallback")
+        # If approval matrix fails or is not setup, rely on doc.save logic
+        return {"status": "success", "message": f"Action {action} completed manually (Approval Router skipped)"}

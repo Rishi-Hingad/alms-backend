@@ -89,6 +89,14 @@ frappe.ready(function () {
                 "revised_quotation_vendor",
                 recordData.revised_quotation_vendor
             );
+
+            const fileField = frappe.web_form.get_field("revised_quotation_vendor");
+            if (fileField && fileField.$wrapper) {
+                // Wait briefly for set_value to render the file link, then hide buttons
+                setTimeout(() => {
+                    fileField.$wrapper.find('.btn-attach, [data-action="clear_attachment"]').hide();
+                }, 100);
+            }
         }
     }
 });
@@ -180,3 +188,25 @@ frappe.web_form.after_save = function () {
         email_phase
     );
 };
+
+function send_email(quotation_name, finance_company, vendor_name, email_phase) {
+    const doc = frappe.web_form.doc;
+    frappe.call({
+        method: "alms_app.alms_app.api.emailsService.email_sender",
+        args: {
+            name: doc.employee_details,
+            email_send_to: "Finance Fill Quotation Acknowledgement",
+            payload: JSON.stringify({
+                vendors: [vendor_name],
+                email_phase: email_phase
+            })
+        },
+        callback: function (r) {
+            if (r.message && r.message.status === "success") {
+                console.log("Email sent successfully!");
+            } else {
+                console.error("Error sending email:", r.message);
+            }
+        }
+    });
+}

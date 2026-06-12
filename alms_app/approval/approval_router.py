@@ -1,6 +1,6 @@
 import frappe
 from frappe.utils.data import cast, compare, cstr, sql_like
-from vms.APIs.utils.email_context import get_email_context
+from alms_app.api.utils.email_context import get_email_context
 
 RESTART_FROM_BEGINNING = "Restart from beginning"
 
@@ -179,6 +179,19 @@ def _get_latest_approval_entry_row(doc):
 def _ledger_table_name(entry):
     return "approval_ledger" if hasattr(entry, "approval_ledger") else "approval_entry"
 
+def _get_employee_from_doc(doc):
+    """Attempt to find the Employee record associated with the document. 
+    Useful when the owner is Guest or when forms are submitted on behalf of others."""
+    if doc.doctype == "Employee":
+        return doc.name
+    if getattr(doc, "employee", None):
+        return doc.employee
+    if getattr(doc, "employee_code", None):
+        return doc.employee_code
+    
+    # fallback to owner
+    return frappe.db.get_value("Employee", {"user_id": doc.owner, "status": "Active"}, "name")
+
 
 def _append_first_pending_stage(entry, doc, first_stage, ledger_table):
     """
@@ -203,7 +216,7 @@ def _append_first_pending_stage(entry, doc, first_stage, ledger_table):
     elif getattr(first_stage, "approver_type", None) == "Role" and getattr(first_stage, "from_hierarchy", False):
         approver = get_role_based_approver(
             first_stage.role,
-            frappe.db.get_value("Employee", {"user_id": doc.owner, "status": "Active"}, "name"),
+            _get_employee_from_doc(doc),
         )
         if approver:
             next_user = approver["user"]
@@ -228,7 +241,7 @@ def _append_first_pending_stage(entry, doc, first_stage, ledger_table):
             "next_approver": next_approver,
             "next_approver_role": next_approver_role,
         })
-    return next_user
+    return next_user, next_stage_val
 
 
 def _notify_first_stage_if_configured(first_stage, doc, next_user):
@@ -262,8 +275,9 @@ def _reset_approval_entry_to_first_stage(entry_name, doc, first_stage):
     ledger_table = _ledger_table_name(entry)
     entry.status = "Pending"
     entry.approval_matrix = first_stage.parent
-    next_user = _append_first_pending_stage(entry, doc, first_stage, ledger_table)
+    next_user, next_stage_val = _append_first_pending_stage(entry, doc, first_stage, ledger_table)
     entry.save(ignore_permissions=True)
+    entry.db_set("next_approval_stage", next_stage_val, update_modified=False)
     _notify_first_stage_if_configured(first_stage, doc, next_user)
     _set_doc_approval_initiated_and_link(doc, entry.name)
 
@@ -283,9 +297,11 @@ def _create_initial_approval_entry(doc, first_stage):
     entry.approval_matrix = first_stage.parent
 
     ledger_table = _ledger_table_name(entry)
-    next_user = _append_first_pending_stage(entry, doc, first_stage, ledger_table)
+    next_user, next_stage_val = _append_first_pending_stage(entry, doc, first_stage, ledger_table)
+    entry.next_approval_stage = next_stage_val
 
     entry.insert(ignore_permissions=True)
+    entry.db_set("next_approval_stage", next_stage_val, update_modified=False)
 
     _notify_first_stage_if_configured(first_stage, doc, next_user)
     _set_doc_approval_initiated_and_link(doc, entry.name)
@@ -317,6 +333,25 @@ def get_role_based_approver(role, starting_employee, max_depth=10):
             return None
         current_employee = emp_name
 
+    def resolve_employee_id(emp_id_or_name):
+        if not emp_id_or_name: return None
+        if frappe.db.exists("Employee", emp_id_or_name):
+            return emp_id_or_name
+        resolved = frappe.db.get_value("Employee", {"employee_name": emp_id_or_name}, "name")
+        return resolved
+
+    current_employee = resolve_employee_id(current_employee)
+    if not current_employee:
+        return None
+
+    if role == "Reporting Head":
+        emp_doc = frappe.get_doc("Employee", current_employee)
+        reports_to = resolve_employee_id(emp_doc.reporting_head)
+        if reports_to:
+            mgr_doc = frappe.get_doc("Employee", reports_to)
+            return {"employee": reports_to, "user": mgr_doc.company_email or mgr_doc.user_id, "role": role}
+        return None
+
     visited = set()
 
     while current_employee and depth < max_depth:
@@ -326,14 +361,14 @@ def get_role_based_approver(role, starting_employee, max_depth=10):
         emp_doc = frappe.get_doc("Employee", current_employee)
 
         # Get User ID and check for role
-        user_id = emp_doc.user_id
+        user_id = emp_doc.company_email or emp_doc.user_id
         if user_id:
             roles = frappe.get_roles(user_id)
             if role in roles:
                 return {"employee": current_employee, "user": user_id, "role":role}
 
-        # Climb up to "reports_to"
-        reports_to = emp_doc.reports_to
+        # Climb up to "reporting_head"
+        reports_to = resolve_employee_id(emp_doc.reporting_head)
         if reports_to:
             current_employee = reports_to
         else:
@@ -359,14 +394,59 @@ def process_approval_action(doctype, doc_name, action, remarks=""):
         
         if action == "Reject":
             _handle_reject_action(doctype, doc_name, entry, pending_row, ledger_table, remarks)
-            return {"status": "success", "message": "Rejected Successfully."}
+            return {"status": "success", "message": f"Document rejected successfully"}
             
         elif action == "Approve":
             return _handle_approve_action(doctype, doc_name, entry, pending_row, ledger_table, remarks)
-            
+        else:
+            frappe.throw(f"Invalid action: {action}")
+
     except Exception as e:
-        frappe.log_error(frappe.get_traceback(), "Process Approval Action Error")
+        frappe.log_error(traceback.format_exc(), "Approval Routing Error")
         frappe.throw(f"Error processing approval: {str(e)}")
+
+@frappe.whitelist()
+def revoke_and_reject_approval(doctype, doc_name, remarks, specific_user=None):
+    try:
+        user = specific_user or frappe.session.user
+        entry_name = frappe.db.get_value("Approval Entry", {
+            "applied_to_doctype": doctype,
+            "record": doc_name,
+            "status": "Pending"
+        }, "name")
+        
+        if not entry_name:
+            frappe.throw("No pending approval entry found.")
+            
+        entry = frappe.get_doc("Approval Entry", entry_name)
+        ledger_table = "approval_entry"
+        
+        # Verify the user has previously approved
+        has_approved = False
+        if entry.get(ledger_table):
+            for row in entry.get(ledger_table):
+                if row.action == "Approved" and row.approver_user == user:
+                    has_approved = True
+                    break
+                
+        if user == "Administrator" and doctype == "Car Indent Form":
+            has_approved = True
+            
+        if not has_approved:
+            frappe.throw("You cannot revoke/reject because you have not previously approved this document.")
+            
+        pending_row = [r for r in entry.get(ledger_table) if r.status == "Pending"]
+        if not pending_row:
+            frappe.throw("No pending stage found to reject.")
+        pending_row = pending_row[-1]
+        
+        # Proceed with rejection
+        _handle_reject_action(doctype, doc_name, entry, pending_row, ledger_table, remarks, specific_user=user)
+        return {"status": "success", "message": "Document revoked and rejected successfully"}
+        
+    except Exception as e:
+        frappe.log_error(traceback.format_exc(), "Revoke & Reject Error")
+        frappe.throw(f"Error processing revocation: {str(e)}")
 
 # --- Action Helpers ---
 
@@ -380,9 +460,13 @@ def _get_active_entry_and_ledger(doctype, doc_name):
     if not entry_name:
         frappe.throw("No pending approval entry found for this document.")
         
-    entry = frappe.get_doc("Approval Entry", entry_name)
-    ledger_table = "approval_ledger" if hasattr(entry, "approval_ledger") else "approval_entry"
-    ledger_items = entry.get(ledger_table)
+    frappe.flags.ignore_permissions = True
+    try:
+        entry = frappe.get_doc("Approval Entry", entry_name)
+        ledger_table = "approval_ledger" if hasattr(entry, "approval_ledger") else "approval_entry"
+        ledger_items = entry.get(ledger_table)
+    finally:
+        frappe.flags.ignore_permissions = False
     
     if not ledger_items:
         frappe.throw("Approval ledger is empty.")
@@ -422,7 +506,7 @@ def _validate_approver_permissions(pending_row):
         if employee:
             employee_teams = frappe.get_all(
                 "Employee",
-                filters={"name": employee, "team": allowed_team},
+                filters={"name": employee, "department": allowed_team},
                 fields=["name"]
             )
             if employee_teams:
@@ -435,8 +519,8 @@ def _validate_approver_permissions(pending_row):
     waiting_for = allowed_user or allowed_role or allowed_team
     frappe.throw(f"You are not authorized to approve this step. Waiting for {waiting_for}.")
 
-def _handle_reject_action(doctype, doc_name, entry, pending_row, ledger_table, remarks):
-    user = frappe.session.user
+def _handle_reject_action(doctype, doc_name, entry, pending_row, ledger_table, remarks, specific_user=None):
+    user = specific_user or frappe.session.user
     employee = frappe.db.get_value("Employee", {"user_id": user}, "name")
 
     entry.append(ledger_table, {
@@ -473,6 +557,29 @@ def _handle_reject_action(doctype, doc_name, entry, pending_row, ledger_table, r
             if email_template:
                 _send_email(email_template, context)
 
+        _sync_generic_legacy_fields(doctype, doc_name, current_stage, "Rejected", remarks)
+
+def _sync_generic_legacy_fields(doctype, doc_name, stage, action, remarks):
+    if not stage:
+        return
+    app_field = getattr(stage, "status_field", None)
+    rem_field = getattr(stage, "remarks_field", None)
+    sig_field = getattr(stage, "signature_field", None)
+
+    updates = {}
+    if app_field and frappe.get_meta(doctype).has_field(app_field):
+        updates[app_field] = action
+    if rem_field and frappe.get_meta(doctype).has_field(rem_field):
+        updates[rem_field] = remarks or ""
+        
+    if sig_field and frappe.get_meta(doctype).has_field(sig_field):
+        user = frappe.session.user
+        signature = frappe.db.get_value("Employee", {"user_id": user, "status": "Active"}, "employee_signature") or user
+        updates[sig_field] = signature
+
+    if updates:
+        frappe.db.set_value(doctype, doc_name, updates, update_modified=False)
+
 def _handle_approve_action(doctype, doc_name, entry, pending_row, ledger_table, remarks):
     user = frappe.session.user
     employee = frappe.db.get_value("Employee", {"user_id": user}, "name")
@@ -481,11 +588,19 @@ def _handle_approve_action(doctype, doc_name, entry, pending_row, ledger_table, 
     matrix = frappe.get_doc("Approval Matrix", entry.approval_matrix)
     next_stage = _find_next_stage(matrix, pending_row)
     
+    # If Administrator is approving on behalf of someone else, use the assigned approver for hierarchy climb
+    hierarchy_employee = employee
+    if pending_row.next_approver and pending_row.next_approver != employee:
+        hierarchy_employee = pending_row.next_approver
+    if not hierarchy_employee:
+        doc_owner = frappe.db.get_value(doctype, doc_name, "owner")
+        hierarchy_employee = frappe.db.get_value("Employee", {"user_id": doc_owner, "status": "Active"}, "name")
+
     # Append a new approval ledger row for APPROVED action (do not update the pending row)
     next_stage_user = None
     if next_stage:
         if next_stage.approver_type == "Role" and next_stage.from_hierarchy:
-            approver = get_role_based_approver(next_stage.role, employee)
+            approver = get_role_based_approver(next_stage.role, hierarchy_employee)
             if approver:
                 next_stage.employee = approver["employee"]
                 next_stage.role = approver["role"]
@@ -493,7 +608,7 @@ def _handle_approve_action(doctype, doc_name, entry, pending_row, ledger_table, 
                 frappe.throw(f"Approver not found for role: {next_stage.role}")
 
         if next_stage.employee:
-            next_stage_user = frappe.get_value("Employee", next_stage.employee, "user_id")
+            next_stage_user = frappe.get_value("Employee", next_stage.employee, "company_email")
             
         entry.append(ledger_table, {
             "action":"Approved",
@@ -511,15 +626,32 @@ def _handle_approve_action(doctype, doc_name, entry, pending_row, ledger_table, 
         })
         entry.save(ignore_permissions=True)
         
+        # Update the parent's next_approval_stage pointer
+        new_stage_val = getattr(next_stage, "stage_number", getattr(next_stage, "approval_stage", 0))
+        entry.db_set("next_approval_stage", new_stage_val, update_modified=False)
+        
         current_stage = _find_current_stage(matrix, pending_row)
         if current_stage.send_email:
             doc = frappe.get_doc(doctype, doc_name)
-            context = get_email_context(doctype, doc, next_user=next_stage_user, next_team=next_stage.team,action="Approved")
+            context = get_email_context(
+                doctype, 
+                doc, 
+                next_user=next_stage_user, 
+                next_team=next_stage.team, 
+                next_role=getattr(next_stage, "role", None), 
+                action="Approved"
+            )
             if not context:
                 return {"status": "error", "message": "Email context not found."}
+            
+            context["remarks"] = remarks or "-"
+            
             email_template = current_stage.email_template
             if email_template:
                 _send_email(email_template, context)
+        
+        _sync_generic_legacy_fields(doctype, doc_name, current_stage, "Approved", remarks)
+            
         return {"status": "success", "message": f"Document approved successfully and sent to next stage."}
     else:
         return _finalize_approval(doctype, doc_name, entry, pending_row, ledger_table, employee, user, remarks)
@@ -553,9 +685,34 @@ def _send_email(template_name, context):
     subject = frappe.render_template(subject, context) if subject else ""
     response = frappe.render_template(response, context) if response else ""
 
+    recipients = context.get("recipients", ["rishi.hingad@merillife.com"])
+    if isinstance(recipients, str): recipients = [recipients]
+    recipients = [r for r in recipients if r and str(r).lower() not in ("administrator", "guest")]
+
+    cc = context.get("cc", ["rishi.hingad@merillife.com"])
+    if isinstance(cc, str): cc = [cc]
+    cc = [c for c in cc if c and str(c).lower() not in ("administrator", "guest")]
+
+    if not recipients:
+        return
+
+    alms_settings = frappe.get_single("ALMS Settings")
+    sender = getattr(alms_settings, "from_address", None)
+
+    bcc = []
+    if hasattr(alms_settings, "bcc_address") and alms_settings.bcc_address:
+        for row in alms_settings.bcc_address:
+            email = row.get("email_address") if isinstance(row, dict) else getattr(row, "email_address", None)
+            template_type = row.get("email_template") if isinstance(row, dict) else getattr(row, "email_template", None)
+            
+            if email and template_type in ("All", template_name):
+                bcc.append(email.strip())
+
     frappe.sendmail(
-        recipients=context.get("recipients", ["hitesh.mahto@merillife.com"]),
-        cc = context.get("cc", ["hitesh.mahto@merillife.com"]),
+        sender=sender,
+        recipients=recipients,
+        cc=cc,
+        bcc=bcc,
         subject=subject,
         message=response
     )
@@ -607,13 +764,30 @@ def _finalize_approval(doctype, doc_name, entry, pending_row=None, ledger_table=
         matrix = frappe.get_doc("Approval Matrix", entry.approval_matrix)
         current_stage = _find_current_stage(matrix, pending_row)
         if current_stage:
-            context = get_email_context(doctype, original_doc, next_user=original_doc.owner, action="Closed")
+            n_user = original_doc.owner
+            n_role = None
+            
+            # ALMS custom logic: if HR Head approves Car Indent Form, send to Purchase Team
+            if doctype == "Car Indent Form" and current_stage.role == "HR Head":
+                n_user = None
+                n_role = "Purchase Team"
+
+            context = get_email_context(doctype, original_doc, next_user=n_user, next_role=n_role, action="Closed")
             if context:
+                # Ensure the original submitter gets CC'd if they are not the main recipient
+                if n_role == "Purchase Team" and "cc" in context:
+                    if original_doc.owner not in context["cc"]:
+                        context["cc"].append(original_doc.owner)
+
+                context["remarks"] = remarks or "-"
+
                 email_template = current_stage.email_template
                 if email_template:
                     _send_email(email_template, context)
     except Exception as e:
         frappe.log_error(f"Error sending closure email: {str(e)}", "Approval Closure Email Error")
+
+    _sync_generic_legacy_fields(doctype, doc_name, current_stage, "Approved", remarks)
 
     return {"status": "success", "message": "Document approved successfully"}
 
@@ -625,48 +799,97 @@ def can_approve(doctype, doc_name):
     try:
         entry_name = frappe.db.get_value("Approval Entry", {
             "applied_to_doctype": doctype,
-            "record": doc_name
+            "record": doc_name,
+            "status": "Pending"
         }, "name")
         
+        user = frappe.session.user
         if not entry_name:
             return False
         
-        entry = frappe.get_doc("Approval Entry", entry_name)
-        ledger_table = "approval_ledger" if hasattr(entry, "approval_ledger") else "approval_entry"
-        ledger_items = entry.get(ledger_table)
+        frappe.flags.ignore_permissions = True
+        try:
+            entry = frappe.get_doc("Approval Entry", entry_name)
+            ledger_table = "approval_ledger" if hasattr(entry, "approval_ledger") else "approval_entry"
+            ledger_items = entry.get(ledger_table)
+        finally:
+            frappe.flags.ignore_permissions = False
         
         if not ledger_items:
             return False
             
-        # Fetch the last row in ledger_items and perform checks accordingly
-        if not ledger_items:
-            return False
+        target_stage = entry.next_approval_stage
+        pending_row = None
+        for row in ledger_items:
+            if row.next_stage == target_stage:
+                pending_row = row
+        
+        if not pending_row:
+            pending_row = ledger_items[-1]
 
-        pending_row = ledger_items[-1]  # Get last row
-
-        user = frappe.session.user
         employee = frappe.db.get_value("Employee", {"user_id": user}, "name")
 
         allowed_team = getattr(pending_row, "next_approver_team", None)
         allowed_user = getattr(pending_row, "next_approver", None)
         allowed_role = getattr(pending_row, "next_approver_role", None)
 
-        if allowed_team:
-            # Check if current user is part of the allowed team
-            if frappe.db.exists("Employee", {"team": allowed_team, "name": employee}):
-                return True
-        else:
-            # Default logic: check for user or role
-            if (
-                user == "Administrator"
-                or (allowed_user and employee and allowed_user == employee)
-                or (allowed_role and allowed_role in frappe.get_roles(user))
-            ):
-                return True
+        print(f"[DEBUG can_approve] doc: {doctype} {doc_name}")
+        print(f"[DEBUG can_approve] user: {user}, employee: {employee}")
+        print(f"[DEBUG can_approve] allowed_team: {allowed_team}, allowed_user: {allowed_user}, allowed_role: {allowed_role}")
 
+        if user == "Administrator":
+            print("[DEBUG can_approve] User is Administrator -> True")
+            return True
+
+        if allowed_user and employee and allowed_user == employee:
+            print("[DEBUG can_approve] User matches allowed_user -> True")
+            return True
+
+        roles = frappe.get_roles(user)
+        print(f"[DEBUG can_approve] user roles: {roles}")
+        
+        if allowed_role and allowed_role in roles:
+            print("[DEBUG can_approve] User has allowed_role -> True")
+            return True
+
+        if allowed_team and employee:
+            if frappe.db.exists("Employee", {"department": allowed_team, "name": employee}):
+                print("[DEBUG can_approve] User is in allowed_team -> True")
+                return True
+            else:
+                print(f"[DEBUG can_approve] User is NOT in allowed_team {allowed_team}")
+
+        print("[DEBUG can_approve] All checks failed -> False")
         return False
     except Exception as e:
         frappe.log_error(frappe.get_traceback(), f"Can Approve Error: {e}")
+        return False
+
+@frappe.whitelist()
+def has_previously_approved(doctype, doc_name):
+    """
+    Check if the current session user has approved any previous stage of the document.
+    """
+    try:
+        user = frappe.session.user
+        if user == "Administrator" and doctype == "Car Indent Form":
+            return True
+
+        entry_name = frappe.db.get_value("Approval Entry", {
+            "applied_to_doctype": doctype,
+            "record": doc_name,
+            "status": ["in", ["Pending", "Approved", "Rejected"]]
+        }, "name", order_by="creation desc")
+        
+        if not entry_name:
+            return False
+            
+        entry = frappe.get_doc("Approval Entry", entry_name)
+        for row in getattr(entry, "approval_entry", []):
+            if row.action == "Approved" and row.approver_user == user:
+                return True
+        return False
+    except Exception:
         return False
 
 @frappe.whitelist()
@@ -680,46 +903,54 @@ def can_approve_entry(onboarding_id):
             
         approval_entry = frappe.db.get_value(
             "Approval Entry", 
-            {"record": onboarding_id}, 
+            {"record": onboarding_id, "status": "Pending"}, 
             "name",
             order_by="modified desc"
         )
 
-
         if not approval_entry:
             return False
             
-        entry = frappe.get_doc("Approval Entry", approval_entry)
-        ledger_table = "approval_ledger" if hasattr(entry, "approval_ledger") else "approval_entry"
-        ledger_items = entry.get(ledger_table)
-        
+        frappe.flags.ignore_permissions = True
+        try:
+            entry = frappe.get_doc("Approval Entry", approval_entry)
+            ledger_table = "approval_ledger" if hasattr(entry, "approval_ledger") else "approval_entry"
+            ledger_items = entry.get(ledger_table)
+        finally:
+            frappe.flags.ignore_permissions = False
+            
         if not ledger_items:
             return False
 
-        pending_row = ledger_items[-1]  # Get last row
+        target_stage = entry.next_approval_stage
+        pending_row = None
+        for row in ledger_items:
+            if row.next_stage == target_stage:
+                pending_row = row
+        
+        if not pending_row:
+            pending_row = ledger_items[-1]
 
         user = frappe.session.user
         employee = frappe.db.get_value("Employee", {"user_id": user}, "name")
+        if not employee:
+            employee = frappe.db.get_value("Employee", {"user_id": user}, "name")
 
         allowed_team = getattr(pending_row, "next_approver_team", None)
         allowed_user = getattr(pending_row, "next_approver", None)
         allowed_role = getattr(pending_row, "next_approver_role", None)
 
-        print("allowed_team", allowed_team)
-        print("allowed_user", allowed_user)
-        print("allowed_role", allowed_role)
-        print("user", user)
-        print("employee", employee)
+        if user == "Administrator":
+            return True
 
-        if allowed_team:
-            if employee and frappe.db.exists("Employee", {"team": allowed_team, "name": employee}):
-                return True
-        else:
-            if (
-                user == "Administrator"
-                or (allowed_user and employee and allowed_user == employee)
-                or (allowed_role and allowed_role in frappe.get_roles(user))
-            ):
+        if allowed_user and employee and allowed_user == employee:
+            return True
+
+        if allowed_role and allowed_role in frappe.get_roles(user):
+            return True
+
+        if allowed_team and employee:
+            if frappe.db.exists("Employee", {"department": allowed_team, "name": employee}):
                 return True
 
         return False
@@ -731,7 +962,9 @@ def get_approval_status(approval_entry:str) -> str:
     entry = frappe.get_doc("Approval Entry", approval_entry)
     if not entry:
         return None
-    next_approver = frappe.get_value("Employee", entry.next_approver, "full_name")
+    next_approver = None
+    if entry.next_approver:
+        next_approver = frappe.get_value("Employee", entry.next_approver, "employee_name")
     if entry.status == "Pending":
         if not next_approver:
             pending_row = entry.approval_entry[-1]
@@ -744,8 +977,8 @@ def get_approval_status(approval_entry:str) -> str:
             else:
                 return "Awaiting Approval",entry.previous_approver_remarks or "-"
         return f"Awaiting Approval from {next_approver}",entry.previous_approver_remarks or "-"
-    elif entry.status == "Rejected":
-        previous_approver = frappe.get_value("Employee", entry.previous_approver, "full_name")
+    if entry.previous_approver:
+        previous_approver = frappe.get_value("Employee", entry.previous_approver, "employee_name")
         return f"Rejected by {previous_approver}",entry.previous_approver_remarks or "-"
     return entry.status,entry.previous_approver_remarks or "-"
 
