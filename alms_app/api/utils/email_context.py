@@ -35,7 +35,7 @@ def _default_context_builder(doc, next_user=None, next_team=None, next_role=None
     }
 
 @register_context_builder("Car Indent Form")
-@register_context_builder("Purchase Team Form")
+@register_context_builder("Purchase Form")
 @register_context_builder("Car Quotation")
 def build_car_indent_form_context(doc, next_user=None, next_team=None, next_role=None, action=None):
     context = _default_context_builder(doc, next_user, next_team, next_role, action)
@@ -54,8 +54,9 @@ def build_car_indent_form_context(doc, next_user=None, next_team=None, next_role
             employee = frappe.get_doc("Employee", emp_name)
 
     if employee:
+        emp_name = getattr(employee, "employee_name", None) or getattr(employee, "full_name", None) or f"{getattr(employee, 'first_name', '')} {getattr(employee, 'last_name', '')}".strip() or employee.name
         context.update({
-            "employee_name": employee.employee_name,
+            "employee_name": emp_name,
             "company": employee.company,
             "designation": employee.designation,
             "eligibility": employee.eligibility,
@@ -76,11 +77,11 @@ def build_car_indent_form_context(doc, next_user=None, next_team=None, next_role
     # Find the user who is currently performing the action
     updated_by_name = frappe.db.get_value("Employee", {"user_id": frappe.session.user, "status": "Active"}, "employee_name")
     
-    if doc.doctype == "Purchase Team Form":
+    if doc.doctype == "Purchase Form":
         # Attempt to load the parent Car Indent Form to provide both sets of data
         car_indent_doc = None
         try:
-            # For Purchase Team Form, employee_name stores the Car Indent Form name
+            # For Purchase Form, employee_name stores the Car Indent Form name
             car_indent_name = getattr(doc, "employee_name", None)
             if car_indent_name:
                 car_indent_doc = frappe.get_doc("Car Indent Form", car_indent_name)
@@ -130,8 +131,9 @@ def build_car_quotation_context(doc, next_user=None, next_team=None, next_role=N
             employee = frappe.get_doc("Employee", emp_name)
 
     if employee:
+        emp_name = getattr(employee, "employee_name", None) or getattr(employee, "full_name", None) or f"{getattr(employee, 'first_name', '')} {getattr(employee, 'last_name', '')}".strip() or employee.name
         context.update({
-            "employee_name": employee.employee_name,
+            "employee_name": emp_name,
             "company": employee.company,
             "designation": employee.designation,
             "eligibility": employee.eligibility,
@@ -146,13 +148,42 @@ def build_car_quotation_context(doc, next_user=None, next_team=None, next_role=N
 
     updated_by_name = frappe.db.get_value("Employee", {"user_id": frappe.session.user, "status": "Active"}, "employee_name")
 
+    action_by_email = getattr(doc, "finance_team_action_by", None)
+    if action_by_email:
+        action_by = frappe.db.get_value("User", action_by_email, "full_name") or action_by_email
+    else:
+        action_by = updated_by_name or frappe.session.user
+
+    car_indent_doc = None
+    purchase_form_doc = None
+    try:
+        if getattr(doc, "employee_details", None):
+            car_indent_doc = frappe.get_doc("Car Indent Form", doc.employee_details)
+            purchase_form_doc = frappe.get_doc("Purchase Form", doc.employee_details)
+    except Exception:
+        pass
+
+    ex_showroom = getattr(doc, "ex_showroom_amount", 0)
+    if not ex_showroom and car_indent_doc:
+        ex_showroom = getattr(car_indent_doc, "net_ex_showroom_price", 0)
+
+    revised_amount = getattr(doc, "financed_amount", 0)
+    if not revised_amount and purchase_form_doc:
+        revised_amount = getattr(purchase_form_doc, "revised_financed_amount", 0)
+
     context.update({
         "vehicle": getattr(doc, "variant", "-") or getattr(doc, "make", "-"),
         "finance_amount": getattr(doc, "financed_amount", "-"),
         "regards": getattr(doc, "finance_company", "-"),
         "updated_by": updated_by_name or frappe.session.user,
         "link": f"{frappe.utils.get_url()}/app/car-quotation/{doc.name}",
-        "quotation_id": doc.name
+        "quotation_id": doc.name,
+        "action_by": action_by,
+        "finance_company": getattr(doc, "finance_company", "-"),
+        "ex_showroom": ex_showroom,
+        "revised_amount": revised_amount,
+        "emi_finance": getattr(doc, "emi_financing", 0),
+        "total_emi": getattr(doc, "total_emi", 0),
     })
 
     return context

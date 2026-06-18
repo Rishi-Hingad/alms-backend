@@ -9,19 +9,24 @@ function has_role(role) {
     return frappe.user_roles.includes(role) || is_admin();
 }
 
-
-
 frappe.ui.form.on("Invoice Batch", {
     onload(frm) {
         if (window.setup_approval_ui) {
             window.setup_approval_ui(frm);
+        } else {
+            frappe.msgprint("Warning: Approval UI script not loaded.");
         }
     },
+    
     refresh(frm) {
+        // 1. Setup Approval UI
         if (window.setup_approval_ui) {
             window.setup_approval_ui(frm);
+        } else {
+            frappe.msgprint("Warning: Approval UI script not loaded.");
         }
 
+        // 2. Retry Failed Rows and Download Error Report
         if (frm.doc.excel_file) {
             if (frm.doc.status === "Pending" || frm.doc.status === "Failed") {
 
@@ -47,11 +52,35 @@ frappe.ui.form.on("Invoice Batch", {
                 })
             }
         }
-    }
-});
+        
+        // 3. Render PDF Preview
+        frm.events.render_pdf_preview(frm, 'invoice_attachment', 'file_preview');
+        frm.events.render_pdf_preview(frm, 'invoice_attachment_1', 'file_preview_1');
+        
+        // 4. Retry API button
+        if (
+            frm.doc.hr_head_status === "Approved" &&
+            frm.doc.status === "Completed" &&
+            !frm.doc.lease_api_call
+        ) {
+            frm.add_custom_button("Retry API", () => {
 
-frappe.ui.form.on('Invoice Batch', {
+                frappe.call({
+                    method: "alms_app.crms.doctype.invoice_batch.invoice_batch.retry_lease_api",
+                    args: {
+                        docname: frm.doc.name
+                    },
+                    freeze: true,
+                    freeze_message: "Retrying API call..."
+                }).then(r => {
+                    frappe.msgprint(r.message.message || "Done");
+                    frm.reload_doc();
+                });
 
+            }).addClass("btn-primary");
+        }
+    },
+    
     render_pdf_preview: function (frm, attachment_field, preview_field) {
 
         let file_url = frm.doc[attachment_field];
@@ -102,39 +131,5 @@ frappe.ui.form.on('Invoice Batch', {
 
     invoice_attachment_1: function (frm) {
         frm.events.render_pdf_preview(frm, 'invoice_attachment_1', 'file_preview_1');
-    },
-
-    refresh: function (frm) {
-        frm.events.render_pdf_preview(frm, 'invoice_attachment', 'file_preview');
-        frm.events.render_pdf_preview(frm, 'invoice_attachment_1', 'file_preview_1');
-    }
-
-});
-
-frappe.ui.form.on('Invoice Batch', {
-    refresh(frm) {
-
-        // Show button only if API failed AND conditions are valid
-        if (
-            frm.doc.hr_head_status === "Approved" &&
-            frm.doc.status === "Completed" &&
-            !frm.doc.lease_api_call
-        ) {
-            frm.add_custom_button("Retry API", () => {
-
-                frappe.call({
-                    method: "alms_app.crms.doctype.invoice_batch.invoice_batch.retry_lease_api",
-                    args: {
-                        docname: frm.doc.name
-                    },
-                    freeze: true,
-                    freeze_message: "Retrying API call..."
-                }).then(r => {
-                    frappe.msgprint(r.message.message || "Done");
-                    frm.reload_doc();
-                });
-
-            }).addClass("btn-primary");
-        }
     }
 });

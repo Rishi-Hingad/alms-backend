@@ -40,6 +40,7 @@
   "designation",
   "reporting_head",
   "head_of_department",
+  "cost_center",
   "contact_details",
   "cell_number",
   "column_break_deuq",
@@ -68,8 +69,7 @@
   "pan_number",
   "column_break_rwnd",
   "blood_group",
-  "health_details",
-  "more_info_tab"
+  "health_details"
  ],
  "fields": [
   {
@@ -188,7 +188,7 @@
    "fieldname": "eligibility",
    "fieldtype": "Currency",
    "label": "Eligibility",
-   "options": "₹"
+   "options": "\u20b9"
   },
   {
    "default": "INR",
@@ -315,11 +315,6 @@
    "label": "Create User"
   },
   {
-   "fieldname": "more_info_tab",
-   "fieldtype": "Tab Break",
-   "label": "More Info"
-  },
-  {
    "default": "0",
    "fieldname": "restricted",
    "fieldtype": "Check",
@@ -409,12 +404,18 @@
   {
    "fieldname": "column_break_gwmu",
    "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "cost_center",
+   "fieldtype": "Link",
+   "label": "Cost Center",
+   "options": "Cost Center"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-06-05 18:32:46.631737",
+ "modified": "2026-06-18 15:47:57.817041",
  "modified_by": "Administrator",
  "module": "master",
  "name": "Employee",

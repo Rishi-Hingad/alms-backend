@@ -72,6 +72,22 @@ class CarQuotation(Document):
         self.quarterly_payment = total_emi * 4
 
     def sync_status(self):
+        if getattr(self, "approval_entry", None):
+            ae_status = frappe.db.get_value("Approval Entry", self.approval_entry, "status")
+            if ae_status == "Approved":
+                self.status = "Approved"
+                self.finance_team_status = "Approved"
+                self.finance_head_status = "Approved"
+                reject_other_quotations(self)
+                return
+            elif ae_status == "Rejected":
+                self.status = "Rejected"
+                if self.finance_team_status != "Approved":
+                    self.finance_team_status = "Rejected"
+                else:
+                    self.finance_head_status = "Rejected"
+                return
+
         ft = (self.finance_team_status or "").strip().lower()
         fh = (self.finance_head_status or "").strip().lower()
 
@@ -96,6 +112,7 @@ class CarQuotation(Document):
 
         else:
             self.status = "Pending"
+
 
 
     def after_insert(self):
@@ -184,6 +201,9 @@ def restore_other_quotations(doc):
         q_doc.save(ignore_permissions=True)
 
 def handle_no_approved_case(doc):
+    if frappe.flags.reverting_quotations:
+        return
+        
     all_quotations = frappe.get_all(
         "Car Quotation",
         filters={"employee_details": doc.employee_details},
@@ -197,28 +217,28 @@ def handle_no_approved_case(doc):
             break
 
     if not has_active:
-        for q in all_quotations:
-            if q.status == "Rejected":
-                if q.name == doc.name:
-                    frappe.db.set_value("Car Quotation", doc.name, {
-                        "finance_team_status": "Pending",
-                        "finance_head_status": "Pending",
-                        "status": "Pending"
-                    }, update_modified=False)
-                    doc.finance_team_status = "Pending"
-                    doc.finance_head_status = "Pending"
-                    doc.status = "Pending"
-                    
-                    try:
-                        trigger_approval_if_matrix_exists(doc)
-                    except Exception as e:
-                        frappe.log_error(str(e), "trigger_approval_if_matrix_exists fallback")
-                else:
-                    q_doc = frappe.get_doc("Car Quotation", q.name)
-                    q_doc.finance_team_status = "Pending"
-                    q_doc.finance_head_status = "Pending"
-                    q_doc.status = "Pending"
-                    q_doc.save(ignore_permissions=True)
+        frappe.flags.reverting_quotations = True
+        try:
+            for q in all_quotations:
+                if q.status == "Rejected":
+                    if q.name == doc.name:
+                        # Do not revert the currently rejected document back to Pending
+                        pass
+                    else:
+                        q_doc = frappe.get_doc("Car Quotation", q.name)
+                        q_doc.db_set("finance_team_status", "Pending", update_modified=False)
+                        q_doc.db_set("finance_head_status", "Pending", update_modified=False)
+                        q_doc.db_set("finance_team_remarks", "", update_modified=False)
+                        q_doc.db_set("finance_head_remarks", "", update_modified=False)
+                        q_doc.db_set("status", "Pending", update_modified=False)
+                        
+                        # Properly restart the Approval Entry
+                        q_doc.db_set("is_submitted", 0, update_modified=False)
+                        q_doc.save(ignore_permissions=True)
+                        q_doc.db_set("is_submitted", 1, update_modified=False)
+                        q_doc.save(ignore_permissions=True)
+        finally:
+            frappe.flags.reverting_quotations = False
 
 
 @frappe.whitelist()
@@ -491,7 +511,7 @@ def reject_other_quotations(doc):
     for q in others:
         q_doc = frappe.get_doc("Car Quotation", q)
 
-        if q_doc.status == "Rejected":
+        if q_doc.status == "Rejected" or q_doc.status == "Approved":
             continue
 
         # Formally reject via approval matrix so the ledger is closed properly
@@ -521,7 +541,7 @@ def get_available_purchase_forms(doctype, txt, searchfield, start, page_len, fil
 
     # Step 1: Approved Purchase Forms
     purchase_forms = frappe.get_all(
-        "Purchase Team Form",
+        "Purchase Form",
         filters={"status": "Approved"},
         pluck="name"
     )
@@ -533,8 +553,14 @@ def get_available_purchase_forms(doctype, txt, searchfield, start, page_len, fil
         pluck="employee_details"
     )
 
-    # Step 3: Remove used ones
-    available = list(set(purchase_forms) - set(used_forms))
+    # Step 3: Forms that have at least one quotation submitted
+    submitted_forms = frappe.get_all(
+        "Car Quotation",
+        pluck="employee_details"
+    )
+
+    # Step 4: Keep only approved forms with quotations, and remove used ones
+    available = list((set(purchase_forms).intersection(set(submitted_forms))) - set(used_forms))
 
     # Step 4: Apply search filter (VERY IMPORTANT for typing in link field)
     if txt:

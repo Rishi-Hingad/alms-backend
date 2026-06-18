@@ -28,10 +28,10 @@ export function updateUI(data) {
     setText('employee-email', data.employee_email);
     setText('designation', data.designation);
     setText('reporting-head', data.reporting_head_name);
-    setText('eligibility', data.eligibility ? `₹${data.eligibility}` : '-');
+    setText('eligibility', formatCurrency(data.eligibility));
     setText('vehicle-model', data.vehicle_make_model);
-    setText('ex-showroom', data.net_ex_showroom_price ? `₹${data.net_ex_showroom_price}` : '-');
-    setText('finance-amount', data.finance_amount ? `₹${data.finance_amount}` : '-');
+    setText('ex-showroom', formatCurrency(data.net_ex_showroom_price));
+    setText('finance-amount', formatCurrency(data.finance_amount));
     setText('approval-status', status);
 
     if (status === "Approved" || status === "Rejected") {
@@ -119,6 +119,18 @@ function showAlreadyApproved(status) {
 function hideAlreadyApproved() {
     const notice = document.getElementById("already-approved-notice");
     if (notice) notice.style.display = "none";
+}
+
+function formatCurrency(amount) {
+    if (amount === null || amount === undefined || amount === '') return '-';
+    const num = Number(amount);
+    if (isNaN(num)) return amount;
+    return new Intl.NumberFormat('en-IN', {
+        style: 'currency',
+        currency: 'INR',
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+    }).format(num);
 }
 
 export function getRemarks() {

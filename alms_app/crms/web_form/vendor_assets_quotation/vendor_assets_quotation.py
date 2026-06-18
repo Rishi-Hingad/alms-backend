@@ -65,7 +65,7 @@ def get_vendor_quotation(employee_details=None, quotation_id=None):
     # CASE 2: normal flow → Purchase Form fallback
     if employee_details:
         doc = frappe.get_all(
-            "Purchase Team Form",
+            "Purchase Form",
             filters={"name": employee_details},
             fields=[
                 "revised_financed_amount",

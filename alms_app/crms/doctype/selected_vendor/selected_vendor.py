@@ -14,7 +14,7 @@ class SelectedVendor(Document):
 		count = len(self.selected_finance_company or [])
 
 		frappe.db.set_value(
-			"Purchase Team Form",
+			"Purchase Form",
 			self.employee_details,
 			{
 				"no_of_quotations": count,

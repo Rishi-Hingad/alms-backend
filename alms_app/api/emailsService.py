@@ -35,23 +35,26 @@ def email_sender(name, email_send_to=None, car_indent_form_name=None, payload=No
         
         elif email_send_to =="Travel Desk To HRHead":
             Email.for_travel_desk_to_hr_head(user)            
-            Email.acknowledgement_email(user,"Travel Desk Department","HR Head")
+            # Email.acknowledgement_email(user,"Travel Desk Department","HR Head")
 
         # elif email_send_to =="HR To HRHead":
         #     Email.for_hr_team_to_hrhead(user)
         
-        elif email_send_to =="HRHead To PurchaseTeam":
+        elif email_send_to =="HRHead To PurchaseForm":
             Email.for_hr_head_to_purchase_team(user) 
             Email.acknowledgement_email(user,"HR Department","Purchase Department")
             
-        elif email_send_to =="PurchaseTeam To PurchaseHead":
+        elif email_send_to =="PurchaseForm To PurchaseHead":
             Email.for_purchase_team_to_purchase_head(user) 
             
         elif email_send_to =="PurchaseHead To FinanceTeam":
             Email.for_purchase_head_to_finance_team(user) 
             Email.acknowledgement_email(user,"Purchase Department","Finance Department")
 
-        # From Purchase Team Form to Vendor (By Finance Team)  
+        elif email_send_to == "Reject PurchaseHead to PurchaseForm":
+            Email.for_reject_by_purchase_head(user)
+
+        # From Purchase Form to Vendor (By Finance Team)  
         elif email_send_to == "FinanceHead To Quotation Company":
             return Email.for_car_quotation(user,payload)
             
@@ -100,10 +103,10 @@ def email_sender(name, email_send_to=None, car_indent_form_name=None, payload=No
         elif email_send_to=="Reject HRHead to Employee":
             Email.for_reject_by_hr_head(user)
 
-        elif email_send_to=="Reject PurchaseHead to PurchaseTeam":
+        elif email_send_to=="Reject PurchaseHead to PurchaseForm":
             Email.for_reject_by_purchase_head(user)
 
-        elif email_send_to=="Reject PurchaseTeam to HR":
+        elif email_send_to=="Reject PurchaseForm to HR":
             Email.for_reject_by_purchase_team(user) 
 
         elif email_send_to== "Reject FinanceHead to FinanceTeam": #update the function

@@ -23,7 +23,9 @@
   "installment_dates_section",
   "installment_date",
   "old_contract_details_tab",
-  "old_contract_details"
+  "old_contract_details",
+  "quotation_form",
+  "user"
  ],
  "fields": [
   {
@@ -32,13 +34,11 @@
    "label": "Contract Details"
   },
   {
-   "fetch_from": "employee_car_process_form.contract_start_date",
    "fieldname": "contract_start_date",
    "fieldtype": "Date",
    "label": "Contract Start Date"
   },
   {
-   "fetch_from": "employee_car_process_form.contract_document",
    "fieldname": "upload_contract",
    "fieldtype": "Attach",
    "label": "Upload Contract"
@@ -48,7 +48,6 @@
    "fieldtype": "Column Break"
   },
   {
-   "fetch_from": "employee_car_process_form.contract_end_date",
    "fieldname": "contract_end_date",
    "fieldtype": "Date",
    "label": "Contract End Date"
@@ -87,13 +86,11 @@
   {
    "fieldname": "employee_car_process_form",
    "fieldtype": "Link",
-   "label": "Employee Car Process Form",
-   "options": "Car Process",
-   "unique": 1
+   "label": "Car Process ID",
+   "options": "Car Process"
   },
   {
    "default": "No",
-   "fetch_from": "employee_car_process_form.contract_signed",
    "fieldname": "contract_signed",
    "fieldtype": "Select",
    "label": "Contract Signed",
@@ -111,28 +108,40 @@
    "options": "Old Contract Details"
   },
   {
-   "fetch_from": "employee_car_process_form.contract_number",
    "fieldname": "contract_number",
    "fieldtype": "Data",
    "label": "Contract Number",
    "unique": 1
   },
   {
-   "fetch_from": "employee_car_process_form.company",
    "fieldname": "vendor",
-   "fieldtype": "Data",
-   "label": "Vendor"
+   "fieldtype": "Link",
+   "label": "Vendor",
+   "options": "Vendor Master"
   },
   {
    "fieldname": "company",
-   "fieldtype": "Data",
-   "label": "Company"
+   "fieldtype": "Link",
+   "label": "Company",
+   "options": "Company Master"
+  },
+  {
+   "fieldname": "quotation_form",
+   "fieldtype": "Link",
+   "label": "Quotation Form",
+   "options": "Car Quotation"
+  },
+  {
+   "fieldname": "user",
+   "fieldtype": "Link",
+   "label": "Employee Name",
+   "options": "Employee"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-03-29 22:29:09.147876",
+ "modified": "2026-06-18 12:35:47.926113",
  "modified_by": "Administrator",
  "module": "CRMS",
  "name": "Contract Master",

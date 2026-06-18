@@ -8,44 +8,43 @@
  "field_order": [
   "car_indent_form_details_section",
   "employee_name",
-  "meril_entity",
   "eligibility",
-  "location",
   "car_model",
-  "make",
   "color",
   "engine",
   "column_break_otzw",
+  "meril_entity",
+  "location",
+  "make",
+  "price_and_charges_section",
   "ex_showroom_price",
-  "discount",
   "tcs",
-  "net_ex_showroom_price",
   "registration_charges",
-  "accessories",
   "finance_amount",
+  "column_break_ucxr",
+  "discount",
+  "net_ex_showroom_price",
+  "accessories",
   "quotation_document",
   "revised_car_details_section",
   "revised_make",
-  "revised_color",
   "revised_car_modal",
-  "revised_engine",
   "kilometers_per_year",
-  "tenure_in_years",
   "total_kilometers",
-  "revised_ex_show_room_price",
-  "revised_discount",
-  "revised_tcs",
   "column_break_xtqz",
-  "revised_net_ex_showroom_price",
+  "revised_color",
+  "revised_engine",
+  "tenure_in_years",
+  "revised_price_and_charges_section",
+  "revised_ex_show_room_price",
+  "revised_tcs",
   "revised_registration_charges",
-  "revised_accessories",
   "revised_financed_amount",
+  "column_break_xfja",
+  "revised_discount",
+  "revised_net_ex_showroom_price",
+  "revised_accessories",
   "revised_quotation_attachment_need_to_be_done",
-  "purchase_team_status",
-  "purchase_team_remarks",
-  "purchase_head_status",
-  "purchase_head_remarks",
-  "status",
   "more_info_tab",
   "email_notifications_section",
   "email_sent_to_all",
@@ -57,14 +56,25 @@
   "all_quotations_ref_no",
   "approval_timline_tab",
   "approval_section",
+  "purchase_team_status",
+  "purchase_head_status",
   "is_submitted",
+  "approval_token",
+  "column_break_rata",
+  "purchase_team_remarks",
+  "purchase_head_remarks",
   "approval_initiated",
   "approval_entry",
-  "approval_token",
-  "trail_section",
+  "timeline_section",
+  "status",
   "approval_trail_html"
  ],
  "fields": [
+  {
+   "fieldname": "car_indent_form_details_section",
+   "fieldtype": "Section Break",
+   "label": "Car Indent Form Details"
+  },
   {
    "fieldname": "employee_name",
    "fieldtype": "Link",
@@ -73,47 +83,10 @@
    "unique": 1
   },
   {
-   "fieldname": "kilometers_per_year",
-   "fieldtype": "Int",
-   "label": "Kilometers per Year"
-  },
-  {
-   "fieldname": "tenure_in_years",
-   "fieldtype": "Int",
-   "label": "Tenure (in years)"
-  },
-  {
-   "fieldname": "total_kilometers",
-   "fieldtype": "Data",
-   "label": "Total Kilometers",
-   "read_only": 1
-  },
-  {
-   "fieldname": "column_break_xtqz",
-   "fieldtype": "Column Break"
-  },
-  {
-   "default": "Pending",
-   "fieldname": "status",
-   "fieldtype": "Select",
-   "label": "Status",
-   "options": "Pending\nApproved\nRejected"
-  },
-  {
-   "fieldname": "car_indent_form_details_section",
-   "fieldtype": "Section Break",
-   "label": "Car Indent Form Details"
-  },
-  {
-   "fieldname": "revised_car_details_section",
-   "fieldtype": "Section Break",
-   "label": "Revised Car Details"
-  },
-  {
-   "fetch_from": "employee_name.location",
-   "fieldname": "location",
-   "fieldtype": "Data",
-   "label": "Location"
+   "fetch_from": "employee_name.eligibility",
+   "fieldname": "eligibility",
+   "fieldtype": "Currency",
+   "label": "Eligibility"
   },
   {
    "fetch_from": "employee_name.model",
@@ -126,6 +99,39 @@
    "fieldname": "color",
    "fieldtype": "Data",
    "label": "Color"
+  },
+  {
+   "fetch_from": "employee_name.engine",
+   "fieldname": "engine",
+   "fieldtype": "Data",
+   "label": "Engine"
+  },
+  {
+   "fieldname": "column_break_otzw",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fetch_from": "employee_name.company_name",
+   "fieldname": "meril_entity",
+   "fieldtype": "Data",
+   "label": "Meril Entity"
+  },
+  {
+   "fetch_from": "employee_name.location",
+   "fieldname": "location",
+   "fieldtype": "Data",
+   "label": "Location"
+  },
+  {
+   "fetch_from": "employee_name.make",
+   "fieldname": "make",
+   "fieldtype": "Data",
+   "label": "Make"
+  },
+  {
+   "fieldname": "price_and_charges_section",
+   "fieldtype": "Section Break",
+   "label": "Price and Charges"
   },
   {
    "fetch_from": "employee_name.ex_showroom_price",
@@ -152,32 +158,8 @@
    "label": "Finance Amount"
   },
   {
-   "fieldname": "column_break_otzw",
+   "fieldname": "column_break_ucxr",
    "fieldtype": "Column Break"
-  },
-  {
-   "fetch_from": "employee_name.company_name",
-   "fieldname": "meril_entity",
-   "fieldtype": "Data",
-   "label": "Meril Entity"
-  },
-  {
-   "fetch_from": "employee_name.eligibility",
-   "fieldname": "eligibility",
-   "fieldtype": "Currency",
-   "label": "Eligibility"
-  },
-  {
-   "fetch_from": "employee_name.make",
-   "fieldname": "make",
-   "fieldtype": "Data",
-   "label": "Make"
-  },
-  {
-   "fetch_from": "employee_name.engine",
-   "fieldname": "engine",
-   "fieldtype": "Data",
-   "label": "Engine"
   },
   {
    "fetch_from": "employee_name.discount",
@@ -204,29 +186,66 @@
    "label": "Quotation Document"
   },
   {
+   "fieldname": "revised_car_details_section",
+   "fieldtype": "Section Break",
+   "label": "Revised Car Details"
+  },
+  {
+   "fieldname": "revised_make",
+   "fieldtype": "Link",
+   "label": "Revised Make",
+   "options": "Car Make Master"
+  },
+  {
+   "fieldname": "revised_car_modal",
+   "fieldtype": "Data",
+   "label": "Revised Car Modal"
+  },
+  {
+   "fieldname": "kilometers_per_year",
+   "fieldtype": "Int",
+   "label": "Kilometers per Year"
+  },
+  {
+   "fieldname": "total_kilometers",
+   "fieldtype": "Data",
+   "label": "Total Kilometers",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_xtqz",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "revised_color",
+   "fieldtype": "Data",
+   "label": "Revised Color"
+  },
+  {
+   "fieldname": "revised_engine",
+   "fieldtype": "Select",
+   "label": "Revised Engine",
+   "options": "-Select-\nEV\nPetrol\nCNG\nDiesel"
+  },
+  {
+   "fieldname": "tenure_in_years",
+   "fieldtype": "Int",
+   "label": "Tenure (in years)"
+  },
+  {
+   "fieldname": "revised_price_and_charges_section",
+   "fieldtype": "Section Break",
+   "label": "Revised Price and Charges"
+  },
+  {
    "fieldname": "revised_ex_show_room_price",
    "fieldtype": "Currency",
    "label": "Revised Ex Show Room Price"
   },
   {
-   "fieldname": "revised_discount",
-   "fieldtype": "Currency",
-   "label": "Revised Discount"
-  },
-  {
    "fieldname": "revised_tcs",
    "fieldtype": "Currency",
    "label": "Revised TCS"
-  },
-  {
-   "fieldname": "revised_accessories",
-   "fieldtype": "Currency",
-   "label": "Revised Accessories"
-  },
-  {
-   "fieldname": "revised_quotation_attachment_need_to_be_done",
-   "fieldtype": "Attach",
-   "label": "Revised Quotation (Attachment need to be done)"
   },
   {
    "fieldname": "revised_registration_charges",
@@ -239,59 +258,38 @@
    "label": "Revised Financed Amount"
   },
   {
+   "fieldname": "column_break_xfja",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "revised_discount",
+   "fieldtype": "Currency",
+   "label": "Revised Discount"
+  },
+  {
    "fieldname": "revised_net_ex_showroom_price",
    "fieldtype": "Currency",
    "label": "Revised Net Ex Showroom Price"
   },
   {
-   "default": "Pending",
-   "fieldname": "purchase_head_status",
-   "fieldtype": "Select",
-   "label": "Purchase Head Status",
-   "options": "Pending\nApproved\nRejected"
+   "fieldname": "revised_accessories",
+   "fieldtype": "Currency",
+   "label": "Revised Accessories"
   },
   {
-   "default": "Pending",
-   "fieldname": "purchase_team_status",
-   "fieldtype": "Select",
-   "label": "Purchase Team Status",
-   "options": "Pending\nApproved\nRejected"
-  },
-  {
-   "fieldname": "purchase_team_remarks",
-   "fieldtype": "Data",
-   "label": "Purchase Team Remarks"
-  },
-  {
-   "fieldname": "purchase_head_remarks",
-   "fieldtype": "Data",
-   "label": "Purchase Head Remarks"
-  },
-  {
-   "fieldname": "revised_make",
-   "fieldtype": "Link",
-   "label": "Revised Make",
-   "options": "Car Make Master"
-  },
-  {
-   "fieldname": "revised_color",
-   "fieldtype": "Data",
-   "label": "Revised Color"
-  },
-  {
-   "fieldname": "revised_car_modal",
-   "fieldtype": "Data",
-   "label": "Revised Car Modal"
-  },
-  {
-   "fieldname": "revised_engine",
-   "fieldtype": "Data",
-   "label": "Revised Engine"
+   "fieldname": "revised_quotation_attachment_need_to_be_done",
+   "fieldtype": "Attach",
+   "label": "Revised Quotation (Attachment need to be done)"
   },
   {
    "fieldname": "more_info_tab",
    "fieldtype": "Tab Break",
    "label": "More Info"
+  },
+  {
+   "fieldname": "email_notifications_section",
+   "fieldtype": "Section Break",
+   "label": "Email Notifications"
   },
   {
    "default": "0",
@@ -310,11 +308,6 @@
    "fieldname": "email_sent_to_eazy_assets",
    "fieldtype": "Check",
    "label": "Email Sent to Eazy Assets"
-  },
-  {
-   "fieldname": "email_notifications_section",
-   "fieldtype": "Section Break",
-   "label": "Email Notifications"
   },
   {
    "fieldname": "quotation_details_section",
@@ -347,12 +340,46 @@
    "label": "Approval"
   },
   {
+   "default": "Pending",
+   "fieldname": "purchase_team_status",
+   "fieldtype": "Select",
+   "label": "Purchase Team Status",
+   "options": "Pending\nApproved\nRejected"
+  },
+  {
+   "default": "Pending",
+   "fieldname": "purchase_head_status",
+   "fieldtype": "Select",
+   "label": "Purchase Head Status",
+   "options": "Pending\nApproved\nRejected"
+  },
+  {
    "default": "0",
    "fieldname": "is_submitted",
    "fieldtype": "Check",
    "hidden": 1,
    "label": "Is Submitted",
    "read_only": 1
+  },
+  {
+   "fieldname": "approval_token",
+   "fieldtype": "Data",
+   "hidden": 1,
+   "label": "Approval Token"
+  },
+  {
+   "fieldname": "column_break_rata",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "purchase_team_remarks",
+   "fieldtype": "Data",
+   "label": "Purchase Team Remarks"
+  },
+  {
+   "fieldname": "purchase_head_remarks",
+   "fieldtype": "Data",
+   "label": "Purchase Head Remarks"
   },
   {
    "default": "0",
@@ -371,15 +398,16 @@
    "read_only": 1
   },
   {
-   "fieldname": "approval_token",
-   "fieldtype": "Data",
-   "hidden": 1,
-   "label": "Approval Token"
+   "fieldname": "timeline_section",
+   "fieldtype": "Section Break",
+   "label": "Timeline"
   },
   {
-   "fieldname": "trail_section",
-   "fieldtype": "Section Break",
-   "label": "Trail"
+   "default": "Pending",
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "label": "Status",
+   "options": "Pending\nApproved\nRejected"
   },
   {
    "fieldname": "approval_trail_html",
@@ -388,20 +416,11 @@
   }
  ],
  "index_web_pages_for_search": 1,
- "links": [
-  {
-   "link_doctype": "Car Indent Form",
-   "link_fieldname": "employee_code"
-  },
-  {
-   "link_doctype": "Car Quotation",
-   "link_fieldname": "employee_details"
-  }
- ],
- "modified": "2026-06-05 14:59:03.073299",
+ "links": [],
+ "modified": "2026-06-18 17:59:55.717955",
  "modified_by": "Administrator",
  "module": "CRMS",
- "name": "Purchase Team Form",
+ "name": "Purchase Form",
  "naming_rule": "By fieldname",
  "owner": "Administrator",
  "permissions": [

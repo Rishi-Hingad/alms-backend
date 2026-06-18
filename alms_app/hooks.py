@@ -72,7 +72,7 @@ fixtures=[
 #     "dt": "Vendor Rental Invoice"
 #   },
 #   {
-#     "dt": "Purchase Team Form"
+#     "dt": "Purchase Form"
 #   },
 #   {
 #     "dt": "Car Delivery Form"
@@ -189,14 +189,14 @@ fixtures=[
 app_include_css = [
     "/assets/alms_app/css/custom.css"
 ]
-# app_include_js = "/assets/alms_app/js/alms_app.js"
+# app_include_js = "/assets/alms_app/js/approval_ui_v2.js"
 
 # include js, css files in header of web template
 # web_include_css = "/assets/alms_app/css/alms_app.css"
 # web_include_js = "/assets/alms_app/js/alms_app.js"
 app_include_js = [
     "/assets/alms_app/js/alms_listview_handler.js",
-    "/assets/alms_app/js/approval_ui.js"
+    "/assets/alms_app/js/approval_ui_v2.js"
 ]
 
 # include custom scss in every website theme (without file extension ".scss")
@@ -323,6 +323,7 @@ app_include_js = [
 
 doc_events = {
     "*": {
+        "validate": "alms_app.approval.approval_router.auto_restart_rejected_document",
         "on_update": "alms_app.approval.approval_router.trigger_approval_if_matrix_exists",
         "on_submit": "alms_app.approval.approval_router.trigger_approval_if_matrix_exists"
     },

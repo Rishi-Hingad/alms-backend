@@ -286,9 +286,7 @@ def process_invoice(file_url, vendor, user_email):
             print(f"Row {idx} amounts: A={a}, B={b}, C={c}, D={d}, Total={total_invoice_value}")
 
             # ---------------- COST CENTER ---------------- #
-            cost_center = frappe.db.get_value("Employee", employee_name, "cost_center")
-            if not cost_center:
-                raise Exception("Missing cost center")
+            cost_center = mapped.get("cost_center") or ""
 
             # ---------------- CONTRIBUTIONS ---------------- #
             deduction = frappe.db.get_value(

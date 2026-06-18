@@ -74,56 +74,43 @@ function uploadfile(frm) {
 
     if (frm.doc.finance_team_status !== "Approved") {
 
-        frm.add_custom_button('Upload File', function () {
+        // ✅ Revised Email → backend call (NO send_email)
+        frm.add_custom_button('Send Revised Quot Email', function () {
 
             frappe.prompt(
                 {
-                    label: 'Upload File',
-                    fieldname: 'file',
-                    fieldtype: 'Attach',
-                    reqd: 1
+                    label: 'Remark',
+                    fieldname: 'remark',
+                    fieldtype: 'Small Text',
+                    reqd: 0
                 },
-                function (values) {
+                async function (values) {
 
-                    frappe.call({
-                        method: 'alms_app.crms.doctype.car_quotation.car_quotation.process_uploaded_file',
+                    frm.set_value('revised_remark', values.remark || "");
+                    await frm.save();
+
+                    await frappe.call({
+                        method: "alms_app.api.emailsService.email_sender",
                         args: {
-                            file_url: values.file,
-                        },
-                        callback: function (response) {
-                            if (response.message) {
-                                setValuesInField(frm, response.message.car_quotation_item);
+                            name: frm.doc.employee_details,
+                            email_send_to: "FinanceHead To Quotation Company",
+                            payload: {
+                                email_phase: "Revised",
+                                quotation_id: frm.doc.name,
+                                email_send_to: [frm.doc.finance_company],
+                                remark: values.remark || ""
                             }
                         }
                     });
 
+                    frappe.msgprint("Revised email sent");
+
                 },
-                __('Upload File'),
-                __('Process')
+                __('Add Remark'),
+                __('Send Email')
             );
 
-        }, 'Request Menu');
-
-
-        // ✅ Revised Email → backend call (NO send_email)
-        frm.add_custom_button('Send Revised Quot Email', async function () {
-
-            await frappe.call({
-                method: "alms_app.api.emailsService.email_sender",
-                args: {
-                    name: frm.doc.employee_details,
-                    email_send_to: "FinanceHead To Quotation Company",
-                    payload: {
-                        email_phase: "Revised",
-                        quotation_id: frm.doc.name,
-                        email_send_to: [frm.doc.finance_company]
-                    }
-                }
-            });
-
-            frappe.msgprint("Revised email sent");
-
-        }, 'Request Menu');
+        });
     }
 }
 

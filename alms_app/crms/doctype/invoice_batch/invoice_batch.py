@@ -40,18 +40,16 @@ class InvoiceBatch(Document):
         self.is_submitted = 1
 
     def after_insert(self):
-        try:
-            from alms_app.approval.approval_router import trigger_approval_if_matrix_exists
-            trigger_approval_if_matrix_exists(self)
-        except Exception as e:
-            frappe.log_error(str(e), "trigger_approval_if_matrix_exists fallback")
+        # Do not trigger approval on creation, wait for successful processing
+        pass
 
     def on_update(self):
-        try:
-            from alms_app.approval.approval_router import trigger_approval_if_matrix_exists
-            trigger_approval_if_matrix_exists(self)
-        except Exception as e:
-            frappe.log_error(str(e), "trigger_approval_if_matrix_exists fallback")
+        if self.status in ["Completed", "Partially Completed"] and not self.get("approval_initiated"):
+            try:
+                from alms_app.approval.approval_router import trigger_approval_if_matrix_exists
+                trigger_approval_if_matrix_exists(self)
+            except Exception as e:
+                frappe.log_error(str(e), "trigger_approval_if_matrix_exists fallback")
 
 
 

@@ -83,7 +83,6 @@ frappe.ready(function () {
             }
         });
 
-        // file field
         if (recordData.revised_quotation_vendor) {
             frappe.web_form.set_value(
                 "revised_quotation_vendor",
@@ -99,6 +98,40 @@ frappe.ready(function () {
             }
         }
     }
+
+    // Disable save button and show "Saving..." on click
+    $(document).on("click", ".submit-btn", function () {
+        let $btn = $(this);
+        let form = $('.web-form')[0];
+
+        // Ensure the form is valid before changing the button state
+        if (form && form.checkValidity && !form.checkValidity()) {
+            return;
+        }
+
+        let originalText = $btn.text();
+        $btn.text("Saving...");
+        $btn.css("pointer-events", "none");
+        $btn.addClass("disabled");
+
+        // Revert text if the button is re-enabled (e.g. on validation error from backend)
+        let checkInterval = setInterval(() => {
+            if (!$btn.prop("disabled") && !window.saving) {
+                $btn.text(originalText);
+                $btn.css("pointer-events", "auto");
+                $btn.removeClass("disabled");
+                clearInterval(checkInterval);
+            }
+        }, 500);
+
+        // Safety cleanup for interval
+        setTimeout(() => {
+            clearInterval(checkInterval);
+            $btn.css("pointer-events", "auto");
+            $btn.removeClass("disabled");
+            $btn.text(originalText);
+        }, 15000);
+    });
 });
 
 function add_upload_button() {

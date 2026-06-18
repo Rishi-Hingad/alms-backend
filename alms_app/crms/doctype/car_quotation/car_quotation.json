@@ -57,6 +57,7 @@
   "finance_team_status",
   "finance_team_remarks",
   "finance_team_action_by",
+  "revised_remark",
   "column_break_rxya",
   "finance_head_status",
   "finance_head_remarks",
@@ -394,6 +395,11 @@
    "fieldtype": "Datetime",
    "label": "Submission Date and Time",
    "read_only": 1
+  },
+  {
+   "fieldname": "revised_remark",
+   "fieldtype": "Small Text",
+   "label": "Revised Remark"
   }
  ],
  "index_web_pages_for_search": 1,
@@ -403,7 +409,7 @@
    "link_fieldname": "finance_quotation_id"
   }
  ],
- "modified": "2026-06-10 16:43:55.669073",
+ "modified": "2026-06-16 21:05:15.400918",
  "modified_by": "Administrator",
  "module": "CRMS",
  "name": "Car Quotation",

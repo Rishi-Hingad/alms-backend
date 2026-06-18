@@ -22,7 +22,7 @@ function renderPurchaseRedirectButton(frm) {
                 }
 
                 frm.add_custom_button(__('Redirect to Purchase Form'), function () {
-                    let apiUrl = `${window.location.origin}/app/purchase-team-form/new-purchase-team-form-?employee_name=${encodeURIComponent(employeeCode)}`;
+                    let apiUrl = `${window.location.origin}/app/purchase-form/new-purchase-form-?employee_name=${encodeURIComponent(employeeCode)}`;
                     if (frm.doc.quotation_document) {
                         apiUrl += `&quotation_document=${encodeURIComponent(frm.doc.quotation_document)}`;
                     }
@@ -94,6 +94,10 @@ frappe.ui.form.on("Car Indent Form", {
     },
 
     refresh: function (frm) {
+        if (frm.doc.status === 'Approved') {
+            frm.set_df_property('eligibility', 'read_only', 1);
+        }
+
         renderPurchaseRedirectButton(frm);
         check_user_access(frm);
         if (window.setup_approval_ui) {

@@ -343,12 +343,7 @@
   }
  ],
  "index_web_pages_for_search": 1,
- "links": [
-  {
-   "link_doctype": "Purchase Team Form",
-   "link_fieldname": "employee_name"
-  }
- ],
+ "links": [],
  "modified": "2026-06-08 09:24:18.331249",
  "modified_by": "Administrator",
  "module": "CRMS",

@@ -31,7 +31,7 @@ class CarIndentForm(Document):
 
 @frappe.whitelist()
 def check_purchase_form_exists(employee_code):
-    return frappe.db.exists("Purchase Team Form", employee_code)
+    return frappe.db.exists("Purchase Form", employee_code)
 
 @frappe.whitelist()
 def can_view_car_indent_list():

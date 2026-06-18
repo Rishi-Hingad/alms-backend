@@ -17,7 +17,7 @@ frappe.listview_settings["Car Quotation"] = {
                             fieldname: "purchase_form",
                             label: "Select Approved Purchase Form",
                             fieldtype: "Link",
-                            options: "Purchase Team Form",
+                            options: "Purchase Form",
                             get_query: () => ({
                                 query: "alms_app.crms.doctype.car_quotation.car_quotation.get_available_purchase_forms"
                             }),

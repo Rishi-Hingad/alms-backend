@@ -129,11 +129,28 @@ def get_approval_trail(doctype, docname):
             if row_status in ["Approved", "Rejected"]:
                 label = approval_row.status.upper()
                 variant = "success" if approval_row.status == "Approved" else "danger"
-                people = _employee_people(getattr(approval_row, "approved_by", None))
+                
+                approved_by_val = getattr(approval_row, "approved_by", None)
+                approver_user = getattr(approval_row, "approver_user", None)
+                
+                if approved_by_val:
+                    people = _employee_people(approved_by_val)
+                    approver_name_str = frappe.db.get_value("Employee", approved_by_val, "employee_name") or approved_by_val
+                else:
+                    if approver_user:
+                        full_name = frappe.db.get_value("User", approver_user, "full_name") or approver_user
+                        people = [{"employee_id": approver_user, "full_name": full_name, "email": approver_user}]
+                        approver_name_str = full_name
+                    else:
+                        people = []
+                        approver_name_str = ""
+
                 dt = getattr(approval_row, "action_at", None)
                 action_line = None
                 if dt:
                     action_line = f"{'Approved' if approval_row.status == 'Approved' else 'Rejected'} On: {frappe.utils.format_datetime(dt, 'dd-MM-YYYY HH:mm:ss')}"
+                    if approver_name_str:
+                        action_line += f"<br>By: {approver_name_str}"
                
                 role_out_ar = matrix_row.get("role")
                 team_out_ar = matrix_row.get("team")

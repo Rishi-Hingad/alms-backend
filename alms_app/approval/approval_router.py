@@ -1,4 +1,5 @@
 import frappe
+import traceback
 from frappe.utils.data import cast, compare, cstr, sql_like
 from alms_app.api.utils.email_context import get_email_context
 
@@ -34,6 +35,45 @@ def trigger_approval_if_matrix_exists(doc, method=None):
         approval_matrix = frappe.get_doc("Approval Matrix", matched_matrix_name)
         generic_process_approval_entry(doc, approval_matrix)
 
+
+def auto_restart_rejected_document(doc, method=None):
+    if not hasattr(doc, "is_submitted") or not hasattr(doc, "status"):
+        return
+        
+    if doc.status == "Rejected":
+        doc.status = "Pending"
+        doc.is_submitted = 1
+        
+        try:
+            entry_name = frappe.db.get_value("Approval Entry", {
+                "applied_to_doctype": doc.doctype,
+                "record": doc.name,
+                "status": "Rejected"
+            }, "name", order_by="creation desc")
+            
+            if entry_name:
+                entry = frappe.get_doc("Approval Entry", entry_name)
+                matrix = frappe.get_doc("Approval Matrix", entry.approval_matrix)
+                
+                # Reset ALL stage legacy fields defined in the Matrix
+                stages_list = getattr(matrix, "stages", getattr(matrix, "approval_stages", []))
+                for stage in stages_list:
+                    app_field = getattr(stage, "status_field", None)
+                    rem_field = getattr(stage, "remarks_field", None)
+                    sig_field = getattr(stage, "signature_field", None)
+
+                    if app_field and hasattr(doc, app_field):
+                        doc.set(app_field, "Pending")
+                    if rem_field and hasattr(doc, rem_field):
+                        doc.set(rem_field, "")
+                    if sig_field and hasattr(doc, sig_field):
+                        doc.set(sig_field, "")
+
+                first_stage = _get_first_stage(matrix)
+                if first_stage:
+                    _reset_approval_entry_to_first_stage(entry.name, doc, first_stage)
+        except Exception as e:
+            frappe.log_error(frappe.get_traceback(), f"Auto Restart Error - {doc.doctype}")
 
 def _should_process_approval(doc):
     """
@@ -405,6 +445,7 @@ def process_approval_action(doctype, doc_name, action, remarks=""):
         frappe.log_error(traceback.format_exc(), "Approval Routing Error")
         frappe.throw(f"Error processing approval: {str(e)}")
 
+
 @frappe.whitelist()
 def revoke_and_reject_approval(doctype, doc_name, remarks, specific_user=None):
     try:
@@ -412,14 +453,14 @@ def revoke_and_reject_approval(doctype, doc_name, remarks, specific_user=None):
         entry_name = frappe.db.get_value("Approval Entry", {
             "applied_to_doctype": doctype,
             "record": doc_name,
-            "status": "Pending"
-        }, "name")
+            "status": ["in", ["Pending", "Approved", "Rejected"]]
+        }, "name", order_by="creation desc")
         
         if not entry_name:
-            frappe.throw("No pending approval entry found.")
+            frappe.throw("No approval entry found to revoke.")
             
         entry = frappe.get_doc("Approval Entry", entry_name)
-        ledger_table = "approval_entry"
+        ledger_table = "approval_ledger" if hasattr(entry, "approval_ledger") else "approval_entry"
         
         # Verify the user has previously approved
         has_approved = False
@@ -436,9 +477,13 @@ def revoke_and_reject_approval(doctype, doc_name, remarks, specific_user=None):
             frappe.throw("You cannot revoke/reject because you have not previously approved this document.")
             
         pending_row = [r for r in entry.get(ledger_table) if r.status == "Pending"]
-        if not pending_row:
-            frappe.throw("No pending stage found to reject.")
-        pending_row = pending_row[-1]
+        if pending_row:
+            pending_row = pending_row[-1]
+        elif entry.get(ledger_table):
+            # If no pending row, the document was fully approved or rejected. We use the last row.
+            pending_row = entry.get(ledger_table)[-1]
+        else:
+            frappe.throw("No stages found to reject.")
         
         # Proceed with rejection
         _handle_reject_action(doctype, doc_name, entry, pending_row, ledger_table, remarks, specific_user=user)
@@ -547,6 +592,37 @@ def _handle_reject_action(doctype, doc_name, entry, pending_row, ledger_table, r
             frappe.db.set_value(doctype, doc_name, "is_submitted", 0, update_modified=True)
         
         current_stage = _find_current_stage(matrix, pending_row)
+        
+        try:
+            reject_email_map = {
+                ("Car Indent Form", "Reporting Head"): "Reject Reporting to Employee",
+                ("Car Indent Form", "HR Team"): "Reject HRTeam to Employee",
+                ("Car Indent Form", "Travel Desk"): "Reject TravelDesk to Employee",
+                ("Car Indent Form", "HR Head"): "Reject HRHead to Employee",
+                ("Purchase Form", "Purchase Team"): "Reject PurchaseForm to HR",
+                ("Purchase Form", "Purchase Head"): "Reject PurchaseHead to PurchaseForm",
+                ("Car Quotation", "Finance Team"): "Reject FinanceTeam to Vendor",
+                ("Car Quotation", "Finance Head"): "Reject FinanceHead to FinanceTeam",
+                ("Company and Employee Deduction", "Finance Head"): "Reject Finance Head To Finance Team"
+            }
+            email_send_to = reject_email_map.get((doctype, current_stage.role))
+            if email_send_to:
+                from alms_app.api.emailsService import email_sender
+                doc = frappe.get_doc(doctype, doc_name)
+                if doctype == "Car Quotation":
+                    payload = {"quotation_id": doc_name}
+                    emp_code = getattr(doc, "employee_details", None)
+                elif doctype == "Company and Employee Deduction":
+                    payload = {"name": doc_name}
+                    emp_code = doc.employee_name
+                else:
+                    payload = None
+                    emp_code = getattr(doc, "employee_name", None) or getattr(doc, "employee_code", None) or doc.owner
+                    
+                email_sender(name=emp_code, email_send_to=email_send_to, car_indent_form_name=doc.name, payload=payload)
+        except Exception as e:
+            frappe.log_error(str(e), "Custom Reject Email Error")
+            
         if current_stage.send_email:
             doc = frappe.get_doc(doctype, doc_name)
             context = get_email_context(doctype, doc, next_user=doc.owner, action="Rejected")
@@ -558,6 +634,25 @@ def _handle_reject_action(doctype, doc_name, entry, pending_row, ledger_table, r
                 _send_email(email_template, context)
 
         _sync_generic_legacy_fields(doctype, doc_name, current_stage, "Rejected", remarks)
+
+        if frappe.get_value("Approval Matrix", entry.approval_matrix, "action_on_rejection") == RESTART_FROM_BEGINNING:
+            doc = frappe.get_doc(doctype, doc_name)
+            stages_list = getattr(matrix, "stages", getattr(matrix, "approval_stages", []))
+            updates = {}
+            for stage in stages_list:
+                app_field = getattr(stage, "status_field", None)
+                rem_field = getattr(stage, "remarks_field", None)
+                sig_field = getattr(stage, "signature_field", None)
+
+                if app_field and hasattr(doc, app_field):
+                    updates[app_field] = "Pending"
+                if rem_field and hasattr(doc, rem_field):
+                    updates[rem_field] = ""
+                if sig_field and hasattr(doc, sig_field):
+                    updates[sig_field] = ""
+            
+            if updates:
+                frappe.db.set_value(doctype, doc_name, updates, update_modified=True)
 
 def _sync_generic_legacy_fields(doctype, doc_name, stage, action, remarks):
     if not stage:
@@ -583,6 +678,10 @@ def _sync_generic_legacy_fields(doctype, doc_name, stage, action, remarks):
 def _handle_approve_action(doctype, doc_name, entry, pending_row, ledger_table, remarks):
     user = frappe.session.user
     employee = frappe.db.get_value("Employee", {"user_id": user}, "name")
+    if not employee:
+        employee = frappe.db.get_value("Employee", {"company_email": user}, "name")
+    if not employee:
+        employee = frappe.db.get_value("Employee", {"personal_email": user}, "name")
 
     # Fetch approval matrix and determine next stage
     matrix = frappe.get_doc("Approval Matrix", entry.approval_matrix)
@@ -755,6 +854,14 @@ def _finalize_approval(doctype, doc_name, entry, pending_row=None, ledger_table=
 
     # Set the original document's status to Approved if the status field exists
     original_doc = frappe.get_doc(doctype, doc_name)
+    
+    # Sync the final stage legacy fields BEFORE saving, so that validate hooks see the correct values
+    matrix = frappe.get_doc("Approval Matrix", entry.approval_matrix)
+    current_stage = _find_current_stage(matrix, pending_row)
+    if current_stage:
+        _sync_generic_legacy_fields(doctype, doc_name, current_stage, "Approved", remarks)
+        original_doc.reload() # Reload the document to get the updated legacy fields
+
     if hasattr(original_doc, "status") or frappe.db.has_column(doctype, "status"):
         original_doc.status = "Approved"
         original_doc.save(ignore_permissions=True)
@@ -767,15 +874,45 @@ def _finalize_approval(doctype, doc_name, entry, pending_row=None, ledger_table=
             n_user = original_doc.owner
             n_role = None
             
-            # ALMS custom logic: if HR Head approves Car Indent Form, send to Purchase Team
+            # ALMS custom logic: if final stage approves, trigger specific emailsService logic
+            email_send_to = None
             if doctype == "Car Indent Form" and current_stage.role == "HR Head":
+                email_send_to = "HRHead To PurchaseForm"
                 n_user = None
                 n_role = "Purchase Team"
+            elif doctype == "Purchase Form" and current_stage.role == "Purchase Head":
+                email_send_to = "PurchaseHead To FinanceTeam"
+                n_user = None
+                n_role = "Finance Team"
+            elif doctype == "Car Quotation" and current_stage.role == "Finance Head":
+                email_send_to = "FinanceHead To All"
+            
+            if email_send_to:
+                try:
+                    from alms_app.api.emailsService import email_sender
+                    employee_code = getattr(original_doc, "employee_code", None)
+                    if not employee_code:
+                        employee_code = getattr(original_doc, "employee_name", None)
+                    if not employee_code:
+                        employee_code = original_doc.owner
+                        
+                    payload = None
+                    if doctype == "Car Quotation":
+                        payload = {"quotation_id": original_doc.name}
+                        employee_code = getattr(original_doc, "employee_details", employee_code)
+                    email_sender(
+                        name=employee_code,
+                        email_send_to=email_send_to,
+                        car_indent_form_name=original_doc.name,
+                        payload=payload
+                    )
+                except Exception as e:
+                    frappe.log_error(f"Error calling emailsService email_sender: {str(e)}", "Approval Closure Email Error")
 
             context = get_email_context(doctype, original_doc, next_user=n_user, next_role=n_role, action="Closed")
             if context:
                 # Ensure the original submitter gets CC'd if they are not the main recipient
-                if n_role == "Purchase Team" and "cc" in context:
+                if n_role in ["Purchase Team", "Finance Team"] and "cc" in context:
                     if original_doc.owner not in context["cc"]:
                         context["cc"].append(original_doc.owner)
 
@@ -1041,3 +1178,33 @@ def get_approval_entry(doctype, doc_name):
         "applied_to_doctype": doctype,
         "record": doc_name
     })
+@frappe.whitelist()
+def get_approval_trail(doctype, doc_name):
+    entry_name = frappe.db.get_value('Approval Entry', {
+        'applied_to_doctype': doctype,
+        'record': doc_name
+    }, 'name')
+    
+    if not entry_name:
+        return []
+        
+    frappe.flags.ignore_permissions = True
+    try:
+        entry = frappe.get_doc('Approval Entry', entry_name)
+        ledger_table = 'approval_ledger' if hasattr(entry, 'approval_ledger') else 'approval_entry'
+        ledger_items = entry.get(ledger_table)
+        
+        trail = []
+        for item in ledger_items:
+            trail.append({
+                'action': item.action,
+                'status': item.status,
+                'action_at': item.action_at if hasattr(item, 'action_at') else None,
+                'approver_user': item.approver_user if hasattr(item, 'approver_user') else None,
+                'next_approver_role': getattr(item, 'next_approver_role', None),
+                'next_approver_team': getattr(item, 'next_approver_team', None),
+                'remarks': getattr(item, 'remarks', None)
+            })
+        return trail
+    finally:
+        frappe.flags.ignore_permissions = False

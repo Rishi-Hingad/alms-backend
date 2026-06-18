@@ -67,6 +67,11 @@ class EmailServices:
         # self.bcc_email = ["rishi.hingad@merillife.com","dhrumit.solanki@merillife.com","deepkumar.bhatt@merillife.com"]
         
 
+    
+    def get_emp_name(self, doc):
+        if not doc: return ""
+        return getattr(doc, "employee_name", None) or getattr(doc, "full_name", None) or f"{getattr(doc, 'first_name', '')} {getattr(doc, 'last_name', '')}".strip() or getattr(doc, "name", "")
+
     def _queue_email(self, subject, recipients, cc=None, bcc=None, content=None):
         """Insert entry in Email Queue before sending"""
         try:
@@ -223,62 +228,40 @@ class EmailServices:
 
     # ------------------- User Acknowledgement Email "------------------"
     def acknowledgement_email(self, user, statusFrom, statusTo):
-        recipient_email = user.company_email or user.user_id
-        subject = "Acknowledgement of Car Allocation Request"
-        body = f"""
-        <html>
-        <head>
-            <style>
-                body {{
-                    font-family: Arial, sans-serif;
-                    margin: 20px;
-                    line-height: 1.6;
-                }}
-                h2 {{
-                    color: #4CAF50;
-                    text-align: center;
-                }}
-                p {{
-                    font-size: 16px;
-                    margin-bottom: 20px;
-                }}
-                .content {{
-                    border: 1px solid #dddddd;
-                    border-radius: 8px;
-                    padding: 20px;
-                }}
-                .footer {{
-                    margin-top: 30px;
-                    font-size: 14px;
-                    color: #555;
-                }}
-            </style>
-        </head>
-        <body>
-            <h2>Acknowledgement of Car Allocation Request</h2>
-            <div class="content">
-                <p>Dear {user.employee_name},</p>
-                <p>
-                    We are pleased to inform that your car allocation request has been approved by <strong>{statusFrom}</strong>.
-                    The request is now being reviewed by <strong>{statusTo}</strong>. We will notify you once the next step is completed.
-                </p>
-                <p>
-                    We will keep you informed as your request progresses through each stage. 
-                    If you have any questions, feel free to reach out to us.
-                </p>
-                <p>If you have any questions, feel free to reach out to us.<a href="mailto:meriltraveldesk@merillife.com">(meriltraveldesk@merillife.com)</a></p>
-                <p>Best regards,</p>
-                <p><strong>Meril</strong></p>
-            </div>
-            <div class="footer">
-                <p>This is an automated email. Please do not reply to this email.</p>
-            </div>
-        </body>
-        </html>
-        """
-        bcc_list = self.get_bcc_list(template_type="Acknowledgement")
-        self.send(subject=subject, body=body, recipient_email=recipient_email, bcc_list=bcc_list)
-        return body
+        try:
+            recipient_email = user.company_email or user.user_id
+
+            context = {
+                "employee_name": user.full_name,
+                "status_from": statusFrom,
+                "status_to": statusTo,
+                "login_link": f"{frappe.utils.get_url()}/login"
+            }
+
+            template = frappe.get_doc(
+                "Email Template",
+                "Car Allocation Request Acknowledgement"
+            )
+
+            subject = frappe.render_template(template.subject, context)
+            body = frappe.render_template(template.response_html or "", context)
+
+            bcc_list = self.get_bcc_list(template_type="Acknowledgement")
+
+            self.send(
+                subject=subject,
+                body=body,
+                recipient_email=recipient_email,
+                bcc_list=bcc_list
+            )
+
+            return body
+
+        except Exception as e:
+            frappe.log_error(
+                str(e),
+                "Acknowledgement Email Error"
+            )
 
     # "-------------------------------------" EMAIL BODY "-------------------------------------"
         
@@ -325,7 +308,7 @@ class EmailServices:
                 </tr>
                 <tr>
                     <td>Requestor Name</td>
-                    <td>{user.employee_name}</td>
+                    <td>{self.get_emp_name(user)}</td>
                 </tr>
                 <tr>
                     <td>Designation</td>
@@ -544,7 +527,7 @@ class EmailServices:
             return
 
         recipient_email = reporting_head.company_email or reporting_head.user_id
-        reporting_head_name = reporting_head.employee_name or reporting_head.full_name
+        reporting_head_name = self.get_emp_name(reporting_head) or reporting_head.full_name
 
         if not recipient_email:
             frappe.log_error(f"Reporting head '{reporting_head_name}' has no email!")
@@ -643,7 +626,7 @@ class EmailServices:
             form = frappe.get_doc("Car Indent Form", user.name)
 
             context = {
-                "employee_name": user.employee_name,
+                "employee_name": self.get_emp_name(user),
                 "company": user.company,
                 "designation": user.designation,
                 "eligibility": user.eligibility,
@@ -681,7 +664,7 @@ class EmailServices:
             form = frappe.get_doc("Car Indent Form", user.name)
 
             context = {
-                "employee_name": user.employee_name,
+                "employee_name": self.get_emp_name(user),
                 "company": user.company,
                 "designation": user.designation,
                 "eligibility": user.eligibility,
@@ -719,7 +702,7 @@ class EmailServices:
             form = frappe.get_doc("Car Indent Form", user.name)
 
             context = {
-                "employee_name": user.employee_name,
+                "employee_name": self.get_emp_name(user),
                 "company": user.company,
                 "designation": user.designation,
                 "eligibility": user.eligibility,
@@ -756,7 +739,7 @@ class EmailServices:
             form = frappe.get_doc("Car Indent Form", user.name)
 
             context = {
-                "employee_name": user.employee_name,
+                "employee_name": self.get_emp_name(user),
                 "company": user.company,
                 "designation": user.designation,
                 "eligibility": user.eligibility,
@@ -793,10 +776,10 @@ class EmailServices:
     #     form = frappe.get_doc("Car Indent Form",user.name)
     #     updated_by = self.get_approver_name(form.name)
     #     remarks_by="purchase_team_remarks"
-    #     revised_form = frappe.get_doc("Purchase Team Form",user.name)
+    #     revised_form = frappe.get_doc("Purchase Form",user.name)
     #     content = f"""
     #     Dear Sir/Madam,
-    #     <br><br>The Purchase Team has reviewed and approved the car rental form submitted by {user.employee_name}.
+    #     <br><br>The Purchase Team has reviewed and approved the car rental form submitted by {self.get_emp_name(user)}.
     #     <br>{updated_by} have updated the quotation for the activity mentioned below:
     #     """
     #     body = self.create_email_body_revised(form,revised_form,user,subject, content,updated_by,remarks_by,regards)
@@ -809,10 +792,10 @@ class EmailServices:
             recipient_email = emailMaster.purchase_head_email
 
             form = frappe.get_doc("Car Indent Form", user.name)
-            revised_form = frappe.get_doc("Purchase Team Form", user.name)
+            revised_form = frappe.get_doc("Purchase Form", user.name)
             
             context = {
-                "employee_name": user.full_name,
+                "employee_name": self.get_emp_name(user),
                 "company": user.company,
                 "designation": user.meril_designation,
                 "eligibility": user.eligibility,
@@ -847,10 +830,10 @@ class EmailServices:
             recipient_emails = emailMaster.finance_team_emails
 
             form = frappe.get_doc("Car Indent Form", user.name)
-            revised_form = frappe.get_doc("Purchase Team Form", user.name)
+            revised_form = frappe.get_doc("Purchase Form", user.name)
 
             context = {
-                "employee_name": user.full_name,
+                "employee_name": self.get_emp_name(user),
                 "company": user.company,
                 "designation": user.meril_designation,
                 "eligibility": user.eligibility,
@@ -885,12 +868,12 @@ class EmailServices:
     #     subject = "Car Rental Form Approved by Purchase Head"
     #     regards = "Purchase Head"
     #     form = frappe.get_doc("Car Indent Form",user.name)
-    #     revised_form = frappe.get_doc("Purchase Team Form",user.name)
+    #     revised_form = frappe.get_doc("Purchase Form",user.name)
     #     updated_by = self.get_approver_name(form.name)
     #     remarks_by="purchase_head_remarks"
     #     content = f"""
     #     Dear Sir/Madam,
-    #     <br><br>The Purchase Head has approved the car rental form for {user.employee_name}.
+    #     <br><br>The Purchase Head has approved the car rental form for {self.get_emp_name(user)}.
     #     <br>{updated_by} have approved the request for the activity mentioned below:
     #     """
     #     body = self.create_email_body_revised(form,revised_form,user,subject, content,updated_by,remarks_by,regards)
@@ -904,7 +887,7 @@ class EmailServices:
         regards ="Finance Team"
         form = frappe.get_doc("Car Indent Form",user.name)
         print("form done++++++++++++++++++++++++++++++++++")
-        revised_form = frappe.get_doc("Purchase Team Form",user.name)
+        revised_form = frappe.get_doc("Purchase Form",user.name)
         print("purchase form done +++++++++++++++++++++++++++++++++++++++++")
         quot_form=frappe.get_last_doc(doctype="Car Quotation",filters={"employee_details": user.name})
 
@@ -913,7 +896,7 @@ class EmailServices:
         remarks_by="finance_team_remarks" #to change here  // finance team remarks // need another form car quotation // to add new fields in email body
         content = f"""
         Dear Sir/Madam,
-        <br><br>The Finance Team has approved the car rental form for {user.employee_name}.
+        <br><br>The Finance Team has approved the car rental form for {self.get_emp_name(user)}.
         <br>{updated_by} have approved the request for the activity mentioned below:
         """
         body = self.create_email_body_quot(form,revised_form,quot_form,user,subject, content,updated_by,remarks_by,regards) 
@@ -929,7 +912,7 @@ class EmailServices:
 
             context = {
                 "quotation_id": quotation_id,
-                "employee_name": user.employee_name,
+                "employee_name": self.get_emp_name(user),
                 "company": user.company,
                 "designation": user.designation,
                 "make": form.make,
@@ -969,24 +952,29 @@ class EmailServices:
 
         quot_form = frappe.get_doc("Car Quotation", payload["quotation_id"])
         form = frappe.get_doc("Car Indent Form", quot_form.employee_details)
-        revised_form = frappe.get_doc("Purchase Team Form", quot_form.employee_details)
+        revised_form = frappe.get_doc("Purchase Form", quot_form.employee_details)
 
-        finance_company = quot_form.finance_company
-        action_by = self.get_approver_name(form.name)
+        finance_company = getattr(quot_form, "finance_company", "")
+        
+        action_by_email = getattr(quot_form, "finance_team_action_by", None)
+        if action_by_email:
+            action_by = frappe.db.get_value("User", action_by_email, "full_name")
+        else:
+            action_by = self.get_approver_name(quot_form.name)
 
         context = {
             "company": user.company,
-            "employee_name": user.employee_name,
+            "employee_name": self.get_emp_name(user),
             "designation": user.designation,
             "vehicle": f"{form.make} - {form.model}",
             "eligibility": user.eligibility,
-            "ex_showroom": form.net_ex_showroom_price,
-            "revised_amount": revised_form.revised_financed_amount,
-            "emi_finance": quot_form.emi_financing,
-            "total_emi": quot_form.total_emi,
+            "ex_showroom": getattr(quot_form, "ex_showroom_amount", 0) or getattr(form, "net_ex_showroom_price", 0),
+            "revised_amount": getattr(quot_form, "financed_amount", 0) or getattr(revised_form, "revised_financed_amount", 0),
+            "emi_finance": getattr(quot_form, "emi_financing", 0),
+            "total_emi": getattr(quot_form, "total_emi", 0),
             "remarks": getattr(quot_form, "finance_team_remarks", "-"),
             "finance_company": finance_company,
-            "action_by": action_by,
+            "action_by": action_by or "Finance Team",
             "link": f"{frappe.utils.get_url()}/login#login",
             "regards": "Finance Team"
         }
@@ -1010,13 +998,13 @@ class EmailServices:
         regards = "Finance Head"
         form = frappe.get_doc("Car Indent Form",user.name)
         updated_by = self.get_approver_name(form.name)
-        revised_form = frappe.get_doc("Purchase Team Form",user.name)
+        revised_form = frappe.get_doc("Purchase Form",user.name)
         quot_form=frappe.get_last_doc(doctype="Car Quotation",filters={"employee_details": user.name})
         remarks_by="finance_head_remarks"
         content = f"""
         Dear Sir/Madam,
         <br><br>
-        The car rental form submitted by {user.employee_name} has been approved at all levels and is now ready for processing.
+        The car rental form submitted by {self.get_emp_name(user)} has been approved at all levels and is now ready for processing.
         Kindly proceed with the final steps.
         <br>
         {updated_by} have approved the request for the activity mentioned below:
@@ -1201,7 +1189,7 @@ class EmailServices:
         content = f"""
         Dear Sir/Madam,
         <br><br>
-        This is to notify {user.employee_name} that the car rental form submitted by you has been rejected by the Reporting Manager for the following reasons:<br>
+        This is to notify {self.get_emp_name(user)} that the car rental form submitted by you has been rejected by the Reporting Manager for the following reasons:<br>
         """
         form = frappe.get_doc("Car Indent Form",user.name)
         body = self.create_reject_email_body(form,subject,content,remarks_by)
@@ -1217,7 +1205,7 @@ class EmailServices:
         content = f"""
         Dear Sir/Madam,
         <br><br>
-        This is to notify {user.employee_name} that the car rental form submitted by you has been rejected by the HR Team for the following remarks:<br>
+        This is to notify {self.get_emp_name(user)} that the car rental form submitted by you has been rejected by the HR Team for the following remarks:<br>
         """
         form = frappe.get_doc("Car Indent Form",user.name)
         body = self.create_reject_email_body(form,subject,content,remarks_by)
@@ -1232,7 +1220,7 @@ class EmailServices:
         content = f"""
         Dear Sir/Madam,
         <br><br>
-        This is to notify {user.employee_name} that the car rental form submitted by you has been rejected by the Travel Desk Team for the following remarks:<br>
+        This is to notify {self.get_emp_name(user)} that the car rental form submitted by you has been rejected by the Travel Desk Team for the following remarks:<br>
         """
         form = frappe.get_doc("Car Indent Form",user.name)
         body = self.create_reject_email_body(form,subject,content,remarks_by)
@@ -1247,7 +1235,7 @@ class EmailServices:
         content = f"""
         Dear Sir/Madam,
         <br><br>
-        This is to notify {user.employee_name} that the car rental form submitted by you has been rejected by the HR Head for the following remarks:<br>
+        This is to notify {self.get_emp_name(user)} that the car rental form submitted by you has been rejected by the HR Head for the following remarks:<br>
         """
         form = frappe.get_doc("Car Indent Form",user.name)
         body = self.create_reject_email_body(form,subject,content,remarks_by)
@@ -1260,11 +1248,11 @@ class EmailServices:
         content = f"""
         Dear Sir/Madam,
         <br><br>
-        This is to notify the Purchase Team that the car rental form of {user.employee_name} submitted by you has been rejected by the Purchase Head for the following remarks:<br>
+        This is to notify the Purchase Team that the car rental form of {self.get_emp_name(user)} submitted by you has been rejected by the Purchase Head for the following remarks:<br>
         <br><br>
         If you have any questions, feel free to reach out to us.(meriltraveldesk@merillife.com)
         """
-        form = frappe.get_doc("Purchase Team Form",user.name)
+        form = frappe.get_doc("Purchase Form",user.name)
         body = self.create_reject_email_body(form,subject,content,remarks_by)
         self.send(subject,recipient_email,body)
 
@@ -1275,9 +1263,9 @@ class EmailServices:
         content = f"""
         Dear Sir/Madam,
         <br><br>
-        This is to notify the HR Team that the car rental form of {user.employee_name} submitted by you has been rejected by the Purchase Team for the following remarks:<br>
+        This is to notify the HR Team that the car rental form of {self.get_emp_name(user)} submitted by you has been rejected by the Purchase Team for the following remarks:<br>
         """
-        form = frappe.get_doc("Purchase Team Form",user.name)
+        form = frappe.get_doc("Purchase Form",user.name)
         body = self.create_reject_email_body(form,subject,content,remarks_by)
         self.send(subject,recipient_email,body)
 
@@ -1291,7 +1279,7 @@ class EmailServices:
         print(" ACK EMAIL →", vendors, email_phase)
 
         form = frappe.get_doc("Car Indent Form", user.name)
-        purchase_form = frappe.get_doc("Purchase Team Form", user.name)
+        purchase_form = frappe.get_doc("Purchase Form", user.name)
 
         template_name = (
             "Revised Finance Quotation Acknowledgement"
@@ -1301,8 +1289,9 @@ class EmailServices:
 
         template = frappe.get_doc("Email Template", template_name)
         for vendor in vendors:
+            emp_name = getattr(user, "employee_name", None) or getattr(user, "full_name", None) or f"{getattr(user, 'first_name', '')} {getattr(user, 'last_name', '')}".strip() or user.name
             context = {
-                "employee_name": user.employee_name,
+                "employee_name": emp_name,
                 "company": user.company,
                 "designation": user.designation,
                 "vehicle": f"{form.make} - {form.model}",
@@ -1325,7 +1314,7 @@ class EmailServices:
             )
 
 
-    def get_vendor_email_body(self, vendor_name, user, form, link, email_phase=None):
+    def get_vendor_email_body(self, vendor_name, user, form, link, email_phase=None, remark=None):
 
         template_name = (
             "Car Quotation Revised Request"
@@ -1340,7 +1329,8 @@ class EmailServices:
             "model": form.model,
             "engine": form.engine,
             "colour": form.colour,
-            "link": link
+            "link": link,
+            "remark": remark
         }
 
         template = frappe.get_doc("Email Template", template_name)
@@ -1380,7 +1370,11 @@ class EmailServices:
                 continue
 
             # FIXED UNIQUE KEY (phase-aware & prevents duplicates across forms)
-            unique_key = f"{user.name}|{quotation_id or ''}|{vendor_name}|{email_phase}"
+            import time
+            if email_phase == "Revised":
+                unique_key = f"{user.name}|{quotation_id or ''}|{vendor_name}|{email_phase}|{int(time.time())}"
+            else:
+                unique_key = f"{user.name}|{quotation_id or ''}|{vendor_name}|{email_phase}"
 
             # Check existence first to prevent Frappe UI toast errors
             if frappe.db.exists("Vendor Email Log", {"unique_key": unique_key}):
@@ -1390,7 +1384,7 @@ class EmailServices:
             try:
                 log = frappe.get_doc({
                     "doctype": "Vendor Email Log",
-                    "reference_doctype": "Purchase Team Form",
+                    "reference_doctype": "Purchase Form",
                     "reference_name": user.name,
                     "vendor": vendor_name,
                     "email": email,
@@ -1423,7 +1417,8 @@ class EmailServices:
                     user,
                     car_indent_form,
                     link,
-                    email_phase
+                    email_phase,
+                    payload.get("remark")
                 )
 
                 # USE TEMPLATE SUBJECT + BODY
@@ -1455,7 +1450,7 @@ class EmailServices:
         frappe.db.commit()
 
         # Update Flags (truth-based)
-        car_purchase_form = frappe.get_doc("Purchase Team Form", user.name)
+        car_purchase_form = frappe.get_doc("Purchase Form", user.name)
 
         sent_vendors_lower = {v.lower() for v in emails_sent}
 
@@ -1537,7 +1532,7 @@ class EmailServices:
         </head>
         <body>
             <h1>Congratulations, <span class="company-name">{car_form.finance_company}</span>!</h1>
-            <p>Your quotation request for <strong>{user.employee_name}</strong> has been selected for further processing.</p>
+            <p>Your quotation request for <strong>{self.get_emp_name(user)}</strong> has been selected for further processing.</p>
             <p>Please fill out the required form by clicking the link below. Ensure you carefully enter the <strong>PO details</strong> and upload the necessary documents.</p>
 
             <h3>Quotation Details:</h3>
@@ -1555,7 +1550,7 @@ class EmailServices:
                     </tr>
                     <tr>
                         <td>User Name</td>
-                        <td>{user.employee_name}</td>
+                        <td>{self.get_emp_name(user)}</td>
                     </tr>
                 </tbody>
             </table>
@@ -1581,7 +1576,7 @@ class EmailServices:
         user = frappe.get_doc("Employee",car_quot_form.employee_details)  
         form_link = f"{frappe.utils.get_url()}/car-purchase-form/new?quotation_form={quotation_id}&user={user.name}&company={car_quot_form.finance_company}"
         body = self.create_selected_company_process(car_quot_form,user,form_link)
-        subject = f"Car Onboard Process for {user.employee_name}"
+        subject = f"Car Onboard Process for {self.get_emp_name(user)}"
         vendor =frappe.get_doc("Vendor Master",car_quot_form.finance_company)
         self.send(subject=subject, body=body, recipient_email=vendor.contact_email)
 
@@ -1598,7 +1593,7 @@ class EmailServices:
         content = f"""
         Dear {vendor.company_name},
         <br><br>
-        This is to notify you that the Car Quotation Form of {user.employee_name} is rejected by the Finance Head for the following reasons:<br>
+        This is to notify you that the Car Quotation Form of {self.get_emp_name(user)} is rejected by the Finance Head for the following reasons:<br>
         """
         body = self.create_reject_email_body(car_quot_form,subject,content,remarks_by)  
         self.send_reject(subject,recipient_email,cc_list,body)  
@@ -1615,7 +1610,7 @@ class EmailServices:
         content = f"""
         Dear {vendor.company_name},
         <br><br>
-        This is to notify you that the Car Quotation Form of {user.employee_name} is rejected by the Finance Team for the following reasons:<br>
+        This is to notify you that the Car Quotation Form of {self.get_emp_name(user)} is rejected by the Finance Team for the following reasons:<br>
         """
         body = self.create_reject_email_body(car_quot_form,subject,content,remarks_by)  
         self.send_reject(subject,recipient_email,cc_list,body) 
@@ -1643,7 +1638,7 @@ class EmailServices:
 
             context = {
                 "employee": employee,
-                "employee_name": employee.employee_name,
+                "employee_name": self.get_emp_name(employee),
                 "hr_name": hr_name,
             }
 
