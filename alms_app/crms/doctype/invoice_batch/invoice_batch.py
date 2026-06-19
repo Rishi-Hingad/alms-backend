@@ -44,7 +44,7 @@ class InvoiceBatch(Document):
         pass
 
     def on_update(self):
-        if self.status in ["Completed", "Partially Completed"] and not self.get("approval_initiated"):
+        if self.excel_sheet_status in ["Completed", "Partially Completed"] and not self.get("approval_initiated"):
             try:
                 from alms_app.approval.approval_router import trigger_approval_if_matrix_exists
                 trigger_approval_if_matrix_exists(self)
@@ -194,7 +194,7 @@ def create_invoice_details_on_approval(doc, method):
     print("Checking conditions for creating Invoice Details from Invoice Batch:", doc.name)
     frappe.logger().info(f"Creating invoices for batch {doc.name}")
 
-    if (doc.hr_head_status != "Approved" or doc.status != "Completed"):
+    if (doc.hr_head_status != "Approved" or doc.excel_sheet_status != "Completed"):
         return
     
     config = VENDOR_CONFIG.get(doc.vendor_name)
@@ -368,11 +368,11 @@ def retry_failed(docname):
     doc.total_rows = doc.success_rows + doc.failed_rows
 
     if doc.failed_rows == 0 and doc.total_rows > 0:
-        doc.status = "Completed"
+        doc.excel_sheet_status = "Completed"
     elif doc.success_rows > 0:
-        doc.status = "Partially Completed"
+        doc.excel_sheet_status = "Partially Completed"
     else:
-        doc.status = "Failed"
+        doc.excel_sheet_status = "Failed"
 
     doc.save()
     # trigger invoice creation if conditions met
@@ -423,7 +423,7 @@ def retry_lease_api(docname):
     if doc.hr_head_status != "Approved":
         frappe.throw("HR Head must approve first")
 
-    if doc.status != "Completed":
+    if doc.excel_sheet_status != "Completed":
         frappe.throw("Batch must be Completed")
 
     if doc.lease_api_call and doc.api_log:

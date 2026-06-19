@@ -189,69 +189,38 @@ function render_approval_trail(frm) {
         },
         callback: function (r) {
             if (r.message && r.message.length > 0) {
-                let html = `
-                <div class="approval-trail-container" style="margin-top: 30px; margin-bottom: 30px;">
-                    <div class="form-section">
-                        <div class="section-head" style="margin-bottom: 20px; border-bottom: 1px solid #d1d8dd; padding-bottom: 10px;">
-                            <h4 style="font-weight: 600; color: #1f272e; display: flex; align-items: center; gap: 8px; margin: 0;">
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-muted"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="10"/></svg>
-                                Approval Routing History
-                            </h4>
-                        </div>
-                        <div class="timeline" style="position: relative; padding-left: 24px; border-left: 2px solid #e2e8f0; margin-left: 12px; font-family: inherit;">
-                `;
+                let html = `<div class="approval-trail-container" style="margin-top: 20px; padding: 15px; border: 1px solid #d1d8dd; border-radius: 4px; background: #f8f9fa;">`;
+                html += `<h5><i class="fa fa-history"></i> Approval Trail</h5><ul style="list-style: none; padding-left: 0;">`;
 
-                r.message.forEach((entry, index) => {
+                r.message.forEach(entry => {
                     let icon = "fa-clock-o";
-                    let bg_color = "#64748b"; // slate-500 for pending
-                    
+                    let color = "#6c757d"; // gray for pending
                     if (entry.status === "Approved") {
-                        icon = "fa-check";
-                        bg_color = "#10b981"; // emerald-500
+                        icon = "fa-check-circle";
+                        color = "#28a745"; // green
                     } else if (entry.status === "Rejected") {
-                        icon = "fa-times";
-                        bg_color = "#ef4444"; // red-500
+                        icon = "fa-times-circle";
+                        color = "#dc3545"; // red
                     } else if (entry.status === "Revoked") {
                         icon = "fa-undo";
-                        bg_color = "#f59e0b"; // amber-500
+                        color = "#ffc107"; // yellow/orange
                     }
 
                     let action_at = entry.action_at ? frappe.datetime.str_to_user(entry.action_at) : '';
                     let approver = entry.approver_user || entry.next_approver_role || entry.next_approver_team || 'Pending';
-                    
-                    // Determine if this is the last item
-                    let is_last = (index === r.message.length - 1);
-                    let margin_bottom = is_last ? "0" : "24px";
+                    let remarks = entry.remarks ? ` - <em>"${entry.remarks}"</em>` : '';
 
                     html += `
-                        <div class="timeline-item" style="position: relative; margin-bottom: ${margin_bottom};">
-                            <!-- Timeline Badge -->
-                            <div class="timeline-badge" style="position: absolute; left: -36px; top: 2px; width: 24px; height: 24px; border-radius: 50%; background: ${bg_color}; color: white; display: flex; align-items: center; justify-content: center; font-size: 11px; border: 3px solid white; box-shadow: 0 0 0 1px ${bg_color}; z-index: 1;">
-                                <i class="fa ${icon}"></i>
-                            </div>
-                            
-                            <!-- Timeline Content Card -->
-                            <div class="timeline-content" style="background: white; border: 1px solid #e2e8f0; border-radius: 8px; padding: 14px 18px; margin-left: 8px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); transition: box-shadow 0.2s ease, transform 0.2s ease;" onmouseover="this.style.boxShadow='0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06)'; this.style.transform='translateY(-1px)';" onmouseout="this.style.boxShadow='0 1px 2px rgba(0,0,0,0.05)'; this.style.transform='translateY(0)';">
-                                <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 8px;">
-                                    <div style="font-weight: 600; color: #0f172a; font-size: 14px; display: flex; align-items: center; gap: 6px;">
-                                        <span style="color: ${bg_color};">${entry.action || 'Pending'}</span>
-                                        <span style="color: #94a3b8; font-weight: 400; font-size: 13px;">by</span>
-                                        <span>${approver}</span>
-                                    </div>
-                                    ${action_at ? `<div style="font-size: 12px; color: #64748b; font-weight: 500; background: #f1f5f9; padding: 2px 8px; border-radius: 12px;">${action_at}</div>` : ''}
-                                </div>
-                                
-                                ${entry.remarks ? `
-                                <div style="margin-top: 12px; padding: 10px 14px; background: #f8fafc; border-radius: 6px; border-left: 3px solid ${bg_color}; font-size: 13px; color: #334155; line-height: 1.5;">
-                                    <strong>Remarks:</strong> ${entry.remarks}
-                                </div>
-                                ` : ''}
-                            </div>
-                        </div>
+                        <li style="margin-bottom: 10px;">
+                            <span style="color: ${color}; font-size: 16px;"><i class="fa ${icon}"></i></span>
+                            <strong>${entry.action || 'Pending'}</strong> by <strong>${approver}</strong> 
+                            ${action_at ? `<small class="text-muted">on ${action_at}</small>` : ''}
+                            ${remarks}
+                        </li>
                     `;
                 });
 
-                html += `</div></div></div>`;
+                html += `</ul></div>`;
 
                 let target_wrapper = frm.layout.wrapper || frm.page.wrapper.find('.form-page');
                 if (target_wrapper.length === 0) target_wrapper = frm.page.wrapper;

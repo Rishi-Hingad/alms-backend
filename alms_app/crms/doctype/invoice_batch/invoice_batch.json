@@ -51,7 +51,7 @@
   "progress_details_section",
   "excel_file",
   "excel_uploaded_by",
-  "status",
+  "excel_sheet_status",
   "invoice_created",
   "email_sent",
   "email_sent_to_finance_head",
@@ -65,6 +65,7 @@
   "failed_rows_table",
   "api_call_tab",
   "api_call_details_section",
+  "status",
   "lease_api_call",
   "api_message",
   "column_break_zecw",
@@ -83,9 +84,9 @@
    "reqd": 1
   },
   {
-   "fieldname": "status",
+   "fieldname": "excel_sheet_status",
    "fieldtype": "Select",
-   "label": "Status",
+   "label": "Excel Sheet Status",
    "options": "Pending\nProcessing\nCompleted\nFailed"
   },
   {
@@ -424,39 +425,45 @@
    "label": "Email Sent to All"
   },
   {
+   "default": "0",
    "fieldname": "is_submitted",
    "fieldtype": "Check",
+   "hidden": 1,
    "label": "Is Submitted",
-   "default": "0",
-   "read_only": 1,
-   "hidden": 1
+   "read_only": 1
   },
   {
+   "default": "0",
    "fieldname": "approval_initiated",
    "fieldtype": "Check",
+   "hidden": 1,
    "label": "Approval Initiated",
-   "default": "0",
-   "read_only": 1,
-   "hidden": 1
+   "read_only": 1
   },
   {
    "fieldname": "approval_entry",
    "fieldtype": "Link",
+   "hidden": 1,
    "label": "Approval Entry",
    "options": "Approval Entry",
-   "read_only": 1,
-   "hidden": 1
+   "read_only": 1
   },
   {
    "fieldname": "approval_trail_html",
    "fieldtype": "HTML",
    "label": "Approval Trail"
+  },
+  {
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "label": "Status",
+   "options": "Draft\nPending Approval\nApproved\nRejected\nCancelled"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-04-03 14:53:03.652990",
+ "modified": "2026-06-19 16:01:26.777311",
  "modified_by": "Administrator",
  "module": "CRMS",
  "name": "Invoice Batch",

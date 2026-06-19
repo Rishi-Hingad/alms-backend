@@ -537,9 +537,11 @@ def _validate_approver_permissions(pending_row):
     allowed_role = pending_row.next_approver_role
     allowed_team = getattr(pending_row, "next_approver_team", None)
 
-    # Check individual user permission
-    if allowed_user and employee and allowed_user == employee:
-        return True
+    # Check individual user permission strictly
+    if allowed_user:
+        if employee and allowed_user == employee:
+            return True
+        frappe.throw("You do not have permission to approve this stage. It is assigned to a specific user.")
 
     # Check role permission
     if allowed_role and allowed_role in frappe.get_roles(user):
@@ -664,14 +666,23 @@ def _sync_generic_legacy_fields(doctype, doc_name, stage, action, remarks):
     updates = {}
     if app_field and frappe.get_meta(doctype).has_field(app_field):
         updates[app_field] = action
+        
+        # Auto-infer user field from status field
+        if app_field.endswith("_status"):
+            user_field = app_field.replace("_status", "_user")
+            if frappe.get_meta(doctype).has_field(user_field):
+                user = frappe.session.user
+                employee = frappe.db.get_value("Employee", {"user_id": user, "status": "Active"}, "name")
+                updates[user_field] = employee or user
+                
     if rem_field and frappe.get_meta(doctype).has_field(rem_field):
         updates[rem_field] = remarks or ""
         
     if sig_field and frappe.get_meta(doctype).has_field(sig_field):
         user = frappe.session.user
         signature = user
-        if frappe.db.has_column("Employee", "employee_signature"):
-            signature = frappe.db.get_value("Employee", {"user_id": user, "status": "Active"}, "employee_signature") or user
+        if frappe.db.has_column("Employee", "esignature"):
+            signature = frappe.db.get_value("Employee", {"user_id": user, "status": "Active"}, "esignature") or user
         updates[sig_field] = signature
 
     if updates:
@@ -820,12 +831,19 @@ def _send_email(template_name, context):
 
 def _add_next_pending_stage(entry, next_stage, ledger_table, current_stage_num):
     next_stage_val = getattr(next_stage, "stage_number", getattr(next_stage, "approval_stage", 0))
+    approver_type = getattr(next_stage, "approver_type", None)
+    
+    next_approver = getattr(next_stage, "employee", getattr(next_stage, "user", None)) if approver_type in ["User", None] else None
+    next_approver_role = getattr(next_stage, "role", None) if approver_type in ["Role", None] else None
+    next_approver_team = getattr(next_stage, "team", getattr(next_stage, "department", None)) if approver_type in ["Team", "Department", None] else None
+    
     entry.append(ledger_table, {
         "status": "Pending",
         "current_stage": current_stage_num,
         "next_stage": next_stage_val,
-        "next_approver": getattr(next_stage, "employee", None),
-        "next_approver_role": getattr(next_stage, "role", None)
+        "next_approver": next_approver,
+        "next_approver_role": next_approver_role,
+        "next_approver_team": next_approver_team
     })
     entry.save(ignore_permissions=True)
     
@@ -980,9 +998,13 @@ def can_approve(doctype, doc_name):
             print("[DEBUG can_approve] User is Administrator -> True")
             return True
 
-        if allowed_user and employee and allowed_user == employee:
-            print("[DEBUG can_approve] User matches allowed_user -> True")
-            return True
+        if allowed_user:
+            if employee and allowed_user == employee:
+                print("[DEBUG can_approve] User matches allowed_user -> True")
+                return True
+            else:
+                print("[DEBUG can_approve] User does NOT match strictly enforced allowed_user -> False")
+                return False
 
         roles = frappe.get_roles(user)
         print(f"[DEBUG can_approve] user roles: {roles}")
@@ -1002,6 +1024,51 @@ def can_approve(doctype, doc_name):
         return False
     except Exception as e:
         frappe.log_error(frappe.get_traceback(), f"Can Approve Error: {e}")
+        return False
+
+@frappe.whitelist()
+def can_revoke(doctype, doc_name):
+    try:
+        user = frappe.session.user
+        if user == "Administrator":
+            return True
+            
+        frappe.flags.ignore_permissions = True
+        try:
+            entry_name = frappe.db.get_value("Approval Entry", {
+                "applied_to_doctype": doctype,
+                "record": doc_name
+            }, "name", order_by="creation desc")
+            
+            if not entry_name:
+                return False
+                
+            entry = frappe.get_doc("Approval Entry", entry_name)
+            ledger_table = "approval_ledger" if hasattr(entry, "approval_ledger") else "approval_entry"
+            ledger_items = entry.get(ledger_table)
+        finally:
+            frappe.flags.ignore_permissions = False
+            
+        if not ledger_items:
+            return False
+            
+        # Find the last approved row
+        last_approved_row = None
+        for row in reversed(ledger_items):
+            if row.action == "Approved":
+                last_approved_row = row
+                break
+                
+        if not last_approved_row:
+            return False
+            
+        employee = frappe.db.get_value("Employee", {"user_id": user}, "name")
+        if last_approved_row.approver_user == user or (employee and last_approved_row.approved_by == employee):
+            return True
+            
+        return False
+    except Exception as e:
+        frappe.log_error(frappe.get_traceback(), f"Can Revoke Error: {e}")
         return False
 
 @frappe.whitelist()
@@ -1137,7 +1204,11 @@ def get_approval_trail(doctype, doc_name):
         ledger_items = entry.get(ledger_table)
         
         trail = []
-        for item in ledger_items:
+        for i, item in enumerate(ledger_items):
+            # Skip historical 'Pending' rows. Only show a Pending row if it's the current active stage (the very last item)
+            if item.status == "Pending" and i < len(ledger_items) - 1:
+                continue
+                
             trail.append({
                 'action': item.action,
                 'status': item.status,

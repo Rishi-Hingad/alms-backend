@@ -30,12 +30,12 @@ frappe.ui.form.on("Invoice Batch", {
                 }
             }
         };
-        console.log("[Invoice Batch] Refresh triggered. Status: " + frm.doc.status);
+        console.log("[Invoice Batch] Refresh triggered. Status: " + frm.doc.excel_sheet_status);
         setup_approval();
         
         // 2. Retry Failed Rows and Download Error Report
         if (frm.doc.excel_file) {
-            if (frm.doc.status === "Pending" || frm.doc.status === "Failed") {
+            if (frm.doc.excel_sheet_status === "Pending" || frm.doc.excel_sheet_status === "Failed") {
 
                 frm.add_custom_button("Retry Failed Rows", () => {
                     frappe.call({
@@ -67,7 +67,7 @@ frappe.ui.form.on("Invoice Batch", {
         // 4. Retry API button
         if (
             frm.doc.hr_head_status === "Approved" &&
-            frm.doc.status === "Completed" &&
+            frm.doc.excel_sheet_status === "Completed" &&
             !frm.doc.lease_api_call
         ) {
             frm.add_custom_button("Retry API", () => {
