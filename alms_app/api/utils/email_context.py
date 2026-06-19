@@ -32,6 +32,7 @@ def _default_context_builder(doc, next_user=None, next_team=None, next_role=None
     return {
         "recipients": recipients,
         "cc": [doc.owner],
+        "doc": doc
     }
 
 @register_context_builder("Car Indent Form")

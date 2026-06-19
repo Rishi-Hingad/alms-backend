@@ -11,21 +11,28 @@ function has_role(role) {
 
 frappe.ui.form.on("Invoice Batch", {
     onload(frm) {
-        if (window.setup_approval_ui) {
-            window.setup_approval_ui(frm);
-        } else {
-            frappe.msgprint("Warning: Approval UI script not loaded.");
-        }
+        // Approval UI is handled globally
     },
     
     refresh(frm) {
-        // 1. Setup Approval UI
-        if (window.setup_approval_ui) {
-            window.setup_approval_ui(frm);
-        } else {
-            frappe.msgprint("Warning: Approval UI script not loaded.");
-        }
-
+        // 1. Setup Approval UI - Wait for global script to load
+        let attempts = 0;
+        let setup_approval = () => {
+            attempts++;
+            if (typeof window.setup_approval_ui === "function") {
+                console.log("[Invoice Batch] Found setup_approval_ui. Calling it now.");
+                window.setup_approval_ui(frm);
+            } else {
+                if (attempts < 20) {
+                    setTimeout(setup_approval, 200);
+                } else {
+                    console.error("[Invoice Batch] Gave up waiting for window.setup_approval_ui after 20 attempts.");
+                }
+            }
+        };
+        console.log("[Invoice Batch] Refresh triggered. Status: " + frm.doc.status);
+        setup_approval();
+        
         // 2. Retry Failed Rows and Download Error Report
         if (frm.doc.excel_file) {
             if (frm.doc.status === "Pending" || frm.doc.status === "Failed") {

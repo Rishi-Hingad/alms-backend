@@ -196,7 +196,7 @@ app_include_css = [
 # web_include_js = "/assets/alms_app/js/alms_app.js"
 app_include_js = [
     "/assets/alms_app/js/alms_listview_handler.js",
-    "/assets/alms_app/js/approval_ui_v2.js"
+    "/assets/alms_app/js/approval_ui_v5.js"
 ]
 
 # include custom scss in every website theme (without file extension ".scss")

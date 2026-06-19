@@ -669,7 +669,9 @@ def _sync_generic_legacy_fields(doctype, doc_name, stage, action, remarks):
         
     if sig_field and frappe.get_meta(doctype).has_field(sig_field):
         user = frappe.session.user
-        signature = frappe.db.get_value("Employee", {"user_id": user, "status": "Active"}, "employee_signature") or user
+        signature = user
+        if frappe.db.has_column("Employee", "employee_signature"):
+            signature = frappe.db.get_value("Employee", {"user_id": user, "status": "Active"}, "employee_signature") or user
         updates[sig_field] = signature
 
     if updates:
@@ -934,18 +936,18 @@ def can_approve(doctype, doc_name):
     Check if the current session user can approve the document based on the pending Approval Entry.
     """
     try:
-        entry_name = frappe.db.get_value("Approval Entry", {
-            "applied_to_doctype": doctype,
-            "record": doc_name,
-            "status": "Pending"
-        }, "name")
-        
-        user = frappe.session.user
-        if not entry_name:
-            return False
-        
         frappe.flags.ignore_permissions = True
         try:
+            entry_name = frappe.db.get_value("Approval Entry", {
+                "applied_to_doctype": doctype,
+                "record": doc_name,
+                "status": "Pending"
+            }, "name")
+            
+            user = frappe.session.user
+            if not entry_name:
+                return False
+                
             entry = frappe.get_doc("Approval Entry", entry_name)
             ledger_table = "approval_ledger" if hasattr(entry, "approval_ledger") else "approval_entry"
             ledger_items = entry.get(ledger_table)
@@ -1012,16 +1014,20 @@ def has_previously_approved(doctype, doc_name):
         if user == "Administrator" and doctype == "Car Indent Form":
             return True
 
-        entry_name = frappe.db.get_value("Approval Entry", {
-            "applied_to_doctype": doctype,
-            "record": doc_name,
-            "status": ["in", ["Pending", "Approved", "Rejected"]]
-        }, "name", order_by="creation desc")
-        
-        if not entry_name:
-            return False
+        frappe.flags.ignore_permissions = True
+        try:
+            entry_name = frappe.db.get_value("Approval Entry", {
+                "applied_to_doctype": doctype,
+                "record": doc_name,
+                "status": ["in", ["Pending", "Approved", "Rejected"]]
+            }, "name", order_by="creation desc")
             
-        entry = frappe.get_doc("Approval Entry", entry_name)
+            if not entry_name:
+                return False
+                
+            entry = frappe.get_doc("Approval Entry", entry_name)
+        finally:
+            frappe.flags.ignore_permissions = False
         for row in getattr(entry, "approval_entry", []):
             if row.action == "Approved" and row.approver_user == user:
                 return True
@@ -1029,71 +1035,7 @@ def has_previously_approved(doctype, doc_name):
     except Exception:
         return False
 
-@frappe.whitelist()
-def can_approve_entry(onboarding_id):
-    """
-    Check if the current session user can approve the document based on a specific Onboarding ID.
-    """
-    try:
-        if not onboarding_id:
-            return False
-            
-        approval_entry = frappe.db.get_value(
-            "Approval Entry", 
-            {"record": onboarding_id, "status": "Pending"}, 
-            "name",
-            order_by="modified desc"
-        )
 
-        if not approval_entry:
-            return False
-            
-        frappe.flags.ignore_permissions = True
-        try:
-            entry = frappe.get_doc("Approval Entry", approval_entry)
-            ledger_table = "approval_ledger" if hasattr(entry, "approval_ledger") else "approval_entry"
-            ledger_items = entry.get(ledger_table)
-        finally:
-            frappe.flags.ignore_permissions = False
-            
-        if not ledger_items:
-            return False
-
-        target_stage = entry.next_approval_stage
-        pending_row = None
-        for row in ledger_items:
-            if row.next_stage == target_stage:
-                pending_row = row
-        
-        if not pending_row:
-            pending_row = ledger_items[-1]
-
-        user = frappe.session.user
-        employee = frappe.db.get_value("Employee", {"user_id": user}, "name")
-        if not employee:
-            employee = frappe.db.get_value("Employee", {"user_id": user}, "name")
-
-        allowed_team = getattr(pending_row, "next_approver_team", None)
-        allowed_user = getattr(pending_row, "next_approver", None)
-        allowed_role = getattr(pending_row, "next_approver_role", None)
-
-        if user == "Administrator":
-            return True
-
-        if allowed_user and employee and allowed_user == employee:
-            return True
-
-        if allowed_role and allowed_role in frappe.get_roles(user):
-            return True
-
-        if allowed_team and employee:
-            if frappe.db.exists("Employee", {"department": allowed_team, "name": employee}):
-                return True
-
-        return False
-    except Exception as e:
-        frappe.log_error(frappe.get_traceback(), f"Can Approve Entry Error: {e}")
-        return False
 
 def get_approval_status(approval_entry:str) -> str:
     entry = frappe.get_doc("Approval Entry", approval_entry)

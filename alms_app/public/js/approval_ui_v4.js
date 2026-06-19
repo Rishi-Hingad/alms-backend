@@ -156,20 +156,12 @@ window.setup_approval_ui = function (frm) {
 
 // Handle Approval Action (Approve, Reject, Revoke)
 function handle_approval(frm, action, remarks = "") {
-    let method_name = "";
-    if (action === "Approve") {
-        method_name = "alms_app.approval.approval_router.approve_document";
-    } else if (action === "Reject") {
-        method_name = "alms_app.approval.approval_router.reject_document";
-    } else if (action === "Revoke") {
-        method_name = "alms_app.approval.approval_router.revoke_document";
-    }
-
     frappe.call({
-        method: method_name,
+        method: "alms_app.approval.approval_router.process_approval_action",
         args: {
             doctype: frm.doc.doctype,
             doc_name: frm.doc.name,
+            action: action,
             remarks: remarks
         },
         callback: function (r) {
