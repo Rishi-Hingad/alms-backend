@@ -5,6 +5,51 @@ frappe.ui.form.on("Car Process", {
 
     refresh(frm) {
         toggle_all_documents(frm);
+        
+        if (!frm.is_new()) {
+            frm.add_custom_button(__("Resend Email"), () => {
+                frappe.call({
+                    method: "frappe.client.get",
+                    args: {
+                        doctype: "Car Process Config",
+                        name: "Car Process Config"
+                    },
+                    callback: function(r) {
+                        if (r.message && r.message.process_steps) {
+                            let options = r.message.process_steps.map(step => step.form_name);
+                            frappe.prompt([
+                                {
+                                    label: 'Select Form Step',
+                                    fieldname: 'form_name',
+                                    fieldtype: 'Select',
+                                    options: options.join('\n'),
+                                    reqd: 1
+                                }
+                            ], (values) => {
+                                frappe.call({
+                                    method: "alms_app.alms_app.api.car_process.resend_process_email",
+                                    args: {
+                                        car_process_name: frm.doc.name,
+                                        form_name: values.form_name
+                                    },
+                                    callback: function(res) {
+                                        if (!res.exc && res.message.status === "success") {
+                                            frappe.msgprint(__("Email request for " + values.form_name + " sent successfully."));
+                                        } else {
+                                            frappe.msgprint({
+                                                title: __("Error"),
+                                                message: res.message.message || "An error occurred",
+                                                indicator: "red"
+                                            });
+                                        }
+                                    }
+                                });
+                            }, __("Resend Email"), __("Send"));
+                        }
+                    }
+                });
+            });
+        }
     },
 
     po_received(frm) {

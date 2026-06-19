@@ -59,7 +59,7 @@ def email_formate_for_car_Onboard(form_link, user_doc, company, form_name):
     template = frappe.get_doc("Email Template", "Car Onboard Vendor Email")
 
     context = {
-        "employee_name": user_doc.employee_name,
+        "employee_name": user_doc.full_name,
         "company": company,
         "form_name": form_name,
         "form_link": form_link
@@ -93,7 +93,7 @@ def acknowledgement_email_for_employee(user, form_name, link):
     )
 
     context = {
-        "employee_name": user.employee_name,
+        "employee_name": user.full_name,
         "form_name": form_name,
         "link": link
     }
@@ -104,7 +104,7 @@ def acknowledgement_email_for_employee(user, form_name, link):
     emailer.send(
         subject=subject,
         body=body,
-        recipient_email=user.email_id,
+        recipient_email=getattr(user, "company_email", None) or getattr(user, "personal_email", None) or getattr(user, "user_id", None),
         bcc_list=emailer.get_bcc_list(template_type="Acknowledgement")
     )
 
@@ -127,7 +127,7 @@ def acknowledgement_email_for_finance(user, form_name, company):
     link = f"{frappe.utils.get_url()}/login#login"
 
     context = {
-        "employee_name": user.employee_name,
+        "employee_name": user.full_name,
         "form_name": form_name,
         "company": company,
         "link": link,
@@ -148,6 +148,7 @@ def acknowledgement_email_for_finance(user, form_name, company):
 @frappe.whitelist(allow_guest=True)
 def car_form_fill():
     print("Car Form Fill API called with data:", frappe.form_dict)
+    frappe.log_error("car_form_fill payload", frappe.as_json(frappe.form_dict))
     try:
         # Extract Request Data
         quotation_id = frappe.form_dict.get("quotation_id")
@@ -169,6 +170,7 @@ def car_form_fill():
         form_document = frappe.form_dict.get("form_document")
         form_date = frappe.form_dict.get("form_date")
         contract_number = frappe.form_dict.get("contract_number")
+        contract_end_date = frappe.form_dict.get("contract_end_date")
 
         if form_document:
             form_document = make_file_public(form_document)
@@ -176,64 +178,24 @@ def car_form_fill():
         if not all([user, company, quotation_id, form_name]):
             return {"status": "error", "message": "Missing required fields"}
 
-        user_doc = frappe.get_doc("Employee Master", user)
+        user_doc = frappe.get_doc("Employee", user)
 
-        # Configuration Mapping
-        FORM_CONFIG = {
-            "Purchase Form": {
-                "document_field": "purchase_document",
-                "status_field": "purchase_status",
-                "next_route": "car-proforma-form",
-                "next_label": "Proforma Invoice"
-            },
-            "Proforma Form": {
-                "document_field": "proforma_invoice_document",
-                "status_field": "proforma_invoice_received",
-                "next_route": "car-insurance-form",
-                "next_label": "Insurance Form"
-            },
-            "Insurance Form": {
-                "document_field": "insurance_document",
-                "status_field": "insurance_copy_received",
-                "next_route": "car-rc-book-form",
-                "next_label": "RC Book Form"
-            },
-            "RC Book Form": {
-                "document_field": "rc_book_document",
-                "status_field": "rc_book_received",
-                "next_route": "car-payment-form",
-                "next_label": "Payment Form"
-            },
-            "Payment Form": {
-                "document_field": "payment_document",
-                "status_field": "payment_done",
-                "next_route": "car-rto-form",
-                "next_label": "RTO Form"
-            },
-            "RTO Form": {
-                "document_field": "registration_document",
-                "status_field": "registration_done",
-                "next_route": "car-delivery-form",
-                "next_label": "Delivery Form"
-            },
-            "Delivery Form": {
-                "document_field": "agreement_document",
-                "status_field": "car_delivery",
-                "date_field": "delivery_date",
-                "next_route": None,
-                "next_label": None
-                # "next_route": "car-contract-form",
-                # "next_label": "Car Contract Form"
-            },
-            # "Car Contract Form": {
-            #     "document_field": "contract_document",
-            #     "status_field": "contract_signed",
-            #     "date_field": "contract_start_date",
-            #     "contract_field": "contract_number",
-            #     "next_route": None,
-            #     "next_label": None
-            # }
-        }
+        # Configuration Mapping from DB
+        FORM_CONFIG = {}
+        try:
+            config_doc = frappe.get_doc("Car Process Config")
+            for step in config_doc.process_steps:
+                FORM_CONFIG[step.form_name] = {
+                    "document_field": step.document_field,
+                    "status_field": step.status_field,
+                    "date_field": step.date_field,
+                    "contract_field": step.contract_field,
+                    "next_route": step.next_route,
+                    "next_label": step.next_label
+                }
+        except Exception as e:
+            frappe.log_error(f"Error fetching Car Process Config: {e}", "Car Process Config Error")
+            return {"status": "error", "message": "Car Process Configuration not found or invalid."}
 
         if form_name not in FORM_CONFIG:
             return {"status": "error", "message": f"Invalid form: {form_name}"}
@@ -273,6 +235,9 @@ def car_form_fill():
 
         if config.get("contract_field") and contract_number:
             setattr(doc, config["contract_field"], contract_number)
+
+        if form_name == "Car Contract Form" and contract_end_date:
+            doc.contract_end_date = contract_end_date
 
         # Save or Insert
         if existing_doc:
@@ -317,4 +282,49 @@ def car_form_fill():
             message=str(e),
             title="Car Form API Error"[:140]
         )
+        return {"status": "error", "message": str(e)}
+
+@frappe.whitelist()
+def resend_process_email(car_process_name, form_name):
+    print(f"Resending email for {car_process_name} - {form_name}")
+    try:
+        car_process = frappe.get_doc("Car Process", car_process_name)
+        config = frappe.get_doc("Car Process Config")
+        
+        step = None
+        for s in config.process_steps:
+            if s.form_name == form_name:
+                step = s
+                break
+                
+        if not step:
+            return {"status": "error", "message": f"Form {form_name} not found in Car Process Config"}
+            
+        if not step.route:
+            return {"status": "error", "message": f"Route not defined for {form_name}"}
+            
+        user_doc = frappe.get_doc("Employee", car_process.user)
+        
+        # Build form link
+        link = (
+            f"{frappe.utils.get_url()}/"
+            f"{step.route}/new"
+            f"?quotation_form={car_process.quotation}"
+            f"&user={car_process.user}"
+            f"&company={car_process.company}"
+        )
+        
+        # We reuse the same email sending logic
+        # It sends to Vendor based on the company parameter
+        email_formate_for_car_Onboard(
+            link,
+            user_doc,
+            car_process.company,
+            step.form_name  # The label they see is the form name requested
+        )
+        
+        return {"status": "success", "message": f"Successfully resent {form_name} request to vendor."}
+        
+    except Exception as e:
+        frappe.log_error(str(e), "Resend Process Email Error")
         return {"status": "error", "message": str(e)}

@@ -37,7 +37,7 @@ class ApprovalEntry(Document):
 		if nxt_approver and nxt_approver != self.get("next_approver"):
 			self.db_set("next_approver", nxt_approver, update_modified=False)
 			employee_name, linked_user = frappe.get_cached_value(
-				"Employee", nxt_approver, ["employee_name", "linked_user"]
+				"Employee", nxt_approver, ["employee_name", "email_id"]
 			)
 			self.db_set("next_approver_name", employee_name, update_modified=False)
 			self.db_set("next_approver_user", linked_user, update_modified=False)
@@ -46,10 +46,10 @@ class ApprovalEntry(Document):
 			self.db_set("next_approver_name", "", update_modified=False)
 			self.db_set("next_approver_user", "", update_modified=False)
 
-		nxt_stage = last.get("next_stage", "")
-		if nxt_stage and nxt_stage != self.get("next_approval_stage"):
+		nxt_stage = last.get("next_stage")
+		if nxt_stage is not None and str(nxt_stage).strip() != "" and str(nxt_stage) != str(self.get("next_approval_stage")):
 			self.db_set("next_approval_stage", nxt_stage, update_modified=False)
-		elif not nxt_stage:
+		elif nxt_stage is None or str(nxt_stage).strip() == "":
 			self.db_set("next_approval_stage", "", update_modified=False)
 
 		nxt_role = last.get("next_approver_role", "")
@@ -71,7 +71,7 @@ class ApprovalEntry(Document):
 		if prv_approver and prv_approver != self.get("previous_approver"):
 			self.db_set("previous_approver", prv_approver, update_modified=False)
 			employee_name, linked_user = frappe.get_cached_value(
-				"Employee", prv_approver, ["employee_name", "linked_user"]
+				"Employee", prv_approver, ["employee_name", "email_id"]
 			)
 			self.db_set("previous_approver_name", employee_name, update_modified=False)
 		elif not prv_approver:

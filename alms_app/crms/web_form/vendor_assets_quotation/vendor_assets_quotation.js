@@ -83,14 +83,55 @@ frappe.ready(function () {
             }
         });
 
-        // file field
         if (recordData.revised_quotation_vendor) {
             frappe.web_form.set_value(
                 "revised_quotation_vendor",
                 recordData.revised_quotation_vendor
             );
+
+            const fileField = frappe.web_form.get_field("revised_quotation_vendor");
+            if (fileField && fileField.$wrapper) {
+                // Wait briefly for set_value to render the file link, then hide buttons
+                setTimeout(() => {
+                    fileField.$wrapper.find('.btn-attach, [data-action="clear_attachment"]').hide();
+                }, 100);
+            }
         }
     }
+
+    // Disable save button and show "Saving..." on click
+    $(document).on("click", ".submit-btn", function () {
+        let $btn = $(this);
+        let form = $('.web-form')[0];
+
+        // Ensure the form is valid before changing the button state
+        if (form && form.checkValidity && !form.checkValidity()) {
+            return;
+        }
+
+        let originalText = $btn.text();
+        $btn.text("Saving...");
+        $btn.css("pointer-events", "none");
+        $btn.addClass("disabled");
+
+        // Revert text if the button is re-enabled (e.g. on validation error from backend)
+        let checkInterval = setInterval(() => {
+            if (!$btn.prop("disabled") && !window.saving) {
+                $btn.text(originalText);
+                $btn.css("pointer-events", "auto");
+                $btn.removeClass("disabled");
+                clearInterval(checkInterval);
+            }
+        }, 500);
+
+        // Safety cleanup for interval
+        setTimeout(() => {
+            clearInterval(checkInterval);
+            $btn.css("pointer-events", "auto");
+            $btn.removeClass("disabled");
+            $btn.text(originalText);
+        }, 15000);
+    });
 });
 
 function add_upload_button() {
@@ -180,3 +221,25 @@ frappe.web_form.after_save = function () {
         email_phase
     );
 };
+
+function send_email(quotation_name, finance_company, vendor_name, email_phase) {
+    const doc = frappe.web_form.doc;
+    frappe.call({
+        method: "alms_app.alms_app.api.emailsService.email_sender",
+        args: {
+            name: doc.employee_details,
+            email_send_to: "Finance Fill Quotation Acknowledgement",
+            payload: JSON.stringify({
+                vendors: [vendor_name],
+                email_phase: email_phase
+            })
+        },
+        callback: function (r) {
+            if (r.message && r.message.status === "success") {
+                console.log("Email sent successfully!");
+            } else {
+                console.error("Error sending email:", r.message);
+            }
+        }
+    });
+}

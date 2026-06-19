@@ -60,28 +60,48 @@ frappe.ready(function () {
 
     frappe.web_form.validate = function () {
         const employeeCode = frappe.web_form.get_value("employee_code");
-        return new Promise((resolve, reject) => {
-            frappe.call({
-                method: "alms_app.crms.web_form.car_indent_form.car_indent_form.check_indent_exists",
-                args: { employee_code: employeeCode },
-                callback: function (response) {
-                    if (response.message === "redirect") {
-                        frappe.msgprint("You already have an active indent.");
-                        setTimeout(() => { window.location.href = "/already-present"; }, 2000);
-                        reject("Indent already exists");
-                    } else {
-                        frappe.call({
-                            method: "alms_app.crms.web_form.car_indent_form.car_indent_form.send_email_to_reporting_head",
-                            args: { doc: employeeCode },
-                            callback: function () { resolve(); },
-                            error: function () {
-                                frappe.throw("Error sending car indent email.");
-                                reject("Email error");
-                            }
-                        });
-                    }
+        let exists = false;
+        
+        frappe.call({
+            method: "alms_app.crms.web_form.car_indent_form.car_indent_form.check_indent_exists",
+            args: { employee_code: employeeCode },
+            async: false,
+            callback: function (response) {
+                if (response.message === "redirect") {
+                    exists = true;
                 }
-            });
+            }
+        });
+
+        if (exists) {
+            frappe.show_alert({
+                message: __('You already have an active indent.'),
+                indicator: 'red'
+            }, 3);
+            setTimeout(() => { window.location.href = "/already-present"; }, 2000);
+            return false;
+        }
+        return true;
+    };
+
+    frappe.web_form.after_save = function () {
+        const employeeCode = frappe.web_form.get_value("employee_code");
+        frappe.call({
+            method: "alms_app.crms.web_form.car_indent_form.car_indent_form.send_email_to_reporting_head",
+            args: { doc: employeeCode },
+            callback: function () {
+                frappe.show_alert({
+                    message: __('Your Car Indent request was submitted successfully.'),
+                    indicator: 'green'
+                }, 3);
+                setTimeout(() => { window.location.href = "/allowance"; }, 2000);
+            },
+            error: function () {
+                frappe.show_alert({
+                    message: __('Error sending car indent email.'),
+                    indicator: 'red'
+                }, 3);
+            }
         });
     };
 });

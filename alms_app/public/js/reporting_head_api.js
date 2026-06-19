@@ -1,5 +1,8 @@
-export async function fetchIndentData(baseUrl, requestId) {
-    const url = `${baseUrl}/api/method/alms_app.www.reporting_head_approval.get_car_indent_data?indent_form_id=${encodeURIComponent(requestId)}`;
+export async function fetchIndentData(baseUrl, requestId, token) {
+    let url = `${baseUrl}/api/method/alms_app.www.reporting_head_approval.get_car_indent_data?indent_form_id=${encodeURIComponent(requestId)}`;
+    if (token) {
+        url += `&token=${encodeURIComponent(token)}`;
+    }
 
     const res = await fetch(url);
     if (!res.ok) throw new Error("Failed to fetch data");

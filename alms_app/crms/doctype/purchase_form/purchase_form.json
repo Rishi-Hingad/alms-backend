@@ -1,0 +1,457 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "field:employee_name",
+ "creation": "2024-09-23 10:19:15.791857",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "car_indent_form_details_section",
+  "employee_name",
+  "eligibility",
+  "car_model",
+  "color",
+  "engine",
+  "column_break_otzw",
+  "meril_entity",
+  "location",
+  "make",
+  "price_and_charges_section",
+  "ex_showroom_price",
+  "tcs",
+  "registration_charges",
+  "finance_amount",
+  "column_break_ucxr",
+  "discount",
+  "net_ex_showroom_price",
+  "accessories",
+  "quotation_document",
+  "revised_car_details_section",
+  "revised_make",
+  "revised_car_modal",
+  "kilometers_per_year",
+  "total_kilometers",
+  "column_break_xtqz",
+  "revised_color",
+  "revised_engine",
+  "tenure_in_years",
+  "revised_price_and_charges_section",
+  "revised_ex_show_room_price",
+  "revised_tcs",
+  "revised_registration_charges",
+  "revised_financed_amount",
+  "column_break_xfja",
+  "revised_discount",
+  "revised_net_ex_showroom_price",
+  "revised_accessories",
+  "revised_quotation_attachment_need_to_be_done",
+  "more_info_tab",
+  "email_notifications_section",
+  "email_sent_to_all",
+  "email_sent_to_ald",
+  "email_sent_to_eazy_assets",
+  "quotation_details_section",
+  "no_of_quotations",
+  "column_break_hhpm",
+  "all_quotations_ref_no",
+  "approval_timline_tab",
+  "approval_section",
+  "purchase_team_status",
+  "purchase_head_status",
+  "is_submitted",
+  "approval_token",
+  "column_break_rata",
+  "purchase_team_remarks",
+  "purchase_head_remarks",
+  "approval_initiated",
+  "approval_entry",
+  "timeline_section",
+  "status",
+  "approval_trail_html"
+ ],
+ "fields": [
+  {
+   "fieldname": "car_indent_form_details_section",
+   "fieldtype": "Section Break",
+   "label": "Car Indent Form Details"
+  },
+  {
+   "fieldname": "employee_name",
+   "fieldtype": "Link",
+   "label": "Employee Name",
+   "options": "Car Indent Form",
+   "unique": 1
+  },
+  {
+   "fetch_from": "employee_name.eligibility",
+   "fieldname": "eligibility",
+   "fieldtype": "Currency",
+   "label": "Eligibility"
+  },
+  {
+   "fetch_from": "employee_name.model",
+   "fieldname": "car_model",
+   "fieldtype": "Data",
+   "label": "Car Model"
+  },
+  {
+   "fetch_from": "employee_name.colour",
+   "fieldname": "color",
+   "fieldtype": "Data",
+   "label": "Color"
+  },
+  {
+   "fetch_from": "employee_name.engine",
+   "fieldname": "engine",
+   "fieldtype": "Data",
+   "label": "Engine"
+  },
+  {
+   "fieldname": "column_break_otzw",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fetch_from": "employee_name.company_name",
+   "fieldname": "meril_entity",
+   "fieldtype": "Data",
+   "label": "Meril Entity"
+  },
+  {
+   "fetch_from": "employee_name.location",
+   "fieldname": "location",
+   "fieldtype": "Data",
+   "label": "Location"
+  },
+  {
+   "fetch_from": "employee_name.make",
+   "fieldname": "make",
+   "fieldtype": "Data",
+   "label": "Make"
+  },
+  {
+   "fieldname": "price_and_charges_section",
+   "fieldtype": "Section Break",
+   "label": "Price and Charges"
+  },
+  {
+   "fetch_from": "employee_name.ex_showroom_price",
+   "fieldname": "ex_showroom_price",
+   "fieldtype": "Currency",
+   "label": "Ex Showroom Price"
+  },
+  {
+   "fetch_from": "employee_name.tcs",
+   "fieldname": "tcs",
+   "fieldtype": "Currency",
+   "label": "TCS"
+  },
+  {
+   "fetch_from": "employee_name.registration_charges",
+   "fieldname": "registration_charges",
+   "fieldtype": "Currency",
+   "label": "Registration Charges"
+  },
+  {
+   "fetch_from": "employee_name.finance_amount",
+   "fieldname": "finance_amount",
+   "fieldtype": "Currency",
+   "label": "Finance Amount"
+  },
+  {
+   "fieldname": "column_break_ucxr",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fetch_from": "employee_name.discount",
+   "fieldname": "discount",
+   "fieldtype": "Currency",
+   "label": "Discount"
+  },
+  {
+   "fetch_from": "employee_name.net_ex_showroom_price",
+   "fieldname": "net_ex_showroom_price",
+   "fieldtype": "Currency",
+   "label": "Net Ex Showroom Price"
+  },
+  {
+   "fetch_from": "employee_name.accessories",
+   "fieldname": "accessories",
+   "fieldtype": "Currency",
+   "label": "Accessories"
+  },
+  {
+   "fetch_from": "employee_name.quotation_document",
+   "fieldname": "quotation_document",
+   "fieldtype": "Attach",
+   "label": "Quotation Document"
+  },
+  {
+   "fieldname": "revised_car_details_section",
+   "fieldtype": "Section Break",
+   "label": "Revised Car Details"
+  },
+  {
+   "fieldname": "revised_make",
+   "fieldtype": "Link",
+   "label": "Revised Make",
+   "options": "Car Make Master"
+  },
+  {
+   "fieldname": "revised_car_modal",
+   "fieldtype": "Data",
+   "label": "Revised Car Modal"
+  },
+  {
+   "fieldname": "kilometers_per_year",
+   "fieldtype": "Int",
+   "label": "Kilometers per Year"
+  },
+  {
+   "fieldname": "total_kilometers",
+   "fieldtype": "Data",
+   "label": "Total Kilometers",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_xtqz",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "revised_color",
+   "fieldtype": "Data",
+   "label": "Revised Color"
+  },
+  {
+   "fieldname": "revised_engine",
+   "fieldtype": "Select",
+   "label": "Revised Engine",
+   "options": "-Select-\nEV\nPetrol\nCNG\nDiesel"
+  },
+  {
+   "fieldname": "tenure_in_years",
+   "fieldtype": "Int",
+   "label": "Tenure (in years)"
+  },
+  {
+   "fieldname": "revised_price_and_charges_section",
+   "fieldtype": "Section Break",
+   "label": "Revised Price and Charges"
+  },
+  {
+   "fieldname": "revised_ex_show_room_price",
+   "fieldtype": "Currency",
+   "label": "Revised Ex Show Room Price"
+  },
+  {
+   "fieldname": "revised_tcs",
+   "fieldtype": "Currency",
+   "label": "Revised TCS"
+  },
+  {
+   "fieldname": "revised_registration_charges",
+   "fieldtype": "Currency",
+   "label": "Revised Registration Charges"
+  },
+  {
+   "fieldname": "revised_financed_amount",
+   "fieldtype": "Currency",
+   "label": "Revised Financed Amount"
+  },
+  {
+   "fieldname": "column_break_xfja",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "revised_discount",
+   "fieldtype": "Currency",
+   "label": "Revised Discount"
+  },
+  {
+   "fieldname": "revised_net_ex_showroom_price",
+   "fieldtype": "Currency",
+   "label": "Revised Net Ex Showroom Price"
+  },
+  {
+   "fieldname": "revised_accessories",
+   "fieldtype": "Currency",
+   "label": "Revised Accessories"
+  },
+  {
+   "fieldname": "revised_quotation_attachment_need_to_be_done",
+   "fieldtype": "Attach",
+   "label": "Revised Quotation (Attachment need to be done)"
+  },
+  {
+   "fieldname": "more_info_tab",
+   "fieldtype": "Tab Break",
+   "label": "More Info"
+  },
+  {
+   "fieldname": "email_notifications_section",
+   "fieldtype": "Section Break",
+   "label": "Email Notifications"
+  },
+  {
+   "default": "0",
+   "fieldname": "email_sent_to_all",
+   "fieldtype": "Check",
+   "label": "Email Sent to All"
+  },
+  {
+   "default": "0",
+   "fieldname": "email_sent_to_ald",
+   "fieldtype": "Check",
+   "label": "Email Sent to ALD"
+  },
+  {
+   "default": "0",
+   "fieldname": "email_sent_to_eazy_assets",
+   "fieldtype": "Check",
+   "label": "Email Sent to Eazy Assets"
+  },
+  {
+   "fieldname": "quotation_details_section",
+   "fieldtype": "Section Break",
+   "label": "Quotation Details"
+  },
+  {
+   "fieldname": "no_of_quotations",
+   "fieldtype": "Data",
+   "label": "No. of Quotations"
+  },
+  {
+   "fieldname": "column_break_hhpm",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "all_quotations_ref_no",
+   "fieldtype": "Link",
+   "label": "All Quotations Ref No.",
+   "options": "Selected Vendor"
+  },
+  {
+   "fieldname": "approval_timline_tab",
+   "fieldtype": "Tab Break",
+   "label": "Approval Timline"
+  },
+  {
+   "fieldname": "approval_section",
+   "fieldtype": "Section Break",
+   "label": "Approval"
+  },
+  {
+   "default": "Pending",
+   "fieldname": "purchase_team_status",
+   "fieldtype": "Select",
+   "label": "Purchase Team Status",
+   "options": "Pending\nApproved\nRejected"
+  },
+  {
+   "default": "Pending",
+   "fieldname": "purchase_head_status",
+   "fieldtype": "Select",
+   "label": "Purchase Head Status",
+   "options": "Pending\nApproved\nRejected"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_submitted",
+   "fieldtype": "Check",
+   "hidden": 1,
+   "label": "Is Submitted",
+   "read_only": 1
+  },
+  {
+   "fieldname": "approval_token",
+   "fieldtype": "Data",
+   "hidden": 1,
+   "label": "Approval Token"
+  },
+  {
+   "fieldname": "column_break_rata",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "purchase_team_remarks",
+   "fieldtype": "Data",
+   "label": "Purchase Team Remarks"
+  },
+  {
+   "fieldname": "purchase_head_remarks",
+   "fieldtype": "Data",
+   "label": "Purchase Head Remarks"
+  },
+  {
+   "default": "0",
+   "fieldname": "approval_initiated",
+   "fieldtype": "Check",
+   "hidden": 1,
+   "label": "Approval Initiated",
+   "read_only": 1
+  },
+  {
+   "fieldname": "approval_entry",
+   "fieldtype": "Link",
+   "hidden": 1,
+   "label": "Approval Entry",
+   "options": "Approval Entry",
+   "read_only": 1
+  },
+  {
+   "fieldname": "timeline_section",
+   "fieldtype": "Section Break",
+   "label": "Timeline"
+  },
+  {
+   "default": "Pending",
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "label": "Status",
+   "options": "Pending\nApproved\nRejected"
+  },
+  {
+   "fieldname": "approval_trail_html",
+   "fieldtype": "HTML",
+   "label": "Approval Trail"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2026-06-18 17:59:55.717955",
+ "modified_by": "Administrator",
+ "module": "CRMS",
+ "name": "Purchase Form",
+ "naming_rule": "By fieldname",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [
+  {
+   "color": "Yellow",
+   "title": "Pending"
+  },
+  {
+   "color": "Green",
+   "title": "Accepted"
+  },
+  {
+   "color": "Red",
+   "title": "Rejected"
+  }
+ ]
+}

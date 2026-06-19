@@ -4,7 +4,7 @@
  "creation": "2024-10-26 11:31:15.153245",
  "docstatus": 0,
  "doctype": "Number Card",
- "document_type": "Employee Master",
+ "document_type": "Employee",
  "dynamic_filters_json": "[]",
  "filters_json": "[]",
  "function": "Count",

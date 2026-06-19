@@ -18,7 +18,7 @@
    "fieldname": "user",
    "fieldtype": "Link",
    "label": "User",
-   "options": "Employee Master"
+   "options": "Employee"
   },
   {
    "fieldname": "company",
@@ -30,8 +30,7 @@
    "fieldname": "quotation_form",
    "fieldtype": "Link",
    "label": "Quotation Form",
-   "options": "Car Quotation",
-   "unique": 1
+   "options": "Car Quotation"
   },
   {
    "default": "No",
@@ -53,7 +52,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-05-02 10:30:14.000367",
+ "modified": "2026-06-18 10:20:46.454295",
  "modified_by": "Administrator",
  "module": "CRMS",
  "name": "Car Payment Form",

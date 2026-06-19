@@ -30,7 +30,11 @@
   "registration_charges",
   "financed_amount",
   "status",
-  "status_head"
+  "status_head",
+  "is_submitted",
+  "approval_initiated",
+  "approval_entry",
+  "approval_trail_html"
  ],
  "fields": [
   {
@@ -48,7 +52,7 @@
    "fieldname": "employee_code",
    "fieldtype": "Link",
    "label": "Employee Code",
-   "options": "Employee Master"
+   "options": "Employee"
   },
   {
    "fetch_from": "employee_code.designation",
@@ -163,6 +167,35 @@
    "fieldname": "email_id",
    "fieldtype": "Data",
    "label": "E-mail ID"
+  },
+  {
+   "fieldname": "is_submitted",
+   "fieldtype": "Check",
+   "label": "Is Submitted",
+   "default": "0",
+   "read_only": 1,
+   "hidden": 1
+  },
+  {
+   "fieldname": "approval_initiated",
+   "fieldtype": "Check",
+   "label": "Approval Initiated",
+   "default": "0",
+   "read_only": 1,
+   "hidden": 1
+  },
+  {
+   "fieldname": "approval_entry",
+   "fieldtype": "Link",
+   "label": "Approval Entry",
+   "options": "Approval Entry",
+   "read_only": 1,
+   "hidden": 1
+  },
+  {
+   "fieldname": "approval_trail_html",
+   "fieldtype": "HTML",
+   "label": "Approval Trail"
   }
  ],
  "index_web_pages_for_search": 1,

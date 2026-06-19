@@ -1,6 +1,6 @@
 import frappe
 
-from vms.utils.get_approver_employee import get_approval_employee
+from alms_app.utils.get_approver_employee import get_approval_employee
 
 
 def verify_approver(user, stage):

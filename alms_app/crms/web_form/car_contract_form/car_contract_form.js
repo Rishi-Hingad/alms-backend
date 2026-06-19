@@ -8,12 +8,11 @@ frappe.ready(() => {
 
 	setTimeout(() => {
 
-		if (company) frappe.web_form.set_value("vendor", company);
-		if (quotation) frappe.web_form.set_value("employee_car_process_form", quotation);
-
-		["vendor", "employee_car_process_form"].forEach(field => {
-			frappe.web_form.set_df_property(field, "read_only", 1);
-		});
+		if (company && company !== 'ALD') {
+			frappe.web_form.set_value("vendor", company);
+		}
+		if (user) frappe.web_form.set_value("employee_car_process_form", user);
+		if (quotation) frappe.web_form.set_value("quotation_form", quotation);
 
 	}, 800);
 

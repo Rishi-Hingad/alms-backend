@@ -36,6 +36,11 @@ frappe.ui.form.on("Approval Matrix", {
 			// Store fields for later lookup
 			frm._applies_to_fields = fields;
 
+			// Populate child table fields for status and remarks mapping
+			let field_options = ["", ...fields.map(df => df.fieldname)];
+			frm.fields_dict.approval_stages.grid.update_docfield_property("status_field", "options", field_options);
+			frm.fields_dict.approval_stages.grid.update_docfield_property("remarks_field", "options", field_options);
+
 			frm.trigger("set_up_filters_editor");
 		});
 	},

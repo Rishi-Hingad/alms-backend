@@ -10,9 +10,10 @@ export function initUI(CONFIG) {
         mainContent: document.getElementById('mainContent'),
         approveBtn: document.getElementById('approveBtn'),
         rejectBtn: document.getElementById('rejectBtn'),
+        revokeBtn: document.getElementById('revokeBtn'),
         remarksInput: document.getElementById('remarks'),
         successMessage: document.getElementById('success-message'),
-        errorMessage: document.getElementById('error-message')
+        errorMessage: document.getElementById('server-error')
     };
     hideAlreadyApproved();
 }
@@ -27,10 +28,10 @@ export function updateUI(data) {
     setText('employee-email', data.employee_email);
     setText('designation', data.designation);
     setText('reporting-head', data.reporting_head_name);
-    setText('eligibility', data.eligibility ? `₹${data.eligibility}` : '-');
+    setText('eligibility', formatCurrency(data.eligibility));
     setText('vehicle-model', data.vehicle_make_model);
-    setText('ex-showroom', data.net_ex_showroom_price ? `₹${data.net_ex_showroom_price}` : '-');
-    setText('finance-amount', data.finance_amount ? `₹${data.finance_amount}` : '-');
+    setText('ex-showroom', formatCurrency(data.net_ex_showroom_price));
+    setText('finance-amount', formatCurrency(data.finance_amount));
     setText('approval-status', status);
 
     if (status === "Approved" || status === "Rejected") {
@@ -40,33 +41,52 @@ export function updateUI(data) {
         document.getElementById("remarks-row").style.display = "none";
     }
 
-    handleState(status);
+    handleState(status, data.user_can_approve, data.has_previously_approved);
 
     const statusEl = document.getElementById('approval-status');
-    statusEl.className = `approval-status badge ${(data.reporting_head_approval || 'pending').toLowerCase()}`;
+    statusEl.className = `approval-status badge ${(status || 'pending').toLowerCase()}`;
 }
 
-function handleState(status) {
+function handleState(status, userCanApprove, hasPreviouslyApproved) {
     const approveBtn = elements.approveBtn;
     const rejectBtn = elements.rejectBtn;
+    const revokeBtn = elements.revokeBtn;
+    const remarksInput = elements.remarksInput;
 
-    // Reset first (important)
-    approveBtn.style.display = "inline-block";
-    rejectBtn.style.display = "inline-block";
-
-    approveBtn.disabled = false;
-    rejectBtn.disabled = false;
+    // Default to hiding unless they can approve
+    approveBtn.style.display = "none";
+    rejectBtn.style.display = "none";
+    if (revokeBtn) revokeBtn.style.display = "none";
+    remarksInput.disabled = true;
 
     hideAlreadyApproved();
 
-    if (status === "Approved") {
-        approveBtn.style.display = "none";
+    if (status === "Approved" || status === "Rejected" || status.includes("Rejected by")) {
         showAlreadyApproved(status);
+        return;
     }
 
-    if (status === "Rejected") {
-        rejectBtn.style.display = "none";
-        showAlreadyApproved(status);
+    if (userCanApprove) {
+        approveBtn.style.display = "inline-block";
+        rejectBtn.style.display = "inline-block";
+        approveBtn.disabled = false;
+        rejectBtn.disabled = false;
+        remarksInput.disabled = false;
+    } else if (hasPreviouslyApproved) {
+        // They approved previously but the document is still pending overall
+        if (revokeBtn) {
+            revokeBtn.style.display = "inline-block";
+            revokeBtn.disabled = false;
+            remarksInput.disabled = false;
+        }
+    } else {
+        const notice = document.getElementById("already-approved-notice");
+        const details = document.getElementById("approval-details");
+        if (notice && details) {
+            notice.className = "already-approved-notice pending";
+            details.innerHTML = "You are not authorized to approve this request at this time.<br>Please ensure you are logged into the ALMS portal.";
+            notice.style.display = "block";
+        }
     }
 }
 
@@ -83,14 +103,14 @@ function showAlreadyApproved(status) {
 
     notice.classList.remove("approved", "rejected");
 
-    if (status === "Approved") {
+    if (status === "Approved" || status.includes("Approved")) {
         notice.classList.add("approved");
-        details.textContent = "This request is already approved. You can still change your decision.";
+        details.textContent = "This request has been approved.";
     }
 
-    if (status === "Rejected") {
+    if (status === "Rejected" || status.includes("Rejected")) {
         notice.classList.add("rejected");
-        details.textContent = "This request is already rejected. You can still change your decision.";
+        details.textContent = "This request has been rejected.";
     }
 
     notice.style.display = "block";
@@ -99,6 +119,18 @@ function showAlreadyApproved(status) {
 function hideAlreadyApproved() {
     const notice = document.getElementById("already-approved-notice");
     if (notice) notice.style.display = "none";
+}
+
+function formatCurrency(amount) {
+    if (amount === null || amount === undefined || amount === '') return '-';
+    const num = Number(amount);
+    if (isNaN(num)) return amount;
+    return new Intl.NumberFormat('en-IN', {
+        style: 'currency',
+        currency: 'INR',
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+    }).format(num);
 }
 
 export function getRemarks() {
@@ -126,9 +158,11 @@ export function enableForm() {
 export function setLoadingState(loading) {
     elements.approveBtn.disabled = loading;
     elements.rejectBtn.disabled = loading;
+    if (elements.revokeBtn) elements.revokeBtn.disabled = loading;
 
     elements.approveBtn.textContent = loading ? "Processing..." : "Approve Request";
     elements.rejectBtn.textContent = loading ? "Processing..." : "Reject Request";
+    if (elements.revokeBtn) elements.revokeBtn.textContent = loading ? "Processing..." : "Revoke & Reject";
 }
 
 export function showFormSuccess(msg) {

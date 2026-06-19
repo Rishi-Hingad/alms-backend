@@ -29,7 +29,7 @@ def _send_vehicle_email(employee_code, file_url, doc_type):
     print(f" - file_url: {file_url}")
 
     # Fetch employee email
-    employee = frappe.get_doc("Employee Master", employee_code)
+    employee = frappe.get_doc("Employee", employee_code)
     recipient = employee.email_id
 
     if not recipient:

@@ -37,7 +37,12 @@
   "gst_on_fms",
   "total_emi",
   "interim_payment",
-  "quarterly_payment"
+  "quarterly_payment",
+  "status",
+  "is_submitted",
+  "approval_initiated",
+  "approval_entry",
+  "approval_trail_html"
  ],
  "fields": [
   {
@@ -202,6 +207,42 @@
    "fieldname": "quarterly_payment",
    "fieldtype": "Data",
    "label": "Quarterly Payment"
+  },
+  {
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "label": "Status",
+   "options": "Pending\nApproved\nRejected",
+   "default": "Pending"
+  },
+  {
+   "fieldname": "is_submitted",
+   "fieldtype": "Check",
+   "label": "Is Submitted",
+   "default": "0",
+   "read_only": 1,
+   "hidden": 1
+  },
+  {
+   "fieldname": "approval_initiated",
+   "fieldtype": "Check",
+   "label": "Approval Initiated",
+   "default": "0",
+   "read_only": 1,
+   "hidden": 1
+  },
+  {
+   "fieldname": "approval_entry",
+   "fieldtype": "Link",
+   "label": "Approval Entry",
+   "options": "Approval Entry",
+   "read_only": 1,
+   "hidden": 1
+  },
+  {
+   "fieldname": "approval_trail_html",
+   "fieldtype": "HTML",
+   "label": "Approval Trail"
   }
  ],
  "index_web_pages_for_search": 1,

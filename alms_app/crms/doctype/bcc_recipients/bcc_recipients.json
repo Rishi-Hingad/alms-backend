@@ -21,23 +21,21 @@
    "in_list_view": 1,
    "in_preview": 1,
    "label": "Email Template",
-   "options": "-Select-\nAll\nAcknowledgement",
-   "read_only": 1
+   "options": "-Select-\nAll\nAcknowledgement"
   },
   {
    "fieldname": "email_address",
    "fieldtype": "Data",
    "in_list_view": 1,
    "in_preview": 1,
-   "label": "Email Address",
-   "read_only": 1
+   "label": "Email Address"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2026-05-21 11:56:17.443069",
+ "modified": "2026-06-02 09:23:22.237130",
  "modified_by": "Administrator",
  "module": "CRMS",
  "name": "BCC Recipients",

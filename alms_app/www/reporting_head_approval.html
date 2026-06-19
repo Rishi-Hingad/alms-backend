@@ -446,16 +446,19 @@
                     <button type="button" id="rejectBtn" class="submit-btn reject-btn">
                         Reject Request
                     </button>
+                    <button type="button" id="revokeBtn" class="submit-btn reject-btn" style="display:none; background-color: #dc3545;">
+                        Revoke & Reject
+                    </button>
                     <span class="loading" id="loadingSpinner">Processing...</span>
                     <div class="success-message" id="success-message">Request processed successfully!</div>
-                    <div class="error-message" id="error-message">An error occurred. Please try again.</div>
+                    <div class="error-message" id="server-error">An error occurred while processing the request.</div>
                 </div>
 
             </div>
         </div>
     </div>
 
-    <script type="module" src="/assets/alms_app/js/reporting_head_app.js"></script>
+    <script type="module" src="/assets/alms_app/js/reporting_head_app.js?v=2"></script>
 </body>
 
 </html>

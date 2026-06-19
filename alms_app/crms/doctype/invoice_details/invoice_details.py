@@ -99,15 +99,24 @@ def get_excel_mapping(vendor):
     doc = frappe.get_doc("Excel Mapper", vendor)
 
     mapping = []
+    header_count = {}
 
     for row in doc.excel_row_mapper:
         if not row.field_column:
             continue
 
+        base_key = normalize(row.excel_column)
+        if base_key in header_count:
+            header_count[base_key] += 1
+            key = f"{base_key}_{header_count[base_key]}"
+        else:
+            header_count[base_key] = 0
+            key = base_key
+
         mapping.append({
             "fieldname": row.field_column,
             "index": row.column_index,
-            "normalized_key": normalize(row.excel_column)
+            "normalized_key": key
         })
 
     return mapping
@@ -163,26 +172,14 @@ def process_invoice(file_url, vendor, user_email):
     batch.status = "Processing"
     batch.insert(ignore_permissions=True)
 
+    # Cache child meta to know fieldtypes
+    child_meta = frappe.get_meta("Invoice Import Row")
+    field_types = {df.fieldname: df.fieldtype for df in child_meta.fields}
+
     # ---------------- PROCESS ROWS ---------------- #
     for idx, row in enumerate(data, start=1):
         row_dict = dict(zip(headers_norm, row))
         mapped = {}
-
-        # Map Excel columns to child fields
-        for m in header_map:
-            fieldname = m.get("fieldname")
-            col_idx = m.get("index")
-            key = m.get("normalized_key")
-
-            value = None
-            
-            if col_idx is not None:
-                try:
-                    value = row[col_idx]
-                except IndexError:
-                    value = None
-
-            mapped[fieldname] = value
 
         # Initialize calculation variables
         total_invoice_value = 0
@@ -190,6 +187,42 @@ def process_invoice(file_url, vendor, user_email):
         employee_contribution = 0
 
         try:
+            # Map Excel columns to child fields
+            for m in header_map:
+                fieldname = m.get("fieldname")
+                col_idx = m.get("index")
+                key = m.get("normalized_key")
+
+                value = None
+                # Dynamically lookup by column header first (handles shifted columns)
+                if key and key in row_dict:
+                    value = row_dict[key]
+                # Fallback to hardcoded index if header not found
+                elif col_idx is not None:
+                    try:
+                        value = row[col_idx]
+                    except IndexError:
+                        value = None
+
+                # Type checking based on child meta
+                ftype = field_types.get(fieldname)
+                if value is not None and str(value).strip() != "":
+                    if ftype == "Date":
+                        str_val = str(value).strip()
+                        if "." in str_val and str_val.replace(".", "").isdigit():
+                            raise Exception(f"Expected Date for {fieldname}, got numeric: {value}")
+                        try:
+                            value = clean_date(value)
+                        except Exception:
+                            raise Exception(f"Invalid date for {fieldname}: {value}")
+                    elif ftype in ["Currency", "Float", "Int"]:
+                        try:
+                            value = clean_amount(value)
+                        except Exception:
+                            raise Exception(f"Invalid numeric for {fieldname}: {value}")
+
+                mapped[fieldname] = value
+
             # ---------------- VALIDATIONS ---------------- #
             contract_number = str(mapped.get("contract_number") or "").strip()
             print(f"Row {idx} raw contract: {contract_number}")
@@ -253,9 +286,7 @@ def process_invoice(file_url, vendor, user_email):
             print(f"Row {idx} amounts: A={a}, B={b}, C={c}, D={d}, Total={total_invoice_value}")
 
             # ---------------- COST CENTER ---------------- #
-            cost_center = frappe.db.get_value("Employee Master", employee_name, "cost_center")
-            if not cost_center:
-                raise Exception("Missing cost center")
+            cost_center = mapped.get("cost_center") or ""
 
             # ---------------- CONTRIBUTIONS ---------------- #
             deduction = frappe.db.get_value(

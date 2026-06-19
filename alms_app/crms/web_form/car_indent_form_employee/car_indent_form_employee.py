@@ -7,16 +7,27 @@ from alms_app.api.emailsService import email_sender
 
 @frappe.whitelist(allow_guest=True)
 def get_employee_details(employee_code):
-    employee = frappe.get_all("Employee Master", filters={"name": employee_code}, 
-    fields=["name", "designation", "location", "company", "contact_number", "email_id", "department","eligibility","reporting_head"])
+    employee = frappe.get_all("Employee", filters={"name": employee_code}, fields=["*"])
     
-    employee_eligibility = frappe.get_doc("Employee Designation",employee[0].designation)
-    employee.append({"eligibility":employee_eligibility.eligibility})
-    if employee:
-        employee_details = employee[0]
-        return employee
-    else:
+    if not employee:
         frappe.throw(f"Employee with name '{employee_code}' not found.")
+        
+    emp = employee[0]
+        
+    # Determine eligibility from Employee Designation or fallback to inline value
+    eligibility_val = emp.get("eligibility") or 0
+    if emp.get("meril_designation"):
+        designation_eligibility = frappe.db.get_value("Employee Designation", emp.meril_designation, "eligibility")
+        if designation_eligibility is not None:
+            eligibility_val = designation_eligibility
+            
+    # Map fields for frontend compatibility
+    emp["eligibility"] = eligibility_val
+    emp["location"] = emp.get("branch")
+    emp["contact_number"] = emp.get("cell_number")
+    emp["email_id"] = emp.get("company_email") or emp.get("user_id")
+    
+    return [emp]
         
 @frappe.whitelist(allow_guest=True)
 def calculate_totals(frm_data):
@@ -64,20 +75,21 @@ def check_indent_exists(employee_code):
 @frappe.whitelist(allow_guest=True)
 def send_allowance_email(employee_code):
     try:
-        employee = frappe.get_doc("Employee Master", employee_code)
+        employee = frappe.get_doc("Employee", employee_code)
         email_to = employee.email_id
-        cc_employee = frappe.get_doc("Employee Master", employee.reporting_head)
+        cc_employee = frappe.get_doc("Employee", employee.reporting_head)
         email_cc = cc_employee.email_id
-        hr_entries = frappe.get_all(
-            "Management Team",
-            filters={"designation": "HR"},
-            fields=["full_name", "email_id"]
-        )
+        hr_entries = frappe.db.sql("""
+            select u.email as email_id, u.full_name 
+            from `tabUser` u 
+            join `tabHas Role` hr on u.name = hr.parent 
+            where hr.role = 'HR' and u.enabled = 1
+        """, as_dict=True)
         hr_emails = [row.email_id for row in hr_entries if row.email_id]
         hr_name = ", ".join([row.full_name for row in hr_entries]) or "HR Team"
 
         if not hr_emails:
-            frappe.throw("No HR emails found in Management Team.")
+            frappe.throw("No HR emails found with the HR role.")
 
         # Fetch BCC from site_config.json
         site_config = frappe.get_site_config()

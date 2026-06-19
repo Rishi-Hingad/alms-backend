@@ -23,6 +23,7 @@ frappe.ready(function () {
                     frappe.web_form.set_value('contact_number', employeeDetails[0].contact_number);
                     frappe.web_form.set_value('email_id', employeeDetails[0].email_id);
                     frappe.web_form.set_value('department', employeeDetails[0].department);
+                    frappe.web_form.set_value('eligibility', employeeDetails[0].eligibility);
                 }
             }
         });
@@ -30,23 +31,43 @@ frappe.ready(function () {
 
     frappe.web_form.validate = function () {
         const employeeCode = frappe.web_form.get_value("employee_code");
-
-        return new Promise((resolve, reject) => {
-            frappe.call({
-                method: "alms_app.crms.web_form.car_allowance.car_allowance.create_allowance_entry",
-                args: { employee_code: employeeCode },
-                callback: function (res) {
-                    if (res.message?.status === "success") {
-                        frappe.msgprint("Your Car Allowance request was submitted successfully.");
-                        setTimeout(() => { window.location.href = "/allowance"; }, 2000);
-                        resolve();
-                    } else {
-                        frappe.msgprint(res.message?.message || "Allowance already exists.");
-                        setTimeout(() => { window.location.href = "/already-present"; }, 2000);
-                        reject("Allowance already exists");
-                    }
+        let exists = false;
+        
+        // Synchronous check before Frappe's native save
+        frappe.call({
+            method: "alms_app.crms.web_form.car_allowance.car_allowance.check_allowance_exists",
+            args: { employee_code: employeeCode },
+            async: false,
+            callback: function (r) {
+                if (r.message === "exists") {
+                    exists = true;
                 }
-            });
+            }
+        });
+
+        if (exists) {
+            frappe.show_alert({
+                message: __('Allowance already exists.'),
+                indicator: 'red'
+            }, 3);
+            setTimeout(() => { window.location.href = "/already-present"; }, 2000);
+            return false; // Aborts native save
+        }
+        return true; // Proceeds to native save -> after_save
+    };
+
+    frappe.web_form.after_save = function () {
+        const employeeCode = frappe.web_form.get_value("employee_code");
+        frappe.call({
+            method: "alms_app.crms.web_form.car_allowance.car_allowance.send_allowance_email",
+            args: { employee_code: employeeCode },
+            callback: function () {
+                frappe.show_alert({
+                    message: __('Your Car Allowance request was submitted successfully.'),
+                    indicator: 'green'
+                }, 3);
+                setTimeout(() => { window.location.href = "/allowance"; }, 2000);
+            }
         });
     };
 });

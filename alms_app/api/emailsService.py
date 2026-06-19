@@ -13,7 +13,7 @@ def email_sender(name, email_send_to=None, car_indent_form_name=None, payload=No
         if payload and isinstance(payload, str):
             payload = json.loads(payload)
 
-        user = frappe.get_doc("Employee Master",name)
+        user = frappe.get_doc("Employee",name)
         print("------------[email sender name]------------------:",user)
         print("------------[email send to]------------------:",email_send_to)
         print("------------[payload]------------------:", payload)
@@ -24,31 +24,37 @@ def email_sender(name, email_send_to=None, car_indent_form_name=None, payload=No
         elif email_send_to == "To Reporting":
             Email.for_employee_to_reporting(user.name, car_indent_form_name)
 
+        elif email_send_to == "To HR (New Request)":
+            Email.for_employee_to_hr_team(user.name, car_indent_form_name)
+
         elif email_send_to =="ReportingHead To HR":
             Email.for_reporting_to_hr_team(user) #changed here
                    
-        # elif email_send_to =="HR To Travel Desk":
-        #     Email.for_hr_team_to_travel_desk(user)
+        elif email_send_to =="HR To Travel Desk":
+            Email.for_hr_team_to_travel_desk(user)
         
-        # elif email_send_to =="Travel Desk To HRHead":
-        #     Email.for_travel_desk_to_hr_head(user)            
-        #     Email.acknowledgement_email(user,"Travel Desk Department","HR Head")
+        elif email_send_to =="Travel Desk To HRHead":
+            Email.for_travel_desk_to_hr_head(user)            
+            # Email.acknowledgement_email(user,"Travel Desk Department","HR Head")
 
-        elif email_send_to =="HR To HRHead":
-            Email.for_hr_team_to_hrhead(user)
+        # elif email_send_to =="HR To HRHead":
+        #     Email.for_hr_team_to_hrhead(user)
         
-        elif email_send_to =="HRHead To PurchaseTeam":
+        elif email_send_to =="HRHead To PurchaseForm":
             Email.for_hr_head_to_purchase_team(user) 
             Email.acknowledgement_email(user,"HR Department","Purchase Department")
             
-        elif email_send_to =="PurchaseTeam To PurchaseHead":
+        elif email_send_to =="PurchaseForm To PurchaseHead":
             Email.for_purchase_team_to_purchase_head(user) 
             
         elif email_send_to =="PurchaseHead To FinanceTeam":
             Email.for_purchase_head_to_finance_team(user) 
             Email.acknowledgement_email(user,"Purchase Department","Finance Department")
 
-        # From Purchase Team Form to Vendor (By Finance Team)  
+        elif email_send_to == "Reject PurchaseHead to PurchaseForm":
+            Email.for_reject_by_purchase_head(user)
+
+        # From Purchase Form to Vendor (By Finance Team)  
         elif email_send_to == "FinanceHead To Quotation Company":
             return Email.for_car_quotation(user,payload)
             
@@ -58,7 +64,7 @@ def email_sender(name, email_send_to=None, car_indent_form_name=None, payload=No
         elif email_send_to =="FinanceTeam To FinanceHead Payload":
             Email.for_finance_team_to_finance_head_payload(user,payload) 
             
-        elif email_send_to == "FinanceHead To AccountsTeam":
+        elif email_send_to == "FinanceHead To All":
 
             quotation_id = payload.get("quotation_id") if payload else None
 
@@ -66,8 +72,8 @@ def email_sender(name, email_send_to=None, car_indent_form_name=None, payload=No
                 # Send to selected company process
                 Email.for_selected_compny_process(quotation_id=quotation_id)
             
-            Email.for_finance_head_to_accounts_team(user)
-            Email.for_finance_head_to_finance_team(user, quotation_id)
+            # Email.for_finance_head_to_accounts_team(user)
+            # Email.for_finance_head_to_finance_team(user, quotation_id)
             Email.acknowledgement_email(user,"Finance Department","Final Approval")  #change to congratualate mail,  finance head to employee
             
         # From Vendor to Finance Team (By Vendor)
@@ -97,10 +103,10 @@ def email_sender(name, email_send_to=None, car_indent_form_name=None, payload=No
         elif email_send_to=="Reject HRHead to Employee":
             Email.for_reject_by_hr_head(user)
 
-        elif email_send_to=="Reject PurchaseHead to PurchaseTeam":
+        elif email_send_to=="Reject PurchaseHead to PurchaseForm":
             Email.for_reject_by_purchase_head(user)
 
-        elif email_send_to=="Reject PurchaseTeam to HR":
+        elif email_send_to=="Reject PurchaseForm to HR":
             Email.for_reject_by_purchase_team(user) 
 
         elif email_send_to== "Reject FinanceHead to FinanceTeam": #update the function
@@ -115,8 +121,9 @@ def email_sender(name, email_send_to=None, car_indent_form_name=None, payload=No
             else:
                 frappe.msgprint("Something Wrong!, Try Again!!")
 
-        return {"status": "success", "message": f"Email sent"}
+
+        return {"status": "success", "message": "Email sent successfully!"}
     except Exception as e:
-        # print(f"------------[Error:{e}]---------------")
+        frappe.log_error(f"Email Sender Error for {email_send_to}: {str(e)}\n{traceback.format_exc()}", "Email Sender Error")
         return {"status": "error","message":str(e)}
 

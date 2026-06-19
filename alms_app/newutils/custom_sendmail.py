@@ -10,6 +10,18 @@ import os
 import mimetypes
 from alms_app.newutils.notification import create_notification_log
 
+def get_dynamic_from_address():
+    try:
+        from_address = frappe.db.get_single_value("ALMS Settings", "from_address")
+        if from_address:
+            return from_address
+        
+        email_accounts = frappe.get_all("Email Account", fields=["email_id"], limit=1)
+        if email_accounts:
+            return email_accounts[0].email_id
+    except Exception:
+        pass
+    return "noreply@merillife.com"
 
 def custom_sendmail(recipients=None, subject=None, message=None, cc=None, bcc=None, attachments=None, **kwargs):
     print("----Custom Send email hit----")
@@ -19,7 +31,8 @@ def custom_sendmail(recipients=None, subject=None, message=None, cc=None, bcc=No
     if not cc and not bcc and not attachments:
         
         try:
-            email_account = frappe.get_doc("Email Account", {"email_id": "noreply@merillife.com"})
+            dynamic_email = get_dynamic_from_address()
+            email_account = frappe.get_doc("Email Account", {"email_id": dynamic_email})
             has_always_bcc = email_account and hasattr(email_account, 'always_bcc') and email_account.always_bcc
         except:
             has_always_bcc = False
@@ -56,7 +69,9 @@ def custom_sendmail(recipients=None, subject=None, message=None, cc=None, bcc=No
         )
 
 
-def _get_email_account_settings(email_id="noreply@merillife.com"):
+def _get_email_account_settings(email_id=None):
+    if not email_id:
+        email_id = get_dynamic_from_address()
     try:
         email_account = frappe.get_doc("Email Account", {"email_id": email_id})
         

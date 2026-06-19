@@ -19,7 +19,7 @@
    "fieldname": "employee_details",
    "fieldtype": "Link",
    "label": "Employee Details",
-   "options": "Purchase Team Form"
+   "options": "Purchase Form"
   },
   {
    "fieldname": "selected_finance_company",
@@ -28,14 +28,10 @@
    "options": "Finance Company"
   }
  ],
+ "grid_page_length": 50,
  "index_web_pages_for_search": 1,
- "links": [
-  {
-   "link_doctype": "Purchase Team Form",
-   "link_fieldname": "name"
-  }
- ],
- "modified": "2025-06-13 08:31:57.985084",
+ "links": [],
+ "modified": "2026-06-13 14:24:49.202928",
  "modified_by": "Administrator",
  "module": "CRMS",
  "name": "Selected Vendor",
@@ -54,6 +50,7 @@
    "write": 1
   }
  ],
+ "row_format": "Dynamic",
  "sort_field": "modified",
  "sort_order": "DESC",
  "states": [],

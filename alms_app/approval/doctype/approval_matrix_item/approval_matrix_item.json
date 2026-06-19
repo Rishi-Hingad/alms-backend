@@ -17,13 +17,13 @@
   "employee",
   "role",
   "user",
-  "team",
   "escalation_tab_section",
   "is_escalation",
   "fallback_role",
   "allow_manual_ride",
-  "column_break_xubk",
-  "escalation_ref"
+  "escalation_ref",
+  "status_field",
+  "remarks_field"
  ],
  "fields": [
   {
@@ -46,7 +46,7 @@
    "fieldtype": "Select",
    "in_list_view": 1,
    "label": "Approver Type",
-   "options": "\nRole\nUser\nTeam",
+   "options": "\nRole\nUser",
    "reqd": 1
   },
   {
@@ -134,23 +134,23 @@
    "label": "Escalation Tab"
   },
   {
-   "fieldname": "column_break_xubk",
-   "fieldtype": "Column Break"
+   "description": "Field to update with the approval status (e.g., Approved/Rejected)",
+   "fieldname": "status_field",
+   "fieldtype": "Select",
+   "label": "Status Field"
   },
   {
-   "depends_on": "eval:doc.approver_type === \"Team\"",
-   "fieldname": "team",
-   "fieldtype": "Link",
-   "in_list_view": 1,
-   "label": "Team",
-   "options": "Team Master"
+   "description": "Field to update with the approver's remarks",
+   "fieldname": "remarks_field",
+   "fieldtype": "Select",
+   "label": "Remarks Field"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2026-04-23 16:23:16.462173",
+ "modified": "2026-06-05 14:39:40.780979",
  "modified_by": "Administrator",
  "module": "Approval",
  "name": "Approval Matrix Item",
