@@ -16,7 +16,7 @@ frappe.ui.form.on("ALMS Employee", {
                             return;
                         }
                         frappe.call({
-                            method: "alms_app.master.doctype.employee.employee.send_credential_email",
+                            method: "alms_app.master.doctype.alms_employee.alms_employee.send_credential_email",
                             args: {
                                 employee_names: [frm.doc.name]
                             },

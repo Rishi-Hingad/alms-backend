@@ -5,7 +5,7 @@ frappe.listview_settings['ALMS Employee'] = {
             if (selected_records.length === 0) return;
 
             frappe.call({
-                method: "alms_app.master.doctype.employee.employee.send_credential_email",
+                method: "alms_app.master.doctype.alms_employee.alms_employee.send_credential_email",
                 args: {
                     employee_names: selected_records.map(r => r.name)
                 },
