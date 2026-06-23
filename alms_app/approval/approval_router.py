@@ -377,7 +377,7 @@ def get_role_based_approver(role, starting_employee, max_depth=10):
         if not emp_id_or_name: return None
         if frappe.db.exists("ALMS Employee", emp_id_or_name):
             return emp_id_or_name
-        resolved = frappe.db.get_value("ALMS Employee", {"employee_name": emp_id_or_name}, "name")
+        resolved = frappe.db.get_value("ALMS Employee", {"full_name": emp_id_or_name}, "name")
         return resolved
 
     current_employee = resolve_employee_id(current_employee)
@@ -1109,7 +1109,7 @@ def get_approval_status(approval_entry:str) -> str:
         return None
     next_approver = None
     if entry.next_approver:
-        next_approver = frappe.get_value("ALMS Employee", entry.next_approver, "employee_name")
+        next_approver = frappe.get_value("ALMS Employee", entry.next_approver, "full_name")
     if entry.status == "Pending":
         if not next_approver:
             pending_row = entry.approval_entry[-1]
@@ -1123,7 +1123,7 @@ def get_approval_status(approval_entry:str) -> str:
                 return "Awaiting Approval",entry.previous_approver_remarks or "-"
         return f"Awaiting Approval from {next_approver}",entry.previous_approver_remarks or "-"
     if entry.previous_approver:
-        previous_approver = frappe.get_value("ALMS Employee", entry.previous_approver, "employee_name")
+        previous_approver = frappe.get_value("ALMS Employee", entry.previous_approver, "full_name")
         return f"Rejected by {previous_approver}",entry.previous_approver_remarks or "-"
     return entry.status,entry.previous_approver_remarks or "-"
 
