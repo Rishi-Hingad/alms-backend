@@ -22,7 +22,7 @@
  "is_hidden": 0,
  "label": "HR Dashboard",
  "links": [],
- "modified": "2026-06-06 16:28:32.392727",
+ "modified": "2026-06-23 11:09:28.493443",
  "modified_by": "Administrator",
  "module": "CRMS",
  "name": "HR Dashboard",
@@ -62,7 +62,7 @@
    "quick_list_filter": "[]"
   },
   {
-   "document_type": "Employee",
+   "document_type": "ALMS Employee",
    "label": "Employee",
    "quick_list_filter": "[]"
   },
