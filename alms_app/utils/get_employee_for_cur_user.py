@@ -5,8 +5,7 @@ from vms.utils.verify_employee import verify_employee
 def get_employee_name_for_cur_user():
     user = frappe.session.user
     employee_id = verify_employee()
-    employee_info = frappe.get_all(
-        "Employee", fields=["*"], filters={"name": employee_id}
+    employee_info = frappe.get_all("ALMS Employee", fields=["*"], filters={"name": employee_id}
     )
 
     if not employee_info:
@@ -18,8 +17,7 @@ def get_employee_name_for_cur_user():
 def get_employee_info_for_cur_user(fields=["*"]):
     user = frappe.session.user
     employee_id = verify_employee()
-    employee_info = frappe.get_all(
-        "Employee", fields=fields, filters={"name": employee_id}
+    employee_info = frappe.get_all("ALMS Employee", fields=fields, filters={"name": employee_id}
     )
 
     if not employee_info:

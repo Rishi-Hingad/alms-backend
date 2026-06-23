@@ -178,7 +178,7 @@ def car_form_fill():
         if not all([user, company, quotation_id, form_name]):
             return {"status": "error", "message": "Missing required fields"}
 
-        user_doc = frappe.get_doc("Employee", user)
+        user_doc = frappe.get_doc("ALMS Employee", user)
 
         # Configuration Mapping from DB
         FORM_CONFIG = {}
@@ -303,7 +303,7 @@ def resend_process_email(car_process_name, form_name):
         if not step.route:
             return {"status": "error", "message": f"Route not defined for {form_name}"}
             
-        user_doc = frappe.get_doc("Employee", car_process.user)
+        user_doc = frappe.get_doc("ALMS Employee", car_process.user)
         
         # Build form link
         link = (

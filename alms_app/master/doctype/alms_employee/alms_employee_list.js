@@ -1,4 +1,4 @@
-frappe.listview_settings['Employee'] = {
+frappe.listview_settings['ALMS Employee'] = {
     onload: function (listview) {
         listview.page.add_action_item(__("Send Credential Email"), function () {
             const selected_records = listview.get_checked_items();

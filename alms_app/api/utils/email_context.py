@@ -45,14 +45,14 @@ def build_car_indent_form_context(doc, next_user=None, next_team=None, next_role
     emp_code = getattr(doc, "employee_code", None) or getattr(doc, "employee_details", None) or getattr(doc, "employee_name", None)
     if emp_code:
         try:
-            employee = frappe.get_doc("Employee", emp_code)
+            employee = frappe.get_doc("ALMS Employee", emp_code)
         except frappe.DoesNotExistError:
             pass
     
     if not employee:
-        emp_name = frappe.db.get_value("Employee", {"user_id": doc.owner, "status": "Active"}, "name")
+        emp_name = frappe.db.get_value("ALMS Employee", {"user_id": doc.owner, "status": "Active"}, "name")
         if emp_name:
-            employee = frappe.get_doc("Employee", emp_name)
+            employee = frappe.get_doc("ALMS Employee", emp_name)
 
     if employee:
         emp_name = getattr(employee, "employee_name", None) or getattr(employee, "full_name", None) or f"{getattr(employee, 'first_name', '')} {getattr(employee, 'last_name', '')}".strip() or employee.name
@@ -64,7 +64,7 @@ def build_car_indent_form_context(doc, next_user=None, next_team=None, next_role
         })
         # Try to find reporting manager name
         if employee.reporting_head:
-            mgr = frappe.db.get_value("Employee", employee.reporting_head, "employee_name")
+            mgr = frappe.db.get_value("ALMS Employee", employee.reporting_head, "employee_name")
             context["reporting_head"] = mgr or employee.reporting_head
     else:
         context.update({
@@ -76,7 +76,7 @@ def build_car_indent_form_context(doc, next_user=None, next_team=None, next_role
         })
 
     # Find the user who is currently performing the action
-    updated_by_name = frappe.db.get_value("Employee", {"user_id": frappe.session.user, "status": "Active"}, "employee_name")
+    updated_by_name = frappe.db.get_value("ALMS Employee", {"user_id": frappe.session.user, "status": "Active"}, "employee_name")
     
     if doc.doctype == "Purchase Form":
         # Attempt to load the parent Car Indent Form to provide both sets of data
@@ -122,14 +122,14 @@ def build_car_quotation_context(doc, next_user=None, next_team=None, next_role=N
     emp_code = getattr(doc, "employee_details", None)
     if emp_code:
         try:
-            employee = frappe.get_doc("Employee", emp_code)
+            employee = frappe.get_doc("ALMS Employee", emp_code)
         except frappe.DoesNotExistError:
             pass
     
     if not employee:
-        emp_name = frappe.db.get_value("Employee", {"user_id": doc.owner, "status": "Active"}, "name")
+        emp_name = frappe.db.get_value("ALMS Employee", {"user_id": doc.owner, "status": "Active"}, "name")
         if emp_name:
-            employee = frappe.get_doc("Employee", emp_name)
+            employee = frappe.get_doc("ALMS Employee", emp_name)
 
     if employee:
         emp_name = getattr(employee, "employee_name", None) or getattr(employee, "full_name", None) or f"{getattr(employee, 'first_name', '')} {getattr(employee, 'last_name', '')}".strip() or employee.name
@@ -147,7 +147,7 @@ def build_car_quotation_context(doc, next_user=None, next_team=None, next_role=N
             "eligibility": "-",
         })
 
-    updated_by_name = frappe.db.get_value("Employee", {"user_id": frappe.session.user, "status": "Active"}, "employee_name")
+    updated_by_name = frappe.db.get_value("ALMS Employee", {"user_id": frappe.session.user, "status": "Active"}, "employee_name")
 
     action_by_email = getattr(doc, "finance_team_action_by", None)
     if action_by_email:
@@ -215,7 +215,7 @@ def build_deduction_context(doc, next_user=None, next_team=None, next_role=None,
     if getattr(doc, "finance_quotation_id", None):
         quotation = frappe.get_doc("Car Quotation", doc.finance_quotation_id)
 
-    updated_by_name = frappe.db.get_value("Employee", {"user_id": frappe.session.user, "status": "Active"}, "employee_name")
+    updated_by_name = frappe.db.get_value("ALMS Employee", {"user_id": frappe.session.user, "status": "Active"}, "employee_name")
 
     context.update({
         "quotation_id": getattr(doc, "finance_quotation_id", "-"),

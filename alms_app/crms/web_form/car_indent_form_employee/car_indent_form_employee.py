@@ -7,7 +7,7 @@ from alms_app.api.emailsService import email_sender
 
 @frappe.whitelist(allow_guest=True)
 def get_employee_details(employee_code):
-    employee = frappe.get_all("Employee", filters={"name": employee_code}, fields=["*"])
+    employee = frappe.get_all("ALMS Employee", filters={"name": employee_code}, fields=["*"])
     
     if not employee:
         frappe.throw(f"Employee with name '{employee_code}' not found.")
@@ -75,9 +75,9 @@ def check_indent_exists(employee_code):
 @frappe.whitelist(allow_guest=True)
 def send_allowance_email(employee_code):
     try:
-        employee = frappe.get_doc("Employee", employee_code)
+        employee = frappe.get_doc("ALMS Employee", employee_code)
         email_to = employee.email_id
-        cc_employee = frappe.get_doc("Employee", employee.reporting_head)
+        cc_employee = frappe.get_doc("ALMS Employee", employee.reporting_head)
         email_cc = cc_employee.email_id
         hr_entries = frappe.db.sql("""
             select u.email as email_id, u.full_name 

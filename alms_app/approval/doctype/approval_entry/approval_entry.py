@@ -36,8 +36,7 @@ class ApprovalEntry(Document):
 		nxt_approver = last.get("next_approver", "")
 		if nxt_approver and nxt_approver != self.get("next_approver"):
 			self.db_set("next_approver", nxt_approver, update_modified=False)
-			employee_name, linked_user = frappe.get_cached_value(
-				"Employee", nxt_approver, ["employee_name", "email_id"]
+			employee_name, linked_user = frappe.get_cached_value("ALMS Employee", nxt_approver, ["employee_name", "email_id"]
 			)
 			self.db_set("next_approver_name", employee_name, update_modified=False)
 			self.db_set("next_approver_user", linked_user, update_modified=False)
@@ -70,8 +69,7 @@ class ApprovalEntry(Document):
 		prv_approver = last.get("approved_by", "")
 		if prv_approver and prv_approver != self.get("previous_approver"):
 			self.db_set("previous_approver", prv_approver, update_modified=False)
-			employee_name, linked_user = frappe.get_cached_value(
-				"Employee", prv_approver, ["employee_name", "email_id"]
+			employee_name, linked_user = frappe.get_cached_value("ALMS Employee", prv_approver, ["employee_name", "email_id"]
 			)
 			self.db_set("previous_approver_name", employee_name, update_modified=False)
 		elif not prv_approver:

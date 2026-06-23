@@ -63,14 +63,14 @@
             "fieldtype": "Link",
             "in_list_view": 1,
             "label": "Approved By",
-            "options": "Employee"
+            "options": "ALMS Employee"
         },
         {
             "fieldname": "next_approver",
             "fieldtype": "Link",
             "in_list_view": 1,
             "label": "Next Approver",
-            "options": "Employee"
+            "options": "ALMS Employee"
         },
         {
             "fieldname": "next_approver_user",
@@ -103,7 +103,7 @@
             "fieldname": "next_escalation_approver",
             "fieldtype": "Link",
             "label": "Next Escalation Approver",
-            "options": "Employee"
+            "options": "ALMS Employee"
         },
         {
             "fieldname": "next_escalation_approver_role",

@@ -38,8 +38,8 @@ def _entry_row_display_stage(row):
 def _employee_people(employee_id):
     if not employee_id:
         return []
-    names = frappe.db.get_value("Employee", employee_id, "employee_name") or ""
-    emails = frappe.db.get_value("Employee", employee_id, "company_email") or ""
+    names = frappe.db.get_value("ALMS Employee", employee_id, "employee_name") or ""
+    emails = frappe.db.get_value("ALMS Employee", employee_id, "company_email") or ""
     return [
         {
             "employee_id": employee_id,
@@ -135,7 +135,7 @@ def get_approval_trail(doctype, docname):
                 
                 if approved_by_val:
                     people = _employee_people(approved_by_val)
-                    approver_name_str = frappe.db.get_value("Employee", approved_by_val, "employee_name") or approved_by_val
+                    approver_name_str = frappe.db.get_value("ALMS Employee", approved_by_val, "employee_name") or approved_by_val
                 else:
                     if approver_user:
                         full_name = frappe.db.get_value("User", approver_user, "full_name") or approver_user
@@ -307,7 +307,7 @@ def get_approval_trail(doctype, docname):
                 
                 owner_emp = emp
                 if not owner_emp:
-                    owner_emp = frappe.db.get_value("Employee", {"user_id": owner, "status": "Active"}, "name")
+                    owner_emp = frappe.db.get_value("ALMS Employee", {"user_id": owner, "status": "Active"}, "name")
                 
                 approver_dict = get_role_based_approver(
                     role,
@@ -317,8 +317,8 @@ def get_approval_trail(doctype, docname):
                     employee = approver_dict.get("employee")
                     people = [{
                         "employee_id": employee,
-                        "full_name": frappe.db.get_value("Employee", employee, "employee_name") or employee,
-                        "email": approver_dict.get("user") or frappe.db.get_value("Employee", employee, "company_email"),
+                        "full_name": frappe.db.get_value("ALMS Employee", employee, "employee_name") or employee,
+                        "email": approver_dict.get("user") or frappe.db.get_value("ALMS Employee", employee, "company_email"),
                     }]
                 else:
                     people = []

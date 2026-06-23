@@ -35,8 +35,7 @@ def get_company_codes_by_session_user():
             )
 
         # Get Employee
-        employee_name = frappe.db.get_value(
-            "Employee",
+        employee_name = frappe.db.get_value("ALMS Employee",
             {"user_id": usr},
             "name"
         )
@@ -47,7 +46,7 @@ def get_company_codes_by_session_user():
                 status_code=404
             )
 
-        emp_doc = frappe.get_doc("Employee", employee_name)
+        emp_doc = frappe.get_doc("ALMS Employee", employee_name)
 
         # Validate Company Child Table
         if not emp_doc.get("company"):

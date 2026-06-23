@@ -71,7 +71,7 @@
    "label": "Employee Code",
    "max_length": 0,
    "max_value": 0,
-   "options": "Employee",
+   "options": "ALMS Employee",
    "precision": "",
    "read_only": 0,
    "reqd": 0,

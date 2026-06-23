@@ -209,13 +209,13 @@
    "fieldname": "reporting_head",
    "fieldtype": "Link",
    "label": "Reporting Head",
-   "options": "Employee"
+   "options": "ALMS Employee"
   },
   {
    "fieldname": "head_of_department",
    "fieldtype": "Link",
    "label": "Head of Department",
-   "options": "Employee"
+   "options": "ALMS Employee"
   },
   {
    "fieldname": "branch",
@@ -418,7 +418,7 @@
  "modified": "2026-06-18 15:47:57.817041",
  "modified_by": "Administrator",
  "module": "master",
- "name": "Employee",
+ "name": "ALMS Employee",
  "naming_rule": "Expression",
  "owner": "Administrator",
  "permissions": [

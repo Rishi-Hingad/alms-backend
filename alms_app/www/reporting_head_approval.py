@@ -24,7 +24,7 @@ def get_car_indent_data(indent_form_id, token=None):
             try:
                 # Try to find by employee name
                 employee_name = indent_form_id
-                emp = frappe.get_doc("Employee", employee_name)
+                emp = frappe.get_doc("ALMS Employee", employee_name)
                 forms = frappe.get_all(
                     "Car Indent Form",
                     filters={"employee_code": emp.name},
@@ -45,7 +45,7 @@ def get_car_indent_data(indent_form_id, token=None):
                 }
         
         try:
-            user = frappe.get_doc("Employee", form_data.employee_code)
+            user = frappe.get_doc("ALMS Employee", form_data.employee_code)
         except frappe.DoesNotExistError:
             return {
                 "success": False,
@@ -77,7 +77,7 @@ def get_car_indent_data(indent_form_id, token=None):
         has_previously_approved = False
         if entry_name:
             entry = frappe.get_doc("Approval Entry", entry_name)
-            reporting_head_email = frappe.db.get_value("Employee", user.reporting_head, "user_id")
+            reporting_head_email = frappe.db.get_value("ALMS Employee", user.reporting_head, "user_id")
             for row in getattr(entry, "approval_entry", []):
                 if row.action == "Approved" and row.approver_user == reporting_head_email:
                     has_previously_approved = True
@@ -207,7 +207,7 @@ def validate_and_get_context(context):
         except frappe.DoesNotExistError:
             # Try to find by employee name as fallback
             try:
-                emp = frappe.get_doc("Employee", record_id)
+                emp = frappe.get_doc("ALMS Employee", record_id)
                 forms = frappe.get_all(
                     "Car Indent Form",
                     filters={"employee_code": emp.name},

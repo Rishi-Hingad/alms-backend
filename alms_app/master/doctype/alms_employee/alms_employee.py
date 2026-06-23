@@ -12,7 +12,7 @@ from frappe.utils.password import update_password
 from frappe.email.doctype.email_template.email_template import get_email_template
 
 
-class Employee(Document):
+class ALMSEmployee(Document):
     
     def before_save(self):
         """
@@ -71,7 +71,7 @@ class Employee(Document):
                 frappe.throw(f"Invalid email format: {self.company_email}")
             
             
-            existing_employee = frappe.db.exists("Employee", {
+            existing_employee = frappe.db.exists("ALMS Employee", {
                 "company_email": self.company_email,
                 "name": ["!=", self.name]
             })
@@ -168,9 +168,9 @@ class Employee(Document):
            
             existing_user = frappe.db.exists("User", {"email": self.company_email})
             if existing_user:
-                frappe.db.set_value("Employee", self.name, "user_id", existing_user)
+                frappe.db.set_value("ALMS Employee", self.name, "user_id", existing_user)
                 frappe.db.set_value(
-                    "Employee",
+                    "ALMS Employee",
                     self.name,
                     "full_name",
                     " ".join(filter(None, [self.first_name, self.middle_name, self.last_name]))
@@ -181,9 +181,9 @@ class Employee(Document):
                 try:
                     user_doc = self.create_user_during_save()
                     if user_doc:
-                        frappe.db.set_value("Employee", self.name, "user_id", user_doc.name)
+                        frappe.db.set_value("ALMS Employee", self.name, "user_id", user_doc.name)
                         frappe.db.set_value(
-                            "Employee",
+                            "ALMS Employee",
                             self.name,
                             "full_name",
                             " ".join(filter(None, [self.first_name, self.middle_name, self.last_name]))
@@ -200,7 +200,7 @@ class Employee(Document):
         Can be called manually if needed
         """
         try:
-            employees = frappe.get_all("Employee", 
+            employees = frappe.get_all("ALMS Employee", 
                 filters={
                     "create_user": 1,
                     "user_id": ["in", ["", None]]
@@ -218,7 +218,7 @@ class Employee(Document):
             for employee_data in employees:
                 try:
                    
-                    employee_doc = frappe.get_doc("Employee", employee_data.name)
+                    employee_doc = frappe.get_doc("ALMS Employee", employee_data.name)
                     if employee_doc.create_user and not employee_doc.user_id:
                         employee_doc.save()
                         if employee_doc.user_id:
@@ -245,7 +245,7 @@ class Employee(Document):
         Link existing users to employees based on email
         """
         try:
-            employees = frappe.get_all("Employee", 
+            employees = frappe.get_all("ALMS Employee", 
                 filters={
                     "company_email": ["!=", ""],
                     "user_id": ["in", ["", None]]
@@ -258,7 +258,7 @@ class Employee(Document):
             for employee_data in employees:
                 existing_user = frappe.db.exists("User", {"email": employee_data.company_email})
                 if existing_user:
-                    frappe.db.set_value("Employee", employee_data.name, "user_id", existing_user)
+                    frappe.db.set_value("ALMS Employee", employee_data.name, "user_id", existing_user)
                     updated_count += 1
             
             frappe.db.commit()
@@ -288,7 +288,7 @@ def send_credential_email(employee_names):
         sent_count = 0
 
         for name in employee_names:
-            emp = frappe.get_doc("Employee", name)
+            emp = frappe.get_doc("ALMS Employee", name)
             
             if not emp.user_id:
                 continue

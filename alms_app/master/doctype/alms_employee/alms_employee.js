@@ -1,7 +1,7 @@
 // Copyright (c) 2025, Blue Phoenix and contributors
 // For license information, please see license.txt
 
-frappe.ui.form.on("Employee", {
+frappe.ui.form.on("ALMS Employee", {
     refresh(frm) {
         if (!frm.is_new()) {
             if (frappe.session.user === "Administrator" || frappe.user.has_role("Administrator") || frappe.user.has_role("System Manager")) {
@@ -175,7 +175,7 @@ function updateEmailButton(frm) {
     }
 }
 
-frappe.ui.form.on("Employee", {
+frappe.ui.form.on("ALMS Employee", {
     first_name: function (frm) {
         set_full_name(frm);
     },

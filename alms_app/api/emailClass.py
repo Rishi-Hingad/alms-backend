@@ -33,7 +33,7 @@ class EmailServices:
         else:
             updated_by_email = frappe.session.user
             
-        emp = frappe.get_all("Employee", filters={"user_id": updated_by_email}, fields=["employee_name", "full_name"], limit=1)
+        emp = frappe.get_all("ALMS Employee", filters={"user_id": updated_by_email}, fields=["employee_name", "full_name"], limit=1)
         if emp:
             return emp[0].get("employee_name") or emp[0].get("full_name") or updated_by_email
         return frappe.db.get_value("User", updated_by_email, "full_name") or updated_by_email
@@ -484,7 +484,7 @@ class EmailServices:
         recipient_email = user.company_email or user.user_id
         cc_list = get_emails_by_role("HR")
         if user.reporting_head:
-            reporting_head_email = frappe.db.get_value("Employee", user.reporting_head, "company_email")
+            reporting_head_email = frappe.db.get_value("ALMS Employee", user.reporting_head, "company_email")
             if reporting_head_email and reporting_head_email not in cc_list:
                 cc_list.append(reporting_head_email)
 
@@ -514,14 +514,14 @@ class EmailServices:
 
     def for_employee_to_reporting(self, user, car_indent_form_name):
         
-        employee_doc = frappe.get_doc("Employee", user)
+        employee_doc = frappe.get_doc("ALMS Employee", user)
         full_name = f"{employee_doc.first_name} {employee_doc.last_name}"
         if not employee_doc.reporting_head:
             frappe.log_error(f"Employee '{full_name}' has no reporting head assigned!")
             return
 
         try:
-            reporting_head = frappe.get_doc("Employee", employee_doc.reporting_head)
+            reporting_head = frappe.get_doc("ALMS Employee", employee_doc.reporting_head)
         except Exception as e:
             frappe.log_error(f"Error fetching reporting head: {str(e)}")
             return
@@ -563,7 +563,7 @@ class EmailServices:
     def for_employee_to_hr_team(self, user, car_indent_form_name):
         recipient_email = emailMaster.hr_team_emails
         template = frappe.get_doc("Email Template", "Car Indent Submission Notification")
-        user_doc = frappe.get_doc("Employee", user)
+        user_doc = frappe.get_doc("ALMS Employee", user)
         full_name = f"{user_doc.first_name} {user_doc.last_name}"
         car_indent_form = frappe.get_doc("Car Indent Form", car_indent_form_name)
 
@@ -1196,7 +1196,7 @@ class EmailServices:
         self.send_reject(subject,recipient_email,cc_list,body)
 
     def for_reject_by_hr_team(self,user): 
-        doc = frappe.get_doc("Employee",user.reporting_head)  #reporting head details
+        doc = frappe.get_doc("ALMS Employee",user.reporting_head)  #reporting head details
         # reporting_head_name = doc.employee_name
         recipient_email = user.company_email or user.user_id   
         subject = "Car Rental Form Rejected by HR Team"
@@ -1214,7 +1214,7 @@ class EmailServices:
     def for_reject_by_travel_desk(self,user): #this
         recipient_email = user.company_email or user.user_id     
         subject = "Car Rental Form Rejected by Travel Desk"
-        doc = frappe.get_doc("Employee",user.reporting_head)
+        doc = frappe.get_doc("ALMS Employee",user.reporting_head)
         cc_list=[emailMaster.hr_team_email, doc.company_email or doc.user_id]
         remarks_by="travel_desk_remarks"
         content = f"""
@@ -1229,7 +1229,7 @@ class EmailServices:
     def for_reject_by_hr_head(self,user): #this
         recipient_email = user.company_email or user.user_id     
         subject = "Car Rental Form Rejected by HR Head"
-        doc = frappe.get_doc("Employee",user.reporting_head)
+        doc = frappe.get_doc("ALMS Employee",user.reporting_head)
         cc_list=[emailMaster.hr_team_email, emailMaster.travel_desk_email, doc.company_email or doc.user_id]
         remarks_by="hr_head_remarks"
         content = f"""
@@ -1573,7 +1573,7 @@ class EmailServices:
     def for_selected_compny_process(self,quotation_id):
         print("Selected Company Process Quotation ID:", quotation_id)
         car_quot_form = frappe.get_doc("Car Quotation",quotation_id)  
-        user = frappe.get_doc("Employee",car_quot_form.employee_details)  
+        user = frappe.get_doc("ALMS Employee",car_quot_form.employee_details)  
         form_link = f"{frappe.utils.get_url()}/car-purchase-form/new?quotation_form={quotation_id}&user={user.name}&company={car_quot_form.finance_company}"
         body = self.create_selected_company_process(car_quot_form,user,form_link)
         subject = f"Car Onboard Process for {self.get_emp_name(user)}"
@@ -1584,7 +1584,7 @@ class EmailServices:
     def for_reject_finance_head_to_finance_team(self,quotation_id):
         car_quot_form = frappe.get_doc("Car Quotation",quotation_id)  #ismei se milega finance company
         vendor =frappe.get_doc("Vendor Master",car_quot_form.finance_company) #this is vendor details recipient humara
-        user = frappe.get_doc("Employee",car_quot_form.employee_details)  #yaha se milega employee, jiska sirf naam chahiye
+        user = frappe.get_doc("ALMS Employee",car_quot_form.employee_details)  #yaha se milega employee, jiska sirf naam chahiye
         recipient_email=vendor.contact_email
         subject=f"""{vendor.company_name} Car Quotation Rejected by Finance Head"""
         remarks_by="finance_head_remarks"
@@ -1601,7 +1601,7 @@ class EmailServices:
     def for_reject_finance_team_to_vendor(self,quotation_id):
         car_quot_form = frappe.get_doc("Car Quotation",quotation_id)  #ismei se milega finance company
         vendor =frappe.get_doc("Vendor Master",car_quot_form.finance_company) #this is vendor details recipient humara
-        user = frappe.get_doc("Employee",car_quot_form.employee_details)  #yaha se milega employee, jiska sirf naam chahiye
+        user = frappe.get_doc("ALMS Employee",car_quot_form.employee_details)  #yaha se milega employee, jiska sirf naam chahiye
         recipient_email=vendor.contact_email
         subject=f"""{vendor.company_name} Car Quotation Rejected by Finance Team"""
         remarks_by="finance_team_remarks"
@@ -1617,10 +1617,10 @@ class EmailServices:
 
     def send_allowance_email(self, employee_code):
         try:
-            employee = frappe.get_doc("Employee", employee_code)
+            employee = frappe.get_doc("ALMS Employee", employee_code)
             email_to = employee.company_email or employee.user_id
 
-            cc_employee = frappe.get_doc("Employee", employee.reporting_head)
+            cc_employee = frappe.get_doc("ALMS Employee", employee.reporting_head)
             email_cc = cc_employee.company_email or cc_employee.user_id
 
             hr_roles = frappe.get_all("Has Role", filters={"role": "HR", "parenttype": "User"}, pluck="parent")

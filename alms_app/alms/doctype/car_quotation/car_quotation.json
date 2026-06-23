@@ -222,7 +222,7 @@
    "fieldname": "employee_details",
    "fieldtype": "Link",
    "label": "Employee Details",
-   "options": "Employee"
+   "options": "ALMS Employee"
   },
   {
    "fieldname": "status",

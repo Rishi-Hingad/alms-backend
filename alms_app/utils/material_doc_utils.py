@@ -51,11 +51,10 @@ def send_material_onboarding_reporting_manager_email(requestor_name):
             
         manager_emp_id = requestor_data.get("immediate_reporting_head")
         requestor_emp_id = requestor_data.get("requested_by")
-        requestor_email = frappe.db.get_value("Employee", requestor_emp_id, "company_email")
+        requestor_email = frappe.db.get_value("ALMS Employee", requestor_emp_id, "company_email")
         
         # Get manager details
-        manager_details = frappe.db.get_value(
-            "Employee", 
+        manager_details = frappe.db.get_value("ALMS Employee", 
             manager_emp_id, 
             ["full_name", "company_email"], 
             as_dict=True
@@ -71,7 +70,7 @@ def send_material_onboarding_reporting_manager_email(requestor_name):
         # Get requestor details
         requestor_full_name = "User"
         if requestor_emp_id:
-            requestor_full_name = frappe.db.get_value("Employee", requestor_emp_id, "full_name") or "User"
+            requestor_full_name = frappe.db.get_value("ALMS Employee", requestor_emp_id, "full_name") or "User"
 
         # Get Email Template
         email_template = frappe.get_doc(
