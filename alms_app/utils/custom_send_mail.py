@@ -326,8 +326,16 @@ def _save_to_email_queue_with_full_message(msg, subject, to_emails, cc_emails, b
     try:
         frappe.flags.ignore_permissions = True
         
-        # Convert the email message to string (this includes ALL headers)
+        # Convert the email message to string and enforce CRLF for SMTP policy parsing
+        from email.policy import SMTP
+        if hasattr(msg, 'policy'):
+            msg.policy = SMTP
         full_message = msg.as_string()
+        
+        # Ensure CRLF line endings as expected by Frappe's SMTP parser
+        if '\r\n' not in full_message:
+            full_message = full_message.replace('\n', '\r\n')
+
         
         #  Format attachments as JSON (not comma-separated string)
         attachments_json = None
