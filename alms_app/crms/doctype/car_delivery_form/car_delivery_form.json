@@ -19,7 +19,7 @@
    "fieldname": "user",
    "fieldtype": "Link",
    "label": "User",
-   "options": "Employee"
+   "options": "ALMS Employee"
   },
   {
    "fieldname": "company",

@@ -27,9 +27,9 @@ class CompanyandEmployeeDeduction(Document):
 @frappe.whitelist()
 def send_employee_approval_email(docname):
     doc = frappe.get_doc("Company and Employee Deduction", docname)
-    employee_email = frappe.db.get_value("Employee", doc.employee_name, "company_email")
+    employee_email = frappe.db.get_value("ALMS Employee", doc.employee_name, "company_email")
     if not employee_email:
-        employee_email = frappe.db.get_value("Employee", doc.employee_name, "personal_email")
+        employee_email = frappe.db.get_value("ALMS Employee", doc.employee_name, "personal_email")
     
     if not employee_email:
         return {"status": "error", "message": "Employee does not have a registered email address."}
@@ -37,7 +37,7 @@ def send_employee_approval_email(docname):
     subject = "Car Quotation Approved"
     
     # Get employee's full name if possible, else use ID
-    employee_full_name = frappe.db.get_value("Employee", doc.employee_name, "employee_name") or doc.employee_name
+    employee_full_name = frappe.db.get_value("ALMS Employee", doc.employee_name, "employee_name") or doc.employee_name
 
     message = f"Dear {employee_full_name},<br><br>"
     message += f"The Car quotation for your model car (<b>{doc.variant}</b>) has been approved.<br>"

@@ -56,7 +56,7 @@ def execute():
     if not pending_row:
         pending_row = ledger_items[-1]
         
-    employee = frappe.db.get_value("Employee", {"user_id": test_user}, "name")
+    employee = frappe.db.get_value("ALMS Employee", {"user_id": test_user}, "name")
     
     allowed_team = getattr(pending_row, "next_approver_team", None)
     allowed_user = getattr(pending_row, "next_approver", None)
@@ -77,7 +77,7 @@ def execute():
         return
         
     if allowed_team and employee:
-        if frappe.db.exists("Employee", {"department": allowed_team, "name": employee}):
+        if frappe.db.exists("ALMS Employee", {"department": allowed_team, "name": employee}):
             print("SUCCESS via team")
             return
             

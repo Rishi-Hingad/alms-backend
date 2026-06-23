@@ -13,7 +13,7 @@ def email_sender(name, email_send_to=None, car_indent_form_name=None, payload=No
         if payload and isinstance(payload, str):
             payload = json.loads(payload)
 
-        user = frappe.get_doc("Employee",name)
+        user = frappe.get_doc("ALMS Employee",name)
         print("------------[email sender name]------------------:",user)
         print("------------[email send to]------------------:",email_send_to)
         print("------------[payload]------------------:", payload)

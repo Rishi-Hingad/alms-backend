@@ -7,8 +7,7 @@ def get_emails_by_role(role_name):
     """
     # Fetch company_email from Employee doctype where designation matches the role_name
     # and the create_user checkbox is checked.
-    emails = frappe.get_all(
-        "Employee",
+    emails = frappe.get_all("ALMS Employee",
         filters={
             "designation": role_name,
             "create_user": 1

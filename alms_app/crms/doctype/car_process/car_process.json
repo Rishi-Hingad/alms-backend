@@ -48,7 +48,7 @@
    "fieldname": "user",
    "fieldtype": "Link",
    "label": "User",
-   "options": "Employee",
+   "options": "ALMS Employee",
    "read_only": 1,
    "unique": 1
   },

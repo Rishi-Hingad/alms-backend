@@ -347,7 +347,7 @@
    "fieldname": "employee_name",
    "fieldtype": "Link",
    "label": "Employee Name",
-   "options": "Employee",
+   "options": "ALMS Employee",
    "unique": 1
   },
   {

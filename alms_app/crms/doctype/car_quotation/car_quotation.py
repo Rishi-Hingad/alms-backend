@@ -346,7 +346,7 @@ def pmt(rate, nper, pv, fv=0, when=1):
 def preview_deduction(quotation_id):
 
     q = frappe.get_doc("Car Quotation", quotation_id)
-    employee = frappe.get_doc("Employee", q.employee_details)
+    employee = frappe.get_doc("ALMS Employee", q.employee_details)
     
     # ---- Company contribution logic (same as calculate_emi) ----
 

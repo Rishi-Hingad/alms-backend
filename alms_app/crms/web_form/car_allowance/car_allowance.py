@@ -8,7 +8,7 @@ from alms_app.api.emailsService import email_sender
 
 @frappe.whitelist(allow_guest=True)
 def get_employee_details(employee_code):
-    employee = frappe.get_all("Employee", filters={"name": employee_code}, fields=["*"])
+    employee = frappe.get_all("ALMS Employee", filters={"name": employee_code}, fields=["*"])
     
     if not employee:
         frappe.throw(f"Employee with name '{employee_code}' not found.")

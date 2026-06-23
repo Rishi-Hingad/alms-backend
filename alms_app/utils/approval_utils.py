@@ -69,8 +69,7 @@ def get_user_in_next_approval_role(doctype: str, docname: str) -> str:
     if not employee_id:
         return ""
 
-    role_short, linked_user = frappe.get_cached_value(
-        "Employee", employee_id, ["role_short", "linked_user"]
+    role_short, linked_user = frappe.get_cached_value("ALMS Employee", employee_id, ["role_short", "linked_user"]
     ) or (None, None)
 
     if not linked_user:

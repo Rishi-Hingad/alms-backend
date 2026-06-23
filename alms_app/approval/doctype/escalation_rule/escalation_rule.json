@@ -55,7 +55,7 @@
    "fieldtype": "Link",
    "in_list_view": 1,
    "label": "Alternate User",
-   "options": "Employee"
+   "options": "ALMS Employee"
   },
   {
    "fieldname": "alternate_role",

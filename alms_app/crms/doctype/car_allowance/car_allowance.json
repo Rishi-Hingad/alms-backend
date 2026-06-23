@@ -37,7 +37,7 @@
    "fieldname": "employee_reporting",
    "fieldtype": "Link",
    "label": "Employee Reporting",
-   "options": "Employee",
+   "options": "ALMS Employee",
    "read_only": 1
   },
   {
@@ -94,7 +94,7 @@
    "fieldname": "employee_code",
    "fieldtype": "Link",
    "label": "Employee Code",
-   "options": "Employee",
+   "options": "ALMS Employee",
    "read_only": 1,
    "unique": 1
   }

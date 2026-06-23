@@ -13,9 +13,9 @@ def execute():
     for row in records:
         emp_code = row.get('employee_code')
         emp_email = row.get('email_id')
-        emp_name = frappe.db.get_value('Employee', {'employee_code': emp_code}, 'name')
+        emp_name = frappe.db.get_value('ALMS Employee', {'employee_code': emp_code}, 'name')
         if not emp_name and emp_email:
-            emp_name = frappe.db.get_value('Employee', {'company_email': emp_email}, 'name')
+            emp_name = frappe.db.get_value('ALMS Employee', {'company_email': emp_email}, 'name')
 
         if emp_name:
             # Update existing
@@ -28,7 +28,7 @@ def execute():
                 update_data['reporting_head'] = row.get('reporting_head')
             
             if update_data:
-                frappe.db.set_value('Employee', emp_name, update_data)
+                frappe.db.set_value('ALMS Employee', emp_name, update_data)
                 migrated += 1
         else:
             # Create new via raw frappe.get_doc({...}).db_insert() to avoid validation

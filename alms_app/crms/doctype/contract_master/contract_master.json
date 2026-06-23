@@ -135,7 +135,7 @@
    "fieldname": "user",
    "fieldtype": "Link",
    "label": "Employee Name",
-   "options": "Employee"
+   "options": "ALMS Employee"
   }
  ],
  "grid_page_length": 50,

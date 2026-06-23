@@ -222,7 +222,7 @@ def _ledger_table_name(entry):
 def _get_employee_from_doc(doc):
     """Attempt to find the Employee record associated with the document. 
     Useful when the owner is Guest or when forms are submitted on behalf of others."""
-    if doc.doctype == "Employee":
+    if doc.doctype == "ALMS Employee":
         return doc.name
     if getattr(doc, "employee", None):
         return doc.employee
@@ -230,7 +230,7 @@ def _get_employee_from_doc(doc):
         return doc.employee_code
     
     # fallback to owner
-    return frappe.db.get_value("Employee", {"user_id": doc.owner, "status": "Active"}, "name")
+    return frappe.db.get_value("ALMS Employee", {"user_id": doc.owner, "status": "Active"}, "name")
 
 
 def _append_first_pending_stage(entry, doc, first_stage, ledger_table):
@@ -368,16 +368,16 @@ def get_role_based_approver(role, starting_employee, max_depth=10):
     # If not provided, attempt to find the Employee record for the current session user
     if not current_employee:
         current_user = frappe.session.user
-        emp_name = frappe.db.get_value("Employee", {"user_id": current_user, "status": "Active"}, "name")
+        emp_name = frappe.db.get_value("ALMS Employee", {"user_id": current_user, "status": "Active"}, "name")
         if not emp_name:
             return None
         current_employee = emp_name
 
     def resolve_employee_id(emp_id_or_name):
         if not emp_id_or_name: return None
-        if frappe.db.exists("Employee", emp_id_or_name):
+        if frappe.db.exists("ALMS Employee", emp_id_or_name):
             return emp_id_or_name
-        resolved = frappe.db.get_value("Employee", {"employee_name": emp_id_or_name}, "name")
+        resolved = frappe.db.get_value("ALMS Employee", {"employee_name": emp_id_or_name}, "name")
         return resolved
 
     current_employee = resolve_employee_id(current_employee)
@@ -385,10 +385,10 @@ def get_role_based_approver(role, starting_employee, max_depth=10):
         return None
 
     if role == "Reporting Head":
-        emp_doc = frappe.get_doc("Employee", current_employee)
+        emp_doc = frappe.get_doc("ALMS Employee", current_employee)
         reports_to = resolve_employee_id(emp_doc.reporting_head)
         if reports_to:
-            mgr_doc = frappe.get_doc("Employee", reports_to)
+            mgr_doc = frappe.get_doc("ALMS Employee", reports_to)
             return {"employee": reports_to, "user": mgr_doc.company_email or mgr_doc.user_id, "role": role}
         return None
 
@@ -398,7 +398,7 @@ def get_role_based_approver(role, starting_employee, max_depth=10):
         if current_employee in visited:
             break  # loop detected
         visited.add(current_employee)
-        emp_doc = frappe.get_doc("Employee", current_employee)
+        emp_doc = frappe.get_doc("ALMS Employee", current_employee)
 
         # Get User ID and check for role
         user_id = emp_doc.company_email or emp_doc.user_id
@@ -532,7 +532,7 @@ def _get_pending_stage(ledger_items, next_stage=None):
 
 def _validate_approver_permissions(pending_row):
     user = frappe.session.user  
-    employee = frappe.db.get_value("Employee", {"user_id": user}, "name")
+    employee = frappe.db.get_value("ALMS Employee", {"user_id": user}, "name")
     allowed_user = pending_row.next_approver
     allowed_role = pending_row.next_approver_role
     allowed_team = getattr(pending_row, "next_approver_team", None)
@@ -551,8 +551,7 @@ def _validate_approver_permissions(pending_row):
     if allowed_team:
         # Find Employee record
         if employee:
-            employee_teams = frappe.get_all(
-                "Employee",
+            employee_teams = frappe.get_all("ALMS Employee",
                 filters={"name": employee, "department": allowed_team},
                 fields=["name"]
             )
@@ -568,7 +567,7 @@ def _validate_approver_permissions(pending_row):
 
 def _handle_reject_action(doctype, doc_name, entry, pending_row, ledger_table, remarks, specific_user=None):
     user = specific_user or frappe.session.user
-    employee = frappe.db.get_value("Employee", {"user_id": user}, "name")
+    employee = frappe.db.get_value("ALMS Employee", {"user_id": user}, "name")
 
     entry.append(ledger_table, {
         "action":"Rejected",
@@ -672,7 +671,7 @@ def _sync_generic_legacy_fields(doctype, doc_name, stage, action, remarks):
             user_field = app_field.replace("_status", "_user")
             if frappe.get_meta(doctype).has_field(user_field):
                 user = frappe.session.user
-                employee = frappe.db.get_value("Employee", {"user_id": user, "status": "Active"}, "name")
+                employee = frappe.db.get_value("ALMS Employee", {"user_id": user, "status": "Active"}, "name")
                 updates[user_field] = employee or user
                 
     if rem_field and frappe.get_meta(doctype).has_field(rem_field):
@@ -681,8 +680,8 @@ def _sync_generic_legacy_fields(doctype, doc_name, stage, action, remarks):
     if sig_field and frappe.get_meta(doctype).has_field(sig_field):
         user = frappe.session.user
         signature = user
-        if frappe.db.has_column("Employee", "esignature"):
-            signature = frappe.db.get_value("Employee", {"user_id": user, "status": "Active"}, "esignature") or user
+        if frappe.db.has_column("ALMS Employee", "esignature"):
+            signature = frappe.db.get_value("ALMS Employee", {"user_id": user, "status": "Active"}, "esignature") or user
         updates[sig_field] = signature
 
     if updates:
@@ -690,11 +689,11 @@ def _sync_generic_legacy_fields(doctype, doc_name, stage, action, remarks):
 
 def _handle_approve_action(doctype, doc_name, entry, pending_row, ledger_table, remarks):
     user = frappe.session.user
-    employee = frappe.db.get_value("Employee", {"user_id": user}, "name")
+    employee = frappe.db.get_value("ALMS Employee", {"user_id": user}, "name")
     if not employee:
-        employee = frappe.db.get_value("Employee", {"company_email": user}, "name")
+        employee = frappe.db.get_value("ALMS Employee", {"company_email": user}, "name")
     if not employee:
-        employee = frappe.db.get_value("Employee", {"personal_email": user}, "name")
+        employee = frappe.db.get_value("ALMS Employee", {"personal_email": user}, "name")
 
     # Fetch approval matrix and determine next stage
     matrix = frappe.get_doc("Approval Matrix", entry.approval_matrix)
@@ -706,7 +705,7 @@ def _handle_approve_action(doctype, doc_name, entry, pending_row, ledger_table, 
         hierarchy_employee = pending_row.next_approver
     if not hierarchy_employee:
         doc_owner = frappe.db.get_value(doctype, doc_name, "owner")
-        hierarchy_employee = frappe.db.get_value("Employee", {"user_id": doc_owner, "status": "Active"}, "name")
+        hierarchy_employee = frappe.db.get_value("ALMS Employee", {"user_id": doc_owner, "status": "Active"}, "name")
 
     # Append a new approval ledger row for APPROVED action (do not update the pending row)
     next_stage_user = None
@@ -720,7 +719,7 @@ def _handle_approve_action(doctype, doc_name, entry, pending_row, ledger_table, 
                 frappe.throw(f"Approver not found for role: {next_stage.role}")
 
         if next_stage.employee:
-            next_stage_user = frappe.get_value("Employee", next_stage.employee, "company_email")
+            next_stage_user = frappe.get_value("ALMS Employee", next_stage.employee, "company_email")
             
         entry.append(ledger_table, {
             "action":"Approved",
@@ -984,7 +983,7 @@ def can_approve(doctype, doc_name):
         if not pending_row:
             pending_row = ledger_items[-1]
 
-        employee = frappe.db.get_value("Employee", {"user_id": user}, "name")
+        employee = frappe.db.get_value("ALMS Employee", {"user_id": user}, "name")
 
         allowed_team = getattr(pending_row, "next_approver_team", None)
         allowed_user = getattr(pending_row, "next_approver", None)
@@ -1014,7 +1013,7 @@ def can_approve(doctype, doc_name):
             return True
 
         if allowed_team and employee:
-            if frappe.db.exists("Employee", {"department": allowed_team, "name": employee}):
+            if frappe.db.exists("ALMS Employee", {"department": allowed_team, "name": employee}):
                 print("[DEBUG can_approve] User is in allowed_team -> True")
                 return True
             else:
@@ -1062,7 +1061,7 @@ def can_revoke(doctype, doc_name):
         if not last_approved_row:
             return False
             
-        employee = frappe.db.get_value("Employee", {"user_id": user}, "name")
+        employee = frappe.db.get_value("ALMS Employee", {"user_id": user}, "name")
         if last_approved_row.approver_user == user or (employee and last_approved_row.approved_by == employee):
             return True
             
@@ -1110,7 +1109,7 @@ def get_approval_status(approval_entry:str) -> str:
         return None
     next_approver = None
     if entry.next_approver:
-        next_approver = frappe.get_value("Employee", entry.next_approver, "employee_name")
+        next_approver = frappe.get_value("ALMS Employee", entry.next_approver, "employee_name")
     if entry.status == "Pending":
         if not next_approver:
             pending_row = entry.approval_entry[-1]
@@ -1124,7 +1123,7 @@ def get_approval_status(approval_entry:str) -> str:
                 return "Awaiting Approval",entry.previous_approver_remarks or "-"
         return f"Awaiting Approval from {next_approver}",entry.previous_approver_remarks or "-"
     if entry.previous_approver:
-        previous_approver = frappe.get_value("Employee", entry.previous_approver, "employee_name")
+        previous_approver = frappe.get_value("ALMS Employee", entry.previous_approver, "employee_name")
         return f"Rejected by {previous_approver}",entry.previous_approver_remarks or "-"
     return entry.status,entry.previous_approver_remarks or "-"
 

@@ -52,7 +52,7 @@
    "fieldname": "employee_code",
    "fieldtype": "Link",
    "label": "Employee Code",
-   "options": "Employee"
+   "options": "ALMS Employee"
   },
   {
    "fetch_from": "employee_code.designation",
