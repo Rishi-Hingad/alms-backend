@@ -251,7 +251,7 @@ def _append_first_pending_stage(entry, doc, first_stage, ledger_table):
             "next_stage": next_stage_val,
             "next_approver": None,
             "next_approver_role": None,
-            "next_approver_team": first_stage.team,
+            "next_approver_team": getattr(first_stage, "team", None),
         })
     elif getattr(first_stage, "approver_type", None) == "Role" and getattr(first_stage, "from_hierarchy", False):
         approver = get_role_based_approver(
@@ -771,7 +771,7 @@ def _handle_approve_action(doctype, doc_name, entry, pending_row, ledger_table, 
                 doctype, 
                 doc, 
                 next_user=next_stage_user, 
-                next_team=next_stage.team, 
+                next_team=getattr(next_stage, "team", None), 
                 next_role=getattr(next_stage, "role", None), 
                 action="Approved"
             )
