@@ -1225,17 +1225,34 @@ def get_approval_trail(doctype, doc_name):
         ledger_table = 'approval_ledger' if hasattr(entry, 'approval_ledger') else 'approval_entry'
         ledger_items = entry.get(ledger_table)
         
+        matrix = None
+        if getattr(entry, 'approval_matrix', None):
+            matrix = frappe.get_doc("Approval Matrix", entry.approval_matrix)
+
         trail = []
         for i, item in enumerate(ledger_items):
             # Skip historical 'Pending' rows. Only show a Pending row if it's the current active stage (the very last item)
             if item.status == "Pending" and i < len(ledger_items) - 1:
                 continue
-                
+
+            role_name = None
+            if matrix and getattr(item, 'current_stage', None) is not None:
+                stages = getattr(matrix, "stages", getattr(matrix, "approval_stages", []))
+                for stage in stages:
+                    st_num = getattr(stage, "stage_number", getattr(stage, "approval_stage", None))
+                    if st_num == item.current_stage:
+                        role_name = getattr(stage, "role", getattr(stage, "team", None))
+                        break
+
+            approver_val = getattr(item, 'approver_user', None)
+            if approver_val and role_name:
+                approver_val = f"{approver_val} ({role_name})"
+
             trail.append({
                 'action': item.action,
                 'status': item.status,
                 'action_at': item.action_at if hasattr(item, 'action_at') else None,
-                'approver_user': item.approver_user if hasattr(item, 'approver_user') else None,
+                'approver_user': approver_val,
                 'next_approver_role': getattr(item, 'next_approver_role', None),
                 'next_approver_team': getattr(item, 'next_approver_team', None),
                 'remarks': getattr(item, 'remarks', None)
