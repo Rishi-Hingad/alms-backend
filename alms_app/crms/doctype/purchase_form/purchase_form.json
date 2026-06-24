@@ -360,8 +360,7 @@
    "fieldname": "is_submitted",
    "fieldtype": "Check",
    "hidden": 1,
-   "label": "Is Submitted",
-   "read_only": 1
+   "label": "Is Submitted"
   },
   {
    "fieldname": "approval_token",
