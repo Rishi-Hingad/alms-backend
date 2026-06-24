@@ -1310,7 +1310,7 @@ class EmailServices:
                 subject=subject,
                 recipient_email=recipient_email,
                 body=body,
-                bcc_list=self.get_bcc_list()
+                bcc_list=self.get_bcc_list(template_type="Acknowledgement")
             )
 
 

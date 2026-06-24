@@ -1,6 +1,6 @@
 function renderPurchaseRedirectButton(frm) {
     // Only administrators or Purchase team should see the redirect button
-    const is_purchase = frappe.user_roles.includes("Purchase Manager") || frappe.user_roles.includes("Purchase Head") || frappe.user_roles.includes("Administrator");
+    const is_purchase = frappe.user_roles.includes("Purchase Team") || frappe.user_roles.includes("Purchase Manager") || frappe.user_roles.includes("Purchase Head") || frappe.user_roles.includes("Administrator");
     if (
         is_purchase &&
         frm.doc.status === "Approved"
