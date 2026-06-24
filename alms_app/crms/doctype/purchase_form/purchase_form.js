@@ -2,6 +2,11 @@
 // For license information, please see license.txt
 
 frappe.ui.form.on("Purchase Form", {
+    refresh: function(frm) {
+        if (typeof window.setup_approval_ui === "function") {
+            window.setup_approval_ui(frm);
+        }
+    },
     revised_ex_show_room_price: function(frm) { calculate_revised_fields(frm); },
     revised_discount: function(frm) { calculate_revised_fields(frm); },
     revised_tcs: function(frm) { calculate_revised_fields(frm); },
