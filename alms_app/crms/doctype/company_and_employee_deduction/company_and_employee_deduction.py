@@ -37,7 +37,7 @@ def send_employee_approval_email(docname):
     subject = "Car Quotation Approved"
     
     # Get employee's full name if possible, else use ID
-    employee_full_name = frappe.db.get_value("ALMS Employee", doc.employee_name, "employee_name") or doc.employee_name
+    employee_full_name = frappe.db.get_value("ALMS Employee", doc.employee_name, "full_name") or doc.employee_name
 
     message = f"Dear {employee_full_name},<br><br>"
     message += f"The Car quotation for your model car (<b>{doc.variant}</b>) has been approved.<br>"
