@@ -11,12 +11,13 @@
   "eligibility",
   "column_break_otzw",
   "meril_entity",
+  "location",
   "car_model_details",
   "make",
-  "color",
-  "location",
-  "engine",
   "car_model",
+  "column_break_sdaz",
+  "color",
+  "engine",
   "price_and_charges_section",
   "ex_showroom_price",
   "tcs",
@@ -419,11 +420,15 @@
    "fieldname": "car_model_details",
    "fieldtype": "Section Break",
    "label": "Car Model & Details"
+  },
+  {
+   "fieldname": "column_break_sdaz",
+   "fieldtype": "Column Break"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-06-24 12:49:00.666604",
+ "modified": "2026-06-24 13:07:28.046212",
  "modified_by": "Administrator",
  "module": "CRMS",
  "name": "Purchase Form",
