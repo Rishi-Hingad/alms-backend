@@ -145,15 +145,19 @@ def get_approval_trail(doctype, docname):
                         people = []
                         approver_name_str = ""
 
+                role_out_ar = matrix_row.get("role")
+                team_out_ar = matrix_row.get("team")
+
                 dt = getattr(approval_row, "action_at", None)
                 action_line = None
                 if dt:
                     action_line = f"{'Approved' if approval_row.status == 'Approved' else 'Rejected'} On: {frappe.utils.format_datetime(dt, 'dd-MM-YYYY HH:mm:ss')}"
                     if approver_name_str:
                         action_line += f"<br>By: {approver_name_str}"
-               
-                role_out_ar = matrix_row.get("role")
-                team_out_ar = matrix_row.get("team")
+                        if role_out_ar:
+                            action_line += f" ({role_out_ar})"
+                        elif team_out_ar:
+                            action_line += f" ({team_out_ar} Team)"
                 approval_trail.append({
                     "label": label,
                     "variant": variant,
