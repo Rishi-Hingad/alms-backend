@@ -148,7 +148,7 @@ window.setup_approval_ui = function (frm) {
         });
     } else {
         // Remove default 'Submit'/'Update' if the form is pending approval
-        if (frm.doc.docstatus === 0 && is_pending_approval) {
+        if (frm.doc.docstatus === 0 && is_pending_approval && !frm.is_new()) {
             frm.page.clear_primary_action();
             frm.page.clear_secondary_action();
         }
