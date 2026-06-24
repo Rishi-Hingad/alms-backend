@@ -370,6 +370,10 @@ def get_role_based_approver(role, starting_employee, max_depth=10):
         current_user = frappe.session.user
         emp_name = frappe.db.get_value("ALMS Employee", {"user_id": current_user, "status": "Active"}, "name")
         if not emp_name:
+            emp_name = frappe.db.get_value("ALMS Employee", {"company_email": current_user, "status": "Active"}, "name")
+        if not emp_name:
+            emp_name = frappe.db.get_value("ALMS Employee", {"personal_email": current_user, "status": "Active"}, "name")
+        if not emp_name:
             return None
         current_employee = emp_name
 
@@ -533,6 +537,10 @@ def _get_pending_stage(ledger_items, next_stage=None):
 def _validate_approver_permissions(pending_row):
     user = frappe.session.user  
     employee = frappe.db.get_value("ALMS Employee", {"user_id": user}, "name")
+    if not employee:
+        employee = frappe.db.get_value("ALMS Employee", {"company_email": user}, "name")
+    if not employee:
+        employee = frappe.db.get_value("ALMS Employee", {"personal_email": user}, "name")
     allowed_user = pending_row.next_approver
     allowed_role = pending_row.next_approver_role
     allowed_team = getattr(pending_row, "next_approver_team", None)
@@ -568,6 +576,10 @@ def _validate_approver_permissions(pending_row):
 def _handle_reject_action(doctype, doc_name, entry, pending_row, ledger_table, remarks, specific_user=None):
     user = specific_user or frappe.session.user
     employee = frappe.db.get_value("ALMS Employee", {"user_id": user}, "name")
+    if not employee:
+        employee = frappe.db.get_value("ALMS Employee", {"company_email": user}, "name")
+    if not employee:
+        employee = frappe.db.get_value("ALMS Employee", {"personal_email": user}, "name")
 
     entry.append(ledger_table, {
         "action":"Rejected",
@@ -672,6 +684,10 @@ def _sync_generic_legacy_fields(doctype, doc_name, stage, action, remarks):
             if frappe.get_meta(doctype).has_field(user_field):
                 user = frappe.session.user
                 employee = frappe.db.get_value("ALMS Employee", {"user_id": user, "status": "Active"}, "name")
+                if not employee:
+                    employee = frappe.db.get_value("ALMS Employee", {"company_email": user, "status": "Active"}, "name")
+                if not employee:
+                    employee = frappe.db.get_value("ALMS Employee", {"personal_email": user, "status": "Active"}, "name")
                 updates[user_field] = employee or user
                 
     if rem_field and frappe.get_meta(doctype).has_field(rem_field):
@@ -680,8 +696,15 @@ def _sync_generic_legacy_fields(doctype, doc_name, stage, action, remarks):
     if sig_field and frappe.get_meta(doctype).has_field(sig_field):
         user = frappe.session.user
         signature = user
-        if frappe.db.has_column("ALMS Employee", "esignature"):
-            signature = frappe.db.get_value("ALMS Employee", {"user_id": user, "status": "Active"}, "esignature") or user
+        employee_doc = frappe.db.get_value("ALMS Employee", {"user_id": user, "status": "Active"}, ["name", "esignature"], as_dict=True)
+        if not employee_doc:
+            employee_doc = frappe.db.get_value("ALMS Employee", {"company_email": user, "status": "Active"}, ["name", "esignature"], as_dict=True)
+        if not employee_doc:
+            employee_doc = frappe.db.get_value("ALMS Employee", {"personal_email": user, "status": "Active"}, ["name", "esignature"], as_dict=True)
+
+        if employee_doc and employee_doc.get("esignature"):
+            signature = employee_doc.get("esignature")
+            
         updates[sig_field] = signature
 
     if updates:
