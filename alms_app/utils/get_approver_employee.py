@@ -25,16 +25,24 @@ def get_approval_employee(role_short, company_list, filters={}, fields=["*"]):
     
     
     # Get users who have the required role from Has Role child table
-    users_with_role = frappe.get_all(
+    user_roles = frappe.get_all(
         "Has Role",
         filters={"role": role_short},
-        fields=["parent"]
+        pluck="parent"
+    )
+    if not user_roles:
+        return None
+        
+    users_with_role = frappe.get_all(
+        "User", 
+        filters={"enabled": 1, "name": ["in", user_roles]},
+        pluck="name"
     )
     
     if not users_with_role:
         return None
     
-    user_ids_with_role = [user.parent for user in users_with_role]
+    user_ids_with_role = users_with_role
     
     
     # Build final filters - combine both conditions

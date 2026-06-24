@@ -44,6 +44,7 @@ def get_approval_users_by_role(doctype: str, docname: str,current_role) -> list[
         all_users = frappe.get_all("User", 
             filters=[
                 ["Has Role", "role", "in", current_role],
+                ["enabled", "=", 1]
             ], 
             pluck="name"
         )
