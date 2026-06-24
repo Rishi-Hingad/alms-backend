@@ -26,8 +26,10 @@ def _default_context_builder(doc, next_user=None, next_team=None, next_role=None
     if next_user:
         recipients.append(next_user)
     elif next_role:
-        users = frappe.get_all("Has Role", filters={"role": next_role, "parenttype": "User"}, fields=["parent"])
-        recipients.extend([u.parent for u in users])
+        users = frappe.get_all("Has Role", filters={"role": next_role, "parenttype": "User"}, pluck="parent")
+        if users:
+            enabled_users = frappe.get_all("User", filters={"enabled": 1, "name": ["in", users]}, pluck="name")
+            recipients.extend(enabled_users)
         
     return {
         "recipients": recipients,
