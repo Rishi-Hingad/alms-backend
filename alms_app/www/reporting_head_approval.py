@@ -77,7 +77,8 @@ def get_car_indent_data(indent_form_id, token=None):
         has_previously_approved = False
         if entry_name:
             entry = frappe.get_doc("Approval Entry", entry_name)
-            reporting_head_email = frappe.db.get_value("ALMS Employee", user.reporting_head, "user_id")
+            rh_user_id, rh_company_email = frappe.db.get_value("ALMS Employee", user.reporting_head, ["user_id", "company_email"]) or (None, None)
+            reporting_head_email = rh_user_id or rh_company_email
             for row in getattr(entry, "approval_entry", []):
                 if row.action == "Approved" and row.approver_user == reporting_head_email:
                     has_previously_approved = True

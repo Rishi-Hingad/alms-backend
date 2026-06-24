@@ -24,8 +24,8 @@ def process_car_indent_by_reporting(indent_form, remarks, token, action):
         # Impersonate Reporting Head
         i_form = frappe.get_doc("Car Indent Form", indent_form)
         user = frappe.get_doc("ALMS Employee", i_form.employee_code)
-        reporting_head_email = frappe.db.get_value("ALMS Employee", user.reporting_head, "user_id")
-        
+        rh_user_id, rh_company_email = frappe.db.get_value("ALMS Employee", user.reporting_head, ["user_id", "company_email"]) or (None, None)
+        reporting_head_email = rh_user_id or rh_company_email
         if not reporting_head_email:
             return fail("Reporting Head has no registered email/user.")
 
