@@ -9,13 +9,14 @@
   "car_indent_form_details_section",
   "employee_name",
   "eligibility",
-  "car_model",
-  "color",
-  "engine",
   "column_break_otzw",
   "meril_entity",
-  "location",
+  "car_model_details",
   "make",
+  "color",
+  "location",
+  "engine",
+  "car_model",
   "price_and_charges_section",
   "ex_showroom_price",
   "tcs",
@@ -131,7 +132,7 @@
   {
    "fieldname": "price_and_charges_section",
    "fieldtype": "Section Break",
-   "label": "Price and Charges"
+   "label": "Price & Charges"
   },
   {
    "fetch_from": "employee_name.ex_showroom_price",
@@ -235,7 +236,7 @@
   {
    "fieldname": "revised_price_and_charges_section",
    "fieldtype": "Section Break",
-   "label": "Revised Price and Charges"
+   "label": "Revised Price & Charges"
   },
   {
    "fieldname": "revised_ex_show_room_price",
@@ -413,11 +414,16 @@
    "fieldname": "approval_trail_html",
    "fieldtype": "HTML",
    "label": "Approval Trail"
+  },
+  {
+   "fieldname": "car_model_details",
+   "fieldtype": "Section Break",
+   "label": "Car Model & Details"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-06-18 17:59:55.717955",
+ "modified": "2026-06-24 12:49:00.666604",
  "modified_by": "Administrator",
  "module": "CRMS",
  "name": "Purchase Form",
