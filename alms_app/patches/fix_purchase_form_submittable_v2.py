@@ -12,5 +12,8 @@ def execute():
     # Update the Doctype to not be submittable
     frappe.db.sql("""UPDATE `tabDocType` SET is_submittable=0 WHERE name='Purchase Form'""")
     
+    # If the user checked it via Customize Form, we must delete the Property Setter!
+    frappe.db.sql("""DELETE FROM `tabProperty Setter` WHERE doc_type='Purchase Form' AND property='is_submittable'""")
+    
     # Clear cache so Frappe picks up the change
     frappe.clear_cache(doctype='Purchase Form')
