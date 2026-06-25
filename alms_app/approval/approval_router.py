@@ -34,6 +34,8 @@ def trigger_approval_if_matrix_exists(doc, method=None):
     if matched_matrix_name:
         approval_matrix = frappe.get_doc("Approval Matrix", matched_matrix_name)
         generic_process_approval_entry(doc, approval_matrix)
+    else:
+        frappe.msgprint(f"Warning: No matching 'Approval Matrix' found for {doc.doctype}. Approval routing could not be started. Please configure the matrix.", alert=True, indicator="orange")
 
 
 def auto_restart_rejected_document(doc, method=None):
