@@ -26,6 +26,12 @@ class PurchaseForm(Document):
         else:
             self.total_kilometers = ""
 
+    def before_save(self):
+        # Clear any dummy.pdf defaults from Custom Field or Property Setter that might have been applied to this document
+        for field in self.meta.get("fields", {"fieldtype": "Attach"}):
+            if self.get(field.fieldname) and "/files/dummy.pdf" in self.get(field.fieldname):
+                self.set(field.fieldname, None)
+
 @frappe.whitelist()
 def force_delete(docname):
     # Check permissions manually since it's whitelisted
