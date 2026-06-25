@@ -329,7 +329,8 @@
    "fieldname": "all_quotations_ref_no",
    "fieldtype": "Link",
    "label": "All Quotations Ref No.",
-   "options": "Selected Vendor"
+   "options": "Selected Vendor",
+   "allow_on_submit": 1
   },
   {
    "fieldname": "approval_timline_tab",
