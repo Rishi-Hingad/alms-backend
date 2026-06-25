@@ -18,7 +18,35 @@ class PurchaseForm(Document):
             self.revised_net_ex_showroom_price = ex_show_room - discount + tcs
             self.revised_financed_amount = self.revised_net_ex_showroom_price + reg_charges + accessories
 
-        if self.kilometers_per_year and self.tenure_in_years:
-            self.total_kilometers = flt(self.kilometers_per_year) * flt(self.tenure_in_years)
+        km_per_year = flt(self.kilometers_per_year)
+        tenure = flt(self.tenure_in_years)
+        
+        if km_per_year and tenure:
+            self.total_kilometers = km_per_year * tenure
         else:
-            self.total_kilometers = 0
+            self.total_kilometers = ""
+
+@frappe.whitelist()
+def force_delete(docname):
+    # Check permissions manually since it's whitelisted
+    if frappe.session.user != "Administrator":
+        frappe.throw("Only Administrator can Force Delete")
+    
+    doc = frappe.get_doc("Purchase Form", docname)
+    
+    # Delete Approval Entries linked to this Purchase Form
+    entries = frappe.get_all("Approval Entry", filters={"applied_to_doctype": "Purchase Form", "record": docname})
+    for entry in entries:
+        frappe.delete_doc("Approval Entry", entry.name, force=1)
+        
+    # Delete Selected Vendor linked to this Purchase Form
+    if doc.all_quotations_ref_no:
+        try:
+            frappe.delete_doc("Selected Vendor", doc.all_quotations_ref_no, force=1)
+        except Exception:
+            pass
+        
+    # Delete the Purchase Form
+    frappe.delete_doc("Purchase Form", docname, force=1)
+    
+    frappe.msgprint("Deleted successfully")
