@@ -500,5 +500,6 @@
    "color": "Red",
    "title": "Rejected"
   }
- ]
+ ],
+ "is_submittable": 0
 }
