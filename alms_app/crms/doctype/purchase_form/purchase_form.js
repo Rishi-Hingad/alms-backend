@@ -35,7 +35,8 @@ frappe.ui.form.on("Purchase Form", {
     revised_registration_charges: function(frm) { calculate_revised_fields(frm); },
     revised_accessories: function(frm) { calculate_revised_fields(frm); },
     kilometers_per_year: function(frm) { calculate_total_kilometers(frm); },
-    tenure_in_years: function(frm) { calculate_total_kilometers(frm); }
+    tenure_in_years: function(frm) { calculate_total_kilometers(frm); },
+    quotation_document: function(frm) { frm.save(); }
 });
 
 function calculate_revised_fields(frm) {
