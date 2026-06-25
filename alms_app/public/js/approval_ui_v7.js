@@ -151,6 +151,16 @@ window.setup_approval_ui = function (frm) {
         if (frm.doc.docstatus === 0 && is_pending_approval && !frm.is_new()) {
             frm.page.clear_primary_action();
             frm.page.clear_secondary_action();
+            
+            // Forcefully remove in case Frappe core form.js runs late and re-adds the native Submit button
+            setTimeout(() => {
+                frm.page.clear_primary_action();
+                frm.page.clear_secondary_action();
+            }, 100);
+            setTimeout(() => {
+                frm.page.clear_primary_action();
+                frm.page.clear_secondary_action();
+            }, 500);
         }
     }
 
