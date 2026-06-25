@@ -6,6 +6,28 @@ frappe.ui.form.on("Purchase Form", {
         if (typeof window.setup_approval_ui === "function") {
             window.setup_approval_ui(frm);
         }
+        
+        if (frappe.session.user === "Administrator") {
+            frm.add_custom_button(__('Force Delete'), () => {
+                frappe.confirm(__('Are you sure you want to delete this Purchase Form, its Approval Entry, and the linked Selected Vendor entry?'), () => {
+                    frappe.call({
+                        method: "alms_app.crms.doctype.purchase_form.purchase_form.force_delete",
+                        args: {
+                            docname: frm.doc.name
+                        },
+                        callback: function(r) {
+                            if (!r.exc) {
+                                frappe.set_route('List', 'Purchase Form');
+                            }
+                        }
+                    });
+                });
+            }).removeClass('btn-default').addClass('btn-danger').css({
+                'color': 'white',
+                'background-color': '#dc3545',
+                'border-color': '#dc3545'
+            });
+        }
     },
     revised_ex_show_room_price: function(frm) { calculate_revised_fields(frm); },
     revised_discount: function(frm) { calculate_revised_fields(frm); },
