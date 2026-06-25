@@ -94,8 +94,9 @@ def build_car_indent_form_context(doc, next_user=None, next_team=None, next_role
         context.update({
             "make": getattr(doc, "revised_make", "-"),
             "model": getattr(doc, "revised_car_modal", "-"),
-            "finance_amount": getattr(doc, "revised_finance_amount", "-"),
-            "revised_finance_amount": getattr(doc, "revised_finance_amount", "-"),
+            "finance_amount": getattr(doc, "revised_financed_amount", "-"),
+            "revised_finance_amount": getattr(doc, "revised_financed_amount", "-"),
+            "revised_financed_amount": getattr(doc, "revised_financed_amount", "-"),
             "original_make": getattr(car_indent_doc, "make", "-") if car_indent_doc else "-",
             "original_model": getattr(car_indent_doc, "model", "-") if car_indent_doc else "-",
             "original_finance_amount": getattr(car_indent_doc, "finance_amount", "-") if car_indent_doc else "-",
