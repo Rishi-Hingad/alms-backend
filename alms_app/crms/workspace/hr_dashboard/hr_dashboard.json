@@ -9,7 +9,7 @@
    "label": "Car Indent Form"
   }
  ],
- "content": "[{\"id\": \"Q29g67Yo_2\", \"type\": \"header\", \"data\": {\"text\": \"<span class=\\\"h4\\\">HR Dashboard</span>\", \"col\": 12}}, {\"id\": \"6GMciSZmeo\", \"type\": \"number_card\", \"data\": {\"number_card_name\": \"Total Employee\", \"col\": 4}}, {\"id\": \"5S9FuBeGpF\", \"type\": \"number_card\", \"data\": {\"number_card_name\": \"Employees Notified\", \"col\": 4}}, {\"id\": \"9h70ROEDHi\", \"type\": \"number_card\", \"data\": {\"number_card_name\": \"Total Car Indent Form\", \"col\": 4}}, {\"id\": \"G-7BeJxY7U\", \"type\": \"number_card\", \"data\": {\"number_card_name\": \"Pending Car Indent Form\", \"col\": 4}}, {\"id\": \"w-Dsna__jk\", \"type\": \"number_card\", \"data\": {\"number_card_name\": \"Approved Car Indent Form\", \"col\": 4}}, {\"id\": \"lt38NROBBW\", \"type\": \"number_card\", \"data\": {\"number_card_name\": \"Rejected Car Indent Form\", \"col\": 4}}, {\"id\": \"BMcWErsXLL\", \"type\": \"quick_list\", \"data\": {\"quick_list_name\": \"Employee\", \"col\": 6}}, {\"id\": \"e01Ee43Sti\", \"type\": \"quick_list\", \"data\": {\"quick_list_name\": \"Car Indent Form\", \"col\": 6}}, {\"id\": \"VXqjHXP0fJ\", \"type\": \"quick_list\", \"data\": {\"quick_list_name\": \"Car Allowance\", \"col\": 7}}, {\"id\": \"fyZSt0QJAe\", \"type\": \"chart\", \"data\": {\"chart_name\": \"Car Indent Form\", \"col\": 6}}, {\"id\": \"FSkyNmxC_V\", \"type\": \"chart\", \"data\": {\"chart_name\": \"Car Indent Status\", \"col\": 12}}]",
+ "content": "[{\"id\":\"Q29g67Yo_2\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">HR Dashboard</span>\",\"col\":12}},{\"id\":\"6GMciSZmeo\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Total Employee\",\"col\":6}},{\"id\":\"5S9FuBeGpF\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Employees Notified\",\"col\":6}},{\"id\":\"QZVyDemSI5\",\"type\":\"quick_list\",\"data\":{\"quick_list_name\":\"Employee List\",\"col\":12}},{\"id\":\"9h70ROEDHi\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Total Car Indent Form\",\"col\":3}},{\"id\":\"G-7BeJxY7U\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Pending Car Indent Form\",\"col\":3}},{\"id\":\"w-Dsna__jk\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Approved Car Indent Form\",\"col\":3}},{\"id\":\"lt38NROBBW\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Rejected Car Indent Form\",\"col\":3}},{\"id\":\"e01Ee43Sti\",\"type\":\"quick_list\",\"data\":{\"quick_list_name\":\"Car Indent Form\",\"col\":6}},{\"id\":\"VXqjHXP0fJ\",\"type\":\"quick_list\",\"data\":{\"quick_list_name\":\"Car Allowance\",\"col\":6}},{\"id\":\"fyZSt0QJAe\",\"type\":\"chart\",\"data\":{\"chart_name\":\"Car Indent Form\",\"col\":12}},{\"id\":\"FSkyNmxC_V\",\"type\":\"chart\",\"data\":{\"chart_name\":\"Car Indent Status\",\"col\":12}}]",
  "creation": "2024-10-26 10:37:38.548833",
  "custom_blocks": [],
  "docstatus": 0,
@@ -22,7 +22,7 @@
  "is_hidden": 0,
  "label": "HR Dashboard",
  "links": [],
- "modified": "2026-06-23 11:09:28.493443",
+ "modified": "2026-06-25 17:09:43.320275",
  "modified_by": "Administrator",
  "module": "CRMS",
  "name": "HR Dashboard",
@@ -63,7 +63,7 @@
   },
   {
    "document_type": "ALMS Employee",
-   "label": "Employee",
+   "label": "Employee List",
    "quick_list_filter": "[]"
   },
   {
@@ -78,6 +78,9 @@
   },
   {
    "role": "HR Head"
+  },
+  {
+   "role": "Administrator"
   }
  ],
  "sequence_id": 2.0,

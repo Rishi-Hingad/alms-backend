@@ -7,6 +7,12 @@ frappe.ui.form.on("Purchase Form", {
             window.setup_approval_ui(frm);
         }
         
+        if (!frappe.user_roles.includes("System Manager") && frappe.session.user !== "Administrator") {
+            if (frappe.user_roles.includes("Purchase Team") || frappe.user_roles.includes("Purchase Head")) {
+                frm.set_df_property("quotation_document", "read_only", 1);
+            }
+        }
+        
         if (frappe.session.user === "Administrator") {
             frm.add_custom_button(__('Force Delete'), () => {
                 frappe.confirm(__('Are you sure you want to delete this Purchase Form, its Approval Entry, and the linked Selected Vendor entry?'), () => {
@@ -28,6 +34,9 @@ frappe.ui.form.on("Purchase Form", {
                 'border-color': '#dc3545'
             });
         }
+        
+        // Restore custom Select Vendors button
+        addVendorButton(frm);
     },
     revised_ex_show_room_price: function(frm) { calculate_revised_fields(frm); },
     revised_discount: function(frm) { calculate_revised_fields(frm); },
@@ -36,7 +45,20 @@ frappe.ui.form.on("Purchase Form", {
     revised_accessories: function(frm) { calculate_revised_fields(frm); },
     kilometers_per_year: function(frm) { calculate_total_kilometers(frm); },
     tenure_in_years: function(frm) { calculate_total_kilometers(frm); },
-    quotation_document: function(frm) { frm.save(); }
+    quotation_document: function(frm) { 
+        if (!frm.is_new() && frm.is_dirty()) {
+            setTimeout(() => {
+                if (frm.is_dirty()) frm.save();
+            }, 1000);
+        }
+    },
+    revised_quotation_attachment_need_to_be_done: function(frm) {
+        if (!frm.is_new() && frm.is_dirty()) {
+            setTimeout(() => {
+                if (frm.is_dirty()) frm.save();
+            }, 1000);
+        }
+    }
 });
 
 function calculate_revised_fields(frm) {
@@ -62,4 +84,119 @@ function calculate_total_kilometers(frm) {
     } else {
         frm.set_value("total_kilometers", "");
     }
+}
+
+function addVendorButton(frm) {
+    if (!["Finance", "Administrator", "Finance Team", "Finance Head", "System Manager"].some(r => frappe.user_roles.includes(r))) return;
+
+    const isApproved = frm.doc.purchase_team_status === "Approved" && frm.doc.purchase_head_status === "Approved";
+    
+    // Check if the generic approval status is Approved (to be compatible with new approval system)
+    const isApprovedV2 = frm.doc.status === "Approved";
+
+    const finalApproved = isApproved || isApprovedV2;
+
+    const btn = frm.add_custom_button("Select Vendors", async () => {
+        if (!finalApproved) {
+            frappe.msgprint("Approval required from Purchase Team and Purchase Head first.");
+            return;
+        }
+
+        const res = await frappe.db.get_list("Vendor Master", {
+            fields: ["name", "contact_email"]
+        });
+
+        if (!res.length) {
+            frappe.msgprint("No vendors found in Vendor Master.");
+            return;
+        }
+
+        const dialog = new frappe.ui.Dialog({
+            title: "Select Vendors",
+            fields: [
+                {
+                    fieldname: "select_all",
+                    fieldtype: "Check",
+                    label: "Select All"
+                },
+                {
+                    fieldname: "vendors",
+                    fieldtype: "MultiCheck",
+                    label: "Vendors",
+                    options: res.map(v => ({
+                        label: `${v.name} (${v.contact_email || "No Email"})`,
+                        value: v.name
+                    }))
+                }
+            ],
+            primary_action_label: "Send Email",
+            primary_action: async (values) => {
+                let selected = [];
+
+                if (values.select_all) {
+                    selected = res.map(v => v.name);
+                } else {
+                    selected = values.vendors || [];
+                }
+
+                if (!selected.length) {
+                    frappe.msgprint("Select at least one vendor.");
+                    return;
+                }
+
+                const dBtn = dialog.get_primary_btn();
+                dBtn.prop("disabled", true).html("Sending...");
+
+                try {
+                    await frappe.call({
+                        method: "alms_app.api.emailsService.email_sender",
+                        args: {
+                            name: frm.doc.name,
+                            email_send_to: "FinanceHead To Quotation Company",
+                            payload: {
+                                email_send_to: selected,
+                                send_to_all: values.select_all ? 1 : 0
+                            }
+                        }
+                    });
+                    
+                    frappe.msgprint("Emails sent successfully.");
+                    dialog.hide();
+                    frm.reload_doc();
+
+                } catch (e) {
+                    frappe.msgprint("Failed to send emails.");
+                    dBtn.prop("disabled", false).text("Send Email");
+                }
+            }
+        });
+
+        dialog.show();
+
+        /* ================================
+           TOGGLE LOGIC (THE MAGIC)
+        ================================ */
+        const selectAllField = dialog.fields_dict.select_all;
+        const vendorField = dialog.fields_dict.vendors;
+
+        // listen for change
+        selectAllField.$input.on("change", function () {
+            const isChecked = dialog.get_value("select_all");
+
+            if (isChecked) {
+                // Hide vendor list
+                $(vendorField.wrapper).closest('.frappe-control').hide();
+                // Clear selection (important)
+                dialog.set_value("vendors", []);
+            } else {
+                // Show vendor list again
+                $(vendorField.wrapper).closest('.frappe-control').show();
+            }
+        });
+    });
+
+    btn.css({
+        "background-color": finalApproved ? "darkgreen" : "gray",
+        "color": "white"
+    });
 }

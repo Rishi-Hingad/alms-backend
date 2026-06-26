@@ -67,7 +67,7 @@ frappe.ui.form.on("ALMS Employee", {
     }
 });
 
-function send_eligibility_email(frm, email_send_to) {
+function send_eligibility_email(frm, email_send_to, btn) {
     frappe.call({
         method: "alms_app.api.emailsService.email_sender",
         args: {
@@ -76,6 +76,15 @@ function send_eligibility_email(frm, email_send_to) {
         },
         callback: function (response) {
             if (response.message && response.message.status === "error") {
+                if (btn) {
+                    btn.removeClass("btn-disabled").prop("disabled", false).text("Send Eligibility Email").css({
+                        "background-color": "#afd1f5",
+                        "color": "#004ea1",
+                        "border-color": "#007bff",
+                        "cursor": "pointer",
+                        "pointer-events": "auto"
+                    });
+                }
                 frappe.msgprint({
                     title: "Error",
                     indicator: "red",
@@ -89,6 +98,15 @@ function send_eligibility_email(frm, email_send_to) {
                 frm.set_value("eligibility_email_status", "Sent");
                 frm.save_or_update();
             } else {
+                if (btn) {
+                    btn.removeClass("btn-disabled").prop("disabled", false).text("Send Eligibility Email").css({
+                        "background-color": "#afd1f5",
+                        "color": "#004ea1",
+                        "border-color": "#007bff",
+                        "cursor": "pointer",
+                        "pointer-events": "auto"
+                    });
+                }
                 frappe.msgprint({
                     title: __("Error"),
                     indicator: "red",
@@ -97,6 +115,15 @@ function send_eligibility_email(frm, email_send_to) {
             }
         },
         error: function (error) {
+            if (btn) {
+                btn.removeClass("btn-disabled").prop("disabled", false).text("Send Eligibility Email").css({
+                    "background-color": "#afd1f5",
+                    "color": "#004ea1",
+                    "border-color": "#007bff",
+                    "cursor": "pointer",
+                    "pointer-events": "auto"
+                });
+            }
             frappe.msgprint({
                 title: "Error",
                 indicator: "red",
@@ -145,7 +172,18 @@ function updateEmailButton(frm) {
                 });
                 return;
             }
-            send_eligibility_email(frm, "To Employee");
+            
+            if (btn) {
+                btn.addClass("btn-disabled").prop("disabled", true).text("Sending...").css({
+                    "background-color": "#e9ecef",
+                    "color": "#6c757d",
+                    "border-color": "#ced4da",
+                    "cursor": "wait",
+                    "pointer-events": "none"
+                });
+            }
+            
+            send_eligibility_email(frm, "To Employee", btn);
         });
 
         if (btn) {
@@ -159,6 +197,7 @@ function updateEmailButton(frm) {
                        "cursor": "not-allowed",
                        "font-weight": "semibold",
                        "text-transform": "uppercase",
+                       "pointer-events": "none"
                    });
             } else {
                 btn.removeClass("btn-disabled")
@@ -169,6 +208,7 @@ function updateEmailButton(frm) {
                        "cursor": "pointer",
                        "font-weight": "semibold",
                        "text-transform": "uppercase",
+                       "pointer-events": "auto"
                    });
             }
         }

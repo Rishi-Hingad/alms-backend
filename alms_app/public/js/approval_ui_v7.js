@@ -2,12 +2,18 @@
 frappe.ui.form.on('*', {
     refresh: function (frm) {
         window.setup_approval_ui(frm);
+    },
+    after_save: function (frm) {
+        window.setup_approval_ui(frm);
     }
 });
 
 // Explicitly bind to Car Indent Form to override any DocType JS caching issues
 frappe.ui.form.on('Car Indent Form', {
     refresh: function (frm) {
+        window.setup_approval_ui(frm);
+    },
+    after_save: function (frm) {
         window.setup_approval_ui(frm);
     }
 });
@@ -40,41 +46,8 @@ window.setup_approval_ui = function (frm) {
                 console.log("[Approval UI] can_approve returned:", r.message);
                 
                 if (r.message) {
-                    // Use native Frappe button injection to guarantee visibility
-                    frm.remove_custom_button(__('Approve'));
-                    frm.remove_custom_button(__('Reject'));
-
-                    let approve_btn = frm.add_custom_button(__('Approve'), () => {
-                        frappe.prompt({
-                            fieldname: 'remarks',
-                            fieldtype: 'Small Text',
-                            label: __('Remarks for Approval (Optional)')
-                        }, function (data) {
-                            handle_approval(frm, "Approve", data.remarks);
-                        }, __('Approve Document'), __('Approve'));
-                    });
-                    approve_btn.removeClass('btn-default').addClass('btn-success').css({
-                        'color': 'white', 
-                        'background-color': '#28a745', 
-                        'border-color': '#28a745',
-                        'margin-right': '5px'
-                    });
-
-                    let reject_btn = frm.add_custom_button(__('Reject'), () => {
-                        frappe.prompt({
-                            fieldname: 'remarks',
-                            fieldtype: 'Small Text',
-                            label: __('Remarks for Rejection'),
-                            reqd: 1
-                        }, function (data) {
-                            handle_approval(frm, "Reject", data.remarks);
-                        }, __('Reject Document'), __('Reject'));
-                    });
-                    reject_btn.removeClass('btn-default').addClass('btn-danger').css({
-                        'color': 'white', 
-                        'background-color': '#dc3545',
-                        'border-color': '#dc3545'
-                    });
+                    frm._user_can_approve = true;
+                    window.draw_approve_reject_buttons(frm);
                 }
             },
             error: function (err) {
@@ -127,8 +100,8 @@ window.setup_approval_ui = function (frm) {
 
     // Custom Submit Logic based on `is_submitted` field
     if (frm.fields_dict.is_submitted && !frm.doc.is_submitted && frm.doc.docstatus === 0 && !frm.is_new()) {
-        frm.page.set_primary_action(__('Submit'), function () {
-            frappe.confirm(__('Are you sure you want to submit?'), function () {
+        frm.page.set_primary_action(__('Send for Approval'), function () {
+            frappe.confirm(__('Are you sure you want to send this document for approval?'), function () {
                 frappe.call({
                     method: "frappe.client.set_value",
                     args: {
@@ -139,7 +112,7 @@ window.setup_approval_ui = function (frm) {
                     },
                     callback: function (r) {
                         if (!r.exc) {
-                            frappe.msgprint(__('Document Submitted Successfully.'));
+                            frappe.msgprint(__('Document Sent for Approval Successfully.'));
                             frm.reload_doc();
                         }
                     }
@@ -166,6 +139,80 @@ window.setup_approval_ui = function (frm) {
 
     // Call function to render approval trail dynamically
     render_approval_trail(frm);
+};
+
+window.draw_approve_reject_buttons = function(frm) {
+    if (!frm._user_can_approve) return;
+
+    try {
+        frm.remove_custom_button(__('Approve'));
+        frm.remove_custom_button(__('Reject'));
+    } catch(e) {}
+
+    let approve_btn = frm.add_custom_button(__('Approve'), () => {
+        let proceed = () => {
+            frappe.prompt({
+                fieldname: 'remarks',
+                fieldtype: 'Small Text',
+                label: __('Remarks for Approval (Optional)')
+            }, function (data) {
+                handle_approval(frm, "Approve", data.remarks);
+            }, __('Approve Document'), __('Approve'));
+        };
+
+        if (frm.is_dirty()) {
+            frm.save().then(() => proceed());
+        } else {
+            proceed();
+        }
+    });
+    
+    approve_btn.removeClass('btn-default').addClass('btn-success').css({
+        'color': 'white', 
+        'background-color': '#28a745', 
+        'border-color': '#28a745',
+        'margin-right': '5px'
+    });
+
+    let reject_btn = frm.add_custom_button(__('Reject'), () => {
+        let proceed = () => {
+            frappe.prompt({
+                fieldname: 'remarks',
+                fieldtype: 'Small Text',
+                label: __('Remarks for Rejection'),
+                reqd: 1
+            }, function (data) {
+                handle_approval(frm, "Reject", data.remarks);
+            }, __('Reject Document'), __('Reject'));
+        };
+
+        if (frm.is_dirty()) {
+            frm.save().then(() => proceed());
+        } else {
+            proceed();
+        }
+    });
+    
+    reject_btn.removeClass('btn-default').addClass('btn-danger').css({
+        'color': 'white', 
+        'background-color': '#dc3545',
+        'border-color': '#dc3545'
+    });
+
+    // Re-add buttons if Frappe's native dirty checker removes them
+    if (!frm._dirty_approval_listener_added) {
+        frm.page.wrapper.on("change", () => {
+            if (frm.doc.status === 'Pending' && frm._user_can_approve) {
+                setTimeout(() => {
+                    // check if frappe removed them
+                    if (frm.page.custom_actions.find('.btn-success').length === 0) {
+                        window.draw_approve_reject_buttons(frm);
+                    }
+                }, 100);
+            }
+        });
+        frm._dirty_approval_listener_added = true;
+    }
 };
 
 // Handle Approval Action (Approve, Reject, Revoke)
