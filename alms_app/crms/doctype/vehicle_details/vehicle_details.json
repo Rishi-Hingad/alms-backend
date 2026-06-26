@@ -2,7 +2,7 @@
  "actions": [],
  "allow_import": 1,
  "allow_rename": 1,
- "autoname": "field:employee_code_and_name",
+ "autoname": "format:{contract_number}-{employee_code_and_name}",
  "creation": "2025-05-29 09:52:58.352448",
  "doctype": "DocType",
  "engine": "InnoDB",
@@ -44,7 +44,8 @@
    "fieldname": "contract_number",
    "fieldtype": "Link",
    "label": "Contract Number",
-   "options": "Contract Master"
+   "options": "Contract Master",
+   "unique": 1
   },
   {
    "fieldname": "company_name",
@@ -120,8 +121,7 @@
    "fieldname": "employee_code_and_name",
    "fieldtype": "Link",
    "label": "Employee Code and Name",
-   "options": "ALMS Employee",
-   "unique": 1
+   "options": "ALMS Employee"
   },
   {
    "fieldname": "car_allotment_letter",
@@ -179,11 +179,11 @@
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-03-10 16:05:59.196088",
+ "modified": "2026-06-26 17:20:39.278241",
  "modified_by": "Administrator",
  "module": "CRMS",
  "name": "Vehicle Details",
- "naming_rule": "By fieldname",
+ "naming_rule": "Expression",
  "owner": "Administrator",
  "permissions": [
   {
