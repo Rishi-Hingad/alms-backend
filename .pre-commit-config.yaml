@@ -9,6 +9,7 @@ repos:
     hooks:
       - id: trailing-whitespace
         files: "lease_app.*"
+        files: "leasemanagement.*"
         exclude: ".*json$|.*txt$|.*csv|.*md|.*svg"
       - id: check-merge-conflict
       - id: check-ast
@@ -43,6 +44,11 @@ repos:
                 .*boilerplate.*|
                 lease_app/templates/includes/.*|
                 lease_app/public/js/lib/.*
+                leasemanagement/public/dist/.*|
+                .*node_modules.*|
+                .*boilerplate.*|
+                leasemanagement/templates/includes/.*|
+                leasemanagement/public/js/lib/.*
             )$
 
 
@@ -61,9 +67,16 @@ repos:
                 .*boilerplate.*|
                 lease_app/templates/includes/.*|
                 lease_app/public/js/lib/.*
+                leasemanagement/public/dist/.*|
+                cypress/.*|
+                .*node_modules.*|
+                .*boilerplate.*|
+                leasemanagement/templates/includes/.*|
+                leasemanagement/public/js/lib/.*
             )$
 
 ci:
     autoupdate_schedule: weekly
     skip: []
+    submodules: false
     submodules: false

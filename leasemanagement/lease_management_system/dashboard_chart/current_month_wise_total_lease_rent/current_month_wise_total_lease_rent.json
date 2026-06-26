@@ -1,0 +1,40 @@
+{
+ "chart_name": "Current Month-wise Total Lease Rent",
+ "chart_type": "Report",
+ "creation": "2025-08-12 17:04:54.446129",
+ "currency": "INR",
+ "custom_options": "",
+ "docstatus": 0,
+ "doctype": "Dashboard Chart",
+ "filters_json": "{}",
+ "group_by_type": "Count",
+ "idx": 2,
+ "is_public": 0,
+ "is_standard": 1,
+ "modified": "2025-09-06 15:24:12.781615",
+ "modified_by": "Administrator",
+ "module": "Lease Management System",
+ "name": "Current Month-wise Total Lease Rent",
+ "number_of_groups": 0,
+ "owner": "Administrator",
+ "report_name": "Lease Rent Summary",
+ "roles": [
+  {
+   "role": "System Manager"
+  },
+  {
+   "role": "Accounts"
+  }
+ ],
+ "time_interval": "Yearly",
+ "timeseries": 0,
+ "timespan": "Last Year",
+ "type": "Bar",
+ "use_report_chart": 0,
+ "x_field": "month",
+ "y_axis": [
+  {
+   "y_field": "total_rent"
+  }
+ ]
+}
