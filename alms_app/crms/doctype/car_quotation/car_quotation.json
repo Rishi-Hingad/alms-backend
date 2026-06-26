@@ -45,17 +45,28 @@
   "interim_payment",
   "quarterly_payment",
   "approval_tab",
-  "approval_fields_section",
-  "finance_team_status",
-  "finance_head_status",
+  "quotation_details_section",
+  "status",
   "revised_modify_quotation_id",
   "quotation_status",
-  "status",
-  "column_break_rxya",
+  "column_break_zxbj",
+  "root_quotation",
+  "parent_quotation",
+  "version_number",
+  "approval_fields_section",
+  "finance_team_status",
   "finance_team_remarks",
-  "finance_head_remarks",
   "finance_team_action_by",
-  "finance_head_action_by"
+  "revised_remark",
+  "column_break_rxya",
+  "finance_head_status",
+  "finance_head_remarks",
+  "finance_head_action_by",
+  "is_submitted",
+  "approval_initiated",
+  "approval_entry",
+  "approval_trail_html",
+  "submission_datetime"
  ],
  "fields": [
   {
@@ -67,13 +78,13 @@
    "fieldname": "finance_company",
    "fieldtype": "Select",
    "label": "Finance Company",
-   "options": "-Select-\nEazy Assets\nALD"
+   "options": "-Select-\nEazy Assets\nALD\nXYZ"
   },
   {
    "fieldname": "employee_details",
    "fieldtype": "Link",
    "label": "Employee Details",
-   "options": "Employee Master"
+   "options": "ALMS Employee"
   },
   {
    "fieldname": "location",
@@ -214,34 +225,40 @@
    "label": "Total EMI"
   },
   {
+   "default": "Pending",
    "fieldname": "finance_team_status",
    "fieldtype": "Select",
    "label": "Finance Team Status",
-   "options": "Pending\nApproved\nRejected"
+   "options": "Pending\nApproved\nRejected",
+   "read_only": 1
   },
   {
    "default": "Pending",
    "fieldname": "status",
    "fieldtype": "Select",
    "label": "Status",
-   "options": "Pending\nApproved\nRejected"
+   "options": "Pending\nApproved\nRejected",
+   "read_only": 1
   },
   {
    "default": "Pending",
    "fieldname": "finance_head_status",
    "fieldtype": "Select",
    "label": "Finance Head Status",
-   "options": "Pending\nApproved\nRejected"
+   "options": "Pending\nApproved\nRejected",
+   "read_only": 1
   },
   {
    "fieldname": "finance_team_remarks",
    "fieldtype": "Data",
-   "label": "Finance Team Remarks"
+   "label": "Finance Team Remarks",
+   "read_only": 1
   },
   {
    "fieldname": "finance_head_remarks",
    "fieldtype": "Data",
-   "label": "Finance Head Remarks"
+   "label": "Finance Head Remarks",
+   "read_only": 1
   },
   {
    "fieldname": "interim_payment",
@@ -269,10 +286,11 @@
    "options": "Car Indent Form"
   },
   {
+   "default": "New",
    "fieldname": "quotation_status",
    "fieldtype": "Select",
    "label": "Quotation Status",
-   "options": "Modified\nRevised"
+   "options": "New\nRevised"
   },
   {
    "fieldname": "revised_modify_quotation_id",
@@ -316,11 +334,82 @@
    "fieldname": "approval_tab",
    "fieldtype": "Tab Break",
    "label": "Approval"
+  },
+  {
+   "fieldname": "quotation_details_section",
+   "fieldtype": "Section Break",
+   "label": "Quotation Details"
+  },
+  {
+   "fieldname": "column_break_zxbj",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "root_quotation",
+   "fieldtype": "Link",
+   "label": "Root Quotation",
+   "options": "Car Quotation"
+  },
+  {
+   "fieldname": "parent_quotation",
+   "fieldtype": "Link",
+   "label": "Parent Quotation",
+   "options": "Car Quotation"
+  },
+  {
+   "fieldname": "version_number",
+   "fieldtype": "Int",
+   "label": "Version"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_submitted",
+   "fieldtype": "Check",
+   "hidden": 1,
+   "label": "Is Submitted",
+   "read_only": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "approval_initiated",
+   "fieldtype": "Check",
+   "hidden": 1,
+   "label": "Approval Initiated",
+   "read_only": 1
+  },
+  {
+   "fieldname": "approval_entry",
+   "fieldtype": "Link",
+   "hidden": 1,
+   "label": "Approval Entry",
+   "options": "Approval Entry",
+   "read_only": 1
+  },
+  {
+   "fieldname": "approval_trail_html",
+   "fieldtype": "HTML",
+   "label": "Approval Trail"
+  },
+  {
+   "fieldname": "submission_datetime",
+   "fieldtype": "Datetime",
+   "label": "Submission Date and Time",
+   "read_only": 1
+  },
+  {
+   "fieldname": "revised_remark",
+   "fieldtype": "Small Text",
+   "label": "Revised Remark"
   }
  ],
  "index_web_pages_for_search": 1,
- "links": [],
- "modified": "2026-03-13 15:14:28.402313",
+ "links": [
+  {
+   "link_doctype": "Company and Employee Deduction",
+   "link_fieldname": "finance_quotation_id"
+  }
+ ],
+ "modified": "2026-06-16 21:05:15.400918",
  "modified_by": "Administrator",
  "module": "CRMS",
  "name": "Car Quotation",

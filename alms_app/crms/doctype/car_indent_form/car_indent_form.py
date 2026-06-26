@@ -2,7 +2,11 @@ import frappe
 from frappe.model.document import Document
 from frappe import _
 
-class CarIndentForm(Document):    
+class CarIndentForm(Document):
+    def before_insert(self):
+        if getattr(frappe.flags, "in_web_form", False):
+            self.is_submitted = 1
+
     def validate(self):
         self.ex_showroom_price = self.ex_showroom_price or 0
         self.discount = self.discount or 0
@@ -14,64 +18,24 @@ class CarIndentForm(Document):
 
         self.financed_amount = self.net_ex_room_price + self.registration_charges + self.accessories
 
-@frappe.whitelist(allow_guest=True)
-def management(current_frappe_user):
-    designation_record = frappe.get_value("Management Team", {"email_id": current_frappe_user}, ["designation"], as_dict=True)
-    
-    if designation_record:
-        return designation_record.designation
-    else:
-        return None
-    
+    def after_insert(self):
+        if getattr(frappe.flags, "in_web_form", False):
+            try:
+                from alms_app.api.emailsService import email_sender
+                email_sender(name=self.employee_code, email_send_to="To HR (New Request)", car_indent_form_name=self.name)
+                email_sender(name=self.employee_code, email_send_to="To Reporting", car_indent_form_name=self.name)
+            except Exception as e:
+                frappe.log_error(f"Error sending HR email on web form submit: {str(e)}")
+
+
+
 @frappe.whitelist()
-def daily_pending_indent_email_reminder():
-    pending_docs = frappe.get_all("Car Indent Form", filters=[
-        ["status", "!=", "Approved"]
-    ], fields=["name", "employee", "reporting_head_approval", "hr_approval", "hr_head_approval"])
-
-    for doc in pending_docs:
-        pending_stage = None
-        email_to = None
-        site_config = frappe.get_site_config()
-        bcc_emails = site_config.get("bcc_email", [])
-
-        if doc.reporting_head_approval == "Pending":
-            pending_stage = "reporting_head_approval"
-            email_to = get_email_by_designation("Reporting Head")
-        elif doc.hr_approval == "Pending":
-            pending_stage = "hr_approval"
-            email_to = get_email_by_designation("HR")
-        # elif doc.travel_desk_approval == "Pending":
-        #     pending_stage = "travel_desk_approval"
-        #     email_to = get_email_by_designation("Travel Desk")
-        elif doc.hr_head_approval == "Pending":
-            pending_stage = "hr_head_approval"
-            email_to = get_email_by_designation("HR Head")
-
-        if email_to and pending_stage:
-            subject = f"Approval Pending - Car Indent Form: {doc.name}"
-            message = f"""
-                <p>Dear Approver,</p>
-                <p>You have a pending car indent form awaiting your action for the <strong>{pending_stage.replace('_', ' ').title()}</strong> stage.</p>
-                <p>Please <a href="{frappe.utils.get_url()}/app/car-indent-form/{doc.name}">click here</a> to approve or reject the request.</p>
-                <p>Thank you,<br/>Meril Travel Desk</p>
-            """
-            frappe.sendmail(recipients=email_to, subject=subject, message=message, now=True, bcc=bcc_emails)
-
-def get_email_by_designation(designation):
-    # Assuming you have Employee or User records tagged by designation
-    user = frappe.db.get_value("User", {"designation": designation, "enabled": 1}, "email")
-    return user
-
-
-
-
-
-
+def check_purchase_form_exists(employee_code):
+    return frappe.db.exists("Purchase Form", employee_code)
 
 @frappe.whitelist()
 def can_view_car_indent_list():
-    """Check if the current user has the Car Indent Form User role"""
+    """Check if the current user has the ALMS User role"""
     user = frappe.session.user
     
     if user == "Administrator":
@@ -79,7 +43,26 @@ def can_view_car_indent_list():
     
     has_role = frappe.db.exists("Has Role", {
         "parent": user,
-        "role": "Car Indent Form User"
+        "role": "ALMS User"
     })
     
     return bool(has_role)
+
+@frappe.whitelist()
+def force_delete(docname):
+    if frappe.session.user != "Administrator":
+        frappe.throw("Only Administrators can force delete Car Indent Forms.")
+        
+    # Find and delete all linked Approval Entries first to avoid LinkExistsError
+    approval_entries = frappe.get_all("Approval Entry", filters={
+        "applied_to_doctype": "Car Indent Form",
+        "record": docname
+    })
+    
+    for entry in approval_entries:
+        frappe.delete_doc("Approval Entry", entry.name, ignore_permissions=True, force=True)
+        
+    # Now safely delete the Car Indent Form
+    frappe.delete_doc("Car Indent Form", docname, ignore_permissions=True, force=True)
+    
+    return True

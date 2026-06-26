@@ -7,6 +7,7 @@
  "engine": "InnoDB",
  "field_order": [
   "invoice_details_section",
+  "vendor_name",
   "contract_number",
   "employee_name",
   "invoice_date_from",
@@ -16,29 +17,33 @@
   "vehicle_details",
   "installment_no",
   "no_of_billing_days",
+  "month",
   "installment_details_section",
+  "billing_date",
   "total_invoice_value",
+  "payment_status",
   "column_break_drgj",
   "company_contribution",
   "employee_contribution",
   "rental_charges_section",
-  "billing_date",
   "invoice_no_rental",
+  "invoice_date_rental",
   "column_break_xnel",
   "invoice_value_a",
   "fleet__charges_section",
   "invoice_no_fleet",
+  "invoice_date_fleet",
   "column_break_sutk",
   "invoice_value_b",
   "road_tax_and_regis_charges_section",
   "invoice_no_road",
+  "invoice_date_road",
   "column_break_kzsq",
   "invoice_value_c",
   "insurance_charges_section",
   "invoice_no_insurance",
   "column_break_zvyq",
   "invoice_value_d",
-  "excel_details_tab",
   "time_stamp_of_excel_section",
   "excel_uploaded_by",
   "excel_batch_id",
@@ -61,14 +66,16 @@
    "fieldname": "employee_name",
    "fieldtype": "Link",
    "label": "Employee Name",
-   "options": "Employee Master"
+   "options": "ALMS Employee"
   },
   {
+   "depends_on": "eval:doc.vendor_name==\"Eazy Assets\"",
    "fieldname": "invoice_date_from",
    "fieldtype": "Date",
    "label": "Invoice Date From"
   },
   {
+   "depends_on": "eval:doc.vendor_name==\"Eazy Assets\"",
    "fieldname": "invoice_date_to",
    "fieldtype": "Date",
    "label": "Invoice Date To"
@@ -93,6 +100,7 @@
    "fieldtype": "Column Break"
   },
   {
+   "depends_on": "eval:doc.vendor_name==\"Eazy Assets\"",
    "fieldname": "no_of_billing_days",
    "fieldtype": "Data",
    "label": "No. of Billing Days"
@@ -186,7 +194,7 @@
   {
    "fieldname": "total_invoice_value",
    "fieldtype": "Data",
-   "label": "Total Invoice Value (A+B+C+D)"
+   "label": "Total Invoice Value"
   },
   {
    "fieldname": "column_break_drgj",
@@ -201,12 +209,6 @@
    "fieldname": "employee_contribution",
    "fieldtype": "Data",
    "label": "Employee Contribution"
-  },
-  {
-   "depends_on": "eval:frappe.user == \"Administrator\"",
-   "fieldname": "excel_details_tab",
-   "fieldtype": "Tab Break",
-   "label": "Excel Details"
   },
   {
    "fieldname": "time_stamp_of_excel_section",
@@ -233,13 +235,45 @@
    "fieldname": "excel_batch_id",
    "fieldtype": "Link",
    "label": "Excel Batch ID",
-   "options": "Invoice Import"
+   "options": "Invoice Batch"
+  },
+  {
+   "fieldname": "vendor_name",
+   "fieldtype": "Select",
+   "label": "Vendor Name",
+   "options": "-Select-\nEazy Assets\nALD"
+  },
+  {
+   "fieldname": "month",
+   "fieldtype": "Data",
+   "label": "Month"
+  },
+  {
+   "fieldname": "invoice_date_rental",
+   "fieldtype": "Date",
+   "label": "Invoice Date"
+  },
+  {
+   "fieldname": "invoice_date_fleet",
+   "fieldtype": "Date",
+   "label": "Invoice Date"
+  },
+  {
+   "fieldname": "payment_status",
+   "fieldtype": "Select",
+   "label": "Payment Status",
+   "options": "-Select-\nPaid\nNot Paid"
+  },
+  {
+   "fieldname": "invoice_date_road",
+   "fieldtype": "Date",
+   "label": "Invoice Date"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-03-14 17:06:19.615908",
+ "modified": "2026-04-07 16:14:03.092688",
  "modified_by": "Administrator",
  "module": "CRMS",
  "name": "Invoice Details",

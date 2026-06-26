@@ -5,280 +5,172 @@ this file manage the email for each levele of process of Onboard  car
 
 import frappe
 from alms_app.api.emailClass import EmailServices
+from alms_app.api.email_master import EmailMaster
 import shutil
 import frappe
 from frappe.utils.file_manager import save_file_on_filesystem
+import os
+from urllib.parse import urlparse, unquote
+
 
 emailer = EmailServices()
 
+
+def normalize_file_url(file_url):
+    parsed = urlparse(file_url)
+    path = parsed.path if parsed.path else file_url
+    return unquote(path)
+
+
 def make_file_public(file_url):
-    # Get file detail
-    file_url = file_url
+    print("DEBUG FILE URL:", file_url)
+
+    file_url = normalize_file_url(file_url)
+
+    if not file_url or not file_url.startswith(("/files/", "/private/files/")):
+        frappe.throw(f"Invalid file URL: {file_url}")
+
     file_doc = frappe.get_doc("File", {"file_url": file_url})
-    
-    old_path = frappe.get_site_path("private", "files", file_doc.file_name)
+
+    if not file_doc:
+        frappe.throw(f"File not found for URL: {file_url}")
+
+    if not file_doc.is_private:
+        return file_doc.file_url
+
+    old_path = file_doc.get_full_path()
+
+    if not os.path.exists(old_path):
+        frappe.log_error(f"File not found at {old_path}", "File Move Error")
+        return file_doc.file_url  # don't crash system
+
     new_path = frappe.get_site_path("public", "files", file_doc.file_name)
-    
-    # Move file to public
+
     shutil.move(old_path, new_path)
-    
-    # Update file doc
-    file_doc.is_private = 0
-    file_doc.file_url = "/files/" + file_doc.file_name
-    file_doc.save(ignore_permissions=True)
-    frappe.db.commit()
+
+    file_doc.db_set("is_private", 0)
+    file_doc.db_set("file_url", "/files/" + file_doc.file_name)
+
     return file_doc.file_url
 
-def email_formate_for_car_Onboard(form_link,user_doc,company,form_name):
-    body = f"""
-        <html>
-        <head>
-            <style>
-                body {{
-                    font-family: Arial, sans-serif;
-                    margin: 20px;
-                }}
-                h1 {{
-                    color: #4CAF50;
-                }}
-                p {{
-                    font-size: 16px;
-                }}
-                .button {{
-                    background-color: #4CAF50;
-                    color: white;
-                    padding: 10px 20px;
-                    text-align: center;
-                    text-decoration: none;
-                    display: inline-block;
-                    font-size: 16px;
-                    border-radius: 5px;
-                    margin-top: 20px;
-                }}
-                .company-name {{
-                    color: blue;
-                    font-size: 24px;
-                    font-weight: bold;
-                }}
-                .contact-info {{
-                    font-size: 14px;
-                    color: grey;
-                    margin-top: 20px;
-                }}
-                table {{
-                    border-collapse: collapse;
-                    width: 100%;
-                }}
-                th, td {{
-                    padding: 8px;
-                    border: 1px solid #ddd;
-                    text-align: left;
-                }}
-                th {{
-                    background-color: #f2f2f2;
-                }}
-            </style>
-        </head>
-        <body>
-            <h1>Hello, <span class="company-name">{company}</span></h1>
-            <p>Your quotation request for <strong>{user_doc.employee_name}</strong> is in progress.</p>
-            <p>Please fill out the required form by clicking the link below. Ensure you carefully enter the <strong>{form_name}</strong> details and upload the necessary documents.</p>
-            <p><strong>This form is for you. Please complete it carefully.</strong></p>
-            <h3>Quotation Details:</h3>
-            <table>
-                <thead>
-                    <tr>
-                        <th></th>
-                        <th></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>Form</td>
-                        <td>{form_name}</td>
-                    </tr>
-                    <tr>
-                        <td>User Name</td>
-                        <td>{user_doc.employee_name}</td>
-                    </tr>
-                </tbody>
-            </table>
-        
-            <p>
-                <a href="{form_link}" class="button">Fill Car Onboard Form</a>
-            </p>
 
-            <p class="contact-info">
-                For assistance, please contact:<br>
-                Email: support@meril.com<br>
-                Phone: +91 123 456 7890
-            </p>
+def email_formate_for_car_Onboard(form_link, user_doc, company, form_name):
+    print("Preparing email for next stage:", form_name)
+    template = frappe.get_doc("Email Template", "Car Onboard Vendor Email")
 
-            <p>Thank you for your time and cooperation!</p>
-        </body>
-        </html>
-        """
-    subject =  f"Car Onboard Process for {user_doc.employee_name}"
-    vendor_doc = frappe.get_value("Vendor Master", {"company_name": company}, ["contact_email"], as_dict=True)
+    context = {
+        "employee_name": user_doc.full_name,
+        "company": company,
+        "form_name": form_name,
+        "form_link": form_link
+    }
+
+    body = frappe.render_template(template.response_html, context)
+
+    subject = frappe.render_template(template.subject, context)
+
+    vendor_doc = frappe.get_value(
+        "Vendor Master",
+        {"company_name": company},
+        ["contact_email"],
+        as_dict=True
+    )
+
     recipient_email = vendor_doc.contact_email if vendor_doc else None
 
-    
-    emailer.send(body=body,recipient_email=recipient_email,subject=subject)
+    emailer.send(
+        subject=subject,
+        recipient_email=recipient_email,
+        body=body,
+        bcc_list=emailer.get_bcc_list()
+    )
 
-def acknowledgement_email_for_employee(user,title,link):
-    recipient_email = user.email_id
-    # bcc_emails = "smplrsaurabh30@gmail.com"
-    subject = f"Acknowledgement of {title} Submission"
+def acknowledgement_email_for_employee(user, form_name, link):
 
-    body = f"""
-    <html>
-    <head>
-        <style>
-            body {{
-                font-family: Arial, sans-serif;
-                margin: 20px;
-                line-height: 1.6;
-            }}
-            h2 {{
-                color: #4CAF50;
-                text-align: center;
-            }}
-            p {{
-                font-size: 16px;
-                margin-bottom: 20px;
-            }}
-            .content {{
-                border: 1px solid #dddddd;
-                border-radius: 8px;
-                padding: 20px;
-                background-color: #f9f9f9;
-            }}
-            .footer {{
-                margin-top: 30px;
-                font-size: 14px;
-                color: #555;
-            }}
-            .button {{
-                display: inline-block;
-                padding: 10px 20px;
-                font-size: 16px;
-                color: #ffffff;
-                background-color: #4CAF50;
-                text-decoration: none;
-                border-radius: 5px;
-                margin-top: 10px;
-            }}
-        </style>
-    </head>
-    <body>
-        <h2>Acknowledgement of {title} Submission</h2>
-        <div class="content">
-            <p>Dear {user.employee_name},</p>
-            <p>
-                We are pleased to inform you that your {title} details have been successfully submitted.  
-                You can view your car’s {title} details by clicking the link below:
-            </p>
-            <p style="text-align: center;">
-                <a href="{link}" class="button" download>View {title} Details</a>
-            </p>
-            <p>
-                If you have any questions or require further assistance, please feel free to contact Meril.
-            </p>
-            <p>Best regards,</p>
-            <p>Meril</p>
-        </div>
-        <div class="footer">
-            <p>This is an automated email. Please do not reply to this email.</p>
-        </div>
-    </body>
-    </html>
-    """
+    template = frappe.get_doc(
+        "Email Template",
+        "Car Process Employee Acknowledgement"
+    )
 
-    emailer.send(subject=subject, body=body, recipient_email=recipient_email)
+    context = {
+        "employee_name": user.full_name,
+        "form_name": form_name,
+        "link": link
+    }
 
-def acknowledgement_email_for_finance(user,title,company):
-    recipient_email = "imran.shaikh@merillife.com"
-    # link="http://127.0.0.1:8001/login#login"
-    link=f"{frappe.utils.get_url()}/login#login"
-    subject = f"{company} has Successfully Filled the {title}"
+    subject = frappe.render_template(template.subject, context)
+    body = frappe.render_template(template.response_html, context)
 
-    body = f"""
-    <html>
-    <head>
-        <style>
-            body {{
-                font-family: Arial, sans-serif;
-                margin: 20px;
-                line-height: 1.6;
-            }}
-            h2 {{
-                color: #4CAF50;
-                text-align: center;
-            }}
-            p {{
-                font-size: 16px;
-                margin-bottom: 20px;
-            }}
-            .content {{
-                border: 1px solid #dddddd;
-                border-radius: 8px;
-                padding: 20px;
-                background-color: #f9f9f9;
-            }}
-            .footer {{
-                margin-top: 30px;
-                font-size: 14px;
-                color: #555;
-            }}
-            .button {{
-                display: inline-block;
-                padding: 10px 20px;
-                font-size: 16px;
-                color: #ffffff;
-                background-color: #4CAF50;
-                text-decoration: none;
-                border-radius: 5px;
-                margin-top: 10px;
-            }}
-        </style>
-    </head>
-    <body>
-        <h2>Acknowledgement of {title} Submission</h2>
-        <div class="content">
-            <p>Dear Finance Team,</p>
-            <p>
-                We are pleased to inform you that {company} has successfully submitted the {title} for {user.employee_name}.  
-                If you would like to review the details, you can log in and check them on the dashboard.
-            </p>
-            <p style="text-align: center;">
-                <a href="{link}" class="button">Login to Dashboard</a>
-            </p>
-            <p>Best regards,</p>
-            <p>Meril</p>
-        </div>
-        <div class="footer">
-            <p>This is an automated email. Please do not reply to this email.</p>
-        </div>
+    emailer.send(
+        subject=subject,
+        body=body,
+        recipient_email=getattr(user, "company_email", None) or getattr(user, "personal_email", None) or getattr(user, "user_id", None),
+        bcc_list=emailer.get_bcc_list(template_type="Acknowledgement")
+    )
 
-    </body>
-    </html>
-    """
+def acknowledgement_email_for_finance(user, form_name, company):
 
-    emailer.send(subject=subject, body=body, recipient_email=recipient_email)
+    email_master = EmailMaster()
+
+    recipient_emails = email_master.finance_team_emails
+    finance_names = email_master.finance_team_names
+
+    if not recipient_emails:
+        frappe.log_error("No Finance Team emails found", "Email Error")
+        return
+
+    template = frappe.get_doc(
+        "Email Template",
+        "Car Process Finance Notification"
+    )
+
+    link = f"{frappe.utils.get_url()}/login#login"
+
+    context = {
+        "employee_name": user.full_name,
+        "form_name": form_name,
+        "company": company,
+        "link": link,
+        "finance_team": ", ".join(finance_names) if finance_names else "Finance Team"
+    }
+
+    subject = frappe.render_template(template.subject, context)
+    body = frappe.render_template(template.response_html, context)
+
+    emailer.send(
+        subject=subject,
+        body=body,
+        recipient_email=recipient_emails,
+        bcc_list=emailer.get_bcc_list(template_type="Acknowledgement")
+    )
 
 
 @frappe.whitelist(allow_guest=True)
 def car_form_fill():
+    print("Car Form Fill API called with data:", frappe.form_dict)
+    frappe.log_error("car_form_fill payload", frappe.as_json(frappe.form_dict))
     try:
         # Extract Request Data
-        user = frappe.form_dict.get("user")
-        company = frappe.form_dict.get("company")
         quotation_id = frappe.form_dict.get("quotation_id")
+
+        if not quotation_id:
+            return {"status": "error", "message": "Missing quotation_id"}
+
+        quotation = frappe.get_doc("Car Quotation", quotation_id)
+
+        user = quotation.employee_details
+        if not user:
+            return {"status": "error", "message": "Quotation is missing employee details"}
+        company = quotation.finance_company
+        if not company:
+            return {"status": "error", "message": "Quotation is missing finance company details"}
+
         form_name = frappe.form_dict.get("form_name")
         form_status = frappe.form_dict.get("form_status")
         form_document = frappe.form_dict.get("form_document")
         form_date = frappe.form_dict.get("form_date")
         contract_number = frappe.form_dict.get("contract_number")
+        contract_end_date = frappe.form_dict.get("contract_end_date")
 
         if form_document:
             form_document = make_file_public(form_document)
@@ -286,62 +178,24 @@ def car_form_fill():
         if not all([user, company, quotation_id, form_name]):
             return {"status": "error", "message": "Missing required fields"}
 
-        user_doc = frappe.get_doc("Employee Master", user)
+        user_doc = frappe.get_doc("ALMS Employee", user)
 
-        # Configuration Mapping
-        FORM_CONFIG = {
-            "Purchase Form": {
-                "document_field": "purchase_document",
-                "status_field": "purchase_status",
-                "next_route": "car-proforma-form",
-                "next_label": "Proforma Invoice"
-            },
-            "Proforma Form": {
-                "document_field": "proforma_invoice_document",
-                "status_field": "proforma_invoice_received",
-                "next_route": "car-insurance-form",
-                "next_label": "Insurance Form"
-            },
-            "Insurance Form": {
-                "document_field": "insurance_document",
-                "status_field": "insurance_copy_received",
-                "next_route": "car-rc-book-form",
-                "next_label": "RC Book Form"
-            },
-            "RC Book Form": {
-                "document_field": "rc_book_document",
-                "status_field": "rc_book_received",
-                "next_route": "car-payment-form",
-                "next_label": "Payment Form"
-            },
-            "Payment Form": {
-                "document_field": "payment_document",
-                "status_field": "payment_done",
-                "next_route": "car-rto-form",
-                "next_label": "RTO Form"
-            },
-            "RTO Form": {
-                "document_field": "registration_document",
-                "status_field": "registration_done",
-                "next_route": "car-delivery-form",
-                "next_label": "Delivery Form"
-            },
-            "Delivery Form": {
-                "document_field": "agreement_document",
-                "status_field": "car_delivery",
-                "date_field": "delivery_date",
-                "next_route": "car-contract-form",
-                "next_label": "Car Contract Form"
-            },
-            "Car Contract Form": {
-                "document_field": "contract_document",
-                "status_field": "contract_signed",
-                "date_field": "contract_start_date",
-                "contract_field": "contract_number",
-                "next_route": None,
-                "next_label": None
-            }
-        }
+        # Configuration Mapping from DB
+        FORM_CONFIG = {}
+        try:
+            config_doc = frappe.get_doc("Car Process Config")
+            for step in config_doc.process_steps:
+                FORM_CONFIG[step.form_name] = {
+                    "document_field": step.document_field,
+                    "status_field": step.status_field,
+                    "date_field": step.date_field,
+                    "contract_field": step.contract_field,
+                    "next_route": step.next_route,
+                    "next_label": step.next_label
+                }
+        except Exception as e:
+            frappe.log_error(f"Error fetching Car Process Config: {e}", "Car Process Config Error")
+            return {"status": "error", "message": "Car Process Configuration not found or invalid."}
 
         if form_name not in FORM_CONFIG:
             return {"status": "error", "message": f"Invalid form: {form_name}"}
@@ -382,6 +236,9 @@ def car_form_fill():
         if config.get("contract_field") and contract_number:
             setattr(doc, config["contract_field"], contract_number)
 
+        if form_name == "Car Contract Form" and contract_end_date:
+            doc.contract_end_date = contract_end_date
+
         # Save or Insert
         if existing_doc:
             doc.save(ignore_permissions=True)
@@ -421,5 +278,53 @@ def car_form_fill():
         }
 
     except Exception as e:
-        frappe.log_error(f"Error in car_form_fill: {str(e)}", "Car Form API")
+        frappe.log_error(
+            message=str(e),
+            title="Car Form API Error"[:140]
+        )
+        return {"status": "error", "message": str(e)}
+
+@frappe.whitelist()
+def resend_process_email(car_process_name, form_name):
+    print(f"Resending email for {car_process_name} - {form_name}")
+    try:
+        car_process = frappe.get_doc("Car Process", car_process_name)
+        config = frappe.get_doc("Car Process Config")
+        
+        step = None
+        for s in config.process_steps:
+            if s.form_name == form_name:
+                step = s
+                break
+                
+        if not step:
+            return {"status": "error", "message": f"Form {form_name} not found in Car Process Config"}
+            
+        if not step.route:
+            return {"status": "error", "message": f"Route not defined for {form_name}"}
+            
+        user_doc = frappe.get_doc("ALMS Employee", car_process.user)
+        
+        # Build form link
+        link = (
+            f"{frappe.utils.get_url()}/"
+            f"{step.route}/new"
+            f"?quotation_form={car_process.quotation}"
+            f"&user={car_process.user}"
+            f"&company={car_process.company}"
+        )
+        
+        # We reuse the same email sending logic
+        # It sends to Vendor based on the company parameter
+        email_formate_for_car_Onboard(
+            link,
+            user_doc,
+            car_process.company,
+            step.form_name  # The label they see is the form name requested
+        )
+        
+        return {"status": "success", "message": f"Successfully resent {form_name} request to vendor."}
+        
+    except Exception as e:
+        frappe.log_error(str(e), "Resend Process Email Error")
         return {"status": "error", "message": str(e)}

@@ -4,111 +4,242 @@ from frappe.model.document import Document
 import pandas as pd 
 from frappe.utils.file_manager import save_file
 import xlrd
+from alms_app.api.emailsService import email_sender
+from frappe.utils import flt
+import math
+from frappe.utils import now_datetime
+from alms_app.approval.approval_router import trigger_approval_if_matrix_exists
+from alms_app.approval.approval_router import process_approval_action
+
+
 
 class CarQuotation(Document):
-    pass
-    # def upload_data(self):
-    #     # Ensure the file is attached and accessible
-    #     if not self.attach_file:
-    #         frappe.throw("No file attached for upload.")
+
+    def before_insert(self):
+        # Auto-submit to start approval matrix instantly
+        self.is_submitted = 1
+
+        self.submission_datetime = now_datetime()
         
-    #     try:
-    #         # Fetch the file from the system using the file URL
-    #         _file = frappe.get_doc("File", {"file_url": self.attach_file})  # Replace 'attach_file' with actual file URL field
-    #         filename = _file.get_full_path()
-            
-    #         # Parse the Excel file
-    #         data = self.parse_excel(filename)
+        # Populate car_indent_form_id if not present
+        if self.employee_details and not self.car_indent_form_id:
+            cif = frappe.get_all("Car Indent Form", filters={"employee_code": self.employee_details}, pluck="name", limit=1)
+            if cif:
+                self.car_indent_form_id = cif[0]
 
-    #         # Populate the Car Quotation fields with parsed data
-    #         self.populate_car_quotation_fields(data)
-    #     except Exception as e:
-    #         frappe.throw(f"Error while uploading file: {str(e)}")
+        # CASE 1: NEW quotation (root)
+        if self.quotation_status == "New":
+            self.root_quotation = self.name
+            self.version_number = 1
 
-    # def parse_excel(self, file_path):
-    #     # Load the workbook and get the active sheet
-    #     wb = load_workbook(file_path)
-    #     sheet = wb.active
+        # CASE 2: REVISED quotation
+        elif self.quotation_status == "Revised":
+
+            if not self.revised_modify_quotation_id:
+                frappe.throw("Missing base quotation")
+
+            parent = frappe.get_doc("Car Quotation", self.revised_modify_quotation_id)
+
+            # Root stays same
+            self.root_quotation = parent.root_quotation or parent.name
+
+            # Parent linkage
+            self.parent_quotation = parent.name
+
+            # Version increment
+            self.version_number = (parent.version_number or 1) + 1
+
+            # Naming logic
+            self.name = f"{self.root_quotation}-v{self.version_number}"
+
+    def on_update(self):
+        is_active = self.status == "Approved" or (self.finance_team_status == "Approved" and self.status != "Rejected")
+        if is_active:
+            reject_other_quotations(self)
+        else:
+            handle_no_approved_case(self)
+
+    def validate(self):
+        self.sync_status()
+        self.calculate_quarterly_payment()
+    
+    def calculate_quarterly_payment(self):
+        total_emi = flt(self.total_emi)
+
+        if total_emi < 0:
+            frappe.throw("Total EMI cannot be negative")
+
+        self.quarterly_payment = total_emi * 4
+
+    def sync_status(self):
+        if getattr(self, "approval_entry", None):
+            ae_status = frappe.db.get_value("Approval Entry", self.approval_entry, "status")
+            if ae_status == "Approved":
+                self.status = "Approved"
+                self.finance_team_status = "Approved"
+                self.finance_head_status = "Approved"
+                reject_other_quotations(self)
+                return
+            elif ae_status == "Rejected":
+                self.status = "Rejected"
+                if self.finance_team_status != "Approved":
+                    self.finance_team_status = "Rejected"
+                else:
+                    self.finance_head_status = "Rejected"
+                return
+
+        ft = (self.finance_team_status or "").strip().lower()
+        fh = (self.finance_head_status or "").strip().lower()
+
+        # Normalize
+        if ft in ["", "-select-"]:
+            self.finance_team_status = "Pending"
+            ft = "pending"
+
+        if fh in ["", "-select-"]:
+            self.finance_head_status = "Pending"
+            fh = "pending"
+
+        # ===== STATUS LOGIC =====
+        if ft == "rejected" or fh == "rejected":
+            self.status = "Rejected"
+
+        elif ft == "approved" and fh == "approved":
+            self.status = "Approved"
+
+            # enforce only one approved
+            reject_other_quotations(self)
+
+        else:
+            self.status = "Pending"
+
+
+
+    def after_insert(self):
+        try:
+            employee_details = self.employee_details
+            finance_company = self.finance_company
+            ref_no = self.name
+
+            if not employee_details or not finance_company or not ref_no:
+                frappe.log_error("Missing required values in CarQuotation", "CarQuotation Error")
+            else:
+                # Step 1: Check if Selected Vendor exists
+                selected_vendor = frappe.db.get_value(
+                    "Selected Vendor",
+                    {"employee_details": employee_details},
+                    "name"
+                )
+
+                if selected_vendor:
+                    doc = frappe.get_doc("Selected Vendor", selected_vendor)
+
+                    # Check duplicate
+                    exists = any(
+                        row.finance_company == finance_company and row.ref_no == ref_no
+                        for row in doc.selected_finance_company
+                    )
+
+                    if not exists:
+                        doc.append("selected_finance_company", {
+                            "finance_company": finance_company,
+                            "ref_no": ref_no
+                        })
+                        doc.save(ignore_permissions=True)
+
+                else:
+                    # Create new Selected Vendor
+                    doc = frappe.get_doc({
+                        "doctype": "Selected Vendor",
+                        "employee_details": employee_details,
+                        "selected_finance_company": [
+                            {
+                                "finance_company": finance_company,
+                                "ref_no": ref_no
+                            }
+                        ]
+                    })
+                    doc.insert(ignore_permissions=True)
+
+        except Exception as e:
+            frappe.log_error(frappe.get_traceback(), "CarQuotation after_insert Error")
         
-    #     # List to hold parsed data
-    #     data = []
+        try:
+            email_sender(
+                name=self.employee_details,
+                email_send_to="Finance Fill Quotation Acknowledgement",
+                payload={
+                    "vendors": [self.finance_company],
+                    "email_phase": "Revised" if self.quotation_status == "Revised" else "Initial"
+                }
+            )
+        except Exception:
+            frappe.log_error(frappe.get_traceback(), "ACK EMAIL FAILED")
 
-    #     # Assuming the first row contains headers, iterate through the rows
-    #     for row in sheet.iter_rows(min_row=2, values_only=True):  # Start from row 2 to skip headers
-    #         # Ensure row has the correct number of columns (29 in this case)
-    #         if len(row) >= 29:
-    #             row_data = {
-    #                 'finance_company': row[0],
-    #                 'employee_details': row[1],
-    #                 'location': row[2],
-    #                 'kms': row[3],
-    #                 'variant': row[4],
-    #                 'quote': row[5],
-    #                 'interest_rate': row[6],
-    #                 'tenure': row[7],
-    #                 'base_price_excluding_gst': row[8],
-    #                 'gst': row[9],
-    #                 'ex_showroom_amount': row[10],
-    #                 'accessory': row[11],
-    #                 'discount_excluding_gst': row[12],
-    #                 'base_price_less_discounts': row[13],
-    #                 'total_discount': row[14],
-    #                 'ex_showroom_amount_net_of_discount': row[15],
-    #                 'registration_charges': row[16],
-    #                 'residual_value': row[17],
-    #                 'percent': row[18],
-    #                 'financed_amount': row[19],
-    #                 'emi_financing': row[20],
-    #                 'finance_emi_road_tax': row[21],
-    #                 'gst_and_cess': row[22],
-    #                 'insurance': row[23],
-    #                 'fleet_management_repairs_and_tyres': row[24],
-    #                 'assist_service': row[25],
-    #                 'pickup_and_drop': row[26],
-    #                 'std_relief_car_non_accident': row[27],
-    #                 'gst_on_fms': row[28],
-    #                 'total_emi': row[29]
-    #             }
-    #             data.append(row_data)
+        
 
-    #     return data
+def restore_other_quotations(doc):
+    others = frappe.get_all(
+        "Car Quotation",
+        filters={
+            "employee_details": doc.employee_details,
+            "name": ["!=", doc.name]
+        },
+        pluck="name"
+    )
 
-    # def populate_car_quotation_fields(self, data):
-    #     # Map the parsed data to the fields of Car Quotation
-    #     for row in data:
-    #         self.finance_company = row['finance_company']
-    #         self.employee_details = row['employee_details']
-    #         self.location = row['location']
-    #         self.kms = row['kms']
-    #         self.variant = row['variant']
-    #         self.quote = row['quote']
-    #         self.interest_rate = row['interest_rate']
-    #         self.tenure = row['tenure']
-    #         self.base_price_excluding_gst = row['base_price_excluding_gst']
-    #         self.gst = row['gst']
-    #         self.ex_showroom_amount = row['ex_showroom_amount']
-    #         self.accessory = row['accessory']
-    #         self.discount_excluding_gst = row['discount_excluding_gst']
-    #         self.base_price_less_discounts = row['base_price_less_discounts']
-    #         self.total_discount = row['total_discount']
-    #         self.ex_showroom_amount_net_of_discount = row['ex_showroom_amount_net_of_discount']
-    #         self.registration_charges = row['registration_charges']
-    #         self.residual_value = row['residual_value']
-    #         self.percent = row['percent']
-    #         self.financed_amount = row['financed_amount']
-    #         self.emi_financing = row['emi_financing']
-    #         self.finance_emi_road_tax = row['finance_emi_road_tax']
-    #         self.gst_and_cess = row['gst_and_cess']
-    #         self.insurance = row['insurance']
-    #         self.fleet_management_repairs_and_tyres = row['fleet_management_repairs_and_tyres']
-    #         self.assist_service = row['assist_service']
-    #         self.pickup_and_drop = row['pickup_and_drop']
-    #         self.std_relief_car_non_accident = row['std_relief_car_non_accident']
-    #         self.gst_on_fms = row['gst_on_fms']
-    #         self.total_emi = row['total_emi']
+    for q in others:
+        q_doc = frappe.get_doc("Car Quotation", q)
 
-    #     # Save the changes
-    #     self.save(ignore_permissions=True)
+        if q_doc.status != "Rejected":
+            continue
+
+        q_doc.finance_team_status = "Pending"
+        q_doc.finance_head_status = "Pending"
+        q_doc.status = "Pending"
+
+        q_doc.save(ignore_permissions=True)
+
+def handle_no_approved_case(doc):
+    if frappe.flags.reverting_quotations:
+        return
+        
+    all_quotations = frappe.get_all(
+        "Car Quotation",
+        filters={"employee_details": doc.employee_details},
+        fields=["name", "status", "finance_team_status"]
+    )
+
+    has_active = False
+    for q in all_quotations:
+        if q.status == "Approved" or (q.finance_team_status == "Approved" and q.status != "Rejected"):
+            has_active = True
+            break
+
+    if not has_active:
+        frappe.flags.reverting_quotations = True
+        try:
+            for q in all_quotations:
+                if q.status == "Rejected":
+                    if q.name == doc.name:
+                        # Do not revert the currently rejected document back to Pending
+                        pass
+                    else:
+                        q_doc = frappe.get_doc("Car Quotation", q.name)
+                        q_doc.db_set("finance_team_status", "Pending", update_modified=False)
+                        q_doc.db_set("finance_head_status", "Pending", update_modified=False)
+                        q_doc.db_set("finance_team_remarks", "", update_modified=False)
+                        q_doc.db_set("finance_head_remarks", "", update_modified=False)
+                        q_doc.db_set("status", "Pending", update_modified=False)
+                        
+                        # Properly restart the Approval Entry
+                        q_doc.db_set("is_submitted", 0, update_modified=False)
+                        q_doc.save(ignore_permissions=True)
+                        q_doc.db_set("is_submitted", 1, update_modified=False)
+                        q_doc.save(ignore_permissions=True)
+        finally:
+            frappe.flags.reverting_quotations = False
+
 
 @frappe.whitelist()
 def process_uploaded_file(file_url):
@@ -119,10 +250,6 @@ def process_uploaded_file(file_url):
         file_doc = frappe.get_doc("File", {"file_url": file_url})
         file_path = file_doc.get_full_path()
 
-        # if file_path.endswith(".xlsx") or file_path.endswith(".xls"):
-        #     data_frame = pd.read_excel(file_path)
-        # elif file_path.endswith(".csv"):
-        #     data_frame = pd.read_csv(file_path)
         if file_path.endswith(".xlsx"):
             data_frame = pd.read_excel(file_path, engine='openpyxl')
         elif file_path.endswith(".xls"):
@@ -179,7 +306,6 @@ def process_uploaded_file(file_url):
         frappe.log_error(frappe.get_traceback(), "File Processing Error")
         frappe.throw(f"An error occurred while processing the file: {str(e)}")
 
-import frappe
 
 @frappe.whitelist()
 def generate_deduction(quotation_id):
@@ -210,10 +336,6 @@ def generate_deduction(quotation_id):
     return doc.name
 
 
-from frappe.utils import flt
-import math
-
-
 def pmt(rate, nper, pv, fv=0, when=1):
     if rate == 0:
         return -(pv + fv) / nper
@@ -224,7 +346,7 @@ def pmt(rate, nper, pv, fv=0, when=1):
 def preview_deduction(quotation_id):
 
     q = frappe.get_doc("Car Quotation", quotation_id)
-    employee = frappe.get_doc("Employee Master", q.employee_details)
+    employee = frappe.get_doc("ALMS Employee", q.employee_details)
     
     # ---- Company contribution logic (same as calculate_emi) ----
 
@@ -237,6 +359,7 @@ def preview_deduction(quotation_id):
     insurance = flt(q.insurance)
     fms = flt(q.fleet_management_repairs_and_tyres)
     assist = flt(q.get("24x7_assist"))
+    print("Value of 24x7 assist:",assist)
     # assist = flt(97)
     pickup = flt(q.pickup_and_drop)
     relief = flt(q.std_relief_car_non_accdt)
@@ -315,14 +438,6 @@ def preview_deduction(quotation_id):
     employee_quarterly_payment = math.ceil(employee_total_emi * 3)
     employee_interim_payment = math.ceil(employee_quarterly_payment * 39 / 90)
 
-    # return {
-    #     "total_emi": total_emi,
-    #     "employee_total_emi": employee_total_emi,
-    #     "quarterly_payment": quarterly_payment,
-    #     "employee_quarterly_payment": employee_quarterly_payment,
-    #     "interim_payment": interim_payment,
-    #     "employee_interim_payment": employee_interim_payment
-    # }
     return {
         # company
         "company_ex_showroom": company_ex_showroom_amount_net_of_discount,
@@ -382,3 +497,156 @@ def create_deduction_doc(quotation_id):
     doc.insert(ignore_permissions=True)
 
     return doc.name
+
+def reject_other_quotations(doc):
+    others = frappe.get_all(
+        "Car Quotation",
+        filters={
+            "employee_details": doc.employee_details,
+            "name": ["!=", doc.name]
+        },
+        pluck="name"
+    )
+
+    for q in others:
+        q_doc = frappe.get_doc("Car Quotation", q)
+
+        if q_doc.status == "Rejected" or q_doc.status == "Approved":
+            continue
+
+        # Formally reject via approval matrix so the ledger is closed properly
+        try:
+            from alms_app.approval.approval_router import process_approval_action
+            original_user = frappe.session.user
+            frappe.set_user("Administrator") # Auto-reject as system
+            try:
+                process_approval_action("Car Quotation", q_doc.name, "Reject", f"Auto-rejected because quotation {doc.name} was approved.")
+            except Exception as e:
+                frappe.log_error(str(e), "Auto-reject matrix fallback")
+            finally:
+                frappe.set_user(original_user)
+        except Exception:
+            pass
+
+        # Fallback to ensure all statuses are explicitly rejected
+        q_doc.db_set("status", "Rejected", update_modified=False)
+        q_doc.db_set("finance_team_status", "Rejected", update_modified=False)
+        q_doc.db_set("finance_head_status", "Rejected", update_modified=False)
+
+
+
+@frappe.whitelist()
+@frappe.validate_and_sanitize_search_inputs
+def get_available_purchase_forms(doctype, txt, searchfield, start, page_len, filters):
+
+    # Step 1: Approved Purchase Forms
+    purchase_forms = frappe.get_all(
+        "Purchase Form",
+        filters={"status": "Approved"},
+        pluck="name"
+    )
+
+    # Step 2: Already used (Approved quotation exists)
+    used_forms = frappe.get_all(
+        "Car Quotation",
+        filters={"status": "Approved"},
+        pluck="employee_details"
+    )
+
+    # Step 3: Forms that have at least one quotation submitted
+    submitted_forms = frappe.get_all(
+        "Car Quotation",
+        pluck="employee_details"
+    )
+
+    # Step 4: Keep only approved forms with quotations, and remove used ones
+    available = list((set(purchase_forms).intersection(set(submitted_forms))) - set(used_forms))
+
+    # Step 4: Apply search filter (VERY IMPORTANT for typing in link field)
+    if txt:
+        available = [pf for pf in available if txt.lower() in pf.lower()]
+
+    # Step 5: Return as list of tuples (Frappe expects this)
+    return [(pf,) for pf in available[start:start + page_len]]
+
+
+@frappe.whitelist()
+def get_quotation_timeline(root_id):
+
+    quotations = frappe.get_all(
+        "Car Quotation",
+        filters={"root_quotation": root_id},
+        fields=[
+            "name",
+            "parent_quotation",
+            "version_number",
+            "status",
+            "finance_company",
+            "creation"
+        ],
+        order_by="version_number asc"
+    )
+
+    return quotations
+
+@frappe.whitelist()
+def create_revised_quotation(old_id):
+
+    old = frappe.get_doc("Car Quotation", old_id)
+
+    new_doc = frappe.copy_doc(old)
+
+    new_doc.quotation_status = "Revised"
+    new_doc.revised_modify_quotation_id = old.name
+
+    new_doc.insert(ignore_permissions=True)
+
+    return new_doc.name
+
+@frappe.whitelist()
+def process_workflow(quotation_id, action, remarks=""):
+    # First update the legacy status fields based on current user role (Finance Team or Finance Head)
+    doc = frappe.get_doc("Car Quotation", quotation_id)
+    
+    role = ""
+    if "Administrator" in frappe.get_roles():
+        role = "Administrator"
+    elif "Finance Head" in frappe.get_roles():
+        role = "Finance Head"
+    elif "Finance Team" in frappe.get_roles() or "Finance" in frappe.get_roles():
+        role = "Finance"
+
+    if role == "Finance":
+        doc.finance_team_status = action
+        doc.finance_team_remarks = remarks
+        doc.finance_team_action_by = frappe.session.user
+    elif role == "Finance Head" or role == "Administrator":
+        doc.finance_head_status = action
+        doc.finance_head_remarks = remarks
+        doc.finance_head_action_by = frappe.session.user
+        if not doc.finance_team_status or doc.finance_team_status == "Pending":
+            doc.finance_team_status = action
+            doc.finance_team_remarks = remarks
+            doc.finance_team_action_by = frappe.session.user
+            
+    doc.save(ignore_permissions=True)
+
+    # Then process through standard approval router
+    try:
+        
+        router_action = "Approve" if action == "Approved" else "Reject" if action == "Rejected" else action
+        
+        result = process_approval_action("Car Quotation", quotation_id, router_action, remarks)
+        
+        if action == "Approved" and doc.finance_head_status == "Approved":
+            email_sender(
+                name=doc.employee_details,
+                email_send_to="FinanceHead To All",
+                payload={"quotation_id": quotation_id}
+            )
+            
+        return result
+    except Exception as e:
+        frappe.log_error(frappe.get_traceback(), "process_workflow fallback")
+        # If approval matrix fails or is not setup, rely on doc.save logic
+        return {"status": "success", "message": f"Action {action} completed manually (Approval Router skipped)"}

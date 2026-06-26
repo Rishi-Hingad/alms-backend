@@ -1,7 +1,7 @@
 {
  "actions": [],
  "allow_rename": 1,
- "autoname": "field:quotation_form",
+ "autoname": "format:{quotation_form}-{###}",
  "creation": "2025-02-10 15:11:34.694811",
  "doctype": "DocType",
  "engine": "InnoDB",
@@ -18,28 +18,29 @@
    "fieldname": "user",
    "fieldtype": "Link",
    "label": "User",
-   "options": "Employee Master"
+   "options": "ALMS Employee"
   },
   {
    "fieldname": "company",
-   "fieldtype": "Select",
+   "fieldtype": "Link",
    "label": "Company",
-   "options": "Eazy Assets\nALD"
+   "options": "Vendor Master"
   },
   {
    "fieldname": "quotation_form",
    "fieldtype": "Link",
    "label": "Quotation Form",
-   "options": "Car Quotation",
-   "unique": 1
+   "options": "Car Quotation"
   },
   {
+   "default": "No",
    "fieldname": "registration_done",
    "fieldtype": "Select",
    "label": "Registration Done",
    "options": "Yes\nNo"
   },
   {
+   "depends_on": "eval:doc.registration_done == \"Yes\"",
    "fieldname": "registration_document",
    "fieldtype": "Attach",
    "label": "Registration Document"
@@ -51,11 +52,11 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-02-17 18:07:55.348285",
+ "modified": "2026-05-01 17:41:59.866247",
  "modified_by": "Administrator",
  "module": "CRMS",
  "name": "Car RTO Form",
- "naming_rule": "By fieldname",
+ "naming_rule": "Expression",
  "owner": "Administrator",
  "permissions": [
   {

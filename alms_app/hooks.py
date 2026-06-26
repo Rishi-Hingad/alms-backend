@@ -60,7 +60,7 @@ fixtures=[
 #     "dt": "Car Indent Form"
 #   },
 #   {
-#     "dt": "Employee Master"
+#     "dt": "ALMS Employee"
 #   },
 #   {
 #     "dt": "Employee Department"
@@ -72,7 +72,7 @@ fixtures=[
 #     "dt": "Vendor Rental Invoice"
 #   },
 #   {
-#     "dt": "Purchase Team Form"
+#     "dt": "Purchase Form"
 #   },
 #   {
 #     "dt": "Car Delivery Form"
@@ -186,13 +186,17 @@ fixtures=[
 
 # include js, css files in header of desk.html
 # app_include_css = "/assets/alms_app/css/alms_app.css"
-# app_include_js = "/assets/alms_app/js/alms_app.js"
+app_include_css = [
+    "/assets/alms_app/css/custom.css"
+]
+# app_include_js = "/assets/alms_app/js/approval_ui_v2.js"
 
 # include js, css files in header of web template
 # web_include_css = "/assets/alms_app/css/alms_app.css"
 # web_include_js = "/assets/alms_app/js/alms_app.js"
 app_include_js = [
-    "/assets/alms_app/js/alms_listview_handler.js"
+    "/assets/alms_app/js/alms_listview_handler.js",
+    "/assets/alms_app/js/approval_ui_v7.js"
 ]
 
 # include custom scss in every website theme (without file extension ".scss")
@@ -208,6 +212,9 @@ app_include_js = [
 # include js in doctype views
 # doctype_js = {"doctype" : "public/js/doctype.js"}
 # doctype_list_js = {"doctype" : "public/js/doctype_list.js"}
+# doctype_list_js = {
+#     "Vehicle Details": "public/js/vehicle_details_list.js"
+# }
 # doctype_tree_js = {"doctype" : "public/js/doctype_tree.js"}
 # doctype_calendar_js = {"doctype" : "public/js/doctype_calendar.js"}
 
@@ -313,6 +320,20 @@ app_include_js = [
 #         "on_submit": "alms_app.crms.web_form.car_indent_form.car_indent_form.send_email_to_reporting_head"
 #     }
 # }
+
+doc_events = {
+    "*": {
+        "validate": "alms_app.approval.approval_router.auto_restart_rejected_document",
+        "on_update": "alms_app.approval.approval_router.trigger_approval_if_matrix_exists",
+        "on_submit": "alms_app.approval.approval_router.trigger_approval_if_matrix_exists"
+    },
+    "Invoice Batch": {
+        "on_update": [
+            "alms_app.crms.doctype.invoice_batch.invoice_batch.create_invoice_details_on_approval",
+            "alms_app.approval.approval_router.trigger_approval_if_matrix_exists"
+        ]
+    }
+}
 
 
 # Scheduled Tasks

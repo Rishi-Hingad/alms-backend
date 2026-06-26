@@ -9,30 +9,41 @@
   "row_number",
   "contract_section",
   "contract_number",
+  "company",
   "employee_name",
-  "vehicle_details",
+  "cost_center",
   "date_column",
+  "vehicle_details",
   "invoice_date_from",
   "invoice_date_to",
   "contract_end_date",
   "billing_section",
   "installment_no",
   "no_of_billing_days",
+  "column_break_sblz",
   "billing_date",
+  "month",
   "rental_section",
   "invoice_no_rental",
+  "invoice_date_rental",
   "invoice_value_a",
   "fleet_column",
   "invoice_no_fleet",
+  "invoice_date_fleet",
   "invoice_value_b",
   "road_section",
   "invoice_no_road",
+  "invoice_date_road",
   "invoice_value_c",
   "insurance_column",
   "invoice_no_insurance",
   "invoice_value_d",
   "total_section",
   "total_invoice_value",
+  "payment_status",
+  "column_break_cfqp",
+  "company_contribution",
+  "employee_contribution",
   "status_section",
   "status",
   "error_message",
@@ -63,17 +74,17 @@
   {
    "fieldname": "employee_name",
    "fieldtype": "Data",
-   "label": "Employee Name",
-   "read_only": 1,
    "in_list_view": 1,
-   "in_preview": 1
+   "in_preview": 1,
+   "label": "Employee Name",
+   "read_only": 1
   },
   {
    "fieldname": "vehicle_details",
    "fieldtype": "Data",
-   "label": "Vehicle Details",
    "in_list_view": 1,
-   "in_preview": 1
+   "in_preview": 1,
+   "label": "Vehicle Details"
   },
   {
    "fieldname": "date_column",
@@ -82,23 +93,23 @@
   {
    "fieldname": "invoice_date_from",
    "fieldtype": "Date",
-   "label": "Invoice Date From",
    "in_list_view": 1,
-   "in_preview": 1
+   "in_preview": 1,
+   "label": "Invoice Date From"
   },
   {
    "fieldname": "invoice_date_to",
    "fieldtype": "Date",
-   "label": "Invoice Date To",
    "in_list_view": 1,
-   "in_preview": 1
+   "in_preview": 1,
+   "label": "Invoice Date To"
   },
   {
    "fieldname": "contract_end_date",
    "fieldtype": "Date",
-   "label": "Contract End Date",
    "in_list_view": 1,
-   "in_preview": 1
+   "in_preview": 1,
+   "label": "Contract End Date"
   },
   {
    "fieldname": "billing_section",
@@ -108,42 +119,42 @@
   {
    "fieldname": "installment_no",
    "fieldtype": "Data",
-   "label": "Installment No",
    "in_list_view": 1,
-   "in_preview": 1
+   "in_preview": 1,
+   "label": "Installment No"
   },
   {
    "fieldname": "no_of_billing_days",
    "fieldtype": "Int",
-   "label": "No Of Billing Days",
    "in_list_view": 1,
-   "in_preview": 1
+   "in_preview": 1,
+   "label": "No. of Billing Days"
   },
   {
    "fieldname": "billing_date",
    "fieldtype": "Date",
-   "label": "Billing Date",
    "in_list_view": 1,
-   "in_preview": 1
+   "in_preview": 1,
+   "label": "Billing Date"
   },
   {
    "fieldname": "rental_section",
    "fieldtype": "Section Break",
-   "label": "Rental Invoice"
+   "label": "Rental & Fleet Invoice"
   },
   {
    "fieldname": "invoice_no_rental",
    "fieldtype": "Data",
-   "label": "Rental Invoice No",
    "in_list_view": 1,
-   "in_preview": 1
+   "in_preview": 1,
+   "label": "Rental Invoice No"
   },
   {
    "fieldname": "invoice_value_a",
    "fieldtype": "Currency",
-   "label": "Rental Invoice Value",
    "in_list_view": 1,
-   "in_preview": 1
+   "in_preview": 1,
+   "label": "Rental Invoice Value"
   },
   {
    "fieldname": "fleet_column",
@@ -152,35 +163,35 @@
   {
    "fieldname": "invoice_no_fleet",
    "fieldtype": "Data",
-   "label": "Fleet Invoice No",
    "in_list_view": 1,
-   "in_preview": 1
+   "in_preview": 1,
+   "label": "Fleet Invoice No"
   },
   {
    "fieldname": "invoice_value_b",
    "fieldtype": "Currency",
-   "label": "Fleet Invoice Value",
    "in_list_view": 1,
-   "in_preview": 1
+   "in_preview": 1,
+   "label": "Fleet Invoice Value"
   },
   {
    "fieldname": "road_section",
    "fieldtype": "Section Break",
-   "label": "Road Invoice"
+   "label": "Road & Insurance Invoice"
   },
   {
    "fieldname": "invoice_no_road",
    "fieldtype": "Data",
-   "label": "Road Invoice No",
    "in_list_view": 1,
-   "in_preview": 1
+   "in_preview": 1,
+   "label": "Road Invoice No"
   },
   {
    "fieldname": "invoice_value_c",
    "fieldtype": "Currency",
-   "label": "Road Invoice Value",
    "in_list_view": 1,
-   "in_preview": 1
+   "in_preview": 1,
+   "label": "Road Invoice Value"
   },
   {
    "fieldname": "insurance_column",
@@ -189,16 +200,16 @@
   {
    "fieldname": "invoice_no_insurance",
    "fieldtype": "Data",
-   "label": "Insurance Invoice No",
    "in_list_view": 1,
-   "in_preview": 1
+   "in_preview": 1,
+   "label": "Insurance Invoice No"
   },
   {
    "fieldname": "invoice_value_d",
    "fieldtype": "Currency",
-   "label": "Insurance Invoice Value",
    "in_list_view": 1,
-   "in_preview": 1
+   "in_preview": 1,
+   "label": "Insurance Invoice Value"
   },
   {
    "fieldname": "total_section",
@@ -208,9 +219,9 @@
   {
    "fieldname": "total_invoice_value",
    "fieldtype": "Currency",
-   "label": "Total Invoice Value",
    "in_list_view": 1,
    "in_preview": 1,
+   "label": "Total Invoice Value",
    "read_only": 1
   },
   {
@@ -223,7 +234,7 @@
    "fieldname": "status",
    "fieldtype": "Select",
    "label": "Status",
-   "options": "Pending\nSuccess\nError"
+   "options": "Pending\nSuccess\nError\nFailed"
   },
   {
    "fieldname": "error_message",
@@ -237,13 +248,75 @@
    "label": "Invoice Document",
    "options": "Invoice Details",
    "read_only": 1
+  },
+  {
+   "fieldname": "cost_center",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "in_preview": 1,
+   "label": "Cost Center"
+  },
+  {
+   "fieldname": "column_break_sblz",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "company_contribution",
+   "fieldtype": "Currency",
+   "in_list_view": 1,
+   "in_preview": 1,
+   "label": "Company Contribution",
+   "read_only": 1
+  },
+  {
+   "fieldname": "employee_contribution",
+   "fieldtype": "Currency",
+   "in_list_view": 1,
+   "in_preview": 1,
+   "label": "Employee Contribution",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_cfqp",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "company",
+   "fieldtype": "Data",
+   "label": "Company"
+  },
+  {
+   "fieldname": "month",
+   "fieldtype": "Data",
+   "label": "Month"
+  },
+  {
+   "fieldname": "invoice_date_rental",
+   "fieldtype": "Date",
+   "label": "Rental Invoice Date"
+  },
+  {
+   "fieldname": "invoice_date_fleet",
+   "fieldtype": "Date",
+   "label": "Fleet Invoice Date"
+  },
+  {
+   "fieldname": "invoice_date_road",
+   "fieldtype": "Date",
+   "label": "Road Invoice Date"
+  },
+  {
+   "fieldname": "payment_status",
+   "fieldtype": "Select",
+   "label": "Payment Status",
+   "options": "-Select-\nPaid\nNot Paid"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2026-03-09 14:37:29.378942",
+ "modified": "2026-04-06 23:35:12.424986",
  "modified_by": "Administrator",
  "module": "CRMS",
  "name": "Invoice Import Row",

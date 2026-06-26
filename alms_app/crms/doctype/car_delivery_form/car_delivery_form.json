@@ -1,6 +1,7 @@
 {
  "actions": [],
  "allow_rename": 1,
+ "autoname": "format:{quotation_form}-{###}",
  "creation": "2025-03-01 12:32:06.722826",
  "doctype": "DocType",
  "engine": "InnoDB",
@@ -8,6 +9,7 @@
   "user",
   "company",
   "quotation_form",
+  "column_break_kvlc",
   "car_deliverd",
   "delivery_date",
   "agreement_document"
@@ -17,7 +19,7 @@
    "fieldname": "user",
    "fieldtype": "Link",
    "label": "User",
-   "options": "Employee Master"
+   "options": "ALMS Employee"
   },
   {
    "fieldname": "company",
@@ -32,28 +34,37 @@
    "options": "Car Quotation"
   },
   {
+   "default": "No",
    "fieldname": "car_deliverd",
    "fieldtype": "Select",
    "label": "Car Deliverd",
    "options": "Yes\nNo"
   },
   {
+   "depends_on": "eval:doc.car_deliverd == \"Yes\"",
    "fieldname": "delivery_date",
    "fieldtype": "Date",
    "label": "Delivery Date"
   },
   {
+   "depends_on": "eval:doc.car_deliverd == \"Yes\"",
    "fieldname": "agreement_document",
    "fieldtype": "Attach",
    "label": "Agreement Document"
+  },
+  {
+   "fieldname": "column_break_kvlc",
+   "fieldtype": "Column Break"
   }
  ],
+ "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-03-01 12:35:11.528812",
+ "modified": "2026-05-02 10:30:07.164930",
  "modified_by": "Administrator",
  "module": "CRMS",
  "name": "Car Delivery Form",
+ "naming_rule": "Expression",
  "owner": "Administrator",
  "permissions": [
   {
@@ -69,6 +80,7 @@
    "write": 1
   }
  ],
+ "row_format": "Dynamic",
  "sort_field": "modified",
  "sort_order": "DESC",
  "states": []

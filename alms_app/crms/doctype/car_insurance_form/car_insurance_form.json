@@ -1,7 +1,7 @@
 {
  "actions": [],
  "allow_rename": 1,
- "autoname": "field:quotation_form",
+ "autoname": "format:{quotation_form}-{###}",
  "creation": "2025-02-10 15:03:58.386205",
  "doctype": "DocType",
  "engine": "InnoDB",
@@ -18,28 +18,29 @@
    "fieldname": "user",
    "fieldtype": "Link",
    "label": "User",
-   "options": "Employee Master"
+   "options": "ALMS Employee"
   },
   {
    "fieldname": "company",
-   "fieldtype": "Select",
+   "fieldtype": "Link",
    "label": "Company",
-   "options": "Eazy Assets\nALD"
+   "options": "Vendor Master"
   },
   {
    "fieldname": "quotation_form",
    "fieldtype": "Link",
    "label": "Quotation Form",
-   "options": "Car Quotation",
-   "unique": 1
+   "options": "Car Quotation"
   },
   {
+   "default": "No",
    "fieldname": "insurance_copy_received",
    "fieldtype": "Select",
    "label": "Insurance Copy Received ",
    "options": "Yes\nNo"
   },
   {
+   "depends_on": "eval:doc.insurance_copy_received == \"Yes\"",
    "fieldname": "insurance_copy_document",
    "fieldtype": "Attach",
    "label": "Insurance Copy Document"
@@ -51,11 +52,11 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-02-17 18:08:25.461540",
+ "modified": "2026-06-18 10:20:46.588587",
  "modified_by": "Administrator",
  "module": "CRMS",
  "name": "Car Insurance Form",
- "naming_rule": "By fieldname",
+ "naming_rule": "Expression",
  "owner": "Administrator",
  "permissions": [
   {

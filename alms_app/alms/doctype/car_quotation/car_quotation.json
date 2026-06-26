@@ -42,7 +42,11 @@
   "gst_on_fms",
   "total_emi",
   "interim_payment",
-  "quarterly_payment"
+  "quarterly_payment",
+  "is_submitted",
+  "approval_initiated",
+  "approval_entry",
+  "approval_trail_html"
  ],
  "fields": [
   {
@@ -218,7 +222,7 @@
    "fieldname": "employee_details",
    "fieldtype": "Link",
    "label": "Employee Details",
-   "options": "Employee Master"
+   "options": "ALMS Employee"
   },
   {
    "fieldname": "status",
@@ -231,6 +235,35 @@
    "fieldtype": "Select",
    "label": "Finance HOD Status",
    "options": "Approved\nRejected"
+  },
+  {
+   "fieldname": "is_submitted",
+   "fieldtype": "Check",
+   "label": "Is Submitted",
+   "default": "0",
+   "read_only": 1,
+   "hidden": 1
+  },
+  {
+   "fieldname": "approval_initiated",
+   "fieldtype": "Check",
+   "label": "Approval Initiated",
+   "default": "0",
+   "read_only": 1,
+   "hidden": 1
+  },
+  {
+   "fieldname": "approval_entry",
+   "fieldtype": "Link",
+   "label": "Approval Entry",
+   "options": "Approval Entry",
+   "read_only": 1,
+   "hidden": 1
+  },
+  {
+   "fieldname": "approval_trail_html",
+   "fieldtype": "HTML",
+   "label": "Approval Trail"
   }
  ],
  "index_web_pages_for_search": 1,

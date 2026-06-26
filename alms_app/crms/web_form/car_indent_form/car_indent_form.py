@@ -7,7 +7,7 @@ from alms_app.api.emailsService import email_sender
 
 @frappe.whitelist(allow_guest=True)
 def get_employee_details(employee_code):
-    employee = frappe.get_all("Employee Master", filters={"name": employee_code}, 
+    employee = frappe.get_all("ALMS Employee", filters={"name": employee_code}, 
     fields=["name", "designation", "location", "company", "contact_number", "email_id", "department","eligibility","reporting_head"])
     
     employee_eligibility = frappe.get_doc("Employee Designation",employee[0].designation)
@@ -92,7 +92,7 @@ def send_email_to_reporting_head(car_indent_form_name):
         car_indent = frappe.get_doc("Car Indent Form", car_indent_form_name)
 
         # Fetch the employee linked to this indent
-        employee = frappe.get_doc("Employee Master", car_indent.employee_code)
+        employee = frappe.get_doc("ALMS Employee", car_indent.employee_code)
 
         
 

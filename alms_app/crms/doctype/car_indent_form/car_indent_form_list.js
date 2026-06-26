@@ -12,7 +12,7 @@ frappe.listview_settings['Car Indent Form'] = {
                     frappe.msgprint({
                         title: __('Access Denied'),
                         indicator: 'red',
-                        message: __('You do not have the required role "Car Indent Form User" to view this list.')
+                        message: __('You do not have the required role "ALMS User" to view this list.')
                     });
                     
                     setTimeout(function() {
@@ -35,7 +35,7 @@ frappe.listview_settings['Car Indent Form'] = {
                     frappe.msgprint({
                         title: __('Access Denied'),
                         indicator: 'red',
-                        message: __('You do not have the required role "Car Indent Form User" to view this list.')
+                        message: __('You do not have the required role "ALMS User" to view this list.')
                     });
                     
                     setTimeout(function() {
