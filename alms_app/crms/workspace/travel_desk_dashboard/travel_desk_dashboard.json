@@ -1,6 +1,6 @@
 {
  "charts": [],
- "content": "[{\"id\":\"_y5fr7PxFA\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Travel Desk Dashboard</span>\",\"col\":12}},{\"id\":\"00jco2QpwO\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Total No. of Vehicles\",\"col\":4}},{\"id\":\"H6qR6MNeuR\",\"type\":\"custom_block\",\"data\":{\"custom_block_name\":\"TDD Expiration Details\",\"col\":12}},{\"id\":\"AyQq9JTFOw\",\"type\":\"quick_list\",\"data\":{\"quick_list_name\":\"Car Allowance\",\"col\":6}},{\"id\":\"YWPxUN0mdQ\",\"type\":\"quick_list\",\"data\":{\"quick_list_name\":\"Car Indent Form\",\"col\":6}},{\"id\":\"1YN3s6li62\",\"type\":\"custom_block\",\"data\":{\"custom_block_name\":\"Vehicle Details View\",\"col\":12}}]",
+ "content": "[{\"id\":\"_y5fr7PxFA\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Travel Desk Dashboard</span>\",\"col\":12}},{\"id\":\"VXOMrE-tLQ\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Eligible Employee\",\"col\":4}},{\"id\":\"zQBQNQ-V4e\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Employees Notified\",\"col\":4}},{\"id\":\"YWPxUN0mdQ\",\"type\":\"quick_list\",\"data\":{\"quick_list_name\":\"Car Indent Form\",\"col\":6}},{\"id\":\"AyQq9JTFOw\",\"type\":\"quick_list\",\"data\":{\"quick_list_name\":\"Car Allowance\",\"col\":6}},{\"id\":\"00jco2QpwO\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Total No. of Vehicles\",\"col\":6}},{\"id\":\"H6qR6MNeuR\",\"type\":\"custom_block\",\"data\":{\"custom_block_name\":\"TDD Expiration Details\",\"col\":12}},{\"id\":\"1YN3s6li62\",\"type\":\"custom_block\",\"data\":{\"custom_block_name\":\"Vehicle Details View\",\"col\":12}}]",
  "creation": "2025-08-08 09:58:15.158253",
  "custom_blocks": [
   {
@@ -22,7 +22,7 @@
  "is_hidden": 0,
  "label": "Travel Desk Dashboard",
  "links": [],
- "modified": "2026-05-18 12:45:51.737203",
+ "modified": "2026-06-25 17:12:48.596445",
  "modified_by": "Administrator",
  "module": "CRMS",
  "name": "Travel Desk Dashboard",
@@ -30,6 +30,14 @@
   {
    "label": "Total No. of Vehicles",
    "number_card_name": "TDD Total"
+  },
+  {
+   "label": "Eligible Employee",
+   "number_card_name": "Eligible Employee"
+  },
+  {
+   "label": "Employees Notified",
+   "number_card_name": "Employees Notified"
   }
  ],
  "owner": "Administrator",

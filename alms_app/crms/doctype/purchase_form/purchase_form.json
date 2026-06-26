@@ -20,32 +20,32 @@
   "engine",
   "price_and_charges_section",
   "ex_showroom_price",
-  "tcs",
-  "registration_charges",
-  "finance_amount",
-  "column_break_ucxr",
   "discount",
+  "tcs",
   "net_ex_showroom_price",
+  "column_break_ucxr",
+  "registration_charges",
   "accessories",
+  "finance_amount",
   "quotation_document",
   "revised_car_details_section",
   "revised_make",
   "revised_car_modal",
-  "kilometers_per_year",
-  "total_kilometers",
-  "column_break_xtqz",
   "revised_color",
   "revised_engine",
+  "column_break_xtqz",
   "tenure_in_years",
+  "kilometers_per_year",
+  "total_kilometers",
   "revised_price_and_charges_section",
   "revised_ex_show_room_price",
-  "revised_tcs",
-  "revised_registration_charges",
-  "revised_financed_amount",
-  "column_break_xfja",
   "revised_discount",
+  "revised_tcs",
   "revised_net_ex_showroom_price",
+  "column_break_xfja",
+  "revised_registration_charges",
   "revised_accessories",
+  "revised_financed_amount",
   "revised_quotation_attachment_need_to_be_done",
   "more_info_tab",
   "email_notifications_section",
@@ -182,7 +182,6 @@
    "label": "Accessories"
   },
   {
-   "fetch_from": "employee_name.quotation_document",
    "fieldname": "quotation_document",
    "fieldtype": "Attach",
    "label": "Quotation Document"
@@ -326,11 +325,11 @@
    "fieldtype": "Column Break"
   },
   {
+   "allow_on_submit": 1,
    "fieldname": "all_quotations_ref_no",
    "fieldtype": "Link",
    "label": "All Quotations Ref No.",
-   "options": "Selected Vendor",
-   "allow_on_submit": 1
+   "options": "Selected Vendor"
   },
   {
    "fieldname": "approval_timline_tab",
@@ -428,7 +427,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-06-24 13:31:20.044438",
+ "modified": "2026-06-25 18:01:35.895215",
  "modified_by": "Administrator",
  "module": "CRMS",
  "name": "Purchase Form",
@@ -449,7 +448,6 @@
   },
   {
    "create": 1,
-   "delete": 0,
    "email": 1,
    "export": 1,
    "print": 1,
@@ -461,7 +459,6 @@
   },
   {
    "create": 1,
-   "delete": 0,
    "email": 1,
    "export": 1,
    "print": 1,
@@ -473,7 +470,6 @@
   },
   {
    "create": 1,
-   "delete": 0,
    "email": 1,
    "export": 1,
    "print": 1,
@@ -482,6 +478,18 @@
    "role": "Purchase Manager",
    "share": 1,
    "write": 1
+  },
+  {
+   "role": "Finance Team",
+   "read": 1,
+   "write": 1,
+   "create": 0,
+   "delete": 0,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "report": 1,
+   "share": 1
   }
  ],
  "row_format": "Dynamic",

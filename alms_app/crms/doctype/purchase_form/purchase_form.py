@@ -27,6 +27,12 @@ class PurchaseForm(Document):
             self.total_kilometers = ""
 
     def before_save(self):
+        # Fetch quotation_document from Car Indent Form if empty
+        if self.employee_name and not self.quotation_document:
+            car_indent_doc = frappe.db.get_value("Car Indent Form", self.employee_name, "quotation_document")
+            if car_indent_doc:
+                self.quotation_document = car_indent_doc
+
         # Clear any dummy.pdf defaults from Custom Field or Property Setter that might have been applied to this document
         for field in self.meta.get("fields", {"fieldtype": "Attach"}):
             if self.get(field.fieldname) and "/files/dummy.pdf" in self.get(field.fieldname):
