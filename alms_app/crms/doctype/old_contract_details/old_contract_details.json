@@ -1,0 +1,84 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2026-02-18 12:40:45.273806",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "old_details_section",
+  "old_contract_number",
+  "old_contract_start_date",
+  "old_contract_end_date",
+  "column_break_ydvj",
+  "old_no_of_installments",
+  "old_additional_cost",
+  "old_contract_agreement"
+ ],
+ "fields": [
+  {
+   "fieldname": "old_details_section",
+   "fieldtype": "Section Break",
+   "label": "Old Details"
+  },
+  {
+   "fieldname": "old_contract_start_date",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "in_preview": 1,
+   "label": "Old Contract Start Date"
+  },
+  {
+   "fieldname": "old_no_of_installments",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "in_preview": 1,
+   "label": "Old No. of Installments"
+  },
+  {
+   "fieldname": "column_break_ydvj",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "old_contract_end_date",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "in_preview": 1,
+   "label": "Old Contract End Date"
+  },
+  {
+   "fieldname": "old_contract_agreement",
+   "fieldtype": "Attach",
+   "in_list_view": 1,
+   "in_preview": 1,
+   "label": "Old Contract Agreement"
+  },
+  {
+   "fieldname": "old_additional_cost",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "in_preview": 1,
+   "label": "Old Additional Cost"
+  },
+  {
+   "fieldname": "old_contract_number",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "in_preview": 1,
+   "label": "Old Contract Number"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2026-02-18 18:15:16.312159",
+ "modified_by": "Administrator",
+ "module": "CRMS",
+ "name": "Old Contract Details",
+ "owner": "Administrator",
+ "permissions": [],
+ "row_format": "Dynamic",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

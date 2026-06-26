@@ -1,0 +1,168 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "field:contract_number",
+ "creation": "2026-02-17 18:19:05.301300",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "contract_details_section",
+  "employee_car_process_form",
+  "vendor",
+  "contract_signed",
+  "contract_number",
+  "column_break_rioq",
+  "contract_start_date",
+  "contract_end_date",
+  "upload_contract",
+  "company",
+  "installments_dates_section",
+  "additional_cost",
+  "column_break_wlxk",
+  "no_of_installments",
+  "installment_dates_section",
+  "installment_date",
+  "old_contract_details_tab",
+  "old_contract_details",
+  "quotation_form",
+  "user"
+ ],
+ "fields": [
+  {
+   "fieldname": "contract_details_section",
+   "fieldtype": "Section Break",
+   "label": "Contract Details"
+  },
+  {
+   "fieldname": "contract_start_date",
+   "fieldtype": "Date",
+   "label": "Contract Start Date"
+  },
+  {
+   "fieldname": "upload_contract",
+   "fieldtype": "Attach",
+   "label": "Upload Contract"
+  },
+  {
+   "fieldname": "column_break_rioq",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "contract_end_date",
+   "fieldtype": "Date",
+   "label": "Contract End Date"
+  },
+  {
+   "fieldname": "no_of_installments",
+   "fieldtype": "Data",
+   "label": "No. of Installments",
+   "read_only": 1
+  },
+  {
+   "fieldname": "installments_dates_section",
+   "fieldtype": "Section Break",
+   "label": "Installments Details"
+  },
+  {
+   "fieldname": "additional_cost",
+   "fieldtype": "Data",
+   "label": "Additional Cost"
+  },
+  {
+   "fieldname": "column_break_wlxk",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "installment_dates_section",
+   "fieldtype": "Section Break",
+   "label": "Installment Dates"
+  },
+  {
+   "fieldname": "installment_date",
+   "fieldtype": "Table",
+   "label": "Installment Date",
+   "options": "Installment Details"
+  },
+  {
+   "fieldname": "employee_car_process_form",
+   "fieldtype": "Link",
+   "label": "Car Process ID",
+   "options": "Car Process"
+  },
+  {
+   "default": "No",
+   "fieldname": "contract_signed",
+   "fieldtype": "Select",
+   "label": "Contract Signed",
+   "options": "Yes\nNo"
+  },
+  {
+   "fieldname": "old_contract_details_tab",
+   "fieldtype": "Tab Break",
+   "label": "Old Contract Details"
+  },
+  {
+   "fieldname": "old_contract_details",
+   "fieldtype": "Table",
+   "label": "Old Contract Details",
+   "options": "Old Contract Details"
+  },
+  {
+   "fieldname": "contract_number",
+   "fieldtype": "Data",
+   "label": "Contract Number",
+   "unique": 1
+  },
+  {
+   "fieldname": "vendor",
+   "fieldtype": "Link",
+   "label": "Vendor",
+   "options": "Vendor Master"
+  },
+  {
+   "fieldname": "company",
+   "fieldtype": "Link",
+   "label": "Company",
+   "options": "Company Master"
+  },
+  {
+   "fieldname": "quotation_form",
+   "fieldtype": "Link",
+   "label": "Quotation Form",
+   "options": "Car Quotation"
+  },
+  {
+   "fieldname": "user",
+   "fieldtype": "Link",
+   "label": "Employee Name",
+   "options": "ALMS Employee"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2026-06-18 12:35:47.926113",
+ "modified_by": "Administrator",
+ "module": "CRMS",
+ "name": "Contract Master",
+ "naming_rule": "By fieldname",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

@@ -1,0 +1,385 @@
+{
+ "actions": [],
+ "allow_import": 1,
+ "allow_rename": 1,
+ "autoname": "format:{employee_code}",
+ "creation": "2024-09-21 16:06:06.381987",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "car_indent_form_section",
+  "form_type",
+  "employee_code",
+  "employee_reporting",
+  "department",
+  "contact_number",
+  "column_break_ejap",
+  "location",
+  "company_name",
+  "designation",
+  "email_id",
+  "eligibility",
+  "vehicle_details_section",
+  "make",
+  "model",
+  "column_break_kdnd",
+  "engine",
+  "colour",
+  "vehicle_pricing_details_section",
+  "column_break_xrgt",
+  "ex_showroom_price",
+  "tcs",
+  "registration_charges",
+  "finance_amount",
+  "default_currency",
+  "column_break_jycd",
+  "discount",
+  "net_ex_showroom_price",
+  "accessories",
+  "quotation_document",
+  "car_indent_form_status_section",
+  "reporting_head_approval",
+  "hr_approval",
+  "travel_desk_approval",
+  "hr_head_approval",
+  "column_break_ebpq",
+  "reporting_head_remarks",
+  "hr_remarks",
+  "travel_desk_remarks",
+  "hr_head_remarks",
+  "approval_timline_tab",
+  "approval_section",
+  "status",
+  "is_submitted",
+  "approval_initiated",
+  "column_break_tfyd",
+  "approval_entry",
+  "approval_token",
+  "trail_section",
+  "approval_trail_html"
+ ],
+ "fields": [
+  {
+   "fieldname": "car_indent_form_section",
+   "fieldtype": "Section Break",
+   "label": "Employee Details"
+  },
+  {
+   "fieldname": "employee_code",
+   "fieldtype": "Link",
+   "label": "Employee Code",
+   "options": "ALMS Employee"
+  },
+  {
+   "fetch_from": "employee_code.department",
+   "fieldname": "department",
+   "fieldtype": "Data",
+   "label": "Department"
+  },
+  {
+   "fetch_from": "employee_code.cell_number",
+   "fieldname": "contact_number",
+   "fieldtype": "Data",
+   "label": "Contact Number"
+  },
+  {
+   "fetch_from": "employee_code.branch",
+   "fieldname": "location",
+   "fieldtype": "Data",
+   "label": "Location"
+  },
+  {
+   "fieldname": "model",
+   "fieldtype": "Data",
+   "label": "Model"
+  },
+  {
+   "fieldname": "colour",
+   "fieldtype": "Data",
+   "label": "Colour"
+  },
+  {
+   "fieldname": "tcs",
+   "fieldtype": "Currency",
+   "label": "TCS"
+  },
+  {
+   "fieldname": "accessories",
+   "fieldtype": "Currency",
+   "label": "Accessories"
+  },
+  {
+   "fieldname": "quotation_document",
+   "fieldtype": "Attach",
+   "label": "Quotation Document",
+   "make_attachment_public": 1,
+   "reqd": 1
+  },
+  {
+   "fetch_from": "employee_code.company",
+   "fieldname": "company_name",
+   "fieldtype": "Data",
+   "label": "Company Name"
+  },
+  {
+   "fetch_from": "employee_code.designation",
+   "fieldname": "designation",
+   "fieldtype": "Data",
+   "label": "Designation"
+  },
+  {
+   "fieldname": "eligibility",
+   "fieldtype": "Currency",
+   "in_list_view": 1,
+   "label": "Eligibility (Ex-Showroom Price)",
+   "reqd": 1
+  },
+  {
+   "fetch_from": "employee_code.company_email",
+   "fieldname": "email_id",
+   "fieldtype": "Data",
+   "label": "E-mail ID"
+  },
+  {
+   "fieldname": "make",
+   "fieldtype": "Link",
+   "label": "Make",
+   "options": "Car Make Master"
+  },
+  {
+   "fieldname": "engine",
+   "fieldtype": "Select",
+   "label": "Engine",
+   "options": "-Select-\nEV\nPetrol\nDiesel\nCNG"
+  },
+  {
+   "fieldname": "ex_showroom_price",
+   "fieldtype": "Currency",
+   "label": "Ex Showroom Price"
+  },
+  {
+   "fieldname": "discount",
+   "fieldtype": "Currency",
+   "label": "Discount"
+  },
+  {
+   "fieldname": "registration_charges",
+   "fieldtype": "Currency",
+   "label": "Registration Charges"
+  },
+  {
+   "fieldname": "net_ex_showroom_price",
+   "fieldtype": "Currency",
+   "label": "Net Ex Showroom Price",
+   "options": "Currency",
+   "read_only": 1
+  },
+  {
+   "fieldname": "finance_amount",
+   "fieldtype": "Currency",
+   "label": "Finance Amount",
+   "options": "Currency",
+   "read_only": 1
+  },
+  {
+   "fieldname": "reporting_head_approval",
+   "fieldtype": "Select",
+   "label": "Reporting Head Approval",
+   "options": "Pending\nApproved\nRejected"
+  },
+  {
+   "fieldname": "hr_approval",
+   "fieldtype": "Select",
+   "label": "HR Approval",
+   "options": "Pending\nApproved\nRejected"
+  },
+  {
+   "fieldname": "hr_head_approval",
+   "fieldtype": "Select",
+   "label": "HR Head Approval",
+   "options": "Pending\nApproved\nRejected"
+  },
+  {
+   "default": "Pending",
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "label": "Status",
+   "options": "Approved\nRejected\nPending"
+  },
+  {
+   "fetch_from": "employee_code.reporting_head",
+   "fieldname": "employee_reporting",
+   "fieldtype": "Data",
+   "label": "Employee Reporting",
+   "read_only": 1
+  },
+  {
+   "fieldname": "hr_remarks",
+   "fieldtype": "Data",
+   "label": "HR Remarks"
+  },
+  {
+   "fieldname": "hr_head_remarks",
+   "fieldtype": "Data",
+   "label": "HR Head Remarks"
+  },
+  {
+   "fieldname": "reporting_head_remarks",
+   "fieldtype": "Data",
+   "label": "Reporting Head Remarks"
+  },
+  {
+   "fieldname": "form_type",
+   "fieldtype": "Select",
+   "label": "Form Type",
+   "options": "Car\nAllowance"
+  },
+  {
+   "fieldname": "travel_desk_approval",
+   "fieldtype": "Select",
+   "label": "Travel Desk Approval",
+   "options": "Pending\nApproved\nRejected"
+  },
+  {
+   "fieldname": "travel_desk_remarks",
+   "fieldtype": "Data",
+   "label": "Travel Desk Remarks"
+  },
+  {
+   "fieldname": "column_break_jycd",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "car_indent_form_status_section",
+   "fieldtype": "Section Break",
+   "label": "Car Indent Form Status"
+  },
+  {
+   "fieldname": "column_break_ebpq",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "vehicle_details_section",
+   "fieldtype": "Section Break",
+   "label": "Vehicle Details Section"
+  },
+  {
+   "fieldname": "column_break_kdnd",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "vehicle_pricing_details_section",
+   "fieldtype": "Section Break",
+   "label": "Vehicle Pricing Details Section"
+  },
+  {
+   "fieldname": "column_break_xrgt",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_ejap",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "INR",
+   "fieldname": "default_currency",
+   "fieldtype": "Link",
+   "label": "Default Currency",
+   "options": "Currency"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_submitted",
+   "fieldtype": "Check",
+   "hidden": 1,
+   "label": "Is Submitted",
+   "read_only": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "approval_initiated",
+   "fieldtype": "Check",
+   "hidden": 1,
+   "label": "Approval Initiated",
+   "read_only": 1
+  },
+  {
+   "fieldname": "approval_entry",
+   "fieldtype": "Link",
+   "hidden": 1,
+   "label": "Approval Entry",
+   "options": "Approval Entry",
+   "read_only": 1
+  },
+  {
+   "fieldname": "approval_trail_html",
+   "fieldtype": "HTML",
+   "label": "Approval Trail"
+  },
+  {
+   "fieldname": "approval_token",
+   "fieldtype": "Data",
+   "hidden": 1,
+   "label": "Approval Token"
+  },
+  {
+   "fieldname": "approval_timline_tab",
+   "fieldtype": "Tab Break",
+   "label": "Approval Timline"
+  },
+  {
+   "fieldname": "approval_section",
+   "fieldtype": "Section Break",
+   "label": "Approval"
+  },
+  {
+   "fieldname": "column_break_tfyd",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "trail_section",
+   "fieldtype": "Section Break",
+   "label": "Trail"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2026-06-08 09:24:18.331249",
+ "modified_by": "Administrator",
+ "module": "CRMS",
+ "name": "Car Indent Form",
+ "naming_rule": "Expression",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [
+  {
+   "color": "Green",
+   "title": "Approved"
+  },
+  {
+   "color": "Red",
+   "title": "Rejected"
+  },
+  {
+   "color": "Yellow",
+   "title": "Pending"
+  }
+ ],
+ "track_changes": 1
+}

@@ -4,11 +4,17 @@ authors = [
     { name = "Rishi Hingad", email = "rishi.hingad@merillife.com"}
 ]
 description = "Car and Lease Manaagment System"
+name = "alms_app"
+authors = [
+    { name = "Rishi Hingad", email = "rishi.hingad@merillife.com"}
+]
+description = "Assest Lease Management System"
 requires-python = ">=3.10"
 readme = "README.md"
 dynamic = ["version"]
 dependencies = [
     # "frappe~=15.0.0" # Installed and managed by bench.
+    "pandas~=2.2.3"
 ]
 
 [build-system]

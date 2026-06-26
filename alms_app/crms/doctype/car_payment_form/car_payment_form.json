@@ -1,0 +1,79 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "format:{quotation_form}-{###}",
+ "creation": "2025-02-10 15:06:59.802507",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "user",
+  "company",
+  "quotation_form",
+  "column_break_phvl",
+  "payment_done",
+  "payment_document"
+ ],
+ "fields": [
+  {
+   "fieldname": "user",
+   "fieldtype": "Link",
+   "label": "User",
+   "options": "ALMS Employee"
+  },
+  {
+   "fieldname": "company",
+   "fieldtype": "Link",
+   "label": "Company",
+   "options": "Vendor Master"
+  },
+  {
+   "fieldname": "quotation_form",
+   "fieldtype": "Link",
+   "label": "Quotation Form",
+   "options": "Car Quotation"
+  },
+  {
+   "default": "No",
+   "fieldname": "payment_done",
+   "fieldtype": "Select",
+   "label": "Payment Done",
+   "options": "Yes\nNo"
+  },
+  {
+   "depends_on": "eval:doc.payment_done == \"Yes\"",
+   "fieldname": "payment_document",
+   "fieldtype": "Attach",
+   "label": "Payment Document"
+  },
+  {
+   "fieldname": "column_break_phvl",
+   "fieldtype": "Column Break"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2026-06-18 10:20:46.454295",
+ "modified_by": "Administrator",
+ "module": "CRMS",
+ "name": "Car Payment Form",
+ "naming_rule": "Expression",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

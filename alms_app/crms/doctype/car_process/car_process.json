@@ -1,0 +1,261 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "field:user",
+ "creation": "2025-02-05 16:10:23.447640",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "user_section",
+  "user",
+  "company",
+  "column_break_psxg",
+  "quotation",
+  "car_delivery_process_section",
+  "po_received",
+  "proforma_invoice_received",
+  "insurance_copy_received",
+  "payment_done",
+  "rc_book_received",
+  "registration_done",
+  "column_break_ybdw",
+  "po_document",
+  "proforma_invoice_document",
+  "insurance_document",
+  "payment_document",
+  "rc_book_document",
+  "registration_document",
+  "car_delivery_details_section",
+  "car_delivery",
+  "delivery_date",
+  "column_break_euqj",
+  "agreement_document",
+  "contract_details_section",
+  "contract_signed",
+  "contract_number",
+  "column_break_oshx",
+  "contract_start_date",
+  "contract_end_date",
+  "contract_document"
+ ],
+ "fields": [
+  {
+   "fieldname": "user_section",
+   "fieldtype": "Section Break",
+   "label": "User"
+  },
+  {
+   "fieldname": "user",
+   "fieldtype": "Link",
+   "label": "User",
+   "options": "ALMS Employee",
+   "read_only": 1,
+   "unique": 1
+  },
+  {
+   "fieldname": "company",
+   "fieldtype": "Select",
+   "label": "Company (Vendor)",
+   "options": "-Select-\nEazy Assets\nALD",
+   "read_only": 1
+  },
+  {
+   "fieldname": "quotation",
+   "fieldtype": "Link",
+   "label": "Quotation",
+   "options": "Car Quotation",
+   "read_only": 1
+  },
+  {
+   "fieldname": "car_delivery_process_section",
+   "fieldtype": "Section Break",
+   "label": "Car Delivery Process"
+  },
+  {
+   "default": "No",
+   "fieldname": "proforma_invoice_received",
+   "fieldtype": "Select",
+   "label": "Proforma Invoice Received",
+   "options": "Yes\nNo",
+   "read_only": 1
+  },
+  {
+   "default": "No",
+   "fieldname": "insurance_copy_received",
+   "fieldtype": "Select",
+   "label": "Insurance Copy Received ",
+   "options": "Yes\nNo",
+   "read_only": 1
+  },
+  {
+   "default": "No",
+   "fieldname": "rc_book_received",
+   "fieldtype": "Select",
+   "label": "RC Book Received",
+   "options": "Yes\nNo",
+   "read_only": 1
+  },
+  {
+   "default": "No",
+   "fieldname": "payment_done",
+   "fieldtype": "Select",
+   "label": "Payment Done",
+   "options": "Yes\nNo",
+   "read_only": 1
+  },
+  {
+   "default": "No",
+   "fieldname": "registration_done",
+   "fieldtype": "Select",
+   "label": "Registration Done",
+   "options": "Yes\nNo",
+   "read_only": 1
+  },
+  {
+   "fieldname": "car_delivery",
+   "fieldtype": "Select",
+   "label": "Car Delivered",
+   "read_only": 1
+  },
+  {
+   "depends_on": "eval:doc.car_delivery == \"Yes\"",
+   "fieldname": "delivery_date",
+   "fieldtype": "Date",
+   "label": "Delivery Date",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_ybdw",
+   "fieldtype": "Column Break"
+  },
+  {
+   "depends_on": "eval:doc.po_received == \"Yes\"",
+   "fieldname": "po_document",
+   "fieldtype": "Attach",
+   "label": "PO Document"
+  },
+  {
+   "depends_on": "eval:doc.proforma_invoice_received == \"Yes\"",
+   "fieldname": "proforma_invoice_document",
+   "fieldtype": "Attach",
+   "label": "Proforma Invoice Document"
+  },
+  {
+   "depends_on": "eval:doc.insurance_copy_received == \"Yes\"",
+   "fieldname": "insurance_document",
+   "fieldtype": "Attach",
+   "label": "Insurance Copy Document"
+  },
+  {
+   "depends_on": "eval:doc.rc_book_received == \"Yes\"",
+   "fieldname": "rc_book_document",
+   "fieldtype": "Attach",
+   "label": "RC Book Document"
+  },
+  {
+   "depends_on": "eval:doc.payment_done == \"Yes\"",
+   "fieldname": "payment_document",
+   "fieldtype": "Attach",
+   "label": "Payment Document"
+  },
+  {
+   "depends_on": "eval:doc.registration_done == \"Yes\"",
+   "fieldname": "registration_document",
+   "fieldtype": "Attach",
+   "label": "Registration Document"
+  },
+  {
+   "depends_on": "eval:doc.car_delivery == \"Yes\"",
+   "fieldname": "agreement_document",
+   "fieldtype": "Attach",
+   "label": "Agreement Document"
+  },
+  {
+   "default": "No",
+   "fieldname": "po_received",
+   "fieldtype": "Select",
+   "label": "PO Received",
+   "options": "Yes\nNo",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_psxg",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "No",
+   "fieldname": "contract_signed",
+   "fieldtype": "Select",
+   "label": "Contract Signed",
+   "options": "Yes\nNo"
+  },
+  {
+   "depends_on": "eval:doc.contract_signed == \"Yes\"",
+   "fieldname": "contract_document",
+   "fieldtype": "Attach",
+   "label": "Contract Document"
+  },
+  {
+   "depends_on": "eval:doc.contract_signed == \"Yes\"",
+   "fieldname": "contract_start_date",
+   "fieldtype": "Date",
+   "label": "Contract Start Date"
+  },
+  {
+   "depends_on": "eval:doc.contract_signed == \"Yes\"",
+   "fieldname": "contract_number",
+   "fieldtype": "Data",
+   "label": "Contract Number"
+  },
+  {
+   "depends_on": "eval:doc.contract_signed == \"Yes\"",
+   "fieldname": "contract_end_date",
+   "fieldtype": "Date",
+   "label": "Contract End Date"
+  },
+  {
+   "fieldname": "contract_details_section",
+   "fieldtype": "Section Break",
+   "label": "Contract Details"
+  },
+  {
+   "fieldname": "column_break_oshx",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_euqj",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "car_delivery_details_section",
+   "fieldtype": "Section Break",
+   "label": "Car Delivery Details"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2026-06-18 10:22:16.299542",
+ "modified_by": "Administrator",
+ "module": "CRMS",
+ "name": "Car Process",
+ "naming_rule": "By fieldname",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

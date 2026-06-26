@@ -1,0 +1,526 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2026-03-09 14:11:42.004623",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "batch_details_section",
+  "vendor_name",
+  "batch_date",
+  "column_break_dvoa",
+  "no_of_invoice",
+  "company",
+  "total_value_section",
+  "total_value_of_rental_charges",
+  "total_value_of_fleet_charges",
+  "column_break_okli",
+  "total_value_of_rto",
+  "total_value_of_insurance",
+  "combined_value_section",
+  "total_value_of_all",
+  "payment_status",
+  "column_break_tfpq",
+  "total_value_of_company_contribution",
+  "total_value_of_employee_contribution",
+  "rows_section",
+  "rows",
+  "attachment_section_section",
+  "invoice_attachment",
+  "file_preview",
+  "column_break_dsrd",
+  "invoice_attachment_1",
+  "file_preview_1",
+  "approval_details_section",
+  "finance_team_column",
+  "finance_team_status",
+  "finance_team_user",
+  "finance_team_remarks",
+  "finance_team_signature",
+  "column_break_mkou",
+  "finance_head_status",
+  "finance_head_user",
+  "finance_head_remarks",
+  "finance_head_signature",
+  "column_break_weyo",
+  "hr_head_status",
+  "hr_head_user",
+  "hr_head_remarks",
+  "hr_head_signature",
+  "progress_details_tab",
+  "progress_details_section",
+  "excel_file",
+  "excel_uploaded_by",
+  "excel_sheet_status",
+  "invoice_created",
+  "email_sent",
+  "email_sent_to_finance_head",
+  "email_sent_to_hr_head",
+  "email_sent_to_all",
+  "column_break_otiz",
+  "total_rows",
+  "success_rows",
+  "failed_rows",
+  "failed_rows_section",
+  "failed_rows_table",
+  "api_call_tab",
+  "api_call_details_section",
+  "status",
+  "lease_api_call",
+  "api_message",
+  "column_break_zecw",
+  "api_log_name",
+  "is_submitted",
+  "approval_initiated",
+  "approval_entry",
+  "approval_trail_html"
+ ],
+ "fields": [
+  {
+   "fieldname": "excel_file",
+   "fieldtype": "Attach",
+   "in_list_view": 1,
+   "label": "Excel File",
+   "reqd": 1
+  },
+  {
+   "fieldname": "excel_sheet_status",
+   "fieldtype": "Select",
+   "label": "Excel Sheet Status",
+   "options": "Pending\nProcessing\nCompleted\nFailed"
+  },
+  {
+   "fieldname": "total_rows",
+   "fieldtype": "Int",
+   "label": "Total Rows",
+   "read_only": 1
+  },
+  {
+   "fieldname": "success_rows",
+   "fieldtype": "Int",
+   "label": "Success Rows",
+   "read_only": 1
+  },
+  {
+   "fieldname": "failed_rows",
+   "fieldtype": "Int",
+   "label": "Failed Rows",
+   "read_only": 1
+  },
+  {
+   "fieldname": "rows_section",
+   "fieldtype": "Section Break",
+   "label": "Rows"
+  },
+  {
+   "fieldname": "rows",
+   "fieldtype": "Table",
+   "label": "Invoice Rows",
+   "options": "Invoice Import Row"
+  },
+  {
+   "fieldname": "progress_details_section",
+   "fieldtype": "Section Break",
+   "label": "Progress Details"
+  },
+  {
+   "fieldname": "failed_rows_section",
+   "fieldtype": "Section Break",
+   "label": "Failed Rows"
+  },
+  {
+   "fieldname": "failed_rows_table",
+   "fieldtype": "Table",
+   "label": "Failed Rows Table",
+   "options": "Invoice Import Row"
+  },
+  {
+   "fieldname": "progress_details_tab",
+   "fieldtype": "Tab Break",
+   "label": "Progress Details"
+  },
+  {
+   "fieldname": "batch_details_section",
+   "fieldtype": "Section Break",
+   "label": "Batch Details"
+  },
+  {
+   "fieldname": "no_of_invoice",
+   "fieldtype": "Data",
+   "label": "No. of Invoice (Excel Row Number)"
+  },
+  {
+   "fieldname": "vendor_name",
+   "fieldtype": "Select",
+   "label": "Vendor Name",
+   "options": "-Select-\nALD\nEazy Assets"
+  },
+  {
+   "fieldname": "column_break_dvoa",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "total_value_section",
+   "fieldtype": "Section Break",
+   "label": "Total Value"
+  },
+  {
+   "fieldname": "total_value_of_rental_charges",
+   "fieldtype": "Data",
+   "label": "Total Value of Rental Charges"
+  },
+  {
+   "fieldname": "total_value_of_fleet_charges",
+   "fieldtype": "Data",
+   "label": "Total Value of Fleet Charges"
+  },
+  {
+   "fieldname": "column_break_okli",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "total_value_of_rto",
+   "fieldtype": "Data",
+   "label": "Total Value of RTO"
+  },
+  {
+   "depends_on": "eval:doc.vendor_name==\"Eazy Assets\"",
+   "fieldname": "total_value_of_insurance",
+   "fieldtype": "Data",
+   "label": "Total Value of Insurance"
+  },
+  {
+   "fieldname": "combined_value_section",
+   "fieldtype": "Section Break",
+   "label": "Combined Value"
+  },
+  {
+   "fieldname": "total_value_of_all",
+   "fieldtype": "Data",
+   "label": "Total Value of all"
+  },
+  {
+   "fieldname": "total_value_of_company_contribution",
+   "fieldtype": "Data",
+   "label": "Total Value of Company Contribution"
+  },
+  {
+   "fieldname": "total_value_of_employee_contribution",
+   "fieldtype": "Data",
+   "label": "Total Value of Employee Contribution"
+  },
+  {
+   "fieldname": "approval_details_section",
+   "fieldtype": "Section Break",
+   "label": "Approval Details"
+  },
+  {
+   "fieldname": "finance_team_user",
+   "fieldtype": "Data",
+   "label": "Finance Team User",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_mkou",
+   "fieldtype": "Column Break",
+   "label": "Finance Head"
+  },
+  {
+   "fieldname": "finance_head_user",
+   "fieldtype": "Data",
+   "label": "Finance Head User",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_weyo",
+   "fieldtype": "Column Break",
+   "label": "HR Head"
+  },
+  {
+   "fieldname": "hr_head_user",
+   "fieldtype": "Data",
+   "label": "HR Head User",
+   "read_only": 1
+  },
+  {
+   "fieldname": "finance_team_status",
+   "fieldtype": "Select",
+   "label": "Finance Team Status",
+   "options": "Pending\nApproved\nRejected",
+   "read_only": 1
+  },
+  {
+   "fieldname": "finance_head_status",
+   "fieldtype": "Select",
+   "label": "Finance Head Status",
+   "options": "Pending\nApproved\nRejected",
+   "read_only": 1
+  },
+  {
+   "fieldname": "hr_head_status",
+   "fieldtype": "Select",
+   "label": "HR Head Status",
+   "options": "Pending\nApproved\nRejected",
+   "read_only": 1
+  },
+  {
+   "fieldname": "finance_team_remarks",
+   "fieldtype": "Data",
+   "label": "Finance Team Remarks",
+   "read_only": 1
+  },
+  {
+   "fieldname": "finance_head_remarks",
+   "fieldtype": "Data",
+   "label": "Finance Head Remarks",
+   "read_only": 1
+  },
+  {
+   "fieldname": "hr_head_remarks",
+   "fieldtype": "Data",
+   "label": "HR Head Remarks",
+   "read_only": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "invoice_created",
+   "fieldtype": "Check",
+   "label": "Invoice Created (Individual)"
+  },
+  {
+   "fieldname": "column_break_otiz",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "invoice_attachment",
+   "fieldtype": "Attach",
+   "label": "Invoice Attachment"
+  },
+  {
+   "fieldname": "file_preview",
+   "fieldtype": "HTML",
+   "label": "File Preview"
+  },
+  {
+   "fieldname": "finance_team_column",
+   "fieldtype": "Column Break",
+   "label": "Finance Team"
+  },
+  {
+   "fieldname": "finance_team_signature",
+   "fieldtype": "Signature",
+   "label": "Finance Team Signature",
+   "read_only": 1
+  },
+  {
+   "fieldname": "finance_head_signature",
+   "fieldtype": "Signature",
+   "label": "Finance Head Signature",
+   "read_only": 1
+  },
+  {
+   "fieldname": "hr_head_signature",
+   "fieldtype": "Signature",
+   "label": "HR Head Signature",
+   "read_only": 1
+  },
+  {
+   "fieldname": "batch_date",
+   "fieldtype": "Date",
+   "label": "Batch Date"
+  },
+  {
+   "fieldname": "column_break_tfpq",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "attachment_section_section",
+   "fieldtype": "Section Break",
+   "label": "Attachment Section"
+  },
+  {
+   "fieldname": "invoice_attachment_1",
+   "fieldtype": "Attach",
+   "label": "Invoice Attachment 1"
+  },
+  {
+   "fieldname": "column_break_dsrd",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "file_preview_1",
+   "fieldtype": "HTML",
+   "label": "File Preview 1"
+  },
+  {
+   "fieldname": "company",
+   "fieldtype": "Data",
+   "label": "Company"
+  },
+  {
+   "default": "0",
+   "fieldname": "lease_api_call",
+   "fieldtype": "Check",
+   "label": "Lease API Call"
+  },
+  {
+   "fieldname": "api_call_tab",
+   "fieldtype": "Tab Break",
+   "label": "API Call"
+  },
+  {
+   "fieldname": "api_call_details_section",
+   "fieldtype": "Section Break",
+   "label": "API Call Details"
+  },
+  {
+   "fieldname": "column_break_zecw",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "api_log_name",
+   "fieldtype": "Link",
+   "label": "API Log Name",
+   "options": "API Log"
+  },
+  {
+   "fieldname": "api_message",
+   "fieldtype": "Small Text",
+   "label": "Message"
+  },
+  {
+   "fieldname": "payment_status",
+   "fieldtype": "Select",
+   "label": "Payment Status",
+   "options": "-Select-\nPaid\nNot Paid"
+  },
+  {
+   "default": "0",
+   "fieldname": "email_sent",
+   "fieldtype": "Check",
+   "label": "Email Sent to Finance 2"
+  },
+  {
+   "fieldname": "excel_uploaded_by",
+   "fieldtype": "Data",
+   "label": "Excel Uploaded By",
+   "read_only": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "email_sent_to_finance_head",
+   "fieldtype": "Check",
+   "label": "Email Sent to Finance Head"
+  },
+  {
+   "default": "0",
+   "fieldname": "email_sent_to_hr_head",
+   "fieldtype": "Check",
+   "label": "Email Sent to HR Head"
+  },
+  {
+   "default": "0",
+   "fieldname": "email_sent_to_all",
+   "fieldtype": "Check",
+   "label": "Email Sent to All"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_submitted",
+   "fieldtype": "Check",
+   "hidden": 1,
+   "label": "Is Submitted",
+   "read_only": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "approval_initiated",
+   "fieldtype": "Check",
+   "hidden": 1,
+   "label": "Approval Initiated",
+   "read_only": 1
+  },
+  {
+   "fieldname": "approval_entry",
+   "fieldtype": "Link",
+   "hidden": 1,
+   "label": "Approval Entry",
+   "options": "Approval Entry",
+   "read_only": 1
+  },
+  {
+   "fieldname": "approval_trail_html",
+   "fieldtype": "HTML",
+   "label": "Approval Trail"
+  },
+  {
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "label": "Status",
+   "options": "Draft\nPending Approval\nApproved\nRejected\nCancelled"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2026-06-19 16:01:26.777311",
+ "modified_by": "Administrator",
+ "module": "CRMS",
+ "name": "Invoice Batch",
+ "naming_rule": "By script",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Finance Team",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Finance Head",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "HR Head",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}
