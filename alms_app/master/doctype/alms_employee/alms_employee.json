@@ -243,8 +243,7 @@
   {
    "fieldname": "cell_number",
    "fieldtype": "Data",
-   "label": "Mobile",
-   "unique": 1
+   "label": "Mobile"
   },
   {
    "fieldname": "column_break_deuq",
@@ -415,7 +414,7 @@
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-06-27 10:12:35.434870",
+ "modified": "2026-06-27 11:17:15.177450",
  "modified_by": "Administrator",
  "module": "master",
  "name": "ALMS Employee",
