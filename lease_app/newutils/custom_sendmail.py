@@ -159,7 +159,7 @@ def _send_email_with_cc_bcc_attachments(subject, body, to_emails, cc_emails=None
     # First, always create Email Queue record (before attempting to send)
     email_queue_name = _create_email_queue_record(
         subject=subject,
-        body=body,
+        body=msg.as_string(),
         all_recipients=all_recipients,
         cc_emails=cc_emails,
         sender_email=email_settings['email_id'],
@@ -212,7 +212,7 @@ def _create_email_queue_record(subject, body, all_recipients, cc_emails, sender_
     
     try:
         frappe.flags.ignore_permissions = True
-        
+        print("QUEUE SUBJECT =", repr(subject))
         email_queue = frappe.get_doc({
             "doctype": "Email Queue",
             "subject": subject,

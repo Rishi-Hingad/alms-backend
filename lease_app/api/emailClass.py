@@ -508,7 +508,7 @@ class EmailServices:
             subject=subject,
             recipient_email=recipient_email,
             body=body,
-            cc_list=cc_list
+            cc_list=cc_list,
         )
 
 
