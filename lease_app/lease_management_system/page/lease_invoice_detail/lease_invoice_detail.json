@@ -1,0 +1,23 @@
+{
+ "content": null,
+ "creation": "2025-09-13 15:48:11.236624",
+ "docstatus": 0,
+ "doctype": "Page",
+ "idx": 0,
+ "modified": "2025-09-13 15:48:11.236624",
+ "modified_by": "Administrator",
+ "module": "Lease Management System",
+ "name": "lease-invoice-detail",
+ "owner": "Administrator",
+ "page_name": "lease-invoice-detail",
+ "roles": [
+  {
+   "role": "Vendor"
+  }
+ ],
+ "script": null,
+ "standard": "Yes",
+ "style": null,
+ "system_page": 1,
+ "title": "Lease LMS Invoice Details"
+}

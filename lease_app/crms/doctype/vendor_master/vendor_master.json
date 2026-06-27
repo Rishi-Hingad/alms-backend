@@ -1,0 +1,183 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2025-02-28 14:13:06.256827",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "company_name",
+  "contact_number",
+  "contact_email",
+  "person_responsible"
+ ],
+ "fields": [
+  {
+   "fieldname": "company_name",
+   "fieldtype": "Data",
+   "label": "Company Name"
+  },
+  {
+   "default": "+91",
+   "fieldname": "contact_number",
+   "fieldtype": "Phone",
+   "label": "Contact Number"
+  },
+  {
+   "fieldname": "contact_email",
+   "fieldtype": "Data",
+   "label": "Contact Email"
+  },
+  {
+   "fieldname": "person_responsible",
+   "fieldtype": "Table",
+   "label": "Person Responsible",
+   "options": "Person Responsible"
+  },
+  {
+   "fieldname": "vendor_code",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Vendor Code",
+   "reqd": 1,
+   "unique": 1
+  },
+  {
+   "fieldname": "vendor_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Vendor Name",
+   "reqd": 1
+  },
+  {
+   "fieldname": "address",
+   "fieldtype": "Text",
+   "label": "Address",
+   "options": "DocType State"
+  },
+  {
+   "fieldname": "pin_code",
+   "fieldtype": "Link",
+   "label": "Pin Code",
+   "options": "Pincode Master"
+  },
+  {
+   "fieldname": "purchase_organization",
+   "fieldtype": "Select",
+   "label": "Purchase Organization",
+   "options": "\n8100\n8200"
+  },
+  {
+   "fieldname": "purchase_organization_description",
+   "fieldtype": "Select",
+   "label": "Purchase Organization Description",
+   "options": "\nPurchase Organization-Domestic\nPurchase Organization-Import"
+  },
+  {
+   "fieldname": "minimum_order_value",
+   "fieldtype": "Float",
+   "label": "Minimum Order Value"
+  },
+  {
+   "fieldname": "telephone_number",
+   "fieldtype": "Phone",
+   "label": "Telephone Number"
+  },
+  {
+   "fieldname": "number_of_purchasing_organization",
+   "fieldtype": "Int",
+   "label": "Number of Purchasing Organization"
+  },
+  {
+   "fieldname": "mobile_number",
+   "fieldtype": "Phone",
+   "label": "Mobile Number"
+  },
+  {
+   "fieldname": "email_address",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Email Address",
+   "options": "Email"
+  },
+  {
+   "fieldname": "cst",
+   "fieldtype": "Data",
+   "label": "CST"
+  },
+  {
+   "fieldname": "lst",
+   "fieldtype": "Data",
+   "label": "LST"
+  },
+  {
+   "fieldname": "pan",
+   "fieldtype": "Data",
+   "label": "PAN"
+  },
+  {
+   "fieldname": "service_registration_number",
+   "fieldtype": "Data",
+   "label": "Service Registration Number"
+  },
+  {
+   "fieldname": "gst_no",
+   "fieldtype": "Data",
+   "label": "GST No."
+  },
+  {
+   "fieldname": "industry",
+   "fieldtype": "Select",
+   "label": "Industry",
+   "options": "\nDOM_Goods\nDOM_Services"
+  },
+  {
+   "fieldname": "vendor_classification",
+   "fieldtype": "Select",
+   "label": "Vendor Classification",
+   "options": "\nRegistered\nUnregistered"
+  },
+  {
+   "fieldname": "country_name",
+   "fieldtype": "Link",
+   "label": "Country Name",
+   "options": "Country"
+  },
+  {
+   "fieldname": "payment_term_description",
+   "fieldtype": "Link",
+   "label": "Payment Term Description",
+   "options": "Payment Term Master"
+  },
+  {
+   "fieldname": "city",
+   "fieldtype": "Data",
+   "label": "City ",
+   "read_only": 1
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2025-04-25 17:38:14.205964",
+ "modified_by": "Administrator",
+ "module": "CRMS",
+ "name": "Vendor Master",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

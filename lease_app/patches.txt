@@ -1,6 +1,8 @@
-[pre_model_sync]
+# Patches added in this section will be executed after doctypes are migrated
+# Patches added in this section will be executed after doctypes are migratedlease_app.patches.clear_dummy_files
 # Patches added in this section will be executed before doctypes are migrated
 # Read docs to understand patches: https://frappeframework.com/docs/v14/user/en/database-migrations
-
 [post_model_sync]
-# Patches added in this section will be executed after doctypes are migrated
+[pre_model_sync]
+lease_app.patches.fix_purchase_form_submittable_v2
+lease_app.patches.revert_purchase_form_submittable

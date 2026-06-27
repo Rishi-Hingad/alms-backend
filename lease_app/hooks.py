@@ -247,3 +247,54 @@ app_license = "mit"
 # List of apps whose translatable strings should be excluded from this app's translations.
 # ignore_translatable_strings_from = []
 
+
+# Merged from lease_app and lease_app
+
+fixtures = [
+    {"dt": "Role", "filters": {"name": ["in", ["Car Indent Form User", "ALMS User"]]}},
+]
+
+app_include_css = [
+    "/assets/lease_app/css/custom.css"
+]
+
+app_include_js = [
+    "/assets/lease_app/js/alms_listview_handler.js",
+    "/assets/lease_app/js/approval_ui_v7.js",
+    "/assets/lease_app/js/invoice_dialog.js"
+]
+
+doc_events = {
+    "*": {
+        "validate": "lease_app.approval.approval_router.auto_restart_rejected_document",
+        "on_update": "lease_app.approval.approval_router.trigger_approval_if_matrix_exists",
+        "on_submit": "lease_app.approval.approval_router.trigger_approval_if_matrix_exists"
+    },
+    "Invoice Batch": {
+        "on_update": [
+            "lease_app.crms.doctype.invoice_batch.invoice_batch.create_invoice_details_on_approval",
+            "lease_app.approval.approval_router.trigger_approval_if_matrix_exists"
+        ]
+    },
+    "LMS Invoice Details": {
+        "on_update": "lease_app.api.invoice_payment_status.on_update_invoice"
+    }
+}
+
+scheduler_events = {
+"cron": {
+"0 0 * * *": [  # Runs at 12:00 AM daily
+"lease_app.api.fetch_invoice_details.run_daily_invoice_fetch"
+]
+}
+}
+
+permission_query_conditions = {
+"Lease Management": "lease_app.lease_management_system.doctype.lease_management.lease_management.get_permission_query_conditions",
+"Property Master": "lease_app.lease_masters.doctype.property_master.property_master.get_permission_query_conditions",
+}
+
+has_permission = {
+"Lease Management": "lease_app.lease_management_system.doctype.lease_management.lease_management.has_permission",
+"Property Master": "lease_app.lease_masters.doctype.property_master.property_master.has_permission",
+}
