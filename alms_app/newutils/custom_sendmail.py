@@ -26,6 +26,7 @@ def get_dynamic_from_address():
 def custom_sendmail(recipients=None, subject=None, message=None, cc=None, bcc=None, attachments=None, **kwargs):
     print("----Custom Send email hit----")
    
+    subject = (subject or "").strip() or "Notification"
    
     create_notification_log(recipients= recipients, subject=subject, message=message, **kwargs)
     if not cc and not bcc and not attachments:
