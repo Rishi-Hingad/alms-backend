@@ -226,7 +226,7 @@
    "fieldname": "revised_engine",
    "fieldtype": "Select",
    "label": "Revised Engine",
-   "options": "-Select-\nEV\nPetrol\nCNG\nDiesel"
+   "options": "-Select-\nEV\nPetrol\nCNG\nDiesel\nCNG-Petrol"
   },
   {
    "fieldname": "tenure_in_years",
@@ -427,7 +427,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-06-25 18:01:35.895215",
+ "modified": "2026-06-27 11:35:38.312389",
  "modified_by": "Administrator",
  "module": "CRMS",
  "name": "Purchase Form",
@@ -480,16 +480,14 @@
    "write": 1
   },
   {
-   "role": "Finance Team",
-   "read": 1,
-   "write": 1,
-   "create": 0,
-   "delete": 0,
    "email": 1,
    "export": 1,
    "print": 1,
+   "read": 1,
    "report": 1,
-   "share": 1
+   "role": "Finance Team",
+   "share": 1,
+   "write": 1
   }
  ],
  "row_format": "Dynamic",
@@ -508,6 +506,5 @@
    "color": "Red",
    "title": "Rejected"
   }
- ],
- "is_submittable": 0
+ ]
 }
