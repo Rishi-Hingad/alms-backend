@@ -75,11 +75,7 @@ frappe.ui.form.on("Invoice Documents", {
 		dialog.show();
 
 		frappe.call({
-<<<<<<<< HEAD:lease_app/lease_management_system/doctype/lease_management/lease_management.js
 			method: "lease_app.lease_management_system.doctype.lease_management.lease_management.get_invoice_attachments",
-========
-			method: "leasemanagement.lease_management_system.doctype.lease_management.lease_management.get_invoice_attachments",
->>>>>>>> 29d1e89 (fix:changed app name from lms to leasemanagement.):leasemanagement/lease_management_system/doctype/lease_management/lease_management.js
 			args: {
 				filters: {
 					parent: frm.doc.name,
@@ -137,11 +133,7 @@ frappe.ui.form.on("Invoice Documents", {
 					const name = $(this).attr("data-name");
 					frappe.confirm(__("Delete this attachment?"), () => {
 						frappe.call({
-<<<<<<<< HEAD:lease_app/lease_management_system/doctype/lease_management/lease_management.js
 							method: "lease_app.lease_management_system.doctype.lease_management.lease_management.delete_invoice_attachment",
-========
-							method: "leasemanagement.lease_management_system.doctype.lease_management.lease_management.delete_invoice_attachment",
->>>>>>>> 29d1e89 (fix:changed app name from lms to leasemanagement.):leasemanagement/lease_management_system/doctype/lease_management/lease_management.js
 							args: {
 								parent_doctype: frm.doctype,
 								parent_name: frm.doc.name,
@@ -346,11 +338,7 @@ frappe.ui.form.on("Lease Management", {
 				// frm.add_custom_button(__("Generate Report"), function () {
 				// 	frm.report_counter = (frm.report_counter || 0) + 1;
 				// 	frappe.call({
-<<<<<<<< HEAD:lease_app/lease_management_system/doctype/lease_management/lease_management.js
 				// 		method: "lease_app.lease_management_system.doctype.lease_management.lease_management.generate_report",
-========
-				// 		method: "leasemanagement.lease_management_system.doctype.lease_management.lease_management.generate_report",
->>>>>>>> 29d1e89 (fix:changed app name from lms to leasemanagement.):leasemanagement/lease_management_system/doctype/lease_management/lease_management.js
 				// 		args: {
 				// 			docname: frm.doc.name,
 				// 			cnt: frm.report_counter,
@@ -524,7 +512,6 @@ frappe.ui.form.on("Lease Management", {
 						);
 					}
 				});
-<<<<<<<< HEAD:lease_app/lease_management_system/doctype/lease_management/lease_management.js
 				if (frm.doc.security_deposit == "Paid") {
 					frm.add_custom_button(
 						__("Security Deposit Amortization"),
@@ -536,30 +523,6 @@ frappe.ui.form.on("Lease Management", {
 						"Actions"
 					);
 				}
-========
-
-				// frm.add_custom_button(__("Update Expired Lease's"),function (){
-				//  frappe.call({
-				//      method:"leasemanagement.lease_management_system.doctype.lease_management.lease_management.bulk_update_agreement_status",
-				//      callback(res){
-				// 		if(res.message==0){
-				// 			frappe.msgprint("No Agreement Status to Update");
-				// 		}
-				// 		else{
-				// 			frappe.msgprint(res.message+" Agreement Status Updated");
-				// 			frm.reload_doc();
-				// 		}
-				//      }
-				//  });
-				// }
-				// );
-			}
-			if (frappe.user.has_role("Vendor") || frappe.user.has_role("Accounts")) {
-				frm.add_custom_button(__("Go to Invoice Details"), function () {
-					// Scroll to the field
-					frm.scroll_to_field("invoice_details");
-				});
->>>>>>>> 29d1e89 (fix:changed app name from lms to leasemanagement.):leasemanagement/lease_management_system/doctype/lease_management/lease_management.js
 			}
 			// if (frappe.user.has_role("Vendor") || frappe.user.has_role("Accounts")) {
 			// 	frm.add_custom_button(__("Go to LMS Invoice Details"), function () {
