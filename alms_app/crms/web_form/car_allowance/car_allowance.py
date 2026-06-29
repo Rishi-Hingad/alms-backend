@@ -11,6 +11,11 @@ def get_employee_details(employee_code):
     employee = frappe.get_all("ALMS Employee", filters={"name": employee_code}, fields=["*"])
     
     if not employee:
+        # Fallback for old name format 'CODE-Name'
+        possible_code = employee_code.split('-')[0].strip()
+        employee = frappe.get_all("ALMS Employee", filters={"employee_code": possible_code}, fields=["*"])
+
+    if not employee:
         frappe.throw(f"Employee with name '{employee_code}' not found.")
         
     emp = employee[0]
