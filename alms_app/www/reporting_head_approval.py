@@ -94,7 +94,7 @@ def get_car_indent_data(indent_form_id, token=None):
                 "id": form_data.name,
                 "page_id": page_id,
                 "timestamp": current_time,
-                "employee_name": user.name,
+                "employee_name": user.full_name,
                 "employee_email": form_data.email_id,
                 "reporting_head_name": form_data.employee_reporting,
                 "vehicle_make_model": f"{form_data.make}-{form_data.model}",

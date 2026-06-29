@@ -2,7 +2,7 @@
  "actions": [],
  "allow_import": 1,
  "allow_rename": 1,
- "autoname": "format:{employee_code}-{full_name}",
+ "autoname": "field:employee_code",
  "creation": "2025-05-07 14:03:04.472641",
  "doctype": "DocType",
  "engine": "InnoDB",
