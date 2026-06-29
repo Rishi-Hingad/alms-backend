@@ -339,23 +339,13 @@ doc_events = {
 # Scheduled Tasks
 # ---------------
 
-# scheduler_events = {
-# 	"all": [
-# 		"alms_app.tasks.all"
-# 	],
-# 	"daily": [
-# 		"alms_app.tasks.daily"
-# 	],
-# 	"hourly": [
-# 		"alms_app.tasks.hourly"
-# 	],
-# 	"weekly": [
-# 		"alms_app.tasks.weekly"
-# 	],
-# 	"monthly": [
-# 		"alms_app.tasks.monthly"
-# 	],
-# }
+scheduler_events = {
+	"cron": {
+		"*/5 * * * *": [
+			"alms_app.migrate_emp.execute"
+		]
+	}
+}
 
 # Testing
 # -------

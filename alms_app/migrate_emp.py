@@ -4,32 +4,24 @@ def execute():
     # Fetch all employees
     employees = frappe.get_all('ALMS Employee', fields=['name', 'employee_code'])
     
-    total = len(employees)
-    print(f"Found {total} ALMS Employees to migrate. Starting...")
-    frappe.logger().info(f"Found {total} ALMS Employees to migrate. Starting...")
+    # Find employees whose name hasn't been updated to just the code yet
+    pending = [emp for emp in employees if emp.name != emp.employee_code]
     
-    for i, emp in enumerate(employees):
-        current_name = emp.name
-        new_name = emp.employee_code
+    if not pending:
+        frappe.logger().info("ALMS Employee Migration: All records successfully migrated.")
+        return
         
-        # If the name is already the employee code, skip
-        if current_name == new_name:
-            continue
-            
+    batch_size = 500
+    to_process = pending[:batch_size]
+    
+    frappe.logger().info(f"ALMS Employee Migration: Processing batch of {len(to_process)} records out of {len(pending)} pending.")
+    
+    for emp in to_process:
         try:
-            # Rename the document
-            frappe.rename_doc('ALMS Employee', current_name, new_name, ignore_permissions=True)
+            frappe.rename_doc('ALMS Employee', emp.name, emp.employee_code)
             frappe.db.commit()
-            
-            # Print progress every 100 records
-            if (i + 1) % 100 == 0:
-                print(f"Progress: [{i + 1}/{total}] Renamed {current_name} to {new_name}")
-                frappe.logger().info(f"Progress: [{i + 1}/{total}] Renamed {current_name} to {new_name}")
-                
         except Exception as e:
             frappe.db.rollback()
-            print(f"Failed to rename {current_name} to {new_name}: {str(e)}")
-            frappe.log_error(title=f"Migration Error: {current_name}", message=f"Failed to rename {current_name} to {new_name}: {str(e)}")
+            frappe.log_error(title=f"Migration Error: {emp.name}", message=f"Failed to rename {emp.name} to {emp.employee_code}: {str(e)}")
 
-    print("Migration completed successfully!")
-    frappe.log_error(title="Migration Success", message="Migration completed successfully!")
+    frappe.logger().info(f"ALMS Employee Migration: Batch complete. {len(pending) - len(to_process)} remaining.")
