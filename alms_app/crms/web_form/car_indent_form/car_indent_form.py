@@ -10,13 +10,18 @@ def get_employee_details(employee_code):
     employee = frappe.get_all("ALMS Employee", filters={"name": employee_code}, 
     fields=["name", "designation", "location", "company", "contact_number", "email_id", "department","eligibility","reporting_head"])
     
+    if not employee:
+        # Fallback for old name format 'CODE-Name'
+        possible_code = employee_code.split('-')[0].strip()
+        employee = frappe.get_all("ALMS Employee", filters={"employee_code": possible_code}, 
+        fields=["name", "designation", "location", "company", "contact_number", "email_id", "department","eligibility","reporting_head"])
+
+    if not employee:
+        frappe.throw(f"Employee with name '{employee_code}' not found.")
+
     employee_eligibility = frappe.get_doc("Employee Designation",employee[0].designation)
     employee.append({"eligibility":employee_eligibility.eligibility})
-    if employee:
-        employee_details = employee[0]
-        return employee
-    else:
-        frappe.throw(f"Employee with name '{employee_code}' not found.")
+    return employee
         
 @frappe.whitelist(allow_guest=True)
 def calculate_totals(frm_data):
