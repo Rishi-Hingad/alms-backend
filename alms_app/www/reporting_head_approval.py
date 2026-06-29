@@ -161,7 +161,7 @@ def get_context(context):
         
         # Set aggressive anti-cache headers for the web page
         if hasattr(frappe.local, 'response'):
-            if not hasattr(frappe.local.response, 'headers'):
+            if not getattr(frappe.local.response, 'headers', None):
                 frappe.local.response.headers = {}
             
             frappe.local.response.headers.update({
