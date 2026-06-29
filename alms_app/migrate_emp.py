@@ -29,7 +29,7 @@ def execute():
         except Exception as e:
             frappe.db.rollback()
             print(f"Failed to rename {current_name} to {new_name}: {str(e)}")
-            frappe.logger().error(f"Failed to rename {current_name} to {new_name}: {str(e)}")
+            frappe.log_error(title=f"Migration Error: {current_name}", message=f"Failed to rename {current_name} to {new_name}: {str(e)}")
 
     print("Migration completed successfully!")
-    frappe.logger().info("Migration completed successfully!")
+    frappe.log_error(title="Migration Success", message="Migration completed successfully!")
