@@ -4,3 +4,4 @@ alms_app.patches.fix_purchase_form_submittable_v2
 [post_model_sync]
 # Patches added in this section will be executed after doctypes are migratedalms_app.patches.clear_dummy_files
 alms_app.patches.revert_purchase_form_submittable
+alms_app.patches.rename_employees
