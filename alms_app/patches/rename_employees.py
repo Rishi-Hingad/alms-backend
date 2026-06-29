@@ -16,7 +16,7 @@ def execute():
             
         try:
             # Rename the document
-            frappe.rename_doc('ALMS Employee', current_name, new_name, ignore_permissions=True)
+            frappe.rename_doc('ALMS Employee', current_name, new_name)
             # We don't commit inside the loop for patches; frappe's patch runner handles commits.
         except Exception as e:
             frappe.log_error(title=f"Migration Error: {current_name}", message=f"Failed to rename {current_name} to {new_name}: {str(e)}")
