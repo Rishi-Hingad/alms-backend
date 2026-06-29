@@ -97,7 +97,7 @@ def send_email_to_reporting_head(car_indent_form_name):
         
 
         email_sender(name=employee.name, email_send_to="To Reporting", car_indent_form_name=car_indent)
-        return {"status": "success", "message": f"Email triggered for reporting head of {employee.name}"}
+        return {"status": "success", "message": f"Email triggered for reporting head of {employee.full_name}"}
     except Exception as e:
         frappe.log_error(f"Failed to send reporting head email: {str(e)}", "Car Indent Email Error")
         return {"status": "error", "message": str(e)}
