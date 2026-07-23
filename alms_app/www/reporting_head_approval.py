@@ -88,13 +88,18 @@ def get_car_indent_data(indent_form_id, token=None):
         current_time = now()
         page_id = f"{form_data.name}_{get_datetime().strftime('%Y%m%d_%H%M%S_%f')}"
         
+        employee_full_name = user.get("full_name")
+        if not employee_full_name or employee_full_name == user.name:
+            name_parts = [part for part in [user.get("first_name"), user.get("middle_name"), user.get("last_name")] if part]
+            employee_full_name = " ".join(name_parts) or user.name
+
         data = {
             "success": True,
             "data": {
                 "id": form_data.name,
                 "page_id": page_id,
                 "timestamp": current_time,
-                "employee_name": user.full_name,
+                "employee_name": employee_full_name,
                 "employee_email": form_data.email_id,
                 "reporting_head_name": form_data.employee_reporting,
                 "vehicle_make_model": f"{form_data.make}-{form_data.model}",

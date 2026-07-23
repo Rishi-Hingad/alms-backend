@@ -340,11 +340,9 @@ doc_events = {
 # ---------------
 
 scheduler_events = {
-	"cron": {
-		"*/5 * * * *": [
-			"alms_app.migrate_emp.execute"
-		]
-	}
+	"all": [
+		"alms_app.migrate_emp.execute"
+	]
 }
 
 # Testing
