@@ -1,0 +1,436 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "format:Quo-{finance_company}-{employee_details}-{###}",
+ "creation": "2024-09-23 10:04:09.288926",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "revised_quotation_from_meril_section",
+  "revised_quotation_vendor",
+  "car_quotation_section",
+  "finance_company",
+  "employee_details",
+  "car_indent_form_id",
+  "location",
+  "total_kms",
+  "variant",
+  "quote",
+  "interest_rate",
+  "tenure",
+  "base_price_excluding_gst",
+  "gst",
+  "ex_showroom_amount",
+  "column_break_xjhs",
+  "accessories",
+  "discount_excluding_gst",
+  "base_price_less_discounts",
+  "total_discount",
+  "ex_showroom_amount_net_of_discount",
+  "registration_charges",
+  "residual_value_percent",
+  "financed_amount",
+  "residual_value",
+  "emi_financing",
+  "finance_emi_road_tax",
+  "column_break_vhla",
+  "gst_and_cess",
+  "insurance",
+  "fleet_management_repairs_and_tyres",
+  "24x7_assist",
+  "pickup_and_drop",
+  "std_relief_car_non_accdt",
+  "gst_on_fms",
+  "total_emi",
+  "interim_payment",
+  "quarterly_payment",
+  "approval_tab",
+  "quotation_details_section",
+  "status",
+  "revised_modify_quotation_id",
+  "quotation_status",
+  "column_break_zxbj",
+  "root_quotation",
+  "parent_quotation",
+  "version_number",
+  "approval_fields_section",
+  "finance_team_status",
+  "finance_team_remarks",
+  "finance_team_action_by",
+  "revised_remark",
+  "column_break_rxya",
+  "finance_head_status",
+  "finance_head_remarks",
+  "finance_head_action_by",
+  "is_submitted",
+  "approval_initiated",
+  "approval_entry",
+  "approval_trail_html",
+  "submission_datetime"
+ ],
+ "fields": [
+  {
+   "fieldname": "car_quotation_section",
+   "fieldtype": "Section Break",
+   "label": "Car Quotation"
+  },
+  {
+   "fieldname": "finance_company",
+   "fieldtype": "Select",
+   "label": "Finance Company",
+   "options": "-Select-\nEazy Assets\nALD\nXYZ"
+  },
+  {
+   "fieldname": "employee_details",
+   "fieldtype": "Link",
+   "label": "Employee Details",
+   "options": "ALMS Employee"
+  },
+  {
+   "fieldname": "location",
+   "fieldtype": "Data",
+   "label": "Location"
+  },
+  {
+   "fieldname": "variant",
+   "fieldtype": "Data",
+   "label": "Variant"
+  },
+  {
+   "fieldname": "quote",
+   "fieldtype": "Data",
+   "label": "Quote"
+  },
+  {
+   "fieldname": "interest_rate",
+   "fieldtype": "Data",
+   "label": "Interest Rate"
+  },
+  {
+   "fieldname": "tenure",
+   "fieldtype": "Data",
+   "label": "Tenure (in Years)"
+  },
+  {
+   "fieldname": "base_price_excluding_gst",
+   "fieldtype": "Data",
+   "label": "Base Price Excluding GST"
+  },
+  {
+   "fieldname": "gst",
+   "fieldtype": "Data",
+   "label": "GST"
+  },
+  {
+   "fieldname": "ex_showroom_amount",
+   "fieldtype": "Data",
+   "label": "Ex-Showroom Amount"
+  },
+  {
+   "fieldname": "column_break_xjhs",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "discount_excluding_gst",
+   "fieldtype": "Data",
+   "label": "Discount (Excluding GST)"
+  },
+  {
+   "fieldname": "base_price_less_discounts",
+   "fieldtype": "Data",
+   "label": "Base Price Less Discounts"
+  },
+  {
+   "fieldname": "total_discount",
+   "fieldtype": "Data",
+   "label": "Total Discount"
+  },
+  {
+   "fieldname": "ex_showroom_amount_net_of_discount",
+   "fieldtype": "Data",
+   "label": "Ex-Showroom Amount(Net of Discount)"
+  },
+  {
+   "fieldname": "registration_charges",
+   "fieldtype": "Data",
+   "label": "Registration Charges"
+  },
+  {
+   "fieldname": "residual_value_percent",
+   "fieldtype": "Data",
+   "label": "Residual Value Percent"
+  },
+  {
+   "fieldname": "financed_amount",
+   "fieldtype": "Data",
+   "label": "Financed Amount"
+  },
+  {
+   "fieldname": "residual_value",
+   "fieldtype": "Data",
+   "label": "Residual Value"
+  },
+  {
+   "fieldname": "emi_financing",
+   "fieldtype": "Data",
+   "label": "EMI (Financing)"
+  },
+  {
+   "fieldname": "finance_emi_road_tax",
+   "fieldtype": "Data",
+   "label": "Finance EMI - Road Tax"
+  },
+  {
+   "fieldname": "column_break_vhla",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "gst_and_cess",
+   "fieldtype": "Data",
+   "label": "GST and Cess"
+  },
+  {
+   "fieldname": "insurance",
+   "fieldtype": "Data",
+   "label": "Insurance"
+  },
+  {
+   "fieldname": "fleet_management_repairs_and_tyres",
+   "fieldtype": "Data",
+   "label": "Fleet Management (Repairs and Tyres)"
+  },
+  {
+   "fieldname": "24x7_assist",
+   "fieldtype": "Data",
+   "label": "24x7 Assist"
+  },
+  {
+   "fieldname": "pickup_and_drop",
+   "fieldtype": "Data",
+   "label": "Pickup & Drop"
+  },
+  {
+   "fieldname": "std_relief_car_non_accdt",
+   "fieldtype": "Data",
+   "label": "Std Relief Car (Non Accdt)"
+  },
+  {
+   "fieldname": "gst_on_fms",
+   "fieldtype": "Data",
+   "label": "GST on FMS"
+  },
+  {
+   "fieldname": "total_emi",
+   "fieldtype": "Data",
+   "label": "Total EMI"
+  },
+  {
+   "default": "Pending",
+   "fieldname": "finance_team_status",
+   "fieldtype": "Select",
+   "label": "Finance Team Status",
+   "options": "Pending\nApproved\nRejected",
+   "read_only": 1
+  },
+  {
+   "default": "Pending",
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "label": "Status",
+   "options": "Pending\nApproved\nRejected",
+   "read_only": 1
+  },
+  {
+   "default": "Pending",
+   "fieldname": "finance_head_status",
+   "fieldtype": "Select",
+   "label": "Finance Head Status",
+   "options": "Pending\nApproved\nRejected",
+   "read_only": 1
+  },
+  {
+   "fieldname": "finance_team_remarks",
+   "fieldtype": "Data",
+   "label": "Finance Team Remarks",
+   "read_only": 1
+  },
+  {
+   "fieldname": "finance_head_remarks",
+   "fieldtype": "Data",
+   "label": "Finance Head Remarks",
+   "read_only": 1
+  },
+  {
+   "fieldname": "interim_payment",
+   "fieldtype": "Data",
+   "label": "Interim Payment"
+  },
+  {
+   "fieldname": "quarterly_payment",
+   "fieldtype": "Data",
+   "label": "Quarterly Payment"
+  },
+  {
+   "fieldname": "approval_fields_section",
+   "fieldtype": "Section Break",
+   "label": "Approval Fields"
+  },
+  {
+   "fieldname": "column_break_rxya",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "car_indent_form_id",
+   "fieldtype": "Link",
+   "label": "Car Indent Form ID",
+   "options": "Car Indent Form"
+  },
+  {
+   "default": "New",
+   "fieldname": "quotation_status",
+   "fieldtype": "Select",
+   "label": "Quotation Status",
+   "options": "New\nRevised"
+  },
+  {
+   "fieldname": "revised_modify_quotation_id",
+   "fieldtype": "Link",
+   "label": "Revised/Modify Quotation ID",
+   "options": "Car Quotation"
+  },
+  {
+   "fieldname": "finance_team_action_by",
+   "fieldtype": "Data",
+   "label": "Finance Team Action By",
+   "read_only": 1
+  },
+  {
+   "fieldname": "finance_head_action_by",
+   "fieldtype": "Data",
+   "label": "Finance Head Action By",
+   "read_only": 1
+  },
+  {
+   "fieldname": "revised_quotation_from_meril_section",
+   "fieldtype": "Section Break",
+   "label": "Revised Quotation From Meril"
+  },
+  {
+   "fieldname": "revised_quotation_vendor",
+   "fieldtype": "Attach",
+   "label": "Revised Quotation"
+  },
+  {
+   "fieldname": "total_kms",
+   "fieldtype": "Data",
+   "label": "Total KMS"
+  },
+  {
+   "fieldname": "accessories",
+   "fieldtype": "Data",
+   "label": "Accessories"
+  },
+  {
+   "fieldname": "approval_tab",
+   "fieldtype": "Tab Break",
+   "label": "Approval"
+  },
+  {
+   "fieldname": "quotation_details_section",
+   "fieldtype": "Section Break",
+   "label": "Quotation Details"
+  },
+  {
+   "fieldname": "column_break_zxbj",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "root_quotation",
+   "fieldtype": "Link",
+   "label": "Root Quotation",
+   "options": "Car Quotation"
+  },
+  {
+   "fieldname": "parent_quotation",
+   "fieldtype": "Link",
+   "label": "Parent Quotation",
+   "options": "Car Quotation"
+  },
+  {
+   "fieldname": "version_number",
+   "fieldtype": "Int",
+   "label": "Version"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_submitted",
+   "fieldtype": "Check",
+   "hidden": 1,
+   "label": "Is Submitted",
+   "read_only": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "approval_initiated",
+   "fieldtype": "Check",
+   "hidden": 1,
+   "label": "Approval Initiated",
+   "read_only": 1
+  },
+  {
+   "fieldname": "approval_entry",
+   "fieldtype": "Link",
+   "hidden": 1,
+   "label": "Approval Entry",
+   "options": "Approval Entry",
+   "read_only": 1
+  },
+  {
+   "fieldname": "approval_trail_html",
+   "fieldtype": "HTML",
+   "label": "Approval Trail"
+  },
+  {
+   "fieldname": "submission_datetime",
+   "fieldtype": "Datetime",
+   "label": "Submission Date and Time",
+   "read_only": 1
+  },
+  {
+   "fieldname": "revised_remark",
+   "fieldtype": "Small Text",
+   "label": "Revised Remark"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [
+  {
+   "link_doctype": "Company and Employee Deduction",
+   "link_fieldname": "finance_quotation_id"
+  }
+ ],
+ "modified": "2026-06-16 21:05:15.400918",
+ "modified_by": "Administrator",
+ "module": "CRMS",
+ "name": "Car Quotation",
+ "naming_rule": "Expression",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

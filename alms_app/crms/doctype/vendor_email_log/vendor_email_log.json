@@ -1,0 +1,87 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2026-04-27 16:15:14.541944",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "unique_key",
+  "reference_doctype",
+  "reference_name",
+  "vendor",
+  "column_break_vjdi",
+  "email",
+  "email_type",
+  "status"
+ ],
+ "fields": [
+  {
+   "fieldname": "reference_doctype",
+   "fieldtype": "Data",
+   "label": "Reference Doctype"
+  },
+  {
+   "fieldname": "reference_name",
+   "fieldtype": "Data",
+   "label": "Reference name"
+  },
+  {
+   "fieldname": "column_break_vjdi",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "vendor",
+   "fieldtype": "Link",
+   "label": "Vendor",
+   "options": "Vendor Master"
+  },
+  {
+   "fieldname": "email",
+   "fieldtype": "Data",
+   "label": "Email"
+  },
+  {
+   "fieldname": "email_type",
+   "fieldtype": "Data",
+   "label": "Email Type"
+  },
+  {
+   "fieldname": "unique_key",
+   "fieldtype": "Data",
+   "label": "Unique Key",
+   "unique": 1
+  },
+  {
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "label": "status",
+   "options": "-Select-\nPending\nSent\nFailed"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2026-04-27 16:18:09.697375",
+ "modified_by": "Administrator",
+ "module": "CRMS",
+ "name": "Vendor Email Log",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}
