@@ -178,3 +178,165 @@ def get_invoice_batch_details(batch_date=None, vendor_name=None, name=None):
         frappe.db.commit()
 
         frappe.throw(str(e))
+
+
+def map_invoice_row(row):
+    from frappe.utils import getdate
+
+    billing_date = getdate(row.get("billing_date")) if row.get("billing_date") else None
+
+    return {
+        "contract_number": row.get("contract_number"),
+        "company": row.get("company"),
+        "employee_code": "",
+        "cost_center": row.get("cost_center"),
+        "vehicle_details": row.get("vehicle_details"),
+        "billing_date": billing_date,
+        "invoice_from_date": row.get("invoice_date_from"),
+        "invoice_to_date": row.get("invoice_date_to"),
+        "invoice_amount": row.get("total_invoice_value"),
+        "invoice_value_a": row.get("invoice_value_a"),
+        "invoice_value_b": row.get("invoice_value_b"),
+        "invoice_value_c": row.get("invoice_value_c"),
+        "invoice_value_d": row.get("invoice_value_d"),
+        "company_contribution": row.get("company_contribution"),
+        "employee_contribution": row.get("employee_contribution"),
+        "installment_no": row.get("installment_no"),
+        "month": row.get("month"),
+    }
+
+
+def _link_invoice_to_lease(doc):
+    from frappe.utils import getdate
+    from dateutil.relativedelta import relativedelta
+    from datetime import date
+
+    for child in doc.rows:
+        contract_no = child.contract_number
+        invoice_date = getdate(child.billing_date) if child.billing_date else None
+        invoice_from_date = getdate(child.invoice_from_date) if child.invoice_from_date else None
+        invoice_to_date = getdate(child.invoice_to_date) if child.invoice_to_date else None
+
+        # 1. Contract Number Check
+        car = frappe.db.get_value(
+            "Vehicle Details",
+            {"contract_number": contract_no},
+            ["name", "vendor_company", "company_name", "employee_code_and_name"],
+            as_dict=1,
+        )
+
+        if not car:
+            child.lease_status = "Contract Not Found"
+            continue
+
+        car_company_code = frappe.db.get_value("Company Master", {"name": car.company_name}, "company_code")
+
+        # 2. Company Match
+        if str(car_company_code) != str(child.company_code):
+            child.lease_status = "Company Mismatch"
+            continue
+
+        # 3. Employee Code Match
+        if str(car.employee_code_and_name) != str(child.employee_code):
+            child.lease_status = "Employee Mismatch"
+            continue
+
+        # 4. Find Lease Management
+        leases = frappe.get_all(
+            "Lease Management",
+            filters={"car_description": car.name, "vendor": car.vendor_company, "company": car.company_name},
+            fields=["name", "agreement_start_date", "agreement_end_date", "status"],
+        )
+
+        if not leases:
+            child.lease_status = "Lease Not Found"
+            continue
+
+        matched = False
+        if len(leases) > 0:
+            for lease in leases:
+                lease_doc = frappe.get_doc("Lease Management", lease.name)
+                if lease.status == "Discarded":
+                    if lease_doc.modifications:
+                        temp = frappe.db.get_value(
+                            "Lease Management",
+                            lease_doc.modifications[0].modified_lease,
+                            "agreement_start_date",
+                        )
+                        modified_date = date(temp.year, temp.month, temp.day) - relativedelta(days=1)
+                        if invoice_date:
+                            if not (
+                                lease.agreement_start_date <= invoice_from_date
+                                and invoice_to_date <= modified_date
+                            ):
+                                child.lease_status = "Date Out of Range for lease " + str(lease_doc.name)
+                                continue
+                        lease_doc.append(
+                            "invoice_details",
+                            {
+                                "amount": child.invoice_amount,
+                                "from_date": child.invoice_from_date,
+                                "to_date": child.invoice_to_date,
+                            },
+                        )
+
+                        lease_doc.save(ignore_permissions=True)
+
+                        child.lease_reference = lease.name
+                        child.lease_status = "Linked"
+
+                        matched = True
+                        break
+                if lease.status == "Modified":
+                    if invoice_date:
+                        if not (
+                            lease_doc.agreement_start_date <= invoice_from_date
+                            and invoice_to_date <= lease_doc.agreement_end_date
+                        ):
+                            child.lease_status = "Date Out of Range for lease " + str(lease_doc.name)
+                            continue
+                    lease_doc.append(
+                        "invoice_details",
+                        {
+                            "amount": child.invoice_amount,
+                            "from_date": child.invoice_from_date,
+                            "to_date": child.invoice_to_date,
+                        },
+                    )
+
+                    lease_doc.save(ignore_permissions=True)
+
+                    child.lease_reference = lease.name
+                    child.lease_status = "Linked"
+
+                    matched = True
+                    break
+
+                if lease.status == "Terminated":
+                    child.lease_status = "Terminated Lease"
+                    if invoice_date:
+                        if not (
+                            lease_doc.agreement_start_date <= invoice_from_date
+                            and invoice_to_date <= lease_doc.termination_date
+                        ):
+                            child.lease_status = "Date Out of Range for lease " + str(lease_doc.name)
+                            continue
+                    lease_doc.append(
+                        "invoice_details",
+                        {
+                            "amount": child.invoice_amount,
+                            "from_date": child.invoice_from_date,
+                            "to_date": child.invoice_to_date,
+                        },
+                    )
+
+                    lease_doc.save(ignore_permissions=True)
+
+                    child.lease_reference = lease.name
+                    child.lease_status = "Linked"
+
+                    matched = True
+                    break
+
+        if not matched and not child.lease_status:
+            child.lease_status = "Lease Not Found"

@@ -191,14 +191,14 @@ frappe.ui.form.on("Lease Management", {
 	car_description: function (frm) {
 		if (frm.doc.car_description) {
 			frappe.db
-				.get_value("Car Description Master", { name: frm.doc.car_description }, [
-					"company",
-					"vendor",
+				.get_value("Vehicle Details", { name: frm.doc.car_description }, [
+					"company_name",
+					"vendor_company",
 				])
 				.then((r) => {
 					if (r.message) {
-						frm.set_value("company", r.message.company);
-						frm.set_value("vendor", r.message.vendor);
+						frm.set_value("company", r.message.company_name);
+						frm.set_value("vendor", r.message.vendor_company);
 					}
 				});
 		} else {

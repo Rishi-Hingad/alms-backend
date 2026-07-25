@@ -1,27 +1,36 @@
 {
  "actions": [],
+ "allow_import": 1,
  "allow_rename": 1,
  "creation": "2025-02-28 14:13:06.256827",
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
-  "company_name",
-  "contact_number",
+  "vendor_name",
   "contact_email",
-  "person_responsible"
+  "address",
+  "person_responsible",
+  "column_break_jbha",
+  "vendor_code",
+  "pin_code",
+  "purchase_organization",
+  "purchase_organization_description",
+  "minimum_order_value",
+  "telephone_number",
+  "number_of_purchasing_organization",
+  "mobile_number",
+  "cst",
+  "lst",
+  "pan",
+  "service_registration_number",
+  "gst_no",
+  "industry",
+  "vendor_classification",
+  "country_name",
+  "payment_term_description",
+  "city"
  ],
  "fields": [
-  {
-   "fieldname": "company_name",
-   "fieldtype": "Data",
-   "label": "Company Name"
-  },
-  {
-   "default": "+91",
-   "fieldname": "contact_number",
-   "fieldtype": "Phone",
-   "label": "Contact Number"
-  },
   {
    "fieldname": "contact_email",
    "fieldtype": "Data",
@@ -93,13 +102,6 @@
    "label": "Mobile Number"
   },
   {
-   "fieldname": "email_address",
-   "fieldtype": "Data",
-   "in_list_view": 1,
-   "label": "Email Address",
-   "options": "Email"
-  },
-  {
    "fieldname": "cst",
    "fieldtype": "Data",
    "label": "CST"
@@ -153,11 +155,15 @@
    "fieldtype": "Data",
    "label": "City ",
    "read_only": 1
+  },
+  {
+   "fieldname": "column_break_jbha",
+   "fieldtype": "Column Break"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-04-25 17:38:14.205964",
+ "modified": "2026-06-30 11:23:17.354709",
  "modified_by": "Administrator",
  "module": "CRMS",
  "name": "Vendor Master",

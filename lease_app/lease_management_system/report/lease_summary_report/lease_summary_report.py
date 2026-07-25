@@ -169,7 +169,7 @@ def execute(filters=None):
 		if lease_doc.type_of_asset == "Immovable":
 			prop_doc = frappe.get_doc("Property Master", lease_doc.property_description)
 		else:
-			car_desc = frappe.get_doc("Car Description Master", lease_doc.car_description)
+			car_desc = frappe.get_doc("Vehicle Details", lease_doc.car_description)
 		modified_start = None
 		terminated_on = None
 		terminated = False
@@ -405,8 +405,8 @@ def execute(filters=None):
 				{
 					"lease_status": lease_doc.status,
 					"lease_id": lease.name,
-					"vendor": car_desc.vendor,
-					"asset_description": car_desc.employee_name,
+					"vendor": car_desc.vendor_company,
+					"asset_description": car_desc.employee_code_and_name,
 					"rou_opening": opening_rou,
 					"rou_closing": closing_rou,
 					"liability_opening": opening_liability,

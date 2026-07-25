@@ -1,8 +1,33 @@
 {
  "charts": [],
- "content": "[{\"id\":\"Z4i1yNU9Ol\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Reporting Head Dashboard</span>\",\"col\":12}},{\"id\":\"5ut7IPRENL\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Employees Under You\",\"col\":4}}]",
+ "content": "[{\"id\":\"1eeb46ab53\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Your Dashboard</span>\",\"col\":12}},{\"id\":\"dZhOeaq5ex\",\"type\":\"custom_block\",\"data\":{\"custom_block_name\":\"RHD Reporting To Number Card\",\"col\":6}},{\"id\":\"E-dD2mPC4t\",\"type\":\"custom_block\",\"data\":{\"custom_block_name\":\"RHD Eligibility Notified Count\",\"col\":6}},{\"id\":\"hQaP0SQgAQ\",\"type\":\"custom_block\",\"data\":{\"custom_block_name\":\"RHD Approved Count\",\"col\":4}},{\"id\":\"45E76Z1vpx\",\"type\":\"custom_block\",\"data\":{\"custom_block_name\":\"RHD Pending Count\",\"col\":4}},{\"id\":\"WwLsijHb0O\",\"type\":\"custom_block\",\"data\":{\"custom_block_name\":\"RHD Rejected Count\",\"col\":4}},{\"id\":\"e5be663c88\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Employee Data</span>\",\"col\":12}},{\"id\":\"sUFHYjA2C-\",\"type\":\"custom_block\",\"data\":{\"custom_block_name\":\"RHD Employee List\",\"col\":12}}]",
  "creation": "2024-11-23 18:17:36.089384",
- "custom_blocks": [],
+ "custom_blocks": [
+  {
+   "custom_block_name": "RHD Approved Count",
+   "label": "RHD Approved Count"
+  },
+  {
+   "custom_block_name": "RHD Reporting To Number Card",
+   "label": "RHD Reporting To Number Card"
+  },
+  {
+   "custom_block_name": "RHD Pending Count",
+   "label": "RHD Pending Count"
+  },
+  {
+   "custom_block_name": "RHD Eligibility Notified Count",
+   "label": "RHD Eligibility Notified Count"
+  },
+  {
+   "custom_block_name": "RHD Rejected Count",
+   "label": "RHD Rejected Count"
+  },
+  {
+   "custom_block_name": "RHD Employee List",
+   "label": "RHD Employee List"
+  }
+ ],
  "docstatus": 0,
  "doctype": "Workspace",
  "for_user": "",
@@ -13,16 +38,11 @@
  "is_hidden": 0,
  "label": "Reporting Head Dashboard",
  "links": [],
- "modified": "2025-05-30 11:34:56.804869",
+ "modified": "2026-06-30 17:32:16.496726",
  "modified_by": "Administrator",
  "module": "CRMS",
  "name": "Reporting Head Dashboard",
- "number_cards": [
-  {
-   "label": "Employees Under You",
-   "number_card_name": "Employees Under You"
-  }
- ],
+ "number_cards": [],
  "owner": "Administrator",
  "parent_page": "",
  "public": 1,

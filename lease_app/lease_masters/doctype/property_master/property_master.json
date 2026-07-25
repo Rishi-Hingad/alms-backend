@@ -1,5 +1,6 @@
 {
  "actions": [],
+ "allow_import": 1,
  "allow_rename": 1,
  "autoname": "format:{vendor}-{#####}",
  "creation": "2025-07-12 15:30:19.463729",
@@ -63,11 +64,11 @@
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-12-15 16:13:01.583917",
+ "modified": "2026-06-30 11:35:52.904758",
  "modified_by": "Administrator",
  "module": "Lease Masters",
  "name": "Property Master",
- "naming_rule": "Expression",
+ "naming_rule": "Expression (old style)",
  "owner": "Administrator",
  "permissions": [
   {

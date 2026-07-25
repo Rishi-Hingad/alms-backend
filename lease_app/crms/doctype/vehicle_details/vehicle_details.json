@@ -135,9 +135,9 @@
   },
   {
    "fieldname": "vendor_company",
-   "fieldtype": "Select",
+   "fieldtype": "Link",
    "label": "Vendor Company",
-   "options": "ALD\nEasyAssets\nCompany Owned Vehicle"
+   "options": "Vendor Master"
   },
   {
    "fieldname": "vehicle_details_tab",

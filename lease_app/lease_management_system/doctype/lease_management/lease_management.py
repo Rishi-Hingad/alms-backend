@@ -588,12 +588,12 @@ class LeaseManagement(Document):
 		if not self.car_description:
 			return
 
-		car_doc = frappe.get_doc("Car Description Master", self.car_description)
+		car_doc = frappe.get_doc("Vehicle Details", self.car_description)
 
-		if car_doc.vendor != self.vendor:
+		if car_doc.vendor_company != self.vendor:
 			frappe.throw(
 				f"Vendor Mismatch:<br>"
-				f"Selected Car Description belongs to Vendor <b>{car_doc.vendor}</b> "
+				f"Selected Car Description belongs to Vendor <b>{car_doc.vendor_company}</b> "
 				f"but you have selected <b>{self.vendor}</b>."
 			)
 

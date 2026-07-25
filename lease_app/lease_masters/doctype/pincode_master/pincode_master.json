@@ -1,13 +1,14 @@
 {
  "actions": [],
+ "allow_import": 1,
  "allow_rename": 1,
  "autoname": "field:pincode",
  "creation": "2025-07-15 09:28:58.678644",
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
-  "city",
-  "pincode"
+  "pincode",
+  "city"
  ],
  "fields": [
   {
@@ -20,7 +21,7 @@
   },
   {
    "fieldname": "city",
-   "fieldtype": "Link",
+   "fieldtype": "Data",
    "in_list_view": 1,
    "label": "City",
    "options": "City Master",
@@ -30,7 +31,7 @@
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-09-03 12:10:31.195609",
+ "modified": "2026-06-30 11:11:38.617799",
  "modified_by": "Administrator",
  "module": "Lease Masters",
  "name": "Pincode Master",
