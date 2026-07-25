@@ -1,5 +1,5 @@
 [project]
-name = "lease_app"
+name = "leasemanagement"
 authors = [
     { name = "Rishi Hingad", email = "rishi.hingad@merillife.com"}
 ]
