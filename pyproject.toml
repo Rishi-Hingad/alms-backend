@@ -1,27 +1,15 @@
 [project]
-name = "alms_app"
-authors = [
-    { name = "Rishi Hingad", email = "rishi.hingad@merillife.com"}
-]
-description = "Assest Lease Management System"
 name = "lease_app"
 authors = [
     { name = "Rishi Hingad", email = "rishi.hingad@merillife.com"}
 ]
-description = "Car and Lease Manaagment System"
-name = "lms"
-name = "leasemanagement"
-authors = [
-    { name = "Shradha_Siddhi", email = "meril@gmail.com"}
-]
-description = "LMS"
+description = "Car and Lease Management System"
 requires-python = ">=3.10"
 readme = "README.md"
 dynamic = ["version"]
 dependencies = [
-    "pandas>=2.2.3,<2.3"
+    "pandas>=2.2.3,<2.3",
     # "frappe~=15.0.0" # Installed and managed by bench.
-    "pandas~=2.2.3"
 ]
 
 [build-system]
