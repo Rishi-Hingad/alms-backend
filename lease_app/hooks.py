@@ -300,4 +300,3 @@ has_permission = {
 "Lease Management": "lease_app.lease_management_system.doctype.lease_management.lease_management.has_permission",
 "Property Master": "lease_app.lease_masters.doctype.property_master.property_master.has_permission",
 }
-before_migrate = "leasemanagement.rename_app.execute"
