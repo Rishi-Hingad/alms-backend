@@ -11,6 +11,22 @@ def execute():
     except Exception:
         return
         
+    # Create a directory symlink dynamically so Frappe Cloud can find the nested alms_app
+    apps_dir = os.path.join(bench_path, "apps")
+    alms_symlink_dir = os.path.join(apps_dir, "alms_app")
+    alms_target_dir = os.path.join(apps_dir, "lease_app", "alms_app")
+    
+    if os.path.exists(alms_target_dir):
+        if not os.path.exists(alms_symlink_dir):
+            os.makedirs(alms_symlink_dir, exist_ok=True)
+        alms_symlink = os.path.join(alms_symlink_dir, "alms_app")
+        if not os.path.exists(alms_symlink):
+            try:
+                os.symlink(alms_target_dir, alms_symlink)
+                print("Created symlink for alms_app!")
+            except Exception as e:
+                print("Failed to create symlink for alms_app:", e)
+
     if "alms_app" not in apps:
         print("Adding alms_app to apps.txt dynamically...")
         # Insert alms_app before lease_app so lease_app modules override alms_app modules
