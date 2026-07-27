@@ -1,36 +1,31 @@
 {
  "actions": [],
- "allow_import": 1,
  "allow_rename": 1,
  "creation": "2025-02-28 14:13:06.256827",
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
-  "vendor_name",
+  "company_name",
+  "contact_number",
   "contact_email",
-  "address",
-  "person_responsible",
-  "column_break_jbha",
-  "vendor_code",
-  "pin_code",
-  "purchase_organization",
-  "purchase_organization_description",
-  "minimum_order_value",
-  "telephone_number",
-  "number_of_purchasing_organization",
-  "mobile_number",
-  "cst",
-  "lst",
-  "pan",
-  "service_registration_number",
-  "gst_no",
-  "industry",
-  "vendor_classification",
-  "country_name",
-  "payment_term_description",
-  "city"
+  "pan_number",
+  "column_break_hrfb",
+  "company_address",
+  "contact_person_section",
+  "person_responsible"
  ],
  "fields": [
+  {
+   "fieldname": "company_name",
+   "fieldtype": "Data",
+   "label": "Company Name"
+  },
+  {
+   "default": "+91",
+   "fieldname": "contact_number",
+   "fieldtype": "Phone",
+   "label": "Contact Number"
+  },
   {
    "fieldname": "contact_email",
    "fieldtype": "Data",
@@ -43,127 +38,28 @@
    "options": "Person Responsible"
   },
   {
-   "fieldname": "vendor_code",
+   "fieldname": "pan_number",
    "fieldtype": "Data",
-   "in_list_view": 1,
-   "label": "Vendor Code",
-   "reqd": 1,
-   "unique": 1
+   "label": "PAN Number"
   },
   {
-   "fieldname": "vendor_name",
-   "fieldtype": "Data",
-   "in_list_view": 1,
-   "label": "Vendor Name",
-   "reqd": 1
-  },
-  {
-   "fieldname": "address",
-   "fieldtype": "Text",
-   "label": "Address",
-   "options": "DocType State"
-  },
-  {
-   "fieldname": "pin_code",
-   "fieldtype": "Link",
-   "label": "Pin Code",
-   "options": "Pincode Master"
-  },
-  {
-   "fieldname": "purchase_organization",
-   "fieldtype": "Select",
-   "label": "Purchase Organization",
-   "options": "\n8100\n8200"
-  },
-  {
-   "fieldname": "purchase_organization_description",
-   "fieldtype": "Select",
-   "label": "Purchase Organization Description",
-   "options": "\nPurchase Organization-Domestic\nPurchase Organization-Import"
-  },
-  {
-   "fieldname": "minimum_order_value",
-   "fieldtype": "Float",
-   "label": "Minimum Order Value"
-  },
-  {
-   "fieldname": "telephone_number",
-   "fieldtype": "Phone",
-   "label": "Telephone Number"
-  },
-  {
-   "fieldname": "number_of_purchasing_organization",
-   "fieldtype": "Int",
-   "label": "Number of Purchasing Organization"
-  },
-  {
-   "fieldname": "mobile_number",
-   "fieldtype": "Phone",
-   "label": "Mobile Number"
-  },
-  {
-   "fieldname": "cst",
-   "fieldtype": "Data",
-   "label": "CST"
-  },
-  {
-   "fieldname": "lst",
-   "fieldtype": "Data",
-   "label": "LST"
-  },
-  {
-   "fieldname": "pan",
-   "fieldtype": "Data",
-   "label": "PAN"
-  },
-  {
-   "fieldname": "service_registration_number",
-   "fieldtype": "Data",
-   "label": "Service Registration Number"
-  },
-  {
-   "fieldname": "gst_no",
-   "fieldtype": "Data",
-   "label": "GST No."
-  },
-  {
-   "fieldname": "industry",
-   "fieldtype": "Select",
-   "label": "Industry",
-   "options": "\nDOM_Goods\nDOM_Services"
-  },
-  {
-   "fieldname": "vendor_classification",
-   "fieldtype": "Select",
-   "label": "Vendor Classification",
-   "options": "\nRegistered\nUnregistered"
-  },
-  {
-   "fieldname": "country_name",
-   "fieldtype": "Link",
-   "label": "Country Name",
-   "options": "Country"
-  },
-  {
-   "fieldname": "payment_term_description",
-   "fieldtype": "Link",
-   "label": "Payment Term Description",
-   "options": "Payment Term Master"
-  },
-  {
-   "fieldname": "city",
-   "fieldtype": "Data",
-   "label": "City ",
-   "read_only": 1
-  },
-  {
-   "fieldname": "column_break_jbha",
+   "fieldname": "column_break_hrfb",
    "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "contact_person_section",
+   "fieldtype": "Section Break",
+   "label": "Contact Person"
+  },
+  {
+   "fieldname": "company_address",
+   "fieldtype": "Small Text",
+   "label": "Company Address"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-06-30 11:23:17.354709",
+ "modified": "2026-07-27 16:35:04.615523",
  "modified_by": "Administrator",
  "module": "CRMS",
  "name": "Vendor Master",

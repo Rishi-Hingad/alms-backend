@@ -45,11 +45,11 @@
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-06-05 18:08:08.705232",
+ "modified": "2026-06-30 09:58:19.009993",
  "modified_by": "Administrator",
  "module": "master",
  "name": "State Master",
- "naming_rule": "Expression",
+ "naming_rule": "Expression (old style)",
  "owner": "Administrator",
  "permissions": [
   {

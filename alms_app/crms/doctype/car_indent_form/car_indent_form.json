@@ -344,11 +344,11 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-06-27 11:37:32.280408",
+ "modified": "2026-06-30 14:46:04.031515",
  "modified_by": "Administrator",
  "module": "CRMS",
  "name": "Car Indent Form",
- "naming_rule": "Expression",
+ "naming_rule": "Expression (old style)",
  "owner": "Administrator",
  "permissions": [
   {
