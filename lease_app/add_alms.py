@@ -54,3 +54,12 @@ def execute():
             frappe.db.commit()
     except Exception as e:
         print(f"Warning adding alms_app to installed apps: {e}")
+
+    # Force reset custom flag and reload Vendor Master from JSON
+    try:
+        if frappe.db.exists("DocType", "Vendor Master"):
+            frappe.db.sql("UPDATE `tabDocType` SET custom = 0 WHERE name = 'Vendor Master'")
+            frappe.reload_doc("crms", "doctype", "vendor_master", force=True)
+            frappe.db.commit()
+    except Exception as e:
+        print(f"Warning reloading Vendor Master: {e}")
