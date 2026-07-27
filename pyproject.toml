@@ -1,5 +1,5 @@
 [project]
-name = "lease_app"
+name = "leasemanagement"
 version = "0.0.1"
 authors = [
     { name = "Rishi Hingad", email = "rishi.hingad@merillife.com"}
@@ -16,6 +16,7 @@ requires = ["setuptools>=61.0"]
 build-backend = "setuptools.build_meta"
 
 [tool.setuptools.package-dir]
+leasemanagement = "lease_app"
 lease_app = "lease_app"
 alms_app = "alms_app"
 remittance_tool = "remittance/remittance_tool"
