@@ -1,3 +1,13 @@
+from . import __version__ as app_version
+import sys
+import os
+
+# Dynamically add the parent directory of lease_app to sys.path so that alms_app is importable
+apps_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
+lease_app_dir = os.path.join(apps_dir, 'lease_app')
+if lease_app_dir not in sys.path:
+    sys.path.insert(0, lease_app_dir)
+
 app_name = "lease_app"
 app_title = "Car and Lease"
 app_publisher = "Rishi Hingad"

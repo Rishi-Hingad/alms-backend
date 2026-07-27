@@ -1,7 +1,3 @@
 Car and Lease
-ALMS
-master
-CRMS
-Approval
 Lease Management System
 Lease Masters

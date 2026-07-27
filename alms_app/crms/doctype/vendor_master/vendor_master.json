@@ -8,6 +8,10 @@
   "company_name",
   "contact_number",
   "contact_email",
+  "pan_number",
+  "column_break_hrfb",
+  "address",
+  "contact_person_section",
   "person_responsible"
  ],
  "fields": [
@@ -32,11 +36,30 @@
    "fieldtype": "Table",
    "label": "Person Responsible",
    "options": "Person Responsible"
+  },
+  {
+   "fieldname": "pan_number",
+   "fieldtype": "Data",
+   "label": "PAN Number"
+  },
+  {
+   "fieldname": "column_break_hrfb",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "address",
+   "fieldtype": "Small Text",
+   "label": "Address"
+  },
+  {
+   "fieldname": "contact_person_section",
+   "fieldtype": "Section Break",
+   "label": "Contact Person"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-04-25 17:38:14.205964",
+ "modified": "2026-07-27 10:08:14.593986",
  "modified_by": "Administrator",
  "module": "CRMS",
  "name": "Vendor Master",
