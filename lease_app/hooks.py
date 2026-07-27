@@ -1,4 +1,12 @@
 from . import __version__ as app_version
+import sys
+import os
+
+# Dynamically add the parent directory of lease_app to sys.path so that alms_app is importable
+apps_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
+lease_app_dir = os.path.join(apps_dir, 'lease_app')
+if lease_app_dir not in sys.path:
+    sys.path.insert(0, lease_app_dir)
 
 app_name = "lease_app"
 app_title = "Car and Lease"
@@ -302,3 +310,4 @@ has_permission = {
 "Lease Management": "lease_app.lease_management_system.doctype.lease_management.lease_management.has_permission",
 "Property Master": "lease_app.lease_masters.doctype.property_master.property_master.has_permission",
 }
+before_migrate = "lease_app.add_alms.execute"

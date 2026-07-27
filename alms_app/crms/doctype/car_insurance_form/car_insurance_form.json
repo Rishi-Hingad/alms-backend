@@ -1,0 +1,79 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "format:{quotation_form}-{###}",
+ "creation": "2025-02-10 15:03:58.386205",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "user",
+  "company",
+  "quotation_form",
+  "column_break_kaks",
+  "insurance_copy_received",
+  "insurance_copy_document"
+ ],
+ "fields": [
+  {
+   "fieldname": "user",
+   "fieldtype": "Link",
+   "label": "User",
+   "options": "ALMS Employee"
+  },
+  {
+   "fieldname": "company",
+   "fieldtype": "Link",
+   "label": "Company",
+   "options": "Vendor Master"
+  },
+  {
+   "fieldname": "quotation_form",
+   "fieldtype": "Link",
+   "label": "Quotation Form",
+   "options": "Car Quotation"
+  },
+  {
+   "default": "No",
+   "fieldname": "insurance_copy_received",
+   "fieldtype": "Select",
+   "label": "Insurance Copy Received ",
+   "options": "Yes\nNo"
+  },
+  {
+   "depends_on": "eval:doc.insurance_copy_received == \"Yes\"",
+   "fieldname": "insurance_copy_document",
+   "fieldtype": "Attach",
+   "label": "Insurance Copy Document"
+  },
+  {
+   "fieldname": "column_break_kaks",
+   "fieldtype": "Column Break"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2026-06-18 10:20:46.588587",
+ "modified_by": "Administrator",
+ "module": "CRMS",
+ "name": "Car Insurance Form",
+ "naming_rule": "Expression",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}
