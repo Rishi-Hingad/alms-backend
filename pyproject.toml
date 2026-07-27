@@ -16,11 +16,25 @@ requires = ["setuptools>=61.0"]
 build-backend = "setuptools.build_meta"
 
 [tool.setuptools.package-dir]
+# Apps & top-level package aliases
 leasemanagement = "lease_app"
 lease_app = "lease_app"
 alms_app = "alms_app"
 remittance_tool = "remittance/remittance_tool"
 approval_app = "approval_app/approval_app"
+
+# Frappe modules inside lease_app
+car_and_lease = "lease_app/car_and_lease"
+lease_management_system = "lease_app/lease_management_system"
+lease_masters = "lease_app/lease_masters"
+
+# Frappe modules inside alms_app
+alms = "alms_app/alms"
+master = "alms_app/master"
+crms = "alms_app/crms"
+
+# Frappe module inside approval_app
+approval = "approval_app/approval_app/approval"
 
 [tool.bench.dev-dependencies]
 
