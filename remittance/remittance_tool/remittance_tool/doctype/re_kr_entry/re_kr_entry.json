@@ -1,0 +1,273 @@
+{
+ "actions": [],
+ "autoname": "format:{bukrs}-{belnr}",
+ "creation": "2026-04-13 12:17:04",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "vendor_section",
+  "bukrs",
+  "lifnr",
+  "name1",
+  "column_break_vendor",
+  "xblnr",
+  "belnr",
+  "blart",
+  "date_section",
+  "bldat",
+  "budat",
+  "column_break_date",
+  "zlspr",
+  "tax_section",
+  "qsshb",
+  "zzqsshb",
+  "column_break_tax",
+  "qbshb",
+  "zzqbshb",
+  "amount_section",
+  "wrshb",
+  "dmshb",
+  "column_break_amount",
+  "waers",
+  "kurse",
+  "hwaer",
+  "punch_time_section",
+  "punch_time",
+  "column_break_status",
+  "form_15cb",
+  "is_used",
+  "is_outdated"
+ ],
+ "fields": [
+  {
+   "fieldname": "vendor_section",
+   "fieldtype": "Section Break",
+   "label": "Vendor Details"
+  },
+  {
+   "fieldname": "bukrs",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Company Code (BUKRS)",
+   "reqd": 1
+  },
+  {
+   "fieldname": "lifnr",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Vendor Number (LIFNR)",
+   "reqd": 1
+  },
+  {
+   "fieldname": "name1",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Vendor Name (NAME1)"
+  },
+  {
+   "fieldname": "column_break_vendor",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "xblnr",
+   "fieldtype": "Data",
+   "label": "Reference (XBLNR)"
+  },
+  {
+   "fieldname": "belnr",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Document Number (BELNR)",
+   "reqd": 1
+  },
+  {
+   "fieldname": "blart",
+   "fieldtype": "Data",
+   "label": "Document Type (BLART)"
+  },
+  {
+   "fieldname": "date_section",
+   "fieldtype": "Section Break",
+   "label": "Dates"
+  },
+  {
+   "fieldname": "bldat",
+   "fieldtype": "Date",
+   "label": "Document Date (BLDAT)"
+  },
+  {
+   "fieldname": "budat",
+   "fieldtype": "Date",
+   "label": "Posting Date (BUDAT)"
+  },
+  {
+   "fieldname": "column_break_date",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "zlspr",
+   "fieldtype": "Data",
+   "label": "Payment Block (ZLSPR)"
+  },
+  {
+   "fieldname": "tax_section",
+   "fieldtype": "Section Break",
+   "label": "Withholding Tax"
+  },
+  {
+   "fieldname": "qsshb",
+   "fieldtype": "Currency",
+   "label": "WHT Base Amount (QSSHB)"
+  },
+  {
+   "fieldname": "zzqsshb",
+   "fieldtype": "Currency",
+   "label": "ZZQSSHB"
+  },
+  {
+   "fieldname": "column_break_tax",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "qbshb",
+   "fieldtype": "Currency",
+   "label": "WHT Amount (QBSHB)"
+  },
+  {
+   "fieldname": "zzqbshb",
+   "fieldtype": "Currency",
+   "label": "ZZQBSHB"
+  },
+  {
+   "fieldname": "amount_section",
+   "fieldtype": "Section Break",
+   "label": "Amounts"
+  },
+  {
+   "fieldname": "wrshb",
+   "fieldtype": "Currency",
+   "in_list_view": 1,
+   "label": "Amount in Doc Currency (WRSHB)"
+  },
+  {
+   "fieldname": "dmshb",
+   "fieldtype": "Currency",
+   "label": "Amount in Local Currency (DMSHB)"
+  },
+  {
+   "fieldname": "column_break_amount",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "waers",
+   "fieldtype": "Data",
+   "label": "Currency (WAERS)"
+  },
+  {
+   "fieldname": "kurse",
+   "fieldtype": "Float",
+   "label": "Exchange Rate (KURSE)",
+   "precision": "5"
+  },
+  {
+   "fieldname": "hwaer",
+   "fieldtype": "Data",
+   "label": "Local Currency (HWAER)"
+  },
+  {
+   "fieldname": "punch_time_section",
+   "fieldtype": "Section Break",
+   "label": "Sync Info"
+  },
+  {
+   "fieldname": "punch_time",
+   "fieldtype": "Datetime",
+   "in_list_view": 1,
+   "label": "Punch Time",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_status",
+   "fieldtype": "Column Break"
+  },
+  {
+   "description": "Remittance Form 15 CB in which this entry is used",
+   "fieldname": "form_15cb",
+   "fieldtype": "Link",
+   "in_filter": 1,
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Form 15 CB",
+   "options": "Remittance Form 15 CB"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_used",
+   "fieldtype": "Check",
+   "in_filter": 1,
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Used in Form 15 CB"
+  },
+  {
+   "default": "0",
+   "description": "Superseded by a newer fetch from SAP with updated values. Hidden from non-admin users.",
+   "fieldname": "is_outdated",
+   "fieldtype": "Check",
+   "in_filter": 1,
+   "in_standard_filter": 1,
+   "label": "Outdated (Superseded)",
+   "read_only": 1
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2026-06-24 11:51:49.789799",
+ "modified_by": "Administrator",
+ "module": "Remittance Tool",
+ "name": "RE KR Entry",
+ "naming_rule": "Expression",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Remittance User",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "read": 1,
+   "role": "Remittance Checker"
+  }
+ ],
+ "row_format": "Dynamic",
+ "show_title_field_in_link": 1,
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "title_field": "belnr",
+ "track_changes": 1
+}

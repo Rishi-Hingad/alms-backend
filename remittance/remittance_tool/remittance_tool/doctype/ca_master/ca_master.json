@@ -1,0 +1,237 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "field:membership_no",
+ "creation": "2026-06-17 12:00:00",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "identity_section",
+  "ca_name",
+  "salutation",
+  "pan",
+  "column_break_identity",
+  "membership_no",
+  "udin",
+  "user_id",
+  "firm_section",
+  "firm_name",
+  "firm_registration_no",
+  "contact_section",
+  "email_id",
+  "mobile",
+  "column_break_contact",
+  "place",
+  "address_section",
+  "address_line_1",
+  "address_line_2",
+  "locality",
+  "post_office",
+  "column_break_address",
+  "city",
+  "district",
+  "state",
+  "country",
+  "pin_code"
+ ],
+ "fields": [
+  {
+   "fieldname": "identity_section",
+   "fieldtype": "Section Break",
+   "label": "Identity"
+  },
+  {
+   "description": "Full name as it appears on the certificate ",
+   "fieldname": "ca_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "CA Full Name",
+   "reqd": 1
+  },
+  {
+   "default": "M/s.",
+   "fieldname": "salutation",
+   "fieldtype": "Select",
+   "label": "Salutation",
+   "options": "\nM/s.\nMr.\nMrs.\nMs.\nDr."
+  },
+  {
+   "description": "CA's Permanent Account Number.",
+   "fieldname": "pan",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "PAN",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_identity",
+   "fieldtype": "Column Break"
+  },
+  {
+   "description": "ICAI membership number (used as the unique identifier for this CA).",
+   "fieldname": "membership_no",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Member Registration No.",
+   "reqd": 1,
+   "unique": 1
+  },
+  {
+   "description": "Unique Document Identification Number (optional).",
+   "fieldname": "udin",
+   "fieldtype": "Data",
+   "label": "UDIN"
+  },
+  {
+   "description": "Income Tax e-filing portal user ID.",
+   "fieldname": "user_id",
+   "fieldtype": "Data",
+   "label": "IT Portal User ID"
+  },
+  {
+   "fieldname": "firm_section",
+   "fieldtype": "Section Break",
+   "label": "Firm"
+  },
+  {
+   "description": "Name of the proprietorship or firm (e.g. D P J & ASSOCIATES).",
+   "fieldname": "firm_name",
+   "fieldtype": "Data",
+   "label": "Firm / Proprietorship Name"
+  },
+  {
+   "description": "Firm's ICAI registration number (e.g. 0142422W).",
+   "fieldname": "firm_registration_no",
+   "fieldtype": "Data",
+   "label": "Firm Registration No."
+  },
+  {
+   "fieldname": "contact_section",
+   "fieldtype": "Section Break",
+   "label": "Contact"
+  },
+  {
+   "fieldname": "email_id",
+   "fieldtype": "Data",
+   "label": "Email ID",
+   "options": "Email"
+  },
+  {
+   "fieldname": "mobile",
+   "fieldtype": "Data",
+   "label": "Mobile",
+   "options": "Phone"
+  },
+  {
+   "fieldname": "column_break_contact",
+   "fieldtype": "Column Break"
+  },
+  {
+   "description": "Place where certificate is signed (e.g. VADODARA).",
+   "fieldname": "place",
+   "fieldtype": "Data",
+   "label": "Place"
+  },
+  {
+   "fieldname": "address_section",
+   "fieldtype": "Section Break",
+   "label": "Address"
+  },
+  {
+   "fieldname": "address_line_1",
+   "fieldtype": "Data",
+   "label": "Address Line 1"
+  },
+  {
+   "fieldname": "address_line_2",
+   "fieldtype": "Data",
+   "label": "Address Line 2"
+  },
+  {
+   "fieldname": "locality",
+   "fieldtype": "Data",
+   "label": "Locality"
+  },
+  {
+   "fieldname": "post_office",
+   "fieldtype": "Data",
+   "label": "Post Office"
+  },
+  {
+   "fieldname": "column_break_address",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "city",
+   "fieldtype": "Data",
+   "label": "City"
+  },
+  {
+   "fieldname": "district",
+   "fieldtype": "Data",
+   "label": "District"
+  },
+  {
+   "fieldname": "state",
+   "fieldtype": "Data",
+   "label": "State"
+  },
+  {
+   "default": "India",
+   "fieldname": "country",
+   "fieldtype": "Link",
+   "label": "Country",
+   "options": "Remittance Country"
+  },
+  {
+   "fieldname": "pin_code",
+   "fieldtype": "Data",
+   "label": "Pin Code"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2026-06-24 10:57:33.780855",
+ "modified_by": "Administrator",
+ "module": "Remittance Tool",
+ "name": "CA Master",
+ "naming_rule": "By fieldname",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Remittance User",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "read": 1,
+   "role": "Remittance Checker"
+  }
+ ],
+ "row_format": "Dynamic",
+ "show_title_field_in_link": 1,
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "title_field": "ca_name",
+ "track_changes": 1
+}
