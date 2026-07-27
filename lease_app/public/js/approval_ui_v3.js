@@ -31,7 +31,7 @@ window.setup_approval_ui = function (frm) {
 
     if (is_pending_approval) {
         frappe.call({
-            method: 'lease_app.approval.approval_router.can_approve',
+            method: 'approval_app.approval.approval_router.can_approve',
             args: {
                 doctype: frm.doc.doctype,
                 doc_name: frm.doc.name
@@ -82,7 +82,7 @@ window.setup_approval_ui = function (frm) {
 
     } else if (frm.doc.status === 'Approved') {
         frappe.call({
-            method: 'lease_app.approval.approval_router.can_revoke',
+            method: 'approval_app.approval.approval_router.can_revoke',
             args: {
                 doctype: frm.doc.doctype,
                 doc_name: frm.doc.name
@@ -93,7 +93,7 @@ window.setup_approval_ui = function (frm) {
                     let btn_revoke = frm.add_custom_button(__('Revoke Last Approval'), () => {
                         frappe.confirm(__('Are you sure you want to revoke the last approval? This will roll back the document to Pending state.'), () => {
                             frappe.call({
-                                method: 'lease_app.approval.approval_router.revoke_last_approval',
+                                method: 'approval_app.approval.approval_router.revoke_last_approval',
                                 args: {
                                     doctype: frm.doc.doctype,
                                     doc_name: frm.doc.name,
@@ -158,11 +158,11 @@ window.setup_approval_ui = function (frm) {
 function handle_approval(frm, action, remarks = "") {
     let method_name = "";
     if (action === "Approve") {
-        method_name = "lease_app.approval.approval_router.approve_document";
+        method_name = "approval_app.approval.approval_router.approve_document";
     } else if (action === "Reject") {
-        method_name = "lease_app.approval.approval_router.reject_document";
+        method_name = "approval_app.approval.approval_router.reject_document";
     } else if (action === "Revoke") {
-        method_name = "lease_app.approval.approval_router.revoke_document";
+        method_name = "approval_app.approval.approval_router.revoke_document";
     }
 
     frappe.call({
@@ -186,7 +186,7 @@ function render_approval_trail(frm) {
     if (frm.is_new()) return;
 
     frappe.call({
-        method: 'lease_app.approval.approval_router.get_approval_trail',
+        method: 'approval_app.approval.approval_router.get_approval_trail',
         args: {
             doctype: frm.doc.doctype,
             doc_name: frm.doc.name

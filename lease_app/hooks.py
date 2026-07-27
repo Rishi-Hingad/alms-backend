@@ -276,14 +276,14 @@ app_include_js = [
 
 doc_events = {
     "*": {
-        "validate": "lease_app.approval.approval_router.auto_restart_rejected_document",
-        "on_update": "lease_app.approval.approval_router.trigger_approval_if_matrix_exists",
-        "on_submit": "lease_app.approval.approval_router.trigger_approval_if_matrix_exists"
+        "validate": "approval_app.approval.approval_router.auto_restart_rejected_document",
+        "on_update": "approval_app.approval.approval_router.trigger_approval_if_matrix_exists",
+        "on_submit": "approval_app.approval.approval_router.trigger_approval_if_matrix_exists"
     },
     "Invoice Batch": {
         "on_update": [
             "lease_app.crms.doctype.invoice_batch.invoice_batch.create_invoice_details_on_approval",
-            "lease_app.approval.approval_router.trigger_approval_if_matrix_exists"
+            "approval_app.approval.approval_router.trigger_approval_if_matrix_exists"
         ]
     },
     "LMS Invoice Details": {

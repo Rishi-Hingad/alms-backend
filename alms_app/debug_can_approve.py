@@ -1,5 +1,5 @@
 import frappe
-from alms_app.approval.approval_router import can_approve
+from approval_app.approval.approval_router import can_approve
 
 def run():
     frappe.session.user = 'Administrator'

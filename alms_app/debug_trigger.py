@@ -1,5 +1,5 @@
 import frappe
-from alms_app.approval.approval_router import trigger_approval_if_matrix_exists
+from approval_app.approval.approval_router import trigger_approval_if_matrix_exists
 
 def run():
     print('Testing trigger on latest Purchase Form...')

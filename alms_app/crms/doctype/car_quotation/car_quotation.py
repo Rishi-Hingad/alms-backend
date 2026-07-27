@@ -8,8 +8,8 @@ from alms_app.api.emailsService import email_sender
 from frappe.utils import flt
 import math
 from frappe.utils import now_datetime
-from alms_app.approval.approval_router import trigger_approval_if_matrix_exists
-from alms_app.approval.approval_router import process_approval_action
+from approval_app.approval.approval_router import trigger_approval_if_matrix_exists
+from approval_app.approval.approval_router import process_approval_action
 
 
 
@@ -516,7 +516,7 @@ def reject_other_quotations(doc):
 
         # Formally reject via approval matrix so the ledger is closed properly
         try:
-            from alms_app.approval.approval_router import process_approval_action
+            from approval_app.approval.approval_router import process_approval_action
             original_user = frappe.session.user
             frappe.set_user("Administrator") # Auto-reject as system
             try:

@@ -12,14 +12,14 @@ class CompanyandEmployeeDeduction(Document):
 
     def after_insert(self):
         try:
-            from lease_app.approval.approval_router import trigger_approval_if_matrix_exists
+            from approval_app.approval.approval_router import trigger_approval_if_matrix_exists
             trigger_approval_if_matrix_exists(self)
         except Exception as e:
             frappe.log_error(str(e), "trigger_approval_if_matrix_exists fallback")
 
     def on_update(self):
         try:
-            from lease_app.approval.approval_router import trigger_approval_if_matrix_exists
+            from approval_app.approval.approval_router import trigger_approval_if_matrix_exists
             trigger_approval_if_matrix_exists(self)
         except Exception as e:
             frappe.log_error(str(e), "trigger_approval_if_matrix_exists fallback")
