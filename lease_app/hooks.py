@@ -312,5 +312,6 @@ has_permission = {
 }
 before_migrate = [
     "lease_app.add_alms.execute",
-    "lease_app.add_remittance.execute"
+    "lease_app.add_remittance.execute",
+    "lease_app.add_approval.execute"
 ]

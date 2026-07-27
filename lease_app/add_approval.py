@@ -8,23 +8,21 @@ def execute():
     apps_txt_path = os.path.join(bench_path, "sites", "apps.txt")
     apps_dir = os.path.join(bench_path, "apps")
 
-    # Determine monorepo directory dynamically based on current file location
     pkg_dir = os.path.dirname(os.path.abspath(__file__))
     monorepo_dir = os.path.dirname(pkg_dir)
-    remittance_dir = os.path.join(monorepo_dir, "remittance")
+    approval_dir = os.path.join(monorepo_dir, "approval_app")
 
-    # Ensure python paths are in sys.path
-    for p in [remittance_dir, monorepo_dir, apps_dir]:
+    for p in [approval_dir, monorepo_dir, apps_dir]:
         if os.path.exists(p) and p not in sys.path:
             sys.path.insert(0, p)
 
     importlib.invalidate_caches()
 
-    # Create top-level symlink in bench apps directory if missing
-    top_level_symlink = os.path.join(apps_dir, "remittance_tool")
-    if not os.path.exists(top_level_symlink) and os.path.exists(remittance_dir):
+    # Symlink in apps/ if missing
+    top_level_symlink = os.path.join(apps_dir, "approval_app")
+    if not os.path.exists(top_level_symlink) and os.path.exists(approval_dir):
         try:
-            os.symlink(remittance_dir, top_level_symlink)
+            os.symlink(approval_dir, top_level_symlink)
         except Exception:
             pass
 
@@ -34,16 +32,16 @@ def execute():
     except Exception:
         apps = []
 
-    if apps and "remittance_tool" not in apps:
-        print("Adding remittance_tool to apps.txt dynamically...")
+    if apps and "approval_app" not in apps:
+        print("Adding approval_app to apps.txt dynamically...")
         if "lease_app" in apps:
             idx = apps.index("lease_app")
-            apps.insert(idx, "remittance_tool")
+            apps.insert(idx, "approval_app")
         elif "leasemanagement" in apps:
             idx = apps.index("leasemanagement")
-            apps.insert(idx, "remittance_tool")
+            apps.insert(idx, "approval_app")
         else:
-            apps.append("remittance_tool")
+            apps.append("approval_app")
 
         with open(apps_txt_path, "w") as f:
             f.write("\n".join(apps) + "\n")
@@ -53,14 +51,14 @@ def execute():
         try:
             frappe.setup_module_map()
         except Exception as e:
-            print(f"Warning setting up module map for remittance_tool: {e}")
+            print(f"Warning setting up module map for approval_app: {e}")
 
     try:
         installed_apps = frappe.get_installed_apps()
-        if "remittance_tool" not in installed_apps:
+        if "approval_app" not in installed_apps:
             from frappe.installer import add_to_installed_apps
-            print("Adding remittance_tool to tabInstalled Applications dynamically...")
-            add_to_installed_apps("remittance_tool", rebuild_website=False)
+            print("Adding approval_app to tabInstalled Applications dynamically...")
+            add_to_installed_apps("approval_app", rebuild_website=False)
             frappe.db.commit()
     except Exception as e:
-        print(f"Warning adding remittance_tool to installed apps: {e}")
+        print(f"Warning adding approval_app to installed apps: {e}")
