@@ -66,11 +66,12 @@ def execute():
     except Exception as e:
         print(f"Warning updating Module Def app_names: {e}")
 
-    # Force reset custom flag, clear stale field_order Property Setters, and import Vendor Master directly from JSON
+    # Force reset custom flag, clear ALL Property Setters & Custom Fields, and import Vendor Master directly from JSON
     try:
         if frappe.db.exists("DocType", "Vendor Master"):
             frappe.db.sql("UPDATE `tabDocType` SET custom = 0 WHERE name = 'Vendor Master'")
-            frappe.db.sql("DELETE FROM `tabProperty Setter` WHERE doc_type = 'Vendor Master' AND property = 'field_order'")
+            frappe.db.sql("DELETE FROM `tabProperty Setter` WHERE doc_type = 'Vendor Master'")
+            frappe.db.sql("DELETE FROM `tabCustom Field` WHERE dt = 'Vendor Master'")
             vm_path = os.path.join(monorepo_dir, "alms_app", "crms", "doctype", "vendor_master", "vendor_master.json")
             if os.path.exists(vm_path):
                 from frappe.modules.import_file import import_file_by_path
