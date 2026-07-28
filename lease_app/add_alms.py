@@ -55,11 +55,19 @@ def execute():
     except Exception as e:
         print(f"Warning adding alms_app to installed apps: {e}")
 
-    # Force reset custom flag and reload Vendor Master from JSON
+    # Force reset custom flag, clear stale field_order Property Setters, and import Vendor Master directly from JSON
     try:
         if frappe.db.exists("DocType", "Vendor Master"):
             frappe.db.sql("UPDATE `tabDocType` SET custom = 0 WHERE name = 'Vendor Master'")
-            frappe.reload_doc("crms", "doctype", "vendor_master", force=True)
+            frappe.db.sql("DELETE FROM `tabProperty Setter` WHERE doc_type = 'Vendor Master' AND property = 'field_order'")
+            vm_path = os.path.join(monorepo_dir, "alms_app", "crms", "doctype", "vendor_master", "vendor_master.json")
+            if os.path.exists(vm_path):
+                from frappe.modules.import_file import import_file_by_path
+                import_file_by_path(vm_path, force=True, ignore_version=True)
+                print("Successfully reloaded Vendor Master directly from JSON path!")
+            else:
+                frappe.reload_doc("crms", "doctype", "vendor_master", force=True)
+            frappe.clear_cache(doctype="Vendor Master")
             frappe.db.commit()
     except Exception as e:
         print(f"Warning reloading Vendor Master: {e}")
