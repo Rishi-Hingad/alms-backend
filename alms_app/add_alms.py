@@ -66,20 +66,60 @@ def execute():
     except Exception as e:
         print(f"Warning updating Module Def app_names: {e}")
 
-    # Force reset custom flag, clear ALL Property Setters & Custom Fields, and import Vendor Master directly from JSON
+    # Force reset custom flag & migration_hash, purge overrides, and programmatically inject fields
     try:
         if frappe.db.exists("DocType", "Vendor Master"):
-            frappe.db.sql("UPDATE `tabDocType` SET custom = 0 WHERE name = 'Vendor Master'")
+            frappe.db.sql("UPDATE `tabDocType` SET custom = 0, migration_hash = NULL WHERE name = 'Vendor Master'")
             frappe.db.sql("DELETE FROM `tabProperty Setter` WHERE doc_type = 'Vendor Master'")
             frappe.db.sql("DELETE FROM `tabCustom Field` WHERE dt = 'Vendor Master'")
+
             vm_path = os.path.join(monorepo_dir, "alms_app", "crms", "doctype", "vendor_master", "vendor_master.json")
             if os.path.exists(vm_path):
                 from frappe.modules.import_file import import_file_by_path
                 import_file_by_path(vm_path, force=True, ignore_version=True)
-                print("Successfully reloaded Vendor Master directly from JSON path!")
-            else:
-                frappe.reload_doc("crms", "doctype", "vendor_master", force=True)
+
+            doc = frappe.get_doc("DocType", "Vendor Master")
+            doc.migration_hash = None
+            doc.custom = 0
+
+            fieldnames = [f.fieldname for f in doc.fields]
+            if "pan_number" not in fieldnames:
+                doc.append("fields", {
+                    "fieldname": "pan_number",
+                    "label": "PAN Number",
+                    "fieldtype": "Data"
+                })
+            if "column_break_hrfb" not in fieldnames:
+                doc.append("fields", {
+                    "fieldname": "column_break_hrfb",
+                    "fieldtype": "Column Break"
+                })
+            if "contact_person_section" not in fieldnames:
+                doc.append("fields", {
+                    "fieldname": "contact_person_section",
+                    "label": "Contact Person",
+                    "fieldtype": "Section Break"
+                })
+            if "company_address" not in fieldnames:
+                doc.append("fields", {
+                    "fieldname": "company_address",
+                    "label": "Company Address",
+                    "fieldtype": "Small Text"
+                })
+
+            doc.field_order = [
+                "company_name",
+                "contact_number",
+                "contact_email",
+                "pan_number",
+                "column_break_hrfb",
+                "company_address",
+                "contact_person_section",
+                "person_responsible"
+            ]
+            doc.save(ignore_permissions=True)
             frappe.clear_cache(doctype="Vendor Master")
             frappe.db.commit()
+            print("Successfully updated Vendor Master schema and fields!")
     except Exception as e:
         print(f"Warning reloading Vendor Master: {e}")
