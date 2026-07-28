@@ -66,6 +66,13 @@ def execute():
     except Exception as e:
         print(f"Warning updating Module Def app_names: {e}")
 
+    # Enable Data Import tool for Core Role DocType
+    try:
+        frappe.db.sql("UPDATE `tabDocType` SET allow_import = 1 WHERE name = 'Role'")
+        frappe.db.commit()
+    except Exception as e:
+        print(f"Warning enabling import for Role: {e}")
+
     # Force reset custom flag & migration_hash, purge overrides, and programmatically inject fields
     try:
         if frappe.db.exists("DocType", "Vendor Master"):
