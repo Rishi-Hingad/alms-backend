@@ -7,7 +7,7 @@ import json
 from frappe.utils import cstr
 from frappe.model.document import Document
 from frappe.core.doctype.user.user import User
-from alms_app.utils.custom_send_mail import custom_sendmail
+from lease_app.utils.custom_send_mail import custom_sendmail
 from frappe.utils.password import update_password
 from frappe.email.doctype.email_template.email_template import get_email_template
 
@@ -335,3 +335,48 @@ def get_eligibility_from_designation(designation):
 
     doc = frappe.get_doc("Employee Designation", designation)
     return {"eligibility": doc.eligibility}
+
+
+def get_permission_query_conditions(user):
+    if not user:
+        user = frappe.session.user
+    
+    if user == "Administrator":
+        return ""
+    
+    roles = frappe.get_roles(user)
+    
+    # Do not restrict System Managers or HRs
+    if any(role in roles for role in ["System Manager", "HR Manager", "HR", "HR Head", "HR (CRMS)"]):
+        return ""
+        
+    if "Reporting Head" in roles:
+        emp_name = frappe.db.get_value("ALMS Employee", {"company_email": user}, "name")
+        if emp_name:
+            # Allow them to see themselves and the employees reporting to them
+            return f"(`tabALMS Employee`.reporting_head = '{emp_name}' OR `tabALMS Employee`.name = '{emp_name}')"
+        else:
+            return "1=2" # If no employee record linked, deny access
+            
+    return ""
+
+def has_permission(doc, ptype="read", user=None):
+    if not user:
+        user = frappe.session.user
+    
+    if user == "Administrator":
+        return True
+        
+    roles = frappe.get_roles(user)
+    
+    if any(role in roles for role in ["System Manager", "HR Manager", "HR", "HR Head", "HR (CRMS)"]):
+        return True
+        
+    if "Reporting Head" in roles:
+        emp_name = frappe.db.get_value("ALMS Employee", {"company_email": user}, "name")
+        if emp_name:
+            if doc.reporting_head == emp_name or doc.name == emp_name:
+                return True
+            return False
+            
+    return True
