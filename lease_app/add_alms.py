@@ -11,8 +11,10 @@ def execute():
     pkg_dir = os.path.dirname(os.path.abspath(__file__))
     monorepo_dir = os.path.dirname(pkg_dir)
     alms_dir = os.path.join(monorepo_dir, "alms_app")
+    approval_dir = os.path.join(monorepo_dir, "approval_app")
+    remittance_dir = os.path.join(monorepo_dir, "remittance")
 
-    for p in [alms_dir, monorepo_dir, apps_dir]:
+    for p in [alms_dir, approval_dir, remittance_dir, monorepo_dir, apps_dir]:
         if os.path.exists(p) and p not in sys.path:
             sys.path.insert(0, p)
 
@@ -24,36 +26,45 @@ def execute():
     except Exception:
         apps = []
 
-    if apps and "alms_app" not in apps:
-        print("Adding alms_app to apps.txt dynamically...")
-        if "lease_app" in apps:
-            idx = apps.index("lease_app")
-            apps.insert(idx, "alms_app")
-        elif "leasemanagement" in apps:
-            idx = apps.index("leasemanagement")
-            apps.insert(idx, "alms_app")
-        else:
-            apps.append("alms_app")
+    # Ensure all monorepo apps are listed in apps.txt
+    needed_apps = ["lease_app", "alms_app", "remittance_tool", "approval_app"]
+    updated_apps = False
+    for app_name in needed_apps:
+        if app_name not in apps:
+            apps.append(app_name)
+            updated_apps = True
 
+    if updated_apps:
         with open(apps_txt_path, "w") as f:
             f.write("\n".join(apps) + "\n")
-
         frappe.cache().delete_value("all_apps")
         frappe.cache().delete_value("app_modules")
         try:
             frappe.setup_module_map()
         except Exception as e:
-            print(f"Warning setting up module map for alms_app: {e}")
+            print(f"Warning setting up module map: {e}")
 
+    # Ensure all monorepo apps are in tabInstalled Applications
     try:
         installed_apps = frappe.get_installed_apps()
-        if "alms_app" not in installed_apps:
-            from frappe.installer import add_to_installed_apps
-            print("Adding alms_app to tabInstalled Applications dynamically...")
-            add_to_installed_apps("alms_app", rebuild_website=False)
-            frappe.db.commit()
+        from frappe.installer import add_to_installed_apps
+        for app_name in needed_apps:
+            if app_name not in installed_apps:
+                print(f"Adding {app_name} to tabInstalled Applications dynamically...")
+                add_to_installed_apps(app_name, rebuild_website=False)
+        frappe.db.commit()
     except Exception as e:
-        print(f"Warning adding alms_app to installed apps: {e}")
+        print(f"Warning adding apps to installed apps: {e}")
+
+    # Align tabModule Def app_name associations so Frappe links every module to an installed app
+    try:
+        frappe.db.sql("UPDATE `tabModule Def` SET app_name = 'lease_app' WHERE module_name IN ('Lease Management System', 'Car and Lease', 'Lease Masters')")
+        frappe.db.sql("UPDATE `tabModule Def` SET app_name = 'alms_app' WHERE module_name IN ('ALMS', 'master', 'CRMS')")
+        frappe.db.sql("UPDATE `tabModule Def` SET app_name = 'approval_app' WHERE module_name = 'Approval'")
+        frappe.db.sql("UPDATE `tabModule Def` SET app_name = 'remittance_tool' WHERE module_name = 'Remittance Tool'")
+        frappe.db.commit()
+    except Exception as e:
+        print(f"Warning updating Module Def app_names: {e}")
 
     # Force reset custom flag, clear stale field_order Property Setters, and import Vendor Master directly from JSON
     try:
