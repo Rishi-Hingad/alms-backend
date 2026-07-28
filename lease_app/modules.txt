@@ -1,3 +1,2 @@
-Car and Lease
 Lease Management System
 Lease Masters

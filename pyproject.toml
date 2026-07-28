@@ -22,7 +22,6 @@ packages = [
     "alms_app",
     "remittance_tool",
     "approval_app",
-    "car_and_lease",
     "lease_management_system",
     "lease_masters",
     "alms",
@@ -38,7 +37,6 @@ alms_app = "alms_app"
 remittance_tool = "remittance/remittance_tool"
 approval_app = "approval_app/approval_app"
 
-car_and_lease = "lease_app/car_and_lease"
 lease_management_system = "lease_app/lease_management_system"
 lease_masters = "lease_app/lease_masters"
 
