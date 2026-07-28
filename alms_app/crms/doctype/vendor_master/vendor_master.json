@@ -2,30 +2,25 @@
  "actions": [],
  "allow_rename": 1,
  "autoname": "format:{vendor_name}-{vendor_code}",
- "creation": "2026-07-28 16:11:18.721796",
+ "creation": "2026-07-28 16:50:03.722323",
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
   "vendor_code",
   "vendor_name",
-  "company_name",
   "industry",
   "vendor_classification",
   "column_break_contact",
   "contact_number",
   "mobile_number",
-  "telephone_number",
-  "contact_email",
   "email_address",
   "address_section",
   "address",
-  "company_address",
   "column_break_address",
   "pin_code",
   "city",
   "country_name",
   "tax_section",
-  "pan",
   "pan_number",
   "gst_no",
   "column_break_tax",
@@ -57,11 +52,6 @@
    "label": "Vendor Name"
   },
   {
-   "fieldname": "company_name",
-   "fieldtype": "Data",
-   "label": "Company Name"
-  },
-  {
    "fieldname": "industry",
    "fieldtype": "Select",
    "label": "Industry",
@@ -89,16 +79,6 @@
    "label": "Mobile Number"
   },
   {
-   "fieldname": "telephone_number",
-   "fieldtype": "Phone",
-   "label": "Telephone Number"
-  },
-  {
-   "fieldname": "contact_email",
-   "fieldtype": "Data",
-   "label": "Contact Email"
-  },
-  {
    "fieldname": "email_address",
    "fieldtype": "Data",
    "in_list_view": 1,
@@ -114,11 +94,6 @@
    "fieldname": "address",
    "fieldtype": "Text",
    "label": "Address"
-  },
-  {
-   "fieldname": "company_address",
-   "fieldtype": "Small Text",
-   "label": "Company Address"
   },
   {
    "fieldname": "column_break_address",
@@ -146,11 +121,6 @@
    "fieldname": "tax_section",
    "fieldtype": "Section Break",
    "label": "Tax & Registration Details"
-  },
-  {
-   "fieldname": "pan",
-   "fieldtype": "Data",
-   "label": "PAN"
   },
   {
    "fieldname": "pan_number",
@@ -232,7 +202,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-07-28 16:11:19.187302",
+ "modified": "2026-07-28 16:50:04.140177",
  "modified_by": "Administrator",
  "module": "CRMS",
  "name": "Vendor Master",

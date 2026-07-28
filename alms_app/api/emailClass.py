@@ -1349,7 +1349,7 @@ class EmailServices:
 
         all_vendors = frappe.get_all(
             "Vendor Master",
-            fields=["name", "company_name", "contact_email"]
+            fields=["name", "vendor_name", "company_name", "email_address", "contact_email"]
         )
 
         car_indent_form = frappe.get_doc("Car Indent Form", user.name)
@@ -1359,9 +1359,9 @@ class EmailServices:
 
         for vendor in all_vendors:
 
-            vendor_name = (vendor.name or "").strip()
+            vendor_name = (vendor.get("vendor_name") or vendor.get("company_name") or vendor.get("name") or "").strip()
             vendor_name_lower = vendor_name.lower()
-            email = (vendor.contact_email or "").strip()
+            email = (vendor.get("email_address") or vendor.get("contact_email") or "").strip()
 
             if not email:
                 continue
@@ -1577,21 +1577,23 @@ class EmailServices:
         form_link = f"{frappe.utils.get_url()}/car-purchase-form/new?quotation_form={quotation_id}&user={user.name}&company={car_quot_form.finance_company}"
         body = self.create_selected_company_process(car_quot_form,user,form_link)
         subject = f"Car Onboard Process for {self.get_emp_name(user)}"
-        vendor =frappe.get_doc("Vendor Master",car_quot_form.finance_company)
-        self.send(subject=subject, body=body, recipient_email=vendor.contact_email)
+        vendor = frappe.get_doc("Vendor Master", car_quot_form.finance_company)
+        vendor_email = getattr(vendor, "email_address", getattr(vendor, "contact_email", None))
+        self.send(subject=subject, body=body, recipient_email=vendor_email)
 
     # rejection for car quotation
     def for_reject_finance_head_to_finance_team(self,quotation_id):
         car_quot_form = frappe.get_doc("Car Quotation",quotation_id)  #ismei se milega finance company
-        vendor =frappe.get_doc("Vendor Master",car_quot_form.finance_company) #this is vendor details recipient humara
+        vendor = frappe.get_doc("Vendor Master",car_quot_form.finance_company) #this is vendor details recipient humara
         user = frappe.get_doc("ALMS Employee",car_quot_form.employee_details)  #yaha se milega employee, jiska sirf naam chahiye
-        recipient_email=vendor.contact_email
-        subject=f"""{vendor.company_name} Car Quotation Rejected by Finance Head"""
-        remarks_by="finance_head_remarks"
-        cc_list=[emailMaster.finance_head2_email, emailMaster.finance_team_emails]
+        recipient_email = getattr(vendor, "email_address", getattr(vendor, "contact_email", None))
+        v_title = getattr(vendor, "vendor_name", getattr(vendor, "company_name", vendor.name))
+        subject = f"""{v_title} Car Quotation Rejected by Finance Head"""
+        remarks_by = "finance_head_remarks"
+        cc_list = [emailMaster.finance_head2_email, emailMaster.finance_team_emails]
 
         content = f"""
-        Dear {vendor.company_name},
+        Dear {v_title},
         <br><br>
         This is to notify you that the Car Quotation Form of {self.get_emp_name(user)} is rejected by the Finance Head for the following reasons:<br>
         """
@@ -1600,15 +1602,16 @@ class EmailServices:
 
     def for_reject_finance_team_to_vendor(self,quotation_id):
         car_quot_form = frappe.get_doc("Car Quotation",quotation_id)  #ismei se milega finance company
-        vendor =frappe.get_doc("Vendor Master",car_quot_form.finance_company) #this is vendor details recipient humara
+        vendor = frappe.get_doc("Vendor Master",car_quot_form.finance_company) #this is vendor details recipient humara
         user = frappe.get_doc("ALMS Employee",car_quot_form.employee_details)  #yaha se milega employee, jiska sirf naam chahiye
-        recipient_email=vendor.contact_email
-        subject=f"""{vendor.company_name} Car Quotation Rejected by Finance Team"""
+        recipient_email = getattr(vendor, "email_address", getattr(vendor, "contact_email", None))
+        v_title = getattr(vendor, "vendor_name", getattr(vendor, "company_name", vendor.name))
+        subject = f"""{v_title} Car Quotation Rejected by Finance Team"""
         remarks_by="finance_team_remarks"
         cc_list=[emailMaster.finance_head2_email, emailMaster.finance_head_email]
 
         content = f"""
-        Dear {vendor.company_name},
+        Dear {v_title},
         <br><br>
         This is to notify you that the Car Quotation Form of {self.get_emp_name(user)} is rejected by the Finance Team for the following reasons:<br>
         """

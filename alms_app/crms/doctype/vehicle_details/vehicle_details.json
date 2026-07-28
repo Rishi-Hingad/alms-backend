@@ -135,9 +135,9 @@
   },
   {
    "fieldname": "vendor_company",
-   "fieldtype": "Select",
+   "fieldtype": "Link",
    "label": "Vendor Company",
-   "options": "ALD\nEasyAssets\nCompany Owned Vehicle"
+   "options": "Vendor Master"
   },
   {
    "fieldname": "vehicle_details_tab",
@@ -179,11 +179,11 @@
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-06-26 17:20:39.278241",
+ "modified": "2026-07-28 16:37:28.494894",
  "modified_by": "Administrator",
  "module": "CRMS",
  "name": "Vehicle Details",
- "naming_rule": "Expression",
+ "naming_rule": "Expression (old style)",
  "owner": "Administrator",
  "permissions": [
   {

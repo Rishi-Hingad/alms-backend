@@ -103,7 +103,7 @@ function addVendorButton(frm) {
         }
 
         const res = await frappe.db.get_list("Vendor Master", {
-            fields: ["name", "contact_email"]
+            fields: ["name", "vendor_name", "email_address", "contact_email"]
         });
 
         if (!res.length) {
@@ -123,10 +123,14 @@ function addVendorButton(frm) {
                     fieldname: "vendors",
                     fieldtype: "MultiCheck",
                     label: "Vendors",
-                    options: res.map(v => ({
-                        label: `${v.name} (${v.contact_email || "No Email"})`,
-                        value: v.name
-                    }))
+                    options: res.map(v => {
+                        const email = v.email_address || v.contact_email || "No Email";
+                        const title = v.vendor_name || v.name;
+                        return {
+                            label: `${title} (${email})`,
+                            value: v.name
+                        };
+                    })
                 }
             ],
             primary_action_label: "Send Email",
