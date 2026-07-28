@@ -21,33 +21,41 @@ def execute():
 
     importlib.invalidate_caches()
 
+    needed_apps = ["frappe", "lease_app", "alms_app", "remittance_tool", "approval_app"]
+
+    # 1. Mutate thread-local in-memory installed_apps list so bench migrate & Desk know all 5 apps are installed
+    if hasattr(frappe, "local"):
+        frappe.local.installed_apps = list(needed_apps)
+
+    # 2. Ensure all monorepo apps are listed in apps.txt
     try:
         with open(apps_txt_path, "r") as f:
             apps = [line.strip() for line in f.read().splitlines() if line.strip()]
     except Exception:
         apps = []
 
-    # 1. Ensure all monorepo apps are listed in apps.txt
-    needed_apps = ["lease_app", "alms_app", "remittance_tool", "approval_app"]
     updated_apps = False
-    for app_name in needed_apps:
+    for app_name in ["lease_app", "alms_app", "remittance_tool", "approval_app"]:
         if app_name not in apps:
             apps.append(app_name)
             updated_apps = True
 
     if updated_apps:
-        with open(apps_txt_path, "w") as f:
-            f.write("\n".join(apps) + "\n")
+        try:
+            with open(apps_txt_path, "w") as f:
+                f.write("\n".join(apps) + "\n")
+        except Exception:
+            pass
 
-    # 2. Ensure all monorepo apps exist in tabInstalled Application table via direct SQL
+    # 3. Ensure all 4 monorepo apps exist in tabInstalled Application table via direct SQL
     try:
-        for app_name in needed_apps:
+        for app_name in ["lease_app", "alms_app", "remittance_tool", "approval_app"]:
             frappe.db.sql(
                 """
                 INSERT INTO `tabInstalled Application` 
                     (name, app_name, app_version, creation, modified, owner, modified_by) 
                 VALUES 
-                    (%s, %s, '1.0.0', NOW(), NOW(), 'Administrator', 'Administrator')
+                    (%s, %s, '0.0.1', NOW(), NOW(), 'Administrator', 'Administrator')
                 ON DUPLICATE KEY UPDATE modified = NOW()
                 """,
                 (app_name, app_name)
@@ -56,7 +64,7 @@ def execute():
     except Exception as e:
         print(f"Warning adding apps to installed apps table: {e}")
 
-    # 3. Clear cache and setup module map
+    # 4. Clear cache and setup module map
     try:
         frappe.cache().delete_value("all_apps")
         frappe.cache().delete_value("app_modules")
@@ -65,24 +73,21 @@ def execute():
     except Exception as e:
         print(f"Warning setting up module map: {e}")
 
-    # 4. Align tabModule Def app_name associations so Frappe links every module to an installed app
+    # 5. Bind all monorepo modules in tabModule Def to alms_app so Frappe never throws Module Not Found
     try:
-        frappe.db.sql("UPDATE `tabModule Def` SET app_name = 'lease_app' WHERE module_name IN ('Lease Management System', 'Car and Lease', 'Lease Masters')")
-        frappe.db.sql("UPDATE `tabModule Def` SET app_name = 'alms_app' WHERE module_name IN ('ALMS', 'master', 'CRMS')")
-        frappe.db.sql("UPDATE `tabModule Def` SET app_name = 'approval_app' WHERE module_name = 'Approval'")
-        frappe.db.sql("UPDATE `tabModule Def` SET app_name = 'remittance_tool' WHERE module_name = 'Remittance Tool'")
+        frappe.db.sql("UPDATE `tabModule Def` SET app_name = 'alms_app' WHERE module_name IN ('Lease Management System', 'Car and Lease', 'Lease Masters', 'ALMS', 'master', 'CRMS', 'Approval', 'Remittance Tool')")
         frappe.db.commit()
     except Exception as e:
         print(f"Warning updating Module Def app_names: {e}")
 
-    # 5. Enable Data Import tool for Core Role DocType
+    # 6. Enable Data Import tool for Core Role DocType
     try:
         frappe.db.sql("UPDATE `tabDocType` SET allow_import = 1 WHERE name = 'Role'")
         frappe.db.commit()
     except Exception as e:
         print(f"Warning enabling import for Role: {e}")
 
-    # 6. Force reset custom flag & migration_hash, purge overrides, and save Vendor Master fields
+    # 7. Force reset custom flag & migration_hash, purge overrides, and save Vendor Master fields
     try:
         if frappe.db.exists("DocType", "Vendor Master"):
             frappe.flags.in_import = True
