@@ -1,24 +1,81 @@
 {
  "actions": [],
  "allow_rename": 1,
- "creation": "2026-07-28 12:24:23.845105",
+ "autoname": "format:{vendor_name}-{vendor_code}",
+ "creation": "2025-07-15 12:26:21.296756",
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
+  "vendor_code",
+  "vendor_name",
   "company_name",
+  "industry",
+  "vendor_classification",
+  "column_break_contact",
   "contact_number",
+  "mobile_number",
+  "telephone_number",
   "contact_email",
-  "pan_number",
-  "column_break_hrfb",
+  "email_address",
+  "address_section",
+  "address",
   "company_address",
+  "column_break_address",
+  "pin_code",
+  "city",
+  "country_name",
+  "tax_section",
+  "pan",
+  "pan_number",
+  "gst_no",
+  "column_break_tax",
+  "cst",
+  "lst",
+  "service_registration_number",
+  "purchasing_section",
+  "purchase_organization",
+  "purchase_organization_description",
+  "number_of_purchasing_organization",
+  "column_break_purchasing",
+  "minimum_order_value",
+  "payment_term_description",
   "contact_person_section",
   "person_responsible"
  ],
  "fields": [
   {
+   "fieldname": "vendor_code",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Vendor Code",
+   "unique": 1
+  },
+  {
+   "fieldname": "vendor_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Vendor Name"
+  },
+  {
    "fieldname": "company_name",
    "fieldtype": "Data",
    "label": "Company Name"
+  },
+  {
+   "fieldname": "industry",
+   "fieldtype": "Select",
+   "label": "Industry",
+   "options": "\nDOM_Goods\nDOM_Services"
+  },
+  {
+   "fieldname": "vendor_classification",
+   "fieldtype": "Select",
+   "label": "Vendor Classification",
+   "options": "\nRegistered\nUnregistered"
+  },
+  {
+   "fieldname": "column_break_contact",
+   "fieldtype": "Column Break"
   },
   {
    "default": "+91",
@@ -27,15 +84,73 @@
    "label": "Contact Number"
   },
   {
+   "fieldname": "mobile_number",
+   "fieldtype": "Phone",
+   "label": "Mobile Number"
+  },
+  {
+   "fieldname": "telephone_number",
+   "fieldtype": "Phone",
+   "label": "Telephone Number"
+  },
+  {
    "fieldname": "contact_email",
    "fieldtype": "Data",
    "label": "Contact Email"
   },
   {
-   "fieldname": "person_responsible",
-   "fieldtype": "Table",
-   "label": "Person Responsible",
-   "options": "Person Responsible"
+   "fieldname": "email_address",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Email Address",
+   "options": "Email"
+  },
+  {
+   "fieldname": "address_section",
+   "fieldtype": "Section Break",
+   "label": "Address Details"
+  },
+  {
+   "fieldname": "address",
+   "fieldtype": "Text",
+   "label": "Address"
+  },
+  {
+   "fieldname": "company_address",
+   "fieldtype": "Small Text",
+   "label": "Company Address"
+  },
+  {
+   "fieldname": "column_break_address",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "pin_code",
+   "fieldtype": "Link",
+   "label": "Pin Code",
+   "options": "Pincode Master"
+  },
+  {
+   "fieldname": "city",
+   "fieldtype": "Data",
+   "label": "City",
+   "read_only": 1
+  },
+  {
+   "fieldname": "country_name",
+   "fieldtype": "Link",
+   "label": "Country Name",
+   "options": "Country"
+  },
+  {
+   "fieldname": "tax_section",
+   "fieldtype": "Section Break",
+   "label": "Tax & Registration Details"
+  },
+  {
+   "fieldname": "pan",
+   "fieldtype": "Data",
+   "label": "PAN"
   },
   {
    "fieldname": "pan_number",
@@ -43,26 +158,85 @@
    "label": "PAN Number"
   },
   {
-   "fieldname": "column_break_hrfb",
+   "fieldname": "gst_no",
+   "fieldtype": "Data",
+   "label": "GST No."
+  },
+  {
+   "fieldname": "column_break_tax",
    "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "cst",
+   "fieldtype": "Data",
+   "label": "CST"
+  },
+  {
+   "fieldname": "lst",
+   "fieldtype": "Data",
+   "label": "LST"
+  },
+  {
+   "fieldname": "service_registration_number",
+   "fieldtype": "Data",
+   "label": "Service Registration Number"
+  },
+  {
+   "fieldname": "purchasing_section",
+   "fieldtype": "Section Break",
+   "label": "Purchasing & Payment Details"
+  },
+  {
+   "fieldname": "purchase_organization",
+   "fieldtype": "Select",
+   "label": "Purchase Organization",
+   "options": "\n8100\n8200"
+  },
+  {
+   "fieldname": "purchase_organization_description",
+   "fieldtype": "Select",
+   "label": "Purchase Organization Description",
+   "options": "\nPurchase Organization-Domestic\nPurchase Organization-Import"
+  },
+  {
+   "fieldname": "number_of_purchasing_organization",
+   "fieldtype": "Int",
+   "label": "Number of Purchasing Organization"
+  },
+  {
+   "fieldname": "column_break_purchasing",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "minimum_order_value",
+   "fieldtype": "Float",
+   "label": "Minimum Order Value"
+  },
+  {
+   "fieldname": "payment_term_description",
+   "fieldtype": "Link",
+   "label": "Payment Term Description",
+   "options": "Payment Term Master"
   },
   {
    "fieldname": "contact_person_section",
    "fieldtype": "Section Break",
-   "label": "Contact Person"
+   "label": "Person Responsible"
   },
   {
-   "fieldname": "company_address",
-   "fieldtype": "Small Text",
-   "label": "Company Address"
+   "fieldname": "person_responsible",
+   "fieldtype": "Table",
+   "label": "Person Responsible",
+   "options": "Person Responsible"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-07-28 12:24:24.165189",
+ "modified": "2026-07-28 15:30:00.000000",
  "modified_by": "Administrator",
  "module": "CRMS",
  "name": "Vendor Master",
+ "naming_rule": "Expression",
  "owner": "Administrator",
  "permissions": [
   {
@@ -70,10 +244,26 @@
    "delete": 1,
    "email": 1,
    "export": 1,
+   "import": 0,
+   "permlevel": 0,
    "print": 1,
    "read": 1,
    "report": 1,
    "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "import": 0,
+   "permlevel": 0,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Accounts",
    "share": 1,
    "write": 1
   }

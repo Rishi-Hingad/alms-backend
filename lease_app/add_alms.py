@@ -73,10 +73,9 @@ def execute():
     except Exception as e:
         print(f"Warning enabling import for Role: {e}")
 
-    # Force reset custom flag & migration_hash, purge overrides, and programmatically inject fields
+    # Force reset custom flag & migration_hash, purge overrides, and import merged Vendor Master JSON
     try:
         if frappe.db.exists("DocType", "Vendor Master"):
-            # Set developer_mode & in_import flags temporarily so Frappe allows saving standard DocType on Frappe Cloud
             frappe.flags.in_import = True
             dev_mode = getattr(frappe.conf, "developer_mode", 0)
             frappe.conf.developer_mode = 1
@@ -89,54 +88,14 @@ def execute():
             if os.path.exists(vm_path):
                 from frappe.modules.import_file import import_file_by_path
                 import_file_by_path(vm_path, force=True, ignore_version=True)
+            else:
+                frappe.reload_doc("crms", "doctype", "vendor_master", force=True)
 
-            doc = frappe.get_doc("DocType", "Vendor Master")
-            doc.migration_hash = None
-            doc.custom = 0
-
-            fieldnames = [f.fieldname for f in doc.fields]
-            if "pan_number" not in fieldnames:
-                doc.append("fields", {
-                    "fieldname": "pan_number",
-                    "label": "PAN Number",
-                    "fieldtype": "Data"
-                })
-            if "column_break_hrfb" not in fieldnames:
-                doc.append("fields", {
-                    "fieldname": "column_break_hrfb",
-                    "fieldtype": "Column Break"
-                })
-            if "contact_person_section" not in fieldnames:
-                doc.append("fields", {
-                    "fieldname": "contact_person_section",
-                    "label": "Contact Person",
-                    "fieldtype": "Section Break"
-                })
-            if "company_address" not in fieldnames:
-                doc.append("fields", {
-                    "fieldname": "company_address",
-                    "label": "Company Address",
-                    "fieldtype": "Small Text"
-                })
-
-            doc.field_order = [
-                "company_name",
-                "contact_number",
-                "contact_email",
-                "pan_number",
-                "column_break_hrfb",
-                "company_address",
-                "contact_person_section",
-                "person_responsible"
-            ]
-            doc.save(ignore_permissions=True)
-
-            # Restore original flags
             frappe.conf.developer_mode = dev_mode
             frappe.flags.in_import = False
 
             frappe.clear_cache(doctype="Vendor Master")
             frappe.db.commit()
-            print("Successfully updated Vendor Master schema and fields on UAT!")
+            print("Successfully reloaded merged Vendor Master schema into MariaDB!")
     except Exception as e:
         print(f"Warning reloading Vendor Master: {e}")
