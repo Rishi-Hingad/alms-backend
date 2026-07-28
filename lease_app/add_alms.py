@@ -2,6 +2,7 @@ import frappe
 import os
 import sys
 import importlib
+import json
 
 def execute():
     bench_path = frappe.utils.get_bench_path()
@@ -73,7 +74,7 @@ def execute():
     except Exception as e:
         print(f"Warning enabling import for Role: {e}")
 
-    # Force reset custom flag & migration_hash, purge overrides, and import merged Vendor Master JSON
+    # Force reset custom flag & migration_hash, purge overrides, and save all 21 fields via doc.save()
     try:
         if frappe.db.exists("DocType", "Vendor Master"):
             frappe.flags.in_import = True
@@ -88,14 +89,31 @@ def execute():
             if os.path.exists(vm_path):
                 from frappe.modules.import_file import import_file_by_path
                 import_file_by_path(vm_path, force=True, ignore_version=True)
-            else:
-                frappe.reload_doc("crms", "doctype", "vendor_master", force=True)
+                
+                with open(vm_path, "r", encoding="utf-8") as jf:
+                    schema_data = json.load(jf)
+
+                doc = frappe.get_doc("DocType", "Vendor Master")
+                doc.migration_hash = None
+                doc.custom = 0
+                if schema_data.get("autoname"):
+                    doc.autoname = schema_data.get("autoname")
+                if schema_data.get("naming_rule"):
+                    doc.naming_rule = schema_data.get("naming_rule")
+                if schema_data.get("field_order"):
+                    doc.field_order = schema_data.get("field_order")
+
+                doc.fields = []
+                for f in schema_data.get("fields", []):
+                    doc.append("fields", f)
+
+                doc.save(ignore_permissions=True)
+                print(f"Successfully saved Vendor Master with {len(doc.fields)} fields!")
 
             frappe.conf.developer_mode = dev_mode
             frappe.flags.in_import = False
 
             frappe.clear_cache(doctype="Vendor Master")
             frappe.db.commit()
-            print("Successfully reloaded merged Vendor Master schema into MariaDB!")
     except Exception as e:
         print(f"Warning reloading Vendor Master: {e}")
