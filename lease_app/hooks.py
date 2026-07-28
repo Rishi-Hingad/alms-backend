@@ -9,7 +9,7 @@ if lease_app_dir not in sys.path:
     sys.path.insert(0, lease_app_dir)
 
 app_name = "lease_app"
-app_title = "Car and Lease"
+app_title = "Lease Management System"
 app_publisher = "Rishi Hingad"
 app_description = "Car and Lease Manaagment System"
 app_email = "rishi.hingad@merillife.com"
