@@ -421,3 +421,10 @@ scheduler_events = {
 # 	"Logging DocType Name": 30  # days to retain logs
 # }
 
+before_migrate = [
+    "alms_app.add_alms.execute",
+    "alms_app.add_remittance.execute",
+    "alms_app.add_approval.execute"
+]
+
+
