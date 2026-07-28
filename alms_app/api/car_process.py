@@ -72,21 +72,11 @@ def email_formate_for_car_Onboard(form_link, user_doc, company, form_name):
     vendor_doc = frappe.get_value(
         "Vendor Master",
         {"vendor_name": company},
-        ["email_address", "contact_email"],
-        as_dict=True
-    ) or frappe.get_value(
-        "Vendor Master",
-        {"company_name": company},
-        ["email_address", "contact_email"],
-        as_dict=True
-    ) or frappe.get_value(
-        "Vendor Master",
-        {"name": company},
-        ["email_address", "contact_email"],
+        ["email_address"],
         as_dict=True
     )
 
-    recipient_email = (vendor_doc.get("email_address") or vendor_doc.get("contact_email")) if vendor_doc else None
+    recipient_email = (vendor_doc.get("email_address")) if vendor_doc else None
 
     emailer.send(
         subject=subject,

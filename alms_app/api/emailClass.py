@@ -1349,7 +1349,7 @@ class EmailServices:
 
         all_vendors = frappe.get_all(
             "Vendor Master",
-            fields=["name", "vendor_name", "company_name", "email_address", "contact_email"]
+            fields=["name", "vendor_name", "email_address"]
         )
 
         car_indent_form = frappe.get_doc("Car Indent Form", user.name)

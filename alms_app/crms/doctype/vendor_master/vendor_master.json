@@ -2,7 +2,7 @@
  "actions": [],
  "allow_rename": 1,
  "autoname": "format:{vendor_name}-{vendor_code}",
- "creation": "2026-07-28 16:50:03.722323",
+ "creation": "2026-07-28 16:58:22.421765",
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
@@ -202,7 +202,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-07-28 16:50:04.140177",
+ "modified": "2026-07-28 16:58:22.858845",
  "modified_by": "Administrator",
  "module": "CRMS",
  "name": "Vendor Master",

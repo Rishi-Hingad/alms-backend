@@ -27,7 +27,7 @@ def execute():
     except Exception:
         apps = []
 
-    # Ensure all monorepo apps are listed in apps.txt
+    # 1. Ensure all monorepo apps are listed in apps.txt
     needed_apps = ["lease_app", "alms_app", "remittance_tool", "approval_app"]
     updated_apps = False
     for app_name in needed_apps:
@@ -38,26 +38,34 @@ def execute():
     if updated_apps:
         with open(apps_txt_path, "w") as f:
             f.write("\n".join(apps) + "\n")
-        frappe.cache().delete_value("all_apps")
-        frappe.cache().delete_value("app_modules")
-        try:
-            frappe.setup_module_map()
-        except Exception as e:
-            print(f"Warning setting up module map: {e}")
 
-    # Ensure all monorepo apps are in tabInstalled Applications
+    # 2. Ensure all monorepo apps exist in tabInstalled Application table via direct SQL
     try:
-        installed_apps = frappe.get_installed_apps()
-        from frappe.installer import add_to_installed_apps
         for app_name in needed_apps:
-            if app_name not in installed_apps:
-                print(f"Adding {app_name} to tabInstalled Applications dynamically...")
-                add_to_installed_apps(app_name, rebuild_website=False)
+            frappe.db.sql(
+                """
+                INSERT INTO `tabInstalled Application` 
+                    (name, app_name, app_version, creation, modified, owner, modified_by) 
+                VALUES 
+                    (%s, %s, '1.0.0', NOW(), NOW(), 'Administrator', 'Administrator')
+                ON DUPLICATE KEY UPDATE modified = NOW()
+                """,
+                (app_name, app_name)
+            )
         frappe.db.commit()
     except Exception as e:
-        print(f"Warning adding apps to installed apps: {e}")
+        print(f"Warning adding apps to installed apps table: {e}")
 
-    # Align tabModule Def app_name associations so Frappe links every module to an installed app
+    # 3. Clear cache and setup module map
+    try:
+        frappe.cache().delete_value("all_apps")
+        frappe.cache().delete_value("app_modules")
+        frappe.clear_cache()
+        frappe.setup_module_map()
+    except Exception as e:
+        print(f"Warning setting up module map: {e}")
+
+    # 4. Align tabModule Def app_name associations so Frappe links every module to an installed app
     try:
         frappe.db.sql("UPDATE `tabModule Def` SET app_name = 'lease_app' WHERE module_name IN ('Lease Management System', 'Car and Lease', 'Lease Masters')")
         frappe.db.sql("UPDATE `tabModule Def` SET app_name = 'alms_app' WHERE module_name IN ('ALMS', 'master', 'CRMS')")
@@ -67,14 +75,14 @@ def execute():
     except Exception as e:
         print(f"Warning updating Module Def app_names: {e}")
 
-    # Enable Data Import tool for Core Role DocType
+    # 5. Enable Data Import tool for Core Role DocType
     try:
         frappe.db.sql("UPDATE `tabDocType` SET allow_import = 1 WHERE name = 'Role'")
         frappe.db.commit()
     except Exception as e:
         print(f"Warning enabling import for Role: {e}")
 
-    # Force reset custom flag & migration_hash, purge overrides, and save all 21 fields via doc.save()
+    # 6. Force reset custom flag & migration_hash, purge overrides, and save Vendor Master fields
     try:
         if frappe.db.exists("DocType", "Vendor Master"):
             frappe.flags.in_import = True

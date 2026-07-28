@@ -300,13 +300,13 @@ scheduler_events = {
 }
 
 permission_query_conditions = {
-"ALMS Employee": "lease_app.master.doctype.alms_employee.alms_employee.get_permission_query_conditions",
+"ALMS Employee": "alms_app.master.doctype.alms_employee.alms_employee.get_permission_query_conditions",
 "Lease Management": "lease_app.lease_management_system.doctype.lease_management.lease_management.get_permission_query_conditions",
 "Property Master": "lease_app.lease_masters.doctype.property_master.property_master.get_permission_query_conditions",
 }
 
 has_permission = {
-"ALMS Employee": "lease_app.master.doctype.alms_employee.alms_employee.has_permission",
+"ALMS Employee": "alms_app.master.doctype.alms_employee.alms_employee.has_permission",
 "Lease Management": "lease_app.lease_management_system.doctype.lease_management.lease_management.has_permission",
 "Property Master": "lease_app.lease_masters.doctype.property_master.property_master.has_permission",
 }
