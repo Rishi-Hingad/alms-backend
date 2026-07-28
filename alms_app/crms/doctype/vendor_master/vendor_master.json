@@ -1,7 +1,7 @@
 {
  "actions": [],
  "allow_rename": 1,
- "creation": "2026-07-28 11:24:17.151933",
+ "creation": "2026-07-28 12:24:23.845105",
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
@@ -59,7 +59,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-07-28 11:24:17.466561",
+ "modified": "2026-07-28 12:24:24.165189",
  "modified_by": "Administrator",
  "module": "CRMS",
  "name": "Vendor Master",
