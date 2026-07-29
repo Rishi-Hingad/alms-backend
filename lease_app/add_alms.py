@@ -2,6 +2,7 @@ import frappe
 import os
 import sys
 import importlib
+import importlib.util
 import json
 
 def execute():
@@ -11,9 +12,9 @@ def execute():
 
     pkg_dir = os.path.dirname(os.path.abspath(__file__))
     monorepo_dir = os.path.dirname(pkg_dir)
-    alms_dir = os.path.join(monorepo_dir, "alms_app")
-    approval_dir = os.path.join(monorepo_dir, "approval_app")
-    remittance_dir = os.path.join(monorepo_dir, "remittance_app")
+    alms_dir = os.path.join(apps_dir, "alms_app")
+    approval_dir = os.path.join(apps_dir, "approval_app")
+    remittance_dir = os.path.join(apps_dir, "remittance_app")
 
     for p in [alms_dir, approval_dir, remittance_dir, monorepo_dir, apps_dir]:
         if os.path.exists(p) and p not in sys.path:
@@ -21,13 +22,23 @@ def execute():
 
     importlib.invalidate_caches()
 
-    needed_apps = ["frappe", "lease_app", "alms_app", "remittance_tool", "approval_app"]
+    # Dynamically determine which apps are actually importable on this environment
+    valid_installed_apps = ["frappe", "lease_app"]
+    candidate_apps = ["alms_app", "remittance_tool", "remittance_app", "approval_app"]
 
-    # 1. Mutate thread-local in-memory installed_apps list so bench migrate & Desk know all 5 apps are installed
+    for app_name in candidate_apps:
+        try:
+            spec = importlib.util.find_spec(f"{app_name}.hooks")
+            if spec is not None and app_name not in valid_installed_apps:
+                valid_installed_apps.append(app_name)
+        except Exception:
+            pass
+
+    # 1. Mutate thread-local in-memory installed_apps list with only importable apps
     if hasattr(frappe, "local"):
-        frappe.local.installed_apps = list(needed_apps)
+        frappe.local.installed_apps = list(valid_installed_apps)
 
-    # 2. Ensure all monorepo apps are listed in apps.txt
+    # 2. Update apps.txt with valid installed apps
     try:
         with open(apps_txt_path, "r") as f:
             apps = [line.strip() for line in f.read().splitlines() if line.strip()]
@@ -35,7 +46,7 @@ def execute():
         apps = []
 
     updated_apps = False
-    for app_name in ["lease_app", "alms_app", "remittance_tool", "approval_app"]:
+    for app_name in valid_installed_apps:
         if app_name not in apps:
             apps.append(app_name)
             updated_apps = True
@@ -47,9 +58,10 @@ def execute():
         except Exception:
             pass
 
-    # 3. Ensure all 4 monorepo apps exist in tabInstalled Application table via direct SQL
+    # 3. Synchronize tabInstalled Application table cleanly
     try:
-        for app_name in ["lease_app", "alms_app", "remittance_tool", "approval_app"]:
+        # Insert or update valid apps
+        for app_name in valid_installed_apps:
             frappe.db.sql(
                 """
                 INSERT INTO `tabInstalled Application` 
@@ -60,9 +72,15 @@ def execute():
                 """,
                 (app_name, app_name)
             )
+        
+        # Purge missing apps that cannot be imported to prevent bench migrate ModuleNotFoundError
+        for app_name in candidate_apps:
+            if app_name not in valid_installed_apps:
+                frappe.db.sql("DELETE FROM `tabInstalled Application` WHERE name = %s", (app_name,))
+
         frappe.db.commit()
     except Exception as e:
-        print(f"Warning adding apps to installed apps table: {e}")
+        print(f"Warning synchronizing installed apps table: {e}")
 
     # 4. Clear cache and setup module map
     try:
@@ -73,9 +91,10 @@ def execute():
     except Exception as e:
         print(f"Warning setting up module map: {e}")
 
-    # 5. Bind all monorepo modules in tabModule Def to alms_app so Frappe never throws Module Not Found
+    # 5. Bind monorepo modules in tabModule Def to an available app
     try:
-        frappe.db.sql("UPDATE `tabModule Def` SET app_name = 'alms_app' WHERE module_name IN ('Lease Management System', 'Car and Lease', 'Lease Masters', 'ALMS', 'master', 'CRMS', 'Approval', 'Remittance Tool')")
+        target_app = "alms_app" if "alms_app" in valid_installed_apps else "lease_app"
+        frappe.db.sql("UPDATE `tabModule Def` SET app_name = %s WHERE module_name IN ('Lease Management System', 'Car and Lease', 'Lease Masters', 'ALMS', 'master', 'CRMS', 'Approval', 'Remittance Tool')", (target_app,))
         frappe.db.commit()
     except Exception as e:
         print(f"Warning updating Module Def app_names: {e}")
@@ -98,7 +117,10 @@ def execute():
             frappe.db.sql("DELETE FROM `tabProperty Setter` WHERE doc_type = 'Vendor Master'")
             frappe.db.sql("DELETE FROM `tabCustom Field` WHERE dt = 'Vendor Master'")
 
-            vm_path = os.path.join(monorepo_dir, "alms_app", "crms", "doctype", "vendor_master", "vendor_master.json")
+            vm_path = os.path.join(apps_dir, "alms_app", "alms_app", "crms", "doctype", "vendor_master", "vendor_master.json")
+            if not os.path.exists(vm_path):
+                vm_path = os.path.join(monorepo_dir, "alms_app", "crms", "doctype", "vendor_master", "vendor_master.json")
+
             if os.path.exists(vm_path):
                 from frappe.modules.import_file import import_file_by_path
                 import_file_by_path(vm_path, force=True, ignore_version=True)

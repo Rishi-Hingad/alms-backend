@@ -1,15 +1,9 @@
 [project]
-name = "leasemanagement"
+name = "lease_app"
 version = "0.0.1"
-authors = [
-    { name = "Rishi Hingad", email = "rishi.hingad@merillife.com"}
-]
 description = "Property Lease Management System"
 requires-python = ">=3.10"
 readme = "README.md"
-dependencies = [
-    "pandas>=2.2.3,<2.3",
-]
 
 [build-system]
 requires = ["setuptools>=61.0"]
@@ -17,55 +11,12 @@ build-backend = "setuptools.build_meta"
 
 [tool.setuptools]
 packages = [
-    "leasemanagement",
     "lease_app",
     "lease_management_system",
     "lease_masters"
 ]
 
 [tool.setuptools.package-dir]
-leasemanagement = "lease_app"
 lease_app = "lease_app"
 lease_management_system = "lease_app/lease_management_system"
 lease_masters = "lease_app/lease_masters"
-
-[tool.bench.dev-dependencies]
-
-[deploy.dependencies.apt]
-packages = []
-
-[tool.ruff]
-line-length = 110
-target-version = "py310"
-
-[tool.ruff.lint]
-select = [
-    "F",
-    "E",
-    "W",
-    "I",
-    "UP",
-    "B",
-    "RUF",
-]
-ignore = [
-    "B017",
-    "B018",
-    "B023",
-    "B904",
-    "E101",
-    "E402",
-    "E501",
-    "E741",
-    "F401",
-    "F403",
-    "F405",
-    "F722",
-    "W191",
-]
-typing-modules = ["frappe.types.DF"]
-
-[tool.ruff.format]
-quote-style = "double"
-indent-style = "tab"
-docstring-code-format = true
