@@ -18,3 +18,8 @@ def execute():
     # Crucially, clear cache so get_installed_apps() refreshes
     frappe.cache().delete_value("installed_apps")
     frappe.clear_cache()
+    if hasattr(frappe.local, "request_cache"):
+        frappe.local.request_cache.clear()
+    if hasattr(frappe.local, "doc_events_hooks"):
+        delattr(frappe.local, "doc_events_hooks")
+
