@@ -1,0 +1,80 @@
+{
+ "charts": [],
+ "content": "[{\"id\":\"fuuW24Boqy\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Purchase Dashboard</span>\",\"col\":12}},{\"id\":\"8Eaj5YOHCF\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Total Car Indent Form\",\"col\":3}},{\"id\":\"soyTqGnze3\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Approved Car Indent Form\",\"col\":3}},{\"id\":\"Sjc-E49ae8\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Rejected Car Indent Form\",\"col\":3}},{\"id\":\"SGEJGmnGZt\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Pending Car Indent Form\",\"col\":3}},{\"id\":\"5p3Hjxyyyc\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Total Purchase Form\",\"col\":3}},{\"id\":\"CLAnOwFR-u\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Pending Purchase Form\",\"col\":3}},{\"id\":\"6lyaCy7HF7\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Approved Purchase Form\",\"col\":3}},{\"id\":\"WIaReFbYPp\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Rejected Purchase Form\",\"col\":3}},{\"id\":\"-6t2VQSc8B\",\"type\":\"quick_list\",\"data\":{\"quick_list_name\":\"Car Indent Form\",\"col\":6}},{\"id\":\"4wBQ1HYVV_\",\"type\":\"quick_list\",\"data\":{\"quick_list_name\":\"Purchase Form\",\"col\":6}}]",
+ "creation": "2025-04-16 11:27:13.000605",
+ "custom_blocks": [],
+ "docstatus": 0,
+ "doctype": "Workspace",
+ "for_user": "",
+ "hide_custom": 0,
+ "icon": "color-review-points",
+ "idx": 0,
+ "indicator_color": "",
+ "is_hidden": 0,
+ "label": "Purchase Dashboard",
+ "links": [],
+ "modified": "2026-06-26 12:07:51.480503",
+ "modified_by": "Administrator",
+ "module": "CRMS",
+ "name": "Purchase Dashboard",
+ "number_cards": [
+  {
+   "label": "Total Purchase Form",
+   "number_card_name": "Total Purchase Form"
+  },
+  {
+   "label": "Approved Car Indent Form",
+   "number_card_name": "Approved Car Indent Form"
+  },
+  {
+   "label": "Pending Purchase Form",
+   "number_card_name": "Pending Purchase Form"
+  },
+  {
+   "label": "Approved Purchase Form",
+   "number_card_name": "Approved Purchase Form"
+  },
+  {
+   "label": "Rejected Purchase Form",
+   "number_card_name": "Rejected Purchase Form"
+  },
+  {
+   "label": "Total Car Indent Form",
+   "number_card_name": "Total Car Indent Form"
+  },
+  {
+   "label": "Rejected Car Indent Form",
+   "number_card_name": "Rejected Car Indent Form"
+  },
+  {
+   "label": "Pending Car Indent Form",
+   "number_card_name": "Pending Car Indent Form"
+  }
+ ],
+ "owner": "Administrator",
+ "parent_page": "",
+ "public": 1,
+ "quick_lists": [
+  {
+   "document_type": "Purchase Form",
+   "label": "Purchase Form",
+   "quick_list_filter": "[]"
+  },
+  {
+   "document_type": "Car Indent Form",
+   "label": "Car Indent Form",
+   "quick_list_filter": "[]"
+  }
+ ],
+ "roles": [
+  {
+   "role": "Purchase Master Manager"
+  },
+  {
+   "role": "Administrator"
+  }
+ ],
+ "sequence_id": 1.0,
+ "shortcuts": [],
+ "title": "Purchase Dashboard"
+}

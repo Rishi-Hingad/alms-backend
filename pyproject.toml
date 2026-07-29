@@ -1,0 +1,24 @@
+[project]
+name = "alms_app"
+version = "0.0.1"
+description = "Car Leasing App"
+requires-python = ">=3.10"
+readme = "README.md"
+
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+packages = [
+    "alms_app",
+    "alms",
+    "master",
+    "crms"
+]
+
+[tool.setuptools.package-dir]
+alms_app = "alms_app"
+alms = "alms_app/alms"
+master = "alms_app/master"
+crms = "alms_app/crms"

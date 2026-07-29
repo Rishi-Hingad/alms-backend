@@ -1,0 +1,147 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2026-03-29 23:16:52.726693",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "details_section",
+  "api_url",
+  "api_method",
+  "column_break_twrp",
+  "invoice_batch_doc",
+  "api_body_section",
+  "api_json_body",
+  "response_info_section",
+  "response_data",
+  "column_break_muoi",
+  "status_code",
+  "status",
+  "error_handling_section",
+  "error_message",
+  "traceback",
+  "payment_log_tab",
+  "payment_status_section",
+  "cascade_log"
+ ],
+ "fields": [
+  {
+   "fieldname": "details_section",
+   "fieldtype": "Section Break",
+   "label": "Details"
+  },
+  {
+   "fieldname": "api_url",
+   "fieldtype": "Data",
+   "label": "API URL"
+  },
+  {
+   "fieldname": "column_break_twrp",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "api_method",
+   "fieldtype": "Select",
+   "label": "API Method",
+   "options": "-Select-\nPOST\nGET"
+  },
+  {
+   "fieldname": "api_body_section",
+   "fieldtype": "Section Break",
+   "label": "API Body"
+  },
+  {
+   "fieldname": "api_json_body",
+   "fieldtype": "JSON",
+   "label": "API JSON Body"
+  },
+  {
+   "fieldname": "response_info_section",
+   "fieldtype": "Section Break",
+   "label": "Response Info"
+  },
+  {
+   "fieldname": "response_data",
+   "fieldtype": "Long Text",
+   "label": "Response Data"
+  },
+  {
+   "fieldname": "column_break_muoi",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "status_code",
+   "fieldtype": "Data",
+   "label": "Status Code"
+  },
+  {
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "label": "Status",
+   "options": "-Select-\nSuccess\nFailed"
+  },
+  {
+   "fieldname": "error_handling_section",
+   "fieldtype": "Section Break",
+   "label": "Error Handling"
+  },
+  {
+   "fieldname": "error_message",
+   "fieldtype": "Long Text",
+   "label": "Error Message"
+  },
+  {
+   "fieldname": "traceback",
+   "fieldtype": "Code",
+   "label": "Traceback"
+  },
+  {
+   "fieldname": "invoice_batch_doc",
+   "fieldtype": "Link",
+   "label": "Invoice Batch Doc",
+   "options": "Invoice Batch"
+  },
+  {
+   "fieldname": "payment_log_tab",
+   "fieldtype": "Tab Break",
+   "label": "Payment Log"
+  },
+  {
+   "fieldname": "payment_status_section",
+   "fieldtype": "Section Break",
+   "label": "Payment Status"
+  },
+  {
+   "fieldname": "cascade_log",
+   "fieldtype": "Long Text",
+   "label": "Cascade Log"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2026-04-10 11:26:16.455310",
+ "modified_by": "Administrator",
+ "module": "CRMS",
+ "name": "API Log",
+ "naming_rule": "By script",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}
