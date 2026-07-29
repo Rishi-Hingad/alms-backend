@@ -1,0 +1,136 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "format:{bank_name}-{###}",
+ "creation": "2026-02-04 00:00:00",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "bank_name",
+  "address",
+  "state",
+  "column_break_nflv",
+  "branch_name",
+  "country",
+  "city",
+  "section_break_pwfa",
+  "bsr_code",
+  "swift_code",
+  "column_break_nhre",
+  "ifsc_code",
+  "ad_code"
+ ],
+ "fields": [
+  {
+   "fieldname": "bank_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Bank Name",
+   "reqd": 1
+  },
+  {
+   "fieldname": "branch_name",
+   "fieldtype": "Data",
+   "label": "Branch Name"
+  },
+  {
+   "fieldname": "bsr_code",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "BSR Code",
+   "unique": 1
+  },
+  {
+   "fieldname": "address",
+   "fieldtype": "Data",
+   "label": "Address"
+  },
+  {
+   "fieldname": "city",
+   "fieldtype": "Data",
+   "label": "City"
+  },
+  {
+   "fieldname": "state",
+   "fieldtype": "Data",
+   "label": "State"
+  },
+  {
+   "fieldname": "country",
+   "fieldtype": "Link",
+   "label": "Country",
+   "options": "Remittance Country"
+  },
+  {
+   "fieldname": "column_break_nflv",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "ifsc_code",
+   "fieldtype": "Data",
+   "label": "IFSC Code"
+  },
+  {
+   "fieldname": "swift_code",
+   "fieldtype": "Data",
+   "label": "Swift Code"
+  },
+  {
+   "fieldname": "ad_code",
+   "fieldtype": "Data",
+   "label": "AD Code"
+  },
+  {
+   "fieldname": "section_break_pwfa",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "column_break_nhre",
+   "fieldtype": "Column Break"
+  }
+ ],
+ "links": [],
+ "modified": "2026-04-28 10:14:17.169577",
+ "modified_by": "Administrator",
+ "module": "Remittance Tool",
+ "name": "Remittance Bank Branch",
+ "naming_rule": "Expression",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Remittance User",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "read": 1,
+   "role": "Remittance Checker"
+  }
+ ],
+ "row_format": "Dynamic",
+ "show_title_field_in_link": 1,
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "title_field": "branch_name",
+ "track_changes": 1
+}

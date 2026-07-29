@@ -1,0 +1,57 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "format:",
+ "creation": "2026-02-12 14:30:53.836125",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "article_no",
+  "article_description",
+  "tax",
+  "enabled"
+ ],
+ "fields": [
+  {
+   "fieldname": "article_description",
+   "fieldtype": "Data",
+   "label": "Article Description",
+   "reqd": 1
+  },
+  {
+   "fieldname": "article_no",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Article No.",
+   "reqd": 1
+  },
+  {
+   "fieldname": "tax",
+   "fieldtype": "Percent",
+   "label": "Tax"
+  },
+  {
+   "default": "0",
+   "fieldname": "enabled",
+   "fieldtype": "Check",
+   "label": "Enabled"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2026-02-25 15:26:54.943297",
+ "modified_by": "Administrator",
+ "module": "Remittance Tool",
+ "name": "DTAA Article",
+ "naming_rule": "Expression",
+ "owner": "Administrator",
+ "permissions": [],
+ "row_format": "Dynamic",
+ "rows_threshold_for_grid_search": 20,
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

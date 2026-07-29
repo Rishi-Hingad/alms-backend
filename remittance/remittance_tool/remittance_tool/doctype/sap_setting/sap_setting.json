@@ -1,0 +1,133 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2026-04-01 12:10:00",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "sap_authorization_section",
+  "column_break_szoq",
+  "authorization_type",
+  "authorization_key",
+  "column_break_fnpp",
+  "auth_user_name",
+  "auth_user_pass",
+  "api_settings_section",
+  "url",
+  "sap_client",
+  "new_api_fields_section",
+  "lifnr",
+  "bukrs",
+  "augdt"
+ ],
+ "fields": [
+  {
+   "fieldname": "sap_authorization_section",
+   "fieldtype": "Section Break",
+   "label": "SAP Authorization"
+  },
+  {
+   "fieldname": "column_break_szoq",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "authorization_type",
+   "fieldtype": "Data",
+   "label": "Authorization type"
+  },
+  {
+   "fieldname": "authorization_key",
+   "fieldtype": "Data",
+   "label": "Authorization key"
+  },
+  {
+   "fieldname": "column_break_fnpp",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "auth_user_name",
+   "fieldtype": "Data",
+   "label": "Auth User Name"
+  },
+  {
+   "fieldname": "auth_user_pass",
+   "fieldtype": "Password",
+   "label": "Auth User Pass"
+  },
+  {
+   "fieldname": "api_settings_section",
+   "fieldtype": "Section Break",
+   "label": "API Settings"
+  },
+  {
+   "fieldname": "url",
+   "fieldtype": "Data",
+   "label": "URL",
+   "length": 500
+  },
+  {
+   "fieldname": "sap_client",
+   "fieldtype": "Data",
+   "label": "SAP Client"
+  },
+  {
+   "fieldname": "new_api_fields_section",
+   "fieldtype": "Section Break",
+   "label": "New API Fields"
+  },
+  {
+   "default": "10153",
+   "fieldname": "lifnr",
+   "fieldtype": "Data",
+   "label": "LIFNR (Vendor)"
+  },
+  {
+   "default": "7000",
+   "fieldname": "bukrs",
+   "fieldtype": "Data",
+   "label": "BUKRS (Company Code)"
+  },
+  {
+   "default": "20260318",
+   "fieldname": "augdt",
+   "fieldtype": "Data",
+   "label": "AUGDT (Clearing Date)"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "issingle": 1,
+ "links": [],
+ "modified": "2026-04-22 10:25:55.926851",
+ "modified_by": "Administrator",
+ "module": "Remittance Tool",
+ "name": "SAP Setting",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "print": 1,
+   "read": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "print": 1,
+   "read": 1,
+   "role": "Remittance User",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1
+}
