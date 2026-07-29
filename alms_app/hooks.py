@@ -11,20 +11,27 @@ if lease_app_dir not in sys.path:
 import frappe
 try:
     # Auto-fix stuck Frappe Cloud cache
-    if frappe.db:
-        val = frappe.db.get_value('DefaultValue', {'defkey': 'installed_apps'}, 'defvalue')
-        if val and 'approval_app' in val:
-            val = val.replace('"approval_app"', '"alms_app"').replace('"remittance_app"', '"remittance_tool"')
-            frappe.db.sql("UPDATE `tabDefaultValue` SET defvalue = %s WHERE defkey = 'installed_apps'", (val,))
-            frappe.db.sql("DELETE FROM `tabInstalled Application` WHERE name IN ('approval_app', 'remittance_app')")
+    if hasattr(frappe, 'db') and hasattr(frappe.db, 'get_value'):
+        try:
+            val = frappe.db.get_value('DefaultValue', {'defkey': 'installed_apps'}, 'defvalue')
+            if val and 'approval_app' in val:
+                val = val.replace('"approval_app"', '"alms_app"').replace('"remittance_app"', '"remittance_tool"')
+                frappe.db.sql("UPDATE `tabDefaultValue` SET defvalue = %s WHERE defkey = 'installed_apps'", (val,))
+                frappe.db.sql("DELETE FROM `tabInstalled Application` WHERE name IN ('approval_app', 'remittance_app')")
+                frappe.db.commit()
+        except Exception:
+            pass
+    if hasattr(frappe, 'cache'):
+        try:
             frappe.cache().delete_value("installed_apps")
             frappe.cache().delete_value("global:installed_apps")
             frappe.cache().delete_value("app_hooks")
-            frappe.db.commit()
-            if hasattr(frappe.local, 'doc_events_hooks'):
-                delattr(frappe.local, 'doc_events_hooks')
-            if hasattr(frappe.local, 'request_cache'):
-                frappe.local.request_cache.clear()
+        except Exception:
+            pass
+    if hasattr(frappe.local, 'doc_events_hooks'):
+        delattr(frappe.local, 'doc_events_hooks')
+    if hasattr(frappe.local, 'request_cache'):
+        frappe.local.request_cache.clear()
 except Exception:
     pass
 
