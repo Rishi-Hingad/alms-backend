@@ -282,36 +282,34 @@ doc_events = {
     },
     "Invoice Batch": {
         "on_update": [
-            "lease_app.crms.doctype.invoice_batch.invoice_batch.create_invoice_details_on_approval",
+            "alms_app.crms.doctype.invoice_batch.invoice_batch.create_invoice_details_on_approval",
             "approval_app.approval.approval_router.trigger_approval_if_matrix_exists"
         ]
     },
-    "LMS Invoice Details": {
-        "on_update": "lease_app.api.invoice_payment_status.on_update_invoice"
+    "Invoice Details": {
+        "on_update": "alms_app.api.invoice_payment_status.on_update_invoice"
     }
 }
 
 scheduler_events = {
 "cron": {
 "0 0 * * *": [  # Runs at 12:00 AM daily
-"lease_app.api.fetch_invoice_details.run_daily_invoice_fetch"
+"alms_app.api.fetch_invoice_details.run_daily_invoice_fetch"
 ]
 }
 }
 
 permission_query_conditions = {
-"Employee": "lease_app.master.doctype.employee.employee.get_permission_query_conditions",
+"Employee": "alms_app.master.doctype.employee.employee.get_permission_query_conditions",
 "Lease Management": "lease_app.lease_management_system.doctype.lease_management.lease_management.get_permission_query_conditions",
 "Property Master": "lease_app.lease_masters.doctype.property_master.property_master.get_permission_query_conditions",
 }
 
 has_permission = {
-"Employee": "lease_app.master.doctype.employee.employee.has_permission",
+"Employee": "alms_app.master.doctype.employee.employee.has_permission",
 "Lease Management": "lease_app.lease_management_system.doctype.lease_management.lease_management.has_permission",
 "Property Master": "lease_app.lease_masters.doctype.property_master.property_master.has_permission",
 }
 before_migrate = [
-    "lease_app.add_alms.execute",
-    "lease_app.add_remittance.execute",
-    "lease_app.add_approval.execute"
+    "lease_app.add_alms.execute"
 ]

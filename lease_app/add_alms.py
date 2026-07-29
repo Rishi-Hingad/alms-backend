@@ -13,7 +13,7 @@ def execute():
     monorepo_dir = os.path.dirname(pkg_dir)
     alms_dir = os.path.join(monorepo_dir, "alms_app")
     approval_dir = os.path.join(monorepo_dir, "approval_app")
-    remittance_dir = os.path.join(monorepo_dir, "remittance")
+    remittance_dir = os.path.join(monorepo_dir, "remittance_app")
 
     for p in [alms_dir, approval_dir, remittance_dir, monorepo_dir, apps_dir]:
         if os.path.exists(p) and p not in sys.path:
