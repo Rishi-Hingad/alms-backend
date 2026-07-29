@@ -4,7 +4,7 @@ version = "0.0.1"
 authors = [
     { name = "Rishi Hingad", email = "rishi.hingad@merillife.com"}
 ]
-description = "Car and Property Lease Management System Monorepo"
+description = "Property Lease Management System"
 requires-python = ">=3.10"
 readme = "README.md"
 dependencies = [
@@ -19,32 +19,15 @@ build-backend = "setuptools.build_meta"
 packages = [
     "leasemanagement",
     "lease_app",
-    "alms_app",
-    "remittance_app",
-    "approval_app",
     "lease_management_system",
-    "lease_masters",
-    "alms",
-    "master",
-    "crms",
-    "approval",
-    "remittance_tool"
+    "lease_masters"
 ]
 
 [tool.setuptools.package-dir]
 leasemanagement = "lease_app"
 lease_app = "lease_app"
-alms_app = "alms_app"
-remittance_app = "remittance_app"
-approval_app = "approval_app"
-
 lease_management_system = "lease_app/lease_management_system"
 lease_masters = "lease_app/lease_masters"
-alms = "alms_app/alms"
-master = "alms_app/master"
-crms = "alms_app/crms"
-approval = "approval_app/approval"
-remittance_tool = "remittance_app/remittance_tool"
 
 [tool.bench.dev-dependencies]
 
