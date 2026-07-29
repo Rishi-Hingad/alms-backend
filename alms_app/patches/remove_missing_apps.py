@@ -16,6 +16,5 @@ def execute():
         frappe.db.sql("UPDATE `tabDefaultValue` SET defvalue = %s WHERE defkey = 'installed_apps'", (val,))
         
     # Crucially, clear cache so get_installed_apps() refreshes
-    if frappe.redis_server:
-        frappe.cache().delete_value("installed_apps")
-        frappe.clear_cache()
+    frappe.cache().delete_value("installed_apps")
+    frappe.clear_cache()
