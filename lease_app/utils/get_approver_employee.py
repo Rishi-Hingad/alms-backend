@@ -53,7 +53,7 @@ def get_approval_employee(role_short, company_list, filters={}, fields=["*"]):
         "status": "Active",  
     }
     
-    employee_list = frappe.get_all("ALMS Employee", 
+    employee_list = frappe.get_all("Employee", 
         filters=final_filters, 
         fields=fields, 
         limit=1
@@ -67,7 +67,7 @@ def get_approval_employee_by_state_for_rdm(
 ):
     emp_parent_dict = frappe.get_all(
         "Employee Select State",
-        {"parenttype": "ALMS Employee", "state": state},
+        {"parenttype": "Employee", "state": state},
         "parent",
     )
     emp_parent = [item["parent"] for item in emp_parent_dict]
@@ -76,7 +76,7 @@ def get_approval_employee_by_state_for_rdm(
         "name": ("in", emp_parent),
         "is_active": 1,
     }
-    employee_list = frappe.get_all("ALMS Employee", filters=filters, fields=fields, limit=1
+    employee_list = frappe.get_all("Employee", filters=filters, fields=fields, limit=1
     )
 
     return employee_list[0] if employee_list else None
@@ -88,7 +88,7 @@ def get_user_for_role_short(name, role_short, depth=0, check_cur_user=False):
     if depth > 5 or not name:
         return None
 
-    employee = frappe.get_doc("ALMS Employee", name)
+    employee = frappe.get_doc("Employee", name)
 
     if (check_cur_user or depth > 0) and employee.get("role_short") == role_short:
         return employee

@@ -77,7 +77,7 @@ def verify_employee(
     """
     return _verify_linked_user(
         user=user,
-        doctype="ALMS Employee",
+        doctype="Employee",
         linked_field="linked_user",
         cache_prefix="employee_id",
         throw_exception=throw_exception,
@@ -114,7 +114,7 @@ def get_current_user_document(user=None):
 
     # Search in different masters safely
     for doctype, phone_field in [
-        ("ALMS Employee", "mobile")
+        ("Employee", "mobile")
     ]:
         result = frappe.get_value(doctype, {"user_id": user}, ["name", phone_field])
         if result:

@@ -111,7 +111,7 @@
    "fieldname": "next_escalation_approver",
    "fieldtype": "Link",
    "label": "Next Escalation Approver",
-   "options": "ALMS Employee"
+   "options": "Employee"
   },
   {
    "fieldname": "next_escalation_approver_role",
