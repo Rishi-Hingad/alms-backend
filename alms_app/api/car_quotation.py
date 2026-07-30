@@ -1,5 +1,5 @@
 import frappe
-import pandas as pd
+from openpyxl import load_workbook
 
 @frappe.whitelist()
 def process_vendor_excel(file_url):
@@ -7,10 +7,11 @@ def process_vendor_excel(file_url):
         file_doc = frappe.get_doc("File", {"file_url": file_url})
         file_path = file_doc.get_full_path()
 
-        df = pd.read_excel(file_path)
-
-        # Example: take first row
-        row = df.iloc[0]
+        wb = load_workbook(file_path, data_only=True)
+        sheet = wb.active
+        headers = [cell.value for cell in sheet[1]]
+        row_cells = next(sheet.iter_rows(min_row=2, max_row=2, values_only=True), None)
+        row = dict(zip(headers, row_cells)) if row_cells else {}
 
         return {
             "financed_amount": row.get("Financed Amount"),

@@ -3,7 +3,6 @@
 from frappe import config
 from frappe.model.document import Document
 import frappe
-import pandas as pd
 from frappe.recorder import status
 from frappe.utils.file_manager import get_file
 from frappe.utils import getdate, user
@@ -403,15 +402,15 @@ def download_error_report(docname):
                 "Error": r.error_message
             })
 
-    df = pd.DataFrame(rows)
-
-    file_name = "invoice_batch_errors.xlsx"
-
-    output = io.BytesIO()
-    df.to_excel(output, index=False)
+    import csv
+    file_name = "invoice_batch_errors.csv"
+    output = io.StringIO()
+    writer = csv.DictWriter(output, fieldnames=["Row", "Contract No", "Installment", "Billing Date", "Error"])
+    writer.writeheader()
+    writer.writerows(rows)
 
     frappe.response["filename"] = file_name
-    frappe.response["filecontent"] = output.getvalue()
+    frappe.response["filecontent"] = output.getvalue().encode('utf-8')
     frappe.response["type"] = "binary"
 
 

@@ -1,7 +1,6 @@
 import frappe
 from openpyxl import load_workbook
 from frappe.model.document import Document
-import pandas as pd 
 from frappe.utils.file_manager import save_file
 import xlrd
 from alms_app.api.emailsService import email_sender
@@ -250,17 +249,28 @@ def process_uploaded_file(file_url):
         file_doc = frappe.get_doc("File", {"file_url": file_url})
         file_path = file_doc.get_full_path()
 
+        rows = []
         if file_path.endswith(".xlsx"):
-            data_frame = pd.read_excel(file_path, engine='openpyxl')
+            wb = load_workbook(file_path, data_only=True)
+            sheet = wb.active
+            headers = [cell.value for cell in sheet[1]]
+            for row_cells in sheet.iter_rows(min_row=2, values_only=True):
+                rows.append(dict(zip(headers, row_cells)))
         elif file_path.endswith(".xls"):
-            data_frame = pd.read_excel(file_path, engine='xlrd')
+            wb = xlrd.open_workbook(file_path)
+            sheet = wb.sheet_by_index(0)
+            headers = sheet.row_values(0)
+            for rowx in range(1, sheet.nrows):
+                rows.append(dict(zip(headers, sheet.row_values(rowx))))
         elif file_path.endswith(".csv"):
-            data_frame = pd.read_csv(file_path)
-
+            import csv
+            with open(file_path, mode='r', encoding='utf-8') as f:
+                reader = csv.DictReader(f)
+                rows = list(reader)
         else:
             frappe.throw("Unsupported file format. Please upload an Excel or CSV file.")
 
-        for index, row in data_frame.iterrows():
+        for row in rows:
             car_quotation_item = frappe.get_doc({
                 "doctype": "Car Quotation",
                 "finance_company": row.get("finance_company"),
