@@ -296,9 +296,9 @@ app_include_css = [
 ]
 
 app_include_js = [
-    "/assets/lease_app/js/alms_listview_handler.js",
-    "/assets/lease_app/js/approval_ui_v7.js",
-    "/assets/lease_app/js/invoice_dialog.js"
+    "/assets/alms_app/js/alms_listview_handler.js",
+    "/assets/alms_app/js/approval_ui_v7.js",
+    "/assets/alms_app/js/invoice_dialog.js"
 ]
 
 doc_events = {
