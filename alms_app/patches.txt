@@ -7,3 +7,4 @@ alms_app.patches.remove_missing_apps
 alms_app.patches.revert_purchase_form_submittable
 alms_app.patches.rename_employees
 alms_app.patches.cleanup_uat_data
+alms_app.patches.rename_vendors
