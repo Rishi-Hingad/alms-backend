@@ -269,21 +269,21 @@ app_include_css = [
 ]
 
 app_include_js = [
-    "/assets/lease_app/js/alms_listview_handler.js",
-    "/assets/lease_app/js/approval_ui_v7.js",
-    "/assets/lease_app/js/invoice_dialog.js"
+    "/assets/alms_app/js/alms_listview_handler.js",
+    "/assets/alms_app/js/approval_ui_v7.js",
+    "/assets/alms_app/js/invoice_dialog.js"
 ]
 
 doc_events = {
     "*": {
-        "validate": "approval_app.approval.approval_router.auto_restart_rejected_document",
-        "on_update": "approval_app.approval.approval_router.trigger_approval_if_matrix_exists",
-        "on_submit": "approval_app.approval.approval_router.trigger_approval_if_matrix_exists"
+        "validate": "alms_app.approval.approval_router.auto_restart_rejected_document",
+        "on_update": "alms_app.approval.approval_router.trigger_approval_if_matrix_exists",
+        "on_submit": "alms_app.approval.approval_router.trigger_approval_if_matrix_exists"
     },
     "Invoice Batch": {
         "on_update": [
             "alms_app.crms.doctype.invoice_batch.invoice_batch.create_invoice_details_on_approval",
-            "approval_app.approval.approval_router.trigger_approval_if_matrix_exists"
+            "alms_app.approval.approval_router.trigger_approval_if_matrix_exists"
         ]
     },
     "Invoice Details": {
