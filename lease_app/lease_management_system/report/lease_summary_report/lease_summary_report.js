@@ -25,7 +25,7 @@ frappe.query_reports["Lease Summary Report"] = {
 				if (!start_year) return;
 
 				frappe.call({
-					method: "lease_app.api.api_utils.auto_set_end_year",
+					method: "alms_app.api.api_utils.auto_set_end_year",
 					args: {
 						start_year: start_year,
 					},
@@ -49,7 +49,7 @@ frappe.query_reports["Lease Summary Report"] = {
 	onload: function (report) {
 		// auto_set_end_year();
 		frappe.call({
-			method: "lease_app.api.api_utils.get_financial_year",
+			method: "alms_app.api.api_utils.get_financial_year",
 			callback: function (r) {
 				if (r.message) {
 					frappe.query_report.set_filter_value("fin_start_year", r.message.start_year);

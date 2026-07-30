@@ -217,7 +217,7 @@ frappe.query_reports["Lease Notes"] = {
 						// dialog.hide();
 						// frappe.query_report.refresh();
 						frappe.call({
-							method: "lease_app.api.api_utils.upsert_previous_lease_details",
+							method: "alms_app.api.api_utils.upsert_previous_lease_details",
 							args: {
 								company: company,
 								financial_start_year: prev_year,
@@ -248,7 +248,7 @@ frappe.query_reports["Lease Notes"] = {
 
 			function fetch_from_server() {
 				frappe.call({
-					method: "lease_app.api.api_utils.get_prev_notes_record",
+					method: "alms_app.api.api_utils.get_prev_notes_record",
 					args: {
 						company_name: company,
 						fin_start_year: prev_year,
@@ -263,7 +263,7 @@ frappe.query_reports["Lease Notes"] = {
 
 			function fetch_data() {
 				frappe.call({
-					method: "lease_app.api.api_utils.get_previous_lease_details",
+					method: "alms_app.api.api_utils.get_previous_lease_details",
 					args: {
 						company: company,
 						financial_start_year: prev_year,
