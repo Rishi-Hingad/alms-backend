@@ -16,7 +16,7 @@ from frappe.utils import getdate, now_datetime, nowdate
 from frappe.utils.file_manager import save_file
 from openpyxl.utils import get_column_letter
 
-from lease_app.api.api_utils import get_mlp
+from alms_app.api.api_utils import get_mlp
 
 
 def get_diff_years(start_date, end_date):

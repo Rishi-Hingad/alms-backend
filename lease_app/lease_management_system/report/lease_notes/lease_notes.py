@@ -9,7 +9,7 @@ from frappe import _ as translate
 from frappe.desk.query_report import run
 from frappe.utils import getdate
 
-from lease_app.api.api_utils import get_formatted_date, get_sd_amount, get_terminated_lease_data
+from alms_app.api.api_utils import get_formatted_date, get_sd_amount, get_terminated_lease_data
 
 
 def execute(filters=None):
