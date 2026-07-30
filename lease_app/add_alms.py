@@ -58,30 +58,6 @@ def execute():
         except Exception:
             pass
 
-    # 3. Synchronize tabInstalled Application table cleanly
-    try:
-        # Insert or update valid apps
-        for app_name in valid_installed_apps:
-            frappe.db.sql(
-                """
-                INSERT INTO `tabInstalled Application` 
-                    (name, app_name, app_version, creation, modified, owner, modified_by) 
-                VALUES 
-                    (%s, %s, '0.0.1', NOW(), NOW(), 'Administrator', 'Administrator')
-                ON DUPLICATE KEY UPDATE modified = NOW()
-                """,
-                (app_name, app_name)
-            )
-        
-        # Purge missing apps that cannot be imported to prevent bench migrate ModuleNotFoundError
-        for app_name in candidate_apps:
-            if app_name not in valid_installed_apps:
-                frappe.db.sql("DELETE FROM `tabInstalled Application` WHERE name = %s", (app_name,))
-
-        frappe.db.commit()
-    except Exception as e:
-        print(f"Warning synchronizing installed apps table: {e}")
-
     # 4. Clear cache and setup module map
     try:
         frappe.cache().delete_value("all_apps")
