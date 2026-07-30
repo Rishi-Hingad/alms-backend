@@ -39,3 +39,18 @@ class DummyMissingAppImporter:
 if not any(isinstance(i, DummyMissingAppImporter) for i in sys.meta_path):
     sys.meta_path.insert(0, DummyMissingAppImporter())
 # --------------------------------------
+
+import frappe
+_original_get_attr = frappe.get_attr
+
+def patched_get_attr(method_string):
+    try:
+        app_name = method_string.split(".", 1)[0]
+        if app_name in ("approval_app", "remittance_app"):
+            return lambda *args, **kwargs: None
+    except Exception:
+        pass
+    return _original_get_attr(method_string)
+
+frappe.get_attr = patched_get_attr
+
