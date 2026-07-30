@@ -8,7 +8,7 @@ from collections import Counter
 from datetime import date, datetime, time, timedelta
 
 import frappe
-import pandas as pd
+
 from dateutil.relativedelta import relativedelta
 from frappe import _, db
 from frappe.model.document import Document
