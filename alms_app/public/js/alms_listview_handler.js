@@ -37,34 +37,16 @@ alms_app.restrict_listview = function (listview) {
     });
 };
 
-frappe.listview_settings = new Proxy(frappe.listview_settings || {}, {
-    get: function (target, doctype) {
-        // Ignore symbols, Vue internals, and native Object prototype properties
-        if (typeof doctype === 'symbol' || doctype in Object.prototype || doctype.startsWith('__')) {
-            return target[doctype];
-        }
-
-        if (!target[doctype]) {
-            target[doctype] = {};
-        }
-
-        if (!target[doctype]._alms_overridden) {
-            const original_onload = target[doctype].onload;
-            target[doctype].onload = function (listview) {
-                alms_app.restrict_listview(listview);
-
-                if (original_onload) {
-                    original_onload.call(this, listview);
-                }
-            };
-            Object.defineProperty(target[doctype], '_alms_overridden', {
-                value: true,
-                enumerable: false,
-                writable: true
-            });
-        }
-
-        return target[doctype];
+$(document).on('page-change', function() {
+    if (frappe.views && frappe.views.ListView && !frappe.views.ListView._alms_patched) {
+        const orig_render = frappe.views.ListView.prototype.render;
+        frappe.views.ListView.prototype.render = function() {
+            alms_app.restrict_listview(this);
+            if (orig_render) {
+                return orig_render.apply(this, arguments);
+            }
+        };
+        frappe.views.ListView._alms_patched = true;
     }
 });
 
