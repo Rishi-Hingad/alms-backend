@@ -6,3 +6,4 @@ alms_app.patches.remove_missing_apps
 # Patches added in this section will be executed after doctypes are migratedalms_app.patches.clear_dummy_files
 alms_app.patches.revert_purchase_form_submittable
 alms_app.patches.rename_employees
+alms_app.patches.cleanup_uat_data
