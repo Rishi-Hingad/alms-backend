@@ -5,7 +5,6 @@ from collections import Counter
 from datetime import date, datetime, time, timedelta
 
 import frappe
-import pandas as pd
 from dateutil.relativedelta import relativedelta
 from frappe.desk.query_report import run
 from frappe.utils import add_days, getdate
@@ -85,26 +84,38 @@ def get_terminated_lease_data(terminated_leases):
 		terminated_on = lease_doc.termination_date
 		lease_report_result = run(lreport, filters={"docname": lease_doc.name, "sum_modified": None})
 		lease_report_rows = lease_report_result.get("result")
-		lease_report_df = pd.DataFrame(lease_report_rows)
 
 		ter_report_result = run(
 			lreport, filters={"docname": lease_doc.name, "sum_modified": terminated_on + timedelta(days=1)}
 		)
 		ter_report_rows = ter_report_result.get("result")
-		ter_report_df = pd.DataFrame(ter_report_rows)
-		ter_report_df["month_end_date"] = pd.to_datetime(ter_report_df["month_end_date"])
-		dates = ter_report_df["month_end_date"].dropna().dt.date.tolist()
-		for i in range(len(dates)):
-			if dates[i] >= lease_doc.agreement_start_date and dates[i] <= terminated_on:
-				# val = str(dates[i])
-				if lease_doc.type_of_asset == "Car":
-					cur_ter_acc_deprec_vehicle += round(ter_report_df.iloc[i + 1]["depreciation"], 3)
-				else:
-					cur_ter_acc_deprec_immovable += round(ter_report_df.iloc[i + 1]["depreciation"], 3)
+		
+		# Process ter_report_rows without pandas
+		valid_dates = []
+		for row in ter_report_rows:
+			if row.get("month_end_date"):
+				valid_dates.append((getdate(row["month_end_date"]), row))
+
+		for i, (date_val, row) in enumerate(valid_dates):
+			if lease_doc.agreement_start_date <= date_val <= terminated_on:
+				# equivalent to ter_report_df.iloc[i + 1]["depreciation"]
+				# if we are at i, i+1 is the next row in valid_dates
+				if i + 1 < len(valid_dates):
+					next_depreciation = valid_dates[i + 1][1].get("depreciation", 0)
+					if lease_doc.type_of_asset == "Car":
+						cur_ter_acc_deprec_vehicle += round(float(next_depreciation), 3)
+					else:
+						cur_ter_acc_deprec_immovable += round(float(next_depreciation), 3)
+		
+		first_wdv = 0
+		if lease_report_rows and len(lease_report_rows) > 0:
+			first_wdv = float(lease_report_rows[0].get("wdv", 0))
+
 		if lease_doc.type_of_asset == "Car":
-			cur_ter_gross_wdv_vehicle += lease_report_df["wdv"][0]
+			cur_ter_gross_wdv_vehicle += first_wdv
 		else:
-			cur_ter_gross_wdv_immovable += lease_report_df["wdv"][0]
+			cur_ter_gross_wdv_immovable += first_wdv
+
 	return (
 		cur_ter_acc_deprec_vehicle,
 		cur_ter_acc_deprec_immovable,
@@ -131,28 +142,28 @@ def get_prev_notes_record(company_name, fin_start_year):
 		"Lease Notes",
 		filters={
 			"company_name": company_name,
-			# "fin_start_year": int(fin_start_year) - 1,
-			# "fin_end_year": int(fin_start_year),
 			"fin_start_year": int(fin_start_year),
 			"fin_end_year": int(fin_start_year) + 1,
 		},
 	)
-	prev_journal_rows = prev_journal_result.get("result")
-	prev_journal_df = pd.DataFrame(prev_journal_rows)
-	if not prev_journal_df.empty and len(prev_journal_df) > 15:
-		prev_gross_immovable = float(prev_journal_df.iloc[4]["rou_immovable"])
-		prev_gross_vehicle = float(prev_journal_df.iloc[4]["rou_vehicle"])
-		prev_gross_add_immovable = float(prev_journal_df.iloc[5]["rou_immovable"])
-		prev_gross_add_vehicle = float(prev_journal_df.iloc[5]["rou_vehicle"])
-		prev_gross_disposal_immovable = float(prev_journal_df.iloc[6]["rou_immovable"])
-		prev_gross_disposal_vehicle = float(prev_journal_df.iloc[6]["rou_vehicle"])
-		prev_acc_depre_immovable = float(prev_journal_df.iloc[12]["rou_immovable"])
-		prev_acc_depre_vehicle = float(prev_journal_df.iloc[12]["rou_vehicle"])
-		prev_acc_year_ended_immovable = float(prev_journal_df.iloc[13]["rou_immovable"])
-		prev_acc_year_ended_vehicle = float(prev_journal_df.iloc[13]["rou_vehicle"])
-		prev_acc_disposal_immovable = float(prev_journal_df.iloc[14]["rou_immovable"])
-		prev_acc_disposal_vehicle = float(prev_journal_df.iloc[14]["rou_vehicle"])
-		# frappe.msgprint(str(prev_journal_df.iloc[15]["rou_immovable"]))
+	prev_journal_rows = prev_journal_result.get("result", [])
+	if prev_journal_rows and len(prev_journal_rows) > 15:
+		def get_val(idx, field):
+			val = prev_journal_rows[idx].get(field, 0)
+			return float(val) if val else 0.0
+
+		prev_gross_immovable = get_val(4, "rou_immovable")
+		prev_gross_vehicle = get_val(4, "rou_vehicle")
+		prev_gross_add_immovable = get_val(5, "rou_immovable")
+		prev_gross_add_vehicle = get_val(5, "rou_vehicle")
+		prev_gross_disposal_immovable = get_val(6, "rou_immovable")
+		prev_gross_disposal_vehicle = get_val(6, "rou_vehicle")
+		prev_acc_depre_immovable = get_val(12, "rou_immovable")
+		prev_acc_depre_vehicle = get_val(12, "rou_vehicle")
+		prev_acc_year_ended_immovable = get_val(13, "rou_immovable")
+		prev_acc_year_ended_vehicle = get_val(13, "rou_vehicle")
+		prev_acc_disposal_immovable = get_val(14, "rou_immovable")
+		prev_acc_disposal_vehicle = get_val(14, "rou_vehicle")
 	return {
 		"gross_immovable": prev_gross_immovable,
 		"gross_vehicle": prev_gross_vehicle,
