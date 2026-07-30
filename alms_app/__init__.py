@@ -13,12 +13,20 @@ class DummyMissingAppImporter:
             return self
         return None
         
+    def find_spec(self, fullname, path, target=None):
+        if fullname.startswith("approval_app") or fullname.startswith("remittance_app"):
+            import importlib.machinery
+            return importlib.machinery.ModuleSpec(fullname, self)
+        return None
+        
     def load_module(self, fullname):
         if fullname in sys.modules:
             return sys.modules[fullname]
             
         class DummyModule(types.ModuleType):
             def __getattr__(self, name):
+                if name == "commands":
+                    return []
                 # Return a dummy function for any attribute accessed (like a Frappe hook)
                 return lambda *args, **kwargs: None
                 
