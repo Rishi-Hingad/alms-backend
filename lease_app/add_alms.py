@@ -13,7 +13,7 @@ def execute():
     pkg_dir = os.path.dirname(os.path.abspath(__file__))
     monorepo_dir = os.path.dirname(pkg_dir)
     alms_dir = os.path.join(apps_dir, "alms_app")
-    approval_dir = os.path.join(apps_dir, "approval_app")
+    approval_dir = os.path.join(apps_dir, "alms_app")
     remittance_dir = os.path.join(apps_dir, "remittance_app")
 
     for p in [alms_dir, approval_dir, remittance_dir, monorepo_dir, apps_dir]:
@@ -24,7 +24,7 @@ def execute():
 
     # Dynamically determine which apps are actually importable on this environment
     valid_installed_apps = ["frappe", "lease_app"]
-    candidate_apps = ["alms_app", "remittance_tool", "remittance_app", "approval_app"]
+    candidate_apps = ["alms_app", "remittance_tool", "remittance_app", "alms_app"]
 
     for app_name in candidate_apps:
         try:

@@ -6,7 +6,6 @@ from calendar import monthrange
 from datetime import date, datetime
 
 import frappe
-import pandas as pd
 from dateutil.relativedelta import relativedelta
 from frappe import _
 from frappe.desk.query_report import run
@@ -218,34 +217,31 @@ def execute(filters=None):
 			lreport = "Lease Report Monthly (With Escalation)"
 
 		prev_res = run(lreport, filters={"docname": lease.name, "sum_modified": None})
-		prev_rows = prev_res.get("result")
-		prev_df = pd.DataFrame(prev_rows)
-		# frappe.msgprint(lease.name+	"prev_df"+str(prev_rows))
-		prev_df["month_start_date"] = pd.to_datetime(prev_df["month_start_date"])
+		prev_rows = prev_res.get("result", [])
+		
+		def to_date(d):
+			if isinstance(d, str):
+				return getdate(d)
+			elif isinstance(d, datetime):
+				return d.date()
+			elif isinstance(d, date):
+				return d
+			return None
+
+		for r in prev_rows:
+			r["month_start_date"] = to_date(r.get("month_start_date"))
+			r["month_end_date"] = to_date(r.get("month_end_date"))
 
 		if lease_doc.status == "Terminated":
 			result = run(lreport, filters={"docname": lease.name, "sum_modified": terminated_on})
-			# frappe.msgprint("terminated_on="+str(terminated_on))
 		else:
 			result = run(lreport, filters={"docname": lease.name, "sum_modified": modified_start})
-		rows = result.get("result")
+		rows = result.get("result", [])
+		
+		for r in rows:
+			r["month_start_date"] = to_date(r.get("month_start_date"))
+			r["month_end_date"] = to_date(r.get("month_end_date"))
 
-		# Convert to DataFrame
-		df = pd.DataFrame(rows)
-
-		# Ensure the 'month_start_date' column is datetime
-		df["month_start_date"] = pd.to_datetime(df["month_start_date"])
-
-		# # Create a date range for the months
-		# date_range = pd.date_range(start=str(msdate), end=str(medate), freq="MS")  # MS = Month Start
-
-		# # Merge your date range with the DataFrame to align months
-		# lease_df = pd.DataFrame({"month_start_date": date_range}).merge(df, on="month_start_date", how="left")
-
-		# if lease_doc.type_of_asset=="Car" and lease_doc.type_of_report=="Quarterly":
-		# 	sdate = datetime(int(fin_start_year), 3, 31)
-		# 	edate = datetime(int(fin_end_year), 3, 31)
-		# else:
 		sdate = date(int(fin_start_year), 3, 31)
 		edate = date(int(fin_end_year), 3, 31)
 		mod_rou = 0
@@ -254,33 +250,32 @@ def execute(filters=None):
 		ter_lia = 0
 
 		if lease_end < edate:
-			# 	edate=lease_end
 			medate = date(lease_end.year, lease_end.month, lease_end.day)
 
-		row_opening = df.loc[df["month_end_date"] == sdate]
-		prev_row_opening = prev_df.loc[prev_df["month_end_date"] == sdate]
+		row_opening = [r for r in rows if r.get("month_end_date") == sdate]
+		prev_row_opening = [r for r in prev_rows if r.get("month_end_date") == sdate]
 		diff_calc_ter_mod = False
 		diff_calc_ter_add = False
 
 		if len(row_opening) == 1:
-			opening_rou = row_opening["wdv"].iloc[0]
-			opening_liability = row_opening["closing_liability"].iloc[0]
-			if row_opening["wdv"].iloc[0] != prev_row_opening["wdv"].iloc[0]:
+			opening_rou = row_opening[0].get("wdv", 0)
+			opening_liability = row_opening[0].get("closing_liability", 0)
+			if len(prev_row_opening) == 1 and row_opening[0].get("wdv") != prev_row_opening[0].get("wdv"):
 				diff_calc_ter_mod = True
-				opening_rou = prev_row_opening["wdv"].iloc[0]
-				opening_liability = prev_row_opening["closing_liability"].iloc[0]
-				# frappe.msgprint(lease_doc.status+" "+lease.name+"wdv="+str(row_opening["wdv"].iloc[0])+ " prev_wdv"+str(prev_row_opening["wdv"].iloc[0]))
+				opening_rou = prev_row_opening[0].get("wdv", 0)
+				opening_liability = prev_row_opening[0].get("closing_liability", 0)
 		else:
 			opening_rou = 0
 			opening_liability = 0
+            
 		if lease_doc.termination_date:
 			if lease_doc.termination_date == edate:
 				edate = date(edate.year, 4, 30)
-				# frappe.msgprint(lease.name+"=edate"+str(edate)+str(lease_doc.termination_date)+" terminated_on"+str(date(edate.year,4,30)))
-		row_closing = df.loc[df["month_end_date"] == edate]
+
+		row_closing = [r for r in rows if r.get("month_end_date") == edate]
 		if len(row_closing) == 1:
-			closing_rou = row_closing["wdv"].iloc[0]
-			closing_liability = row_closing["closing_liability"].iloc[0]
+			closing_rou = row_closing[0].get("wdv", 0)
+			closing_liability = row_closing[0].get("closing_liability", 0)
 			if lease_end < edate:
 				closing_rou = 0
 				closing_liability = 0
@@ -288,54 +283,41 @@ def execute(filters=None):
 			closing_rou = 0
 			closing_liability = 0
 
-		df["month_end_date"] = pd.to_datetime(df["month_end_date"])
 		mlp_list, interest_list, depreciation_list = [], [], []
-		# if lease_doc.type_of_asset=="Car":
-		dates = df["month_start_date"].dropna().dt.date.tolist()
-		# dates_end = df["month_end_date"].dropna().dt.date.tolist()
-		for i in range(len(dates)):
-			if dates[i] >= msdate and dates[i] <= medate:
-				val = str(dates[i])
-				row = df.loc[df["month_start_date"] == val]
-				mlp = row["mlp"].iloc[0]
-				interest = row["interest_cost"].iloc[0]
-				depre = row["depreciation"].iloc[0]
-				mlp_list.append(mlp)
-				interest_list.append(interest)
-				depreciation_list.append(depre)
-		# else:
-		# 	# Extract mlp column as a list
-		# 	mlp_list = lease_df["mlp"].tolist()
-		# 	interest_list = lease_df["interest_cost"].tolist()
-		# 	depreciation_list = lease_df["depreciation"].tolist()
+		for r in rows:
+			d = r.get("month_start_date")
+			if d and d >= msdate and d <= medate:
+				mlp_list.append(r.get("mlp", 0))
+				interest_list.append(r.get("interest_cost", 0))
+				depreciation_list.append(r.get("depreciation", 0))
 
 		if opening_rou == 0:
 			if not lease_doc.is_modified:
-				# frappe.msgprint(lease.name+"prev_df['wdv'][0]="+str(prev_df["wdv"][0])+" df['wdv'][0]="+str(df["wdv"][0]))
-				additions_rou_asset = df["wdv"][0]
-				if prev_df["wdv"][0] != df["wdv"][0]:
-					additions_rou_asset = prev_df["wdv"][0]
+				additions_rou_asset = rows[0].get("wdv", 0) if rows else 0
+				if prev_rows and rows and prev_rows[0].get("wdv") != rows[0].get("wdv"):
+					additions_rou_asset = prev_rows[0].get("wdv", 0)
 					diff_calc_ter_add = True
 				additions_lease_lia = additions_rou_asset
 			else:
 				additions_rou_asset = additions_lease_lia = 0
 		else:
 			additions_rou_asset = additions_lease_lia = 0
+            
 		total_rent_paid = 0
 		total_interest_cost = 0
 		total_depreciation = 0
 
 		for i in range(len(mlp_list)):
-			if not math.isnan(mlp_list[i]):
+			if isinstance(mlp_list[i], (int, float)) and not math.isnan(float(mlp_list[i])):
 				total_rent_paid += mlp_list[i]
-			if not math.isnan(interest_list[i]):
+			if isinstance(interest_list[i], (int, float)) and not math.isnan(float(interest_list[i])):
 				total_interest_cost += interest_list[i]
-			if not math.isnan(depreciation_list[i]):
+			if isinstance(depreciation_list[i], (int, float)) and not math.isnan(float(depreciation_list[i])):
 				total_depreciation += depreciation_list[i]
 
 		if modified:
-			mod_rou = -(row["wdv"].iloc[0])
-			mod_lia = -(row["closing_liability"].iloc[0])
+			mod_rou = -(rows[0].get("wdv", 0) if rows else 0)
+			mod_lia = -(rows[0].get("closing_liability", 0) if rows else 0)
 			if diff_calc_ter_mod:
 				mod_rou = -(opening_rou - total_depreciation)
 				mod_lia = -(opening_liability + total_interest_cost - total_rent_paid)
@@ -345,14 +327,14 @@ def execute(filters=None):
 			or ("Discarded" and lease_doc.is_modified == 1)
 		):
 			if opening_rou == 0 and opening_liability == 0:
-				mod_rou = df["wdv"][0]
-				mod_lia = df["closing_liability"][0]
+				mod_rou = rows[0].get("wdv", 0) if rows else 0
+				mod_lia = rows[0].get("closing_liability", 0) if rows else 0
 				if diff_calc_ter_mod:
 					mod_rou = opening_rou - total_depreciation
 					mod_lia = opening_liability + total_interest_cost - total_rent_paid
 		if terminated:
-			ter_rou = -(row["wdv"].iloc[0])
-			ter_lia = -(row["closing_liability"].iloc[0])
+			ter_rou = -(rows[0].get("wdv", 0) if rows else 0)
+			ter_lia = -(rows[0].get("closing_liability", 0) if rows else 0)
 			if diff_calc_ter_mod:
 				ter_rou = -(opening_rou - total_depreciation)
 				ter_lia = -(opening_liability + total_interest_cost - total_rent_paid)

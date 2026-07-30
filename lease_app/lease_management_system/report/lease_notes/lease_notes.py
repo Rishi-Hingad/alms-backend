@@ -4,7 +4,6 @@
 from datetime import date, datetime, timedelta
 
 import frappe
-import pandas as pd
 from frappe import _ as translate
 from frappe.desk.query_report import run
 from frappe.utils import getdate
@@ -61,8 +60,7 @@ def execute(filters=None):
 			"fin_end_year": fin_end_year,
 		},
 	)
-	sum_rows = cur_summary_result.get("result")
-	sum_df = pd.DataFrame(sum_rows)
+	sum_rows = cur_summary_result.get("result", [])
 	cur_terminated_leases = []
 	prev_terminated_leases = []
 	# prev_sd_leases = []
@@ -79,27 +77,22 @@ def execute(filters=None):
 	cur_mod_wdv_vehicle = 0
 	prev_mod_wdv_immovable = 0
 	prev_mod_wdv_vehicle = 0
-	for _, row in sum_df.iterrows():
+	for row in sum_rows:
 		# cur_security_deposit = frappe.get_value(
-		# 	"Lease Management", {"name": row["lease_id"]}, "security_deposit"
+		# 	"Lease Management", {"name": row.get("lease_id")}, "security_deposit"
 		# )
 		# if cur_security_deposit == "Paid":
-		# 	cur_sd_leases.append(row["lease_id"])
-		if row["termination_rou"] != 0 and (
-			isinstance(row["termination_rou"], int) or isinstance(row["termination_rou"], float)
-		):
-			cur_terminated_leases.append(row["lease_id"])
-		if row["modification_rou"] != 0 and (
-			isinstance(row["modification_rou"], int) or isinstance(row["modification_rou"], float)
-		):
+		# 	cur_sd_leases.append(row.get("lease_id"))
+		if row.get("termination_rou") and row.get("termination_rou") != 0:
+			cur_terminated_leases.append(row.get("lease_id"))
+		if row.get("modification_rou") and row.get("modification_rou") != 0:
 			cur_type_of_asset = frappe.get_value(
-				"Lease Management", {"name": row["lease_id"]}, "type_of_asset"
+				"Lease Management", {"name": row.get("lease_id")}, "type_of_asset"
 			)
 			if cur_type_of_asset == "Immovable":
-				cur_mod_wdv_immovable += round(row["modification_rou"], 3)
+				cur_mod_wdv_immovable += round(row.get("modification_rou"), 3)
 			else:
-				cur_mod_wdv_vehicle += round(row["modification_rou"], 3)
-			# frappe.msgprint(str(row["lease_id"])+"row['modification_rou']="+str(row["modification_rou"]))
+				cur_mod_wdv_vehicle += round(row.get("modification_rou"), 3)
 	if len(cur_terminated_leases) > 0:
 		(
 			cur_ter_acc_deprec_vehicle,
@@ -117,28 +110,18 @@ def execute(filters=None):
 			"fin_end_year": fin_start_year,
 		},
 	)
-	prev_sum_rows = prev_summary_result.get("result")
-	prev_sum_df = pd.DataFrame(prev_sum_rows)
-	for _, row in prev_sum_df.iterrows():
-		# prev_security_deposit = frappe.get_value(
-		# 	"Lease Management", {"name": row["lease_id"]}, "security_deposit"
-		# )
-		# if prev_security_deposit == "Paid":
-		# 	prev_sd_leases.append(row["lease_id"])
-		if row["termination_rou"] != 0 and (
-			isinstance(row["termination_rou"], int) or isinstance(row["termination_rou"], float)
-		):
-			prev_terminated_leases.append(row["lease_id"])
-		if row["modification_rou"] != 0 and (
-			isinstance(row["modification_rou"], int) or isinstance(row["modification_rou"], float)
-		):
+	prev_sum_rows = prev_summary_result.get("result", [])
+	for row in prev_sum_rows:
+		if row.get("termination_rou") and row.get("termination_rou") != 0:
+			prev_terminated_leases.append(row.get("lease_id"))
+		if row.get("modification_rou") and row.get("modification_rou") != 0:
 			prev_type_of_asset = frappe.get_value(
-				"Lease Management", {"name": row["lease_id"]}, "type_of_asset"
+				"Lease Management", {"name": row.get("lease_id")}, "type_of_asset"
 			)
 			if prev_type_of_asset == "Immovable":
-				prev_mod_wdv_immovable += round(row["modification_rou"], 3)
+				prev_mod_wdv_immovable += round(row.get("modification_rou"), 3)
 			else:
-				prev_mod_wdv_vehicle += round(row["modification_rou"], 3)
+				prev_mod_wdv_vehicle += round(row.get("modification_rou"), 3)
 	if len(prev_terminated_leases) > 0:
 		(
 			prev_ter_acc_deprec_vehicle,
@@ -156,13 +139,12 @@ def execute(filters=None):
 			"fin_end_year": fin_end_year,
 		},
 	)
-	rows = cur_result.get("result")
-	df = pd.DataFrame(rows)
-	if not df.empty and len(df) > 15:
-		cur_depre_immovable = round(df.iloc[15]["debit"], 3)
-		cur_depre_vehicle = round(df.iloc[16]["debit"], 3)
-		cur_add_immovable = round(df.iloc[5]["debit"], 3)
-		cur_add_vehicle = round(df.iloc[6]["debit"], 3)
+	rows = cur_result.get("result", [])
+	if rows and len(rows) > 15:
+		cur_depre_immovable = round(rows[15].get("debit", 0), 3)
+		cur_depre_vehicle = round(rows[16].get("debit", 0), 3)
+		cur_add_immovable = round(rows[5].get("debit", 0), 3)
+		cur_add_vehicle = round(rows[6].get("debit", 0), 3)
 	else:
 		cur_depre_immovable = 0
 		cur_depre_vehicle = 0
@@ -184,15 +166,12 @@ def execute(filters=None):
 			"fin_end_year": fin_start_year,
 		},
 	)
-	prev_rows = prev_result.get("result")
-	prev_df = pd.DataFrame(prev_rows)
-	# frappe.msgprint("fin_start_year="+str(fin_start_year)+" "+str(get_prev_notes_record(company_name,fin_start_year)))
-	# prev_gross_immovable,prev_gross_vehicle,prev_acc_depre_immovable,prev_acc_depre_vehicle= get_prev_notes_record(company_name,fin_start_year)
-	if not prev_df.empty and len(prev_df) > 15:
-		prev_depre_immovable = round(prev_df.iloc[15]["debit"], 3)
-		prev_depre_vehicle = round(prev_df.iloc[16]["debit"], 3)
-		prev_add_immovable = round(prev_df.iloc[5]["debit"], 3)
-		prev_add_vehicle = round(prev_df.iloc[6]["debit"], 3)
+	prev_rows = prev_result.get("result", [])
+	if prev_rows and len(prev_rows) > 15:
+		prev_depre_immovable = round(prev_rows[15].get("debit", 0), 3)
+		prev_depre_vehicle = round(prev_rows[16].get("debit", 0), 3)
+		prev_add_immovable = round(prev_rows[5].get("debit", 0), 3)
+		prev_add_vehicle = round(prev_rows[6].get("debit", 0), 3)
 	else:
 		prev_depre_immovable = 0
 		prev_depre_vehicle = 0

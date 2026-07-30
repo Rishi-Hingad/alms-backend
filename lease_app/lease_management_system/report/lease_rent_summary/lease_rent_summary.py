@@ -4,7 +4,6 @@
 from datetime import date, datetime
 
 import frappe
-import pandas as pd
 from dateutil.relativedelta import relativedelta
 from frappe import _ as translate
 from frappe.desk.query_report import run
@@ -47,21 +46,19 @@ def execute(filters=None):
 			"year": (today - relativedelta(months=1)).strftime("%Y"),
 		},
 	)
-	prev_rows = prev_report_data.get("result")
-	prev_report_df = pd.DataFrame(prev_rows)
+	prev_rows = prev_report_data.get("result", [])
 	prev_rent = 0
-	for _, row in prev_report_df.iterrows():
-		prev_rent += round(row.get("total_rent"), 3)
+	for row in prev_rows:
+		prev_rent += round(row.get("total_rent", 0), 3)
 
 	# Current Month Total Rent
 	cur_report_data = run(
 		"Monthly Lease Payment", filters={"month": today.strftime("%B"), "year": today.strftime("%Y")}
 	)
-	cur_rows = cur_report_data.get("result")
-	report_df = pd.DataFrame(cur_rows)
+	cur_rows = cur_report_data.get("result", [])
 	cur_rent = 0
-	for _, row in report_df.iterrows():
-		cur_rent += round(row.get("total_rent"), 3)
+	for row in cur_rows:
+		cur_rent += round(row.get("total_rent", 0), 3)
 
 	# Next Month Total Rent
 	next_report_data = run(
@@ -71,11 +68,10 @@ def execute(filters=None):
 			"year": (today + relativedelta(months=1)).strftime("%Y"),
 		},
 	)
-	next_rows = next_report_data.get("result")
-	next_report_df = pd.DataFrame(next_rows)
+	next_rows = next_report_data.get("result", [])
 	next_rent = 0
-	for _, row in next_report_df.iterrows():
-		next_rent += round(row.get("total_rent"), 3)
+	for row in next_rows:
+		next_rent += round(row.get("total_rent", 0), 3)
 
 	monthly_totals["Previous Month"] = prev_rent
 	monthly_totals["Current Month"] = cur_rent

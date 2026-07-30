@@ -10,7 +10,7 @@ def execute():
 
     pkg_dir = os.path.dirname(os.path.abspath(__file__))
     monorepo_dir = os.path.dirname(pkg_dir)
-    approval_dir = os.path.join(monorepo_dir, "approval_app")
+    approval_dir = os.path.join(monorepo_dir, "alms_app")
 
     for p in [approval_dir, monorepo_dir, apps_dir]:
         if os.path.exists(p) and p not in sys.path:
@@ -19,7 +19,7 @@ def execute():
     importlib.invalidate_caches()
 
     # Symlink in apps/ if missing
-    top_level_symlink = os.path.join(apps_dir, "approval_app")
+    top_level_symlink = os.path.join(apps_dir, "alms_app")
     if not os.path.exists(top_level_symlink) and os.path.exists(approval_dir):
         try:
             os.symlink(approval_dir, top_level_symlink)
@@ -32,16 +32,16 @@ def execute():
     except Exception:
         apps = []
 
-    if apps and "approval_app" not in apps:
-        print("Adding approval_app to apps.txt dynamically...")
+    if apps and "alms_app" not in apps:
+        print("Adding alms_app to apps.txt dynamically...")
         if "lease_app" in apps:
             idx = apps.index("lease_app")
-            apps.insert(idx, "approval_app")
+            apps.insert(idx, "alms_app")
         elif "leasemanagement" in apps:
             idx = apps.index("leasemanagement")
-            apps.insert(idx, "approval_app")
+            apps.insert(idx, "alms_app")
         else:
-            apps.append("approval_app")
+            apps.append("alms_app")
 
         with open(apps_txt_path, "w") as f:
             f.write("\n".join(apps) + "\n")
@@ -51,14 +51,14 @@ def execute():
         try:
             frappe.setup_module_map()
         except Exception as e:
-            print(f"Warning setting up module map for approval_app: {e}")
+            print(f"Warning setting up module map for alms_app: {e}")
 
     try:
         installed_apps = frappe.get_installed_apps()
-        if "approval_app" not in installed_apps:
+        if "alms_app" not in installed_apps:
             from frappe.installer import add_to_installed_apps
-            print("Adding approval_app to tabInstalled Applications dynamically...")
-            add_to_installed_apps("approval_app", rebuild_website=False)
+            print("Adding alms_app to tabInstalled Applications dynamically...")
+            add_to_installed_apps("alms_app", rebuild_website=False)
             frappe.db.commit()
     except Exception as e:
-        print(f"Warning adding approval_app to installed apps: {e}")
+        print(f"Warning adding alms_app to installed apps: {e}")

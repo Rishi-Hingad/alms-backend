@@ -5,7 +5,6 @@ import math
 from datetime import date, datetime
 
 import frappe
-import pandas as pd
 from frappe import _ as translate
 from frappe.desk.query_report import run
 
@@ -36,12 +35,7 @@ def execute(filters=None):
 			"fin_end_year": fin_end_year,
 		},
 	)
-	rows = result.get("result")
-	df = pd.DataFrame(rows)
-
-	interest = df["interest"].tolist()
-	rent_paid = df["rent_paid"].tolist()
-	ter_lease_lia = df["termination_lease_liability"].tolist()
+	rows = result.get("result", [])
 
 	total_interest = 0
 	total_rent = 0
@@ -53,17 +47,21 @@ def execute(filters=None):
 	immovable_ter_rou = 0
 	car_ter_rou = 0
 
-	for i in range(len(interest)):
-		val = interest[i]
-		if isinstance(val, int) or isinstance(val, float):
-			total_interest += val
-		if isinstance(rent_paid[i], int) or isinstance(rent_paid[i], float):
-			total_rent += rent_paid[i]
-		if isinstance(ter_lease_lia[i], int) or isinstance(ter_lease_lia[i], float):
-			total_ter_lease_lia += ter_lease_lia[i]
+	for row in rows:
+		interest_val = row.get("interest", 0)
+		rent_val = row.get("rent_paid", 0)
+		ter_lia_val = row.get("termination_lease_liability", 0)
+		
+		if isinstance(interest_val, (int, float)):
+			total_interest += interest_val
+		if isinstance(rent_val, (int, float)):
+			total_rent += rent_val
+		if isinstance(ter_lia_val, (int, float)):
+			total_ter_lease_lia += ter_lia_val
+
 	total_ter_lease_lia = -(total_ter_lease_lia)
 
-	for _, row in df.iterrows():
+	for row in rows:
 		lease_id = row.get("lease_id")
 		depreciation = row.get("depreciation") or 0
 		additions_rou = row.get("additions_rou_asset") or 0
