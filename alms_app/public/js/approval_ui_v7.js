@@ -1,5 +1,5 @@
 // Generic Approval UI Utility for ALMS App
-if (typeof frappe !== 'undefined' && frappe.ui && frappe.ui.form) {
+if (typeof frappe !== 'undefined' && frappe.ui && frappe.ui.form && typeof frappe.ui.form.on === 'function') {
     frappe.ui.form.on('*', {
         refresh: function (frm) {
             window.setup_approval_ui(frm);
@@ -11,7 +11,7 @@ if (typeof frappe !== 'undefined' && frappe.ui && frappe.ui.form) {
 }
 
 // Explicitly bind to Car Indent Form to override any DocType JS caching issues
-if (typeof frappe !== 'undefined' && frappe.ui && frappe.ui.form) {
+if (typeof frappe !== 'undefined' && frappe.ui && frappe.ui.form && typeof frappe.ui.form.on === 'function') {
     frappe.ui.form.on('Car Indent Form', {
         refresh: function (frm) {
             window.setup_approval_ui(frm);
