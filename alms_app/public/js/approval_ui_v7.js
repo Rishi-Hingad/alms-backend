@@ -1,22 +1,26 @@
 // Generic Approval UI Utility for ALMS App
-frappe.ui.form.on('*', {
-    refresh: function (frm) {
-        window.setup_approval_ui(frm);
-    },
-    after_save: function (frm) {
-        window.setup_approval_ui(frm);
-    }
-});
+if (typeof frappe !== 'undefined' && frappe.ui && frappe.ui.form) {
+    frappe.ui.form.on('*', {
+        refresh: function (frm) {
+            window.setup_approval_ui(frm);
+        },
+        after_save: function (frm) {
+            window.setup_approval_ui(frm);
+        }
+    });
+}
 
 // Explicitly bind to Car Indent Form to override any DocType JS caching issues
-frappe.ui.form.on('Car Indent Form', {
-    refresh: function (frm) {
-        window.setup_approval_ui(frm);
-    },
-    after_save: function (frm) {
-        window.setup_approval_ui(frm);
-    }
-});
+if (typeof frappe !== 'undefined' && frappe.ui && frappe.ui.form) {
+    frappe.ui.form.on('Car Indent Form', {
+        refresh: function (frm) {
+            window.setup_approval_ui(frm);
+        },
+        after_save: function (frm) {
+            window.setup_approval_ui(frm);
+        }
+    });
+}
 
 window.setup_approval_ui = function (frm) {
     // Clear old native custom buttons if they exist
