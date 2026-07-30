@@ -94,7 +94,7 @@
    "fieldtype": "Link",
    "in_list_view": 1,
    "label": "Employee",
-   "options": "ALMS Employee"
+   "options": "Employee"
   },
   {
    "default": "0",

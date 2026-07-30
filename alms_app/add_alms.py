@@ -47,23 +47,6 @@ def execute():
         except Exception:
             pass
 
-    # 3. Ensure all 4 monorepo apps exist in tabInstalled Application table via direct SQL
-    try:
-        for app_name in ["lease_app", "alms_app", "remittance_tool", "alms_app"]:
-            frappe.db.sql(
-                """
-                INSERT INTO `tabInstalled Application` 
-                    (name, app_name, app_version, creation, modified, owner, modified_by) 
-                VALUES 
-                    (%s, %s, '0.0.1', NOW(), NOW(), 'Administrator', 'Administrator')
-                ON DUPLICATE KEY UPDATE modified = NOW()
-                """,
-                (app_name, app_name)
-            )
-        frappe.db.commit()
-    except Exception as e:
-        print(f"Warning adding apps to installed apps table: {e}")
-
     # 4. Clear cache and setup module map
     try:
         frappe.cache().delete_value("all_apps")
