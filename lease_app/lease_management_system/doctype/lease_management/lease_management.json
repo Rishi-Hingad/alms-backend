@@ -40,7 +40,8 @@
   "modifications",
   "section_break_jnax",
   "invoice_details",
-  "invoice_attachments"
+  "invoice_attachments",
+  "contract_number"
  ],
  "fields": [
   {
@@ -179,7 +180,7 @@
   {
    "fieldname": "invoice_details",
    "fieldtype": "Table",
-   "label": "LMS Invoice Details",
+   "label": "Invoice Details",
    "options": "Invoice Documents"
   },
   {
@@ -299,12 +300,18 @@
    "fieldtype": "Float",
    "label": "Security Deposit Amount New",
    "precision": "2"
+  },
+  {
+   "fieldname": "contract_number",
+   "fieldtype": "Link",
+   "label": "Contract Number",
+   "options": "Contract Master"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-06-30 11:29:39.006431",
+ "modified": "2026-07-31 12:54:13.745879",
  "modified_by": "Administrator",
  "module": "Lease Management System",
  "name": "Lease Management",

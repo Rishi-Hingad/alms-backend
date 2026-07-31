@@ -115,9 +115,8 @@ frappe.ui.form.on("Invoice Documents", {
                             <td>${a.uploaded_by}</td>
                             <td>${frappe.datetime.str_to_user(a.uploaded_on)}</td>
                             <td class="text-center">
-                                <a class="text-danger" style="cursor:pointer;" data-name="${
-									a.name
-								}" title="Delete">
+                                <a class="text-danger" style="cursor:pointer;" data-name="${a.name
+						}" title="Delete">
                                     <i class="fa fa-trash"></i>
                                 </a>
                             </td>
@@ -269,6 +268,13 @@ frappe.ui.form.on("Lease Management", {
 	},
 	refresh: function (frm) {
 		frm.page.set_indicator(__(frm.doc.status), get_status_color(frm.doc.status));
+
+		if (frm.doc.vendor === "Easy Asset" || frm.doc.type_of_report === "Quarterly") {
+			let quarterly_amount = (frm.doc.monthly_rent || 0) * 3;
+			frm.set_df_property("monthly_rent", "description", `Above Value is Monthly. but Quartely Rent (Value) is ${quarterly_amount}`);
+		} else {
+			frm.set_df_property("monthly_rent", "description", "");
+		}
 		// frm.dashboard.clear_headline();
 
 		// // ── Root/Original Lease ─────────────────────────────────────
@@ -524,12 +530,12 @@ frappe.ui.form.on("Lease Management", {
 					);
 				}
 			}
-			// if (frappe.user.has_role("Vendor") || frappe.user.has_role("Accounts")) {
-			// 	frm.add_custom_button(__("Go to LMS Invoice Details"), function () {
-			// 		// Scroll to the field
-			// 		frm.scroll_to_field("invoice_details");
-			// 	});
-			// }
+			if (frappe.user.has_role("Vendor") || frappe.user.has_role("Accounts") || frappe.user.has_role("System Manager")) {
+				frm.add_custom_button(__("Go to Invoice Details"), function () {
+					// Scroll to the field
+					frm.scroll_to_field("invoice_details");
+				});
+			}
 		}
 	},
 	validate: function (frm) {
