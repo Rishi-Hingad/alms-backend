@@ -19,6 +19,9 @@ class VehicleDetails(Document):
             
         is_easy_asset = (self.vendor_company == "Easy Asset")
         report_type = "Quarterly" if is_easy_asset else "Monthly"
+        
+        # In Frappe Lease Management, Quarterly leases must use "Daily Rate" to trigger quarterly report logic
+        calc_rate_type = "Daily Rate" if is_easy_asset else "Monthly Rate"
         monthly_rent = (installment_amount / 3) if is_easy_asset else installment_amount
         
         existing_lease = frappe.db.get_value("Lease Management", {"car_description": self.name}, "name")
@@ -29,8 +32,8 @@ class VehicleDetails(Document):
             lease = frappe.new_doc("Lease Management")
             lease.car_description = self.name
             lease.type_of_asset = "Car"
-            lease.calculation_rate_type = "Monthly Rate"
             
+        lease.calculation_rate_type = calc_rate_type
         lease.contract_number = self.get("contract_number")
         lease.company = self.get("company_name")
         lease.vendor = self.get("vendor_company")
