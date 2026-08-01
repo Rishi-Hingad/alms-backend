@@ -127,7 +127,7 @@ def execute(filters=None):
                 if lease_doc.type_of_asset == "Immovable":
                         prop_doc = frappe.get_doc("Property Master", lease_doc.property_description)
                 else:
-                        car_desc = frappe.get_doc("Car Description Master", lease_doc.car_description)
+                        car_desc = frappe.get_doc("Vehicle Details", lease_doc.car_description)
 
                 msdate = date(int(fin_start_year), 4, 1)
                 medate = date(int(fin_end_year), 3, 1)
