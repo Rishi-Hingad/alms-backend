@@ -105,6 +105,7 @@ def execute(filters=None):
 	if doc.type_of_asset == "Car":
 		if doc.type_of_report == "Quarterly":
 			quarterly_report = True
+			mlp = mlp2 = float(doc.monthly_rent) * 3
 		if not doc.additional_amounts:
 			add_amount = False
 		else:
