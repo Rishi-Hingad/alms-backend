@@ -205,6 +205,12 @@ frappe.ui.form.on("Lease Management", {
 			frm.set_value("vendor", null);
 		}
 	},
+	monthly_rent: function(frm) {
+		set_quarterly_rent_description(frm);
+	},
+	type_of_report: function(frm) {
+		set_quarterly_rent_description(frm);
+	},
 	agreement_start_date: function (frm) {
 		validate_dates_and_set_lease_period(frm);
 	},
@@ -269,12 +275,7 @@ frappe.ui.form.on("Lease Management", {
 	refresh: function (frm) {
 		frm.page.set_indicator(__(frm.doc.status), get_status_color(frm.doc.status));
 
-		if (frm.doc.vendor === "Easy Asset" || frm.doc.type_of_report === "Quarterly") {
-			let quarterly_amount = (frm.doc.monthly_rent || 0) * 3;
-			frm.set_df_property("monthly_rent", "description", `Above Value is Monthly. but Quartely Rent (Value) is ${quarterly_amount}`);
-		} else {
-			frm.set_df_property("monthly_rent", "description", "");
-		}
+		set_quarterly_rent_description(frm);
 		// frm.dashboard.clear_headline();
 
 		// // ── Root/Original Lease ─────────────────────────────────────
@@ -666,6 +667,15 @@ function get_status_color(status) {
 	};
 
 	return status_colors[status] || "orange";
+}
+
+function set_quarterly_rent_description(frm) {
+	if (frm.doc.vendor === "Easy Asset" || frm.doc.type_of_report === "Quarterly") {
+		let quarterly_amount = (frm.doc.monthly_rent || 0) * 3;
+		frm.set_df_property("monthly_rent", "description", `Above value is monthly, but quarterly rent is ${quarterly_amount}`);
+	} else {
+		frm.set_df_property("monthly_rent", "description", "");
+	}
 }
 
 function set_lease_fields_readonly(frm) {

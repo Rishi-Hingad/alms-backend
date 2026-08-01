@@ -366,8 +366,12 @@ def execute(filters=None):
 						pv = 0
 				pv_arr.append(round(pv, 3))
 				# pv_arr.append(pv)
+			if str(current_date.date())[:7] == "2024-04":
+				print(f"DEBUG lease_report.py 2024-04-01 before fallback mrent={mrent} rate={rate} famt={famt} escalation={bool(escalation)} mlp={mlp} prev_mlp={prev_mlp} add_amount={add_amount} quarterly_report={quarterly_report}")
 			if (mrent == 0 and rate == 0 and famt == 0 and escalation) or quarterly_report or add_amount:
 				mlp = prev_mlp
+			if str(current_date.date())[:7] == "2024-04":
+				print(f"DEBUG lease_report.py 2024-04-01 after fallback mlp={mlp}")
 		total_pv += pv
 		if quarterly_report:
 			ndays += quarterly_n
