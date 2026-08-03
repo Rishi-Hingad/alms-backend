@@ -1,8 +1,8 @@
 import frappe
 import json
 import traceback
-from lease_app.api.email_master import EmailMaster
-from lease_app.api.emailClass import EmailServices
+from leasemanagement.api.email_master import EmailMaster
+from leasemanagement.api.emailClass import EmailServices
 
 @frappe.whitelist(allow_guest=True)
 def update_payment_status():

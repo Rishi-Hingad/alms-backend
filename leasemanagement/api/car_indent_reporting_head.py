@@ -1,5 +1,5 @@
 import frappe
-from lease_app.api.emailClass import EmailServices
+from leasemanagement.api.emailClass import EmailServices
 import traceback
 
 Email = EmailServices()
