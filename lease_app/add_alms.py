@@ -14,9 +14,7 @@ def execute():
     monorepo_dir = os.path.dirname(pkg_dir)
     alms_dir = os.path.join(apps_dir, "alms_app")
     approval_dir = os.path.join(apps_dir, "alms_app")
-    remittance_dir = os.path.join(apps_dir, "remittance_app")
-
-    for p in [alms_dir, approval_dir, remittance_dir, monorepo_dir, apps_dir]:
+    for p in [alms_dir, approval_dir, monorepo_dir, apps_dir]:
         if os.path.exists(p) and p not in sys.path:
             sys.path.insert(0, p)
 
@@ -24,7 +22,7 @@ def execute():
 
     # Dynamically determine which apps are actually importable on this environment
     valid_installed_apps = ["frappe", "lease_app"]
-    candidate_apps = ["alms_app", "remittance_tool", "remittance_app", "alms_app"]
+    candidate_apps = ["alms_app"]
 
     for app_name in candidate_apps:
         try:
@@ -70,7 +68,7 @@ def execute():
     # 5. Bind monorepo modules in tabModule Def to an available app
     try:
         target_app = "alms_app" if "alms_app" in valid_installed_apps else "lease_app"
-        frappe.db.sql("UPDATE `tabModule Def` SET app_name = %s WHERE module_name IN ('Lease Management System', 'Car and Lease', 'Lease Masters', 'ALMS', 'master', 'CRMS', 'Approval', 'Remittance Tool')", (target_app,))
+        frappe.db.sql("UPDATE `tabModule Def` SET app_name = %s WHERE module_name IN ('Lease Management System', 'Car and Lease', 'Lease Masters', 'ALMS', 'master', 'CRMS', 'Approval')", (target_app,))
         frappe.db.commit()
     except Exception as e:
         print(f"Warning updating Module Def app_names: {e}")
