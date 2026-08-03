@@ -4,8 +4,8 @@ this file manage the email for each levele of process of Onboard  car
 """
 
 import frappe
-from lease_app.api.emailClass import EmailServices
-from lease_app.api.email_master import EmailMaster
+from leasemanagement.api.emailClass import EmailServices
+from leasemanagement.api.email_master import EmailMaster
 import shutil
 import frappe
 from frappe.utils.file_manager import save_file_on_filesystem

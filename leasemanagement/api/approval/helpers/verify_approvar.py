@@ -1,6 +1,6 @@
 import frappe
 
-from lease_app.utils.get_approver_employee import get_approval_employee
+from leasemanagement.utils.get_approver_employee import get_approval_employee
 
 
 def verify_approver(user, stage):

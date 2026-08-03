@@ -21,7 +21,7 @@ def execute():
     importlib.invalidate_caches()
 
     # Dynamically determine which apps are actually importable on this environment
-    valid_installed_apps = ["frappe", "lease_app"]
+    valid_installed_apps = ["frappe", "leasemanagement"]
     candidate_apps = ["alms_app"]
 
     for app_name in candidate_apps:
@@ -67,7 +67,7 @@ def execute():
 
     # 5. Bind monorepo modules in tabModule Def to an available app
     try:
-        target_app = "alms_app" if "alms_app" in valid_installed_apps else "lease_app"
+        target_app = "alms_app" if "alms_app" in valid_installed_apps else "leasemanagement"
         frappe.db.sql("UPDATE `tabModule Def` SET app_name = %s WHERE module_name IN ('Lease Management System', 'Car and Lease', 'Lease Masters', 'ALMS', 'master', 'CRMS', 'Approval')", (target_app,))
         frappe.db.commit()
     except Exception as e:
