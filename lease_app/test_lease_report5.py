@@ -1,5 +1,5 @@
 import frappe
-from leasemanagement.lease_management_system.report.lease_report_monthly_with_escalation.lease_report_monthly_with_escalation import execute
+from lease_app.lease_management_system.report.lease_report_monthly_with_escalation.lease_report_monthly_with_escalation import execute
 
 def run_test():
     columns, rows = execute(filters={"docname": "LMS-APR22_MAR27-154"})

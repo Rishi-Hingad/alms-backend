@@ -1,5 +1,5 @@
 import frappe
-from leasemanagement.lease_management_system.report.lease_summary_report.lease_summary_report import execute
+from lease_app.lease_management_system.report.lease_summary_report.lease_summary_report import execute
 def run_test():
     try:
         # Get a real company from the DB

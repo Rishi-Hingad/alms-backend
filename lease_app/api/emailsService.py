@@ -1,6 +1,6 @@
 from pydoc import doc
 import frappe
-from leasemanagement.api.emailClass import EmailServices
+from lease_app.api.emailClass import EmailServices
 import json
 import traceback
 from frappe import _

@@ -1,5 +1,5 @@
 [project]
-name = "leasemanagement"
+name = "lease_app"
 version = "0.0.1"
 description = "Property Lease Management System"
 requires-python = ">=3.10"
@@ -11,12 +11,12 @@ build-backend = "setuptools.build_meta"
 
 [tool.setuptools]
 packages = [
-    "leasemanagement",
+    "lease_app",
     "lease_management_system",
     "lease_masters"
 ]
 
 [tool.setuptools.package-dir]
-leasemanagement = "leasemanagement"
-lease_management_system = "leasemanagement/lease_management_system"
-lease_masters = "leasemanagement/lease_masters"
+lease_app = "lease_app"
+lease_management_system = "lease_app/lease_management_system"
+lease_masters = "lease_app/lease_masters"

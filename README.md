@@ -12,7 +12,7 @@ You can install this app using the [bench](https://github.com/frappe/bench) CLI:
 ```bash
 cd $PATH_TO_YOUR_BENCH
 bench get-app $URL_OF_THIS_REPO --branch develop
-bench install-app leasemanagement
+bench install-app lease_app
 bench install-app leasemanagement
 ```
 
@@ -21,7 +21,7 @@ bench install-app leasemanagement
 This app uses `pre-commit` for code formatting and linting. Please [install pre-commit](https://pre-commit.com/#installation) and enable it for this repository:
 
 ```bash
-cd apps/leasemanagement
+cd apps/lease_app
 cd apps/leasemanagement
 pre-commit install
 ```
@@ -57,7 +57,7 @@ You can install this app using the [bench](https://github.com/frappe/bench) CLI:
 ```bash
 cd $PATH_TO_YOUR_BENCH
 bench get-app $URL_OF_THIS_REPO --branch develop
-bench install-app leasemanagement
+bench install-app lease_app
 ```
 
 ### Contributing
@@ -65,7 +65,7 @@ bench install-app leasemanagement
 This app uses `pre-commit` for code formatting and linting. Please [install pre-commit](https://pre-commit.com/#installation) and enable it for this repository:
 
 ```bash
-cd apps/leasemanagement
+cd apps/lease_app
 pre-commit install
 ```
 

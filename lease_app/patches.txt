@@ -1,7 +1,7 @@
 [pre_model_sync]
-leasemanagement.patches.fix_purchase_form_submittable_v2
-leasemanagement.patches.revert_purchase_form_submittable
-leasemanagement.patches.clear_dummy_files
+lease_app.patches.fix_purchase_form_submittable_v2
+lease_app.patches.revert_purchase_form_submittable
+lease_app.patches.clear_dummy_files
 
 [post_model_sync]
 

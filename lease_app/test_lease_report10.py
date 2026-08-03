@@ -1,5 +1,5 @@
 import frappe
-from leasemanagement.lease_management_system.report.lease_report_monthly_with_escalation.lease_report_monthly_with_escalation import execute
+from lease_app.lease_management_system.report.lease_report_monthly_with_escalation.lease_report_monthly_with_escalation import execute
 def run_test():
     frappe.db.set_value("Lease Management", "LMS-APR22_MAR27-154", "calculation_rate_type", "Monthly Rate")
     for esc in frappe.get_all("Escalation", filters={"parent": "LMS-APR22_MAR27-154"}):

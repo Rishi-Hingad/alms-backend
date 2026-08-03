@@ -197,7 +197,7 @@ def build_deduction_context(doc, next_user=None, next_team=None, next_role=None,
     context = _default_context_builder(doc, next_user, next_team, next_role, action)
     
     try:
-        from leasemanagement.api.email_master import EmailMaster
+        from lease_app.api.email_master import EmailMaster
         email_master = EmailMaster()
         
         if action == "Closed":

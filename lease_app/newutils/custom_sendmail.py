@@ -8,7 +8,7 @@ from email.mime.base import MIMEBase
 from email import encoders
 import os
 import mimetypes
-from leasemanagement.newutils.notification import create_notification_log
+from lease_app.newutils.notification import create_notification_log
 
 def get_dynamic_from_address():
     try:

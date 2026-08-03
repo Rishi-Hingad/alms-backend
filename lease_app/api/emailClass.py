@@ -7,11 +7,11 @@ import smtplib,ssl
 from email.message import EmailMessage
 import frappe
 from frappe import _
-from leasemanagement.api.email_master import EmailMaster
+from lease_app.api.email_master import EmailMaster
 from urllib.parse import quote
-from leasemanagement.newutils.custom_sendmail import custom_sendmail
+from lease_app.newutils.custom_sendmail import custom_sendmail
 from frappe.utils import get_url
-from leasemanagement.api.role_emails import get_emails_by_role
+from lease_app.api.role_emails import get_emails_by_role
 
 emailMaster = EmailMaster()
 
