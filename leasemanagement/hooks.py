@@ -310,6 +310,6 @@ has_permission = {
 "Lease Management": "leasemanagement.lease_management_system.doctype.lease_management.lease_management.has_permission",
 "Property Master": "leasemanagement.lease_masters.doctype.property_master.property_master.has_permission",
 }
-before_migrate = [
-    "leasemanagement.add_alms.execute"
-]
+# before_migrate = [
+#     "leasemanagement.add_alms.execute"
+# ]
