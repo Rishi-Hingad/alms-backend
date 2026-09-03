@@ -25,17 +25,18 @@
   },
   {
    "fieldname": "email_address",
-   "fieldtype": "Data",
+   "fieldtype": "Link",
    "in_list_view": 1,
    "in_preview": 1,
-   "label": "Email Address"
+   "label": "Email Address",
+   "options": "User"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2026-06-02 09:23:22.237130",
+ "modified": "2026-09-03 09:51:18.963331",
  "modified_by": "Administrator",
  "module": "CRMS",
  "name": "BCC Recipients",
