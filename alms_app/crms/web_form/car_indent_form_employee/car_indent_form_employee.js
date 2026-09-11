@@ -65,7 +65,7 @@ frappe.ready(function () {
                     frappe.web_form.set_value('ex_showroom_price', employeeDetails[0].eligibility);
                     frappe.web_form.set_value('location', employeeDetails[0].location);
                     frappe.web_form.set_value('company_name', employeeDetails[0].company);
-                    frappe.web_form.set_value('employee_reporting', employeeDetails[0].reporting_head);
+                    frappe.web_form.set_value('employee_reporting', employeeDetails[0].reporting_head_name || employeeDetails[0].reporting_head);
                     frappe.web_form.set_value('contact_number', employeeDetails[0].contact_number);
                     frappe.web_form.set_value('email_id', employeeDetails[0].email_id);
                     frappe.web_form.set_value('department', employeeDetails[0].department);
