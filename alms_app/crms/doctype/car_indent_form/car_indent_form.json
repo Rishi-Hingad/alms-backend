@@ -2,7 +2,7 @@
  "actions": [],
  "allow_import": 1,
  "allow_rename": 1,
- "autoname": "format:{employee_code}",
+ "autoname": "format:{employee_code}-{employee_name}",
  "creation": "2024-09-21 16:06:06.381987",
  "doctype": "DocType",
  "engine": "InnoDB",
@@ -346,12 +346,13 @@
    "fetch_from": "employee_code.full_name",
    "fieldname": "employee_name",
    "fieldtype": "Data",
+   "hidden": 1,
    "label": "Employee Name"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-09-02 10:32:48.985390",
+ "modified": "2026-09-10 15:55:07.928694",
  "modified_by": "Administrator",
  "module": "CRMS",
  "name": "Car Indent Form",

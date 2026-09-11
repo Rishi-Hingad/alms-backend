@@ -20,7 +20,7 @@ frappe.ui.form.on("ALMS Employee", {
                             args: {
                                 employee_names: [frm.doc.name]
                             },
-                            callback: function(r) {
+                            callback: function (r) {
                                 if (r.message && r.message.status === "error") {
                                     frappe.msgprint({
                                         title: "Error",
@@ -61,7 +61,7 @@ frappe.ui.form.on("ALMS Employee", {
     status: function (frm) {
         if (!frm.is_new()) updateEmailButton(frm);
     },
-    
+
     eligibility: function (frm) {
         if (!frm.is_new()) updateEmailButton(frm);
     }
@@ -123,6 +123,7 @@ function send_eligibility_email(frm, email_send_to, btn) {
                     "cursor": "pointer",
                     "pointer-events": "auto"
                 });
+
             }
             frappe.msgprint({
                 title: "Error",
@@ -152,7 +153,7 @@ function updateEmailButton(frm) {
                     "border-color": "darkgreen",
                     "cursor": "not-allowed",
                     "font-weight": "semibold",
-                    "text-transform": "uppercase",
+                    "text-transform": "none",
                 })
                 .html('<i class="fa fa-check"></i> Email Sent');
         }
@@ -172,7 +173,16 @@ function updateEmailButton(frm) {
                 });
                 return;
             }
-            
+
+            if (!frm.doc.reporting_head) {
+                frappe.msgprint({
+                    title: "Incomplete Details",
+                    indicator: "orange",
+                    message: "Email cannot be sent. Reporting Head is missing."
+                });
+                return;
+            }
+
             if (btn) {
                 btn.addClass("btn-disabled").prop("disabled", true).text("Sending...").css({
                     "background-color": "#e9ecef",
@@ -182,34 +192,43 @@ function updateEmailButton(frm) {
                     "pointer-events": "none"
                 });
             }
-            
+
             send_eligibility_email(frm, "To Employee", btn);
         });
 
         if (btn) {
             const eligibility = parseFloat(frm.doc.eligibility);
+            let disable_reason = "";
             if (!eligibility || eligibility < 500000) {
+                disable_reason = "Eligibility is either not set or less than ₹5,00,000.";
+            } else if (!frm.doc.reporting_head) {
+                disable_reason = "Reporting Head is missing.";
+            }
+
+            if (disable_reason) {
                 btn.addClass("btn-disabled")
-                   .css({
-                       "background-color": "#e9ecef",
-                       "color": "#6c757d",
-                       "border-color": "#ced4da",
-                       "cursor": "not-allowed",
-                       "font-weight": "semibold",
-                       "text-transform": "uppercase",
-                       "pointer-events": "none"
-                   });
+                    .attr("title", disable_reason)
+                    .css({
+                        "background-color": "#e9ecef",
+                        "color": "#6c757d",
+                        "border-color": "#ced4da",
+                        "cursor": "not-allowed",
+                        "font-weight": "semibold",
+                        "text-transform": "none",
+                        "pointer-events": "auto"
+                    });
             } else {
                 btn.removeClass("btn-disabled")
-                   .css({
-                       "background-color": "#afd1f5",
-                       "color": "#004ea1",
-                       "border-color": "#007bff",
-                       "cursor": "pointer",
-                       "font-weight": "semibold",
-                       "text-transform": "uppercase",
-                       "pointer-events": "auto"
-                   });
+                    .removeAttr("title")
+                    .css({
+                        "background-color": "#afd1f5",
+                        "color": "#004ea1",
+                        "border-color": "#007bff",
+                        "cursor": "pointer",
+                        "font-weight": "semibold",
+                        "text-transform": "none",
+                        "pointer-events": "auto"
+                    });
             }
         }
     }
